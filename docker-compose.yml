@@ -9,27 +9,27 @@ services:
     ports:
       - ${APP_PORT}:${APP_PORT}
     depends_on:
-      - db
+      - biletim-db
     env_file:
       - .env
     networks:
       - biletim-network
     restart: unless-stopped
-  db:
+  biletim-db:
     image: postgres:14
-    container_name: db
+    container_name: biletim-db
     restart: always
     ports:
       - 5432:5432
     env_file:
       - .env
     volumes:
-      -biletim-db:/var/lib/postgresql/data
+      - biletim-vol:/var/lib/postgresql/data
     networks:
       - biletim-network
 volumes:
-  biletim-db:
-    name: biletim-db
+  biletim-vol:
+    name: biletim-vol
 networks:
   biletim-network:
     name: biletim-network
