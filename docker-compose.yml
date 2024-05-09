@@ -24,12 +24,12 @@ services:
     env_file:
       - .env
     volumes:
-      - db-mem:/var/lib/postgresql/data
+      -biletim-db:/var/lib/postgresql/data
     networks:
       - biletim-network
 volumes:
-  db-mem:
-    name: db-mem
+  biletim-db:
+    name: biletim-db
 networks:
   biletim-network:
     name: biletim-network
