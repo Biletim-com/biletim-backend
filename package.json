@@ -46,12 +46,14 @@
     "class-validator": "^0.14.0",
     "csv-parse": "^5.5.2",
     "nestjs-prisma": "^0.20.0",
+    "node-mailer": "^0.1.1",
     "papaparse": "^5.4.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.3.1",

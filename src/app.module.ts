@@ -5,11 +5,9 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from 'nestjs-prisma';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { TıcketsModule } from './tıckets/tıckets.module';
 import { TicketsModule } from './tickets/tickets.module';
-import { TıcketsService } from './tıckets/tıckets.service';
-import { BiletallService } from './biletall/biletall.service';
-import { TicketsService } from './biletall/tickets/tickets.service';
+import { BiletallService } from './tickets/biletall/biletall.service';
+import { TicketsService } from './tickets/tickets.service';
 
 @Module({
   imports: [
@@ -17,10 +15,9 @@ import { TicketsService } from './biletall/tickets/tickets.service';
     PrismaModule.forRoot({ isGlobal: true }),
     AuthModule,
     UsersModule,
-    TıcketsModule,
-    TicketsModule
+    TicketsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, TıcketsService, BiletallService, TicketsService],
+  providers: [AppService, BiletallService, TicketsService],
 })
 export class AppModule {}
