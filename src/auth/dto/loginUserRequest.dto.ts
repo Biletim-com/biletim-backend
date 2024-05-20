@@ -4,7 +4,7 @@ import { IsEmail, IsNotEmpty, IsStrongPassword } from 'class-validator';
 export class LoginUserRequest {
   @ApiProperty({
     description: 'Email',
-    example: 'email@test.com',
+    example: 'emre.yilmaz@westerops.com',
   })
   @IsNotEmpty()
   @IsEmail()
@@ -12,9 +12,16 @@ export class LoginUserRequest {
 
   @ApiProperty({
     description: 'Password',
-    example: 'password',
+    example: 'Test.1234',
   })
   @IsStrongPassword()
   @IsNotEmpty()
+  @IsStrongPassword({
+    minLength: 8,
+    minLowercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
+    minUppercase: 1,
+  })
   password!: string;
 }

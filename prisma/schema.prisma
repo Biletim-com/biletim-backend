@@ -9,37 +9,70 @@ datasource db {
 }
 
 model Company {
-  id          String     @id @default(uuid())
-  name        String     @db.VarChar(255)
-  description String?    @db.VarChar(255)
-  address     String?    @db.VarChar(255)
-  phone       String?    @db.VarChar(64)
-  domain      String?    @unique
-  website     String?    @db.VarChar(255)
-  logo        String?    @db.VarChar(255)
-  created_at  DateTime   @default(now())
+  id          String      @id @default(uuid())
+  name        String      @db.VarChar(255)
+  description String?     @db.VarChar(255)
+  address     String?     @db.VarChar(255)
+  phone       String?     @db.VarChar(64)
+  domain      String?     @unique
+  website     String?     @db.VarChar(255)
+  logo        String?     @db.VarChar(255)
+  created_at  DateTime    @default(now())
   users       User[]
+  PanelUser   PanelUser[]
 }
 
 model User {
-  id         String   @id @default(uuid())
-  role_id    Int
-  company_id String?  @db.VarChar(255)
-  name       String   @db.VarChar(255)
-  familyName String   @db.VarChar(255)
-  email      String   @unique
-  phone      String   @db.VarChar(64)
-  address    String?  @db.VarChar(255)
-  password   String   @db.VarChar(255)
-  created_at DateTime @default(now())
-
-  role      UserRoles  @relation(fields: [role_id], references: [id])
-  company   Company?   @relation(fields: [company_id], references: [id])
+  id               String        @id @default(uuid())
+  name             String        @db.VarChar(255)
+  familyName       String        @db.VarChar(255)
+  email            String        @unique
+  password         String        @db.VarChar(255)
+  phone            String?       @db.VarChar(64)
+  address          String?       @db.VarChar(255)
+  isDeleted        Boolean       @default(false)
+  isVerified       Boolean       @default(false)
+  verificationCode String?       @db.Uuid
+  isUsed           Boolean?      @default(false)
+  created_at       DateTime      @default(now())
+  company          Company?      @relation(fields: [company_id], references: [id])
+  company_id       String?       @db.VarChar(255)
+  verification     Verification?
 }
 
-model UserRoles {
-  id      Int     @id @default(autoincrement())
-  name    String  @db.VarChar(255)
-  isAdmin Boolean @default(false)
-  users   User[]
+model PanelUser {
+  id                    String                 @id @default(uuid())
+  name                  String                 @db.VarChar(255)
+  familyName            String                 @db.VarChar(255)
+  email                 String                 @unique
+  password              String                 @db.VarChar(255)
+  phone                 String?                @db.VarChar(64)
+  address               String?                @db.VarChar(255)
+  isDeleted             Boolean                @default(false)
+  isVerified            Boolean                @default(false)
+  created_at            DateTime               @default(now())
+  company               Company?               @relation(fields: [company_id], references: [id])
+  company_id            String?                @db.VarChar(255)
+  panelUserVerification PanelUserVerification?
+}
+
+model Verification {
+  id               String  @id @default(uuid())
+  verificationCode Int
+  isUsed           Boolean @default(false)
+  isExpired        Boolean @default(false)
+  user             User    @relation(fields: [user_id], references: [id])
+  user_id          String  @unique
+
+  createdAt DateTime @default(now())
+}
+
+model PanelUserVerification {
+  id               String    @id @default(uuid())
+  verificationCode Int
+  isUsed           Boolean   @default(false)
+  isExpired        Boolean   @default(false)
+  panelUser        PanelUser @relation(fields: [panelUser_id], references: [id])
+  panelUser_id     String    @unique
+  createdAt        DateTime  @default(now())
 }

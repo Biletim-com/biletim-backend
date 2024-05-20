@@ -27,6 +27,7 @@ async function bootstrap() {
     .setTitle('Biletim API')
     .setDescription('API Documentation')
     .setVersion('v1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, docOptions);
   SwaggerModule.setup('api', app, document);

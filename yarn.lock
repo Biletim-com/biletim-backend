@@ -1356,6 +1356,11 @@
   dependencies:
     "@types/superagent" "*"
 
+"@types/uuid@8.3.4":
+  version "8.3.4"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.4.tgz#bd86a43617df0594787d38b735f55c805becf1bc"
+  integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
+
 "@types/validator@^13.7.10":
   version "13.7.15"
   resolved "https://registry.yarnpkg.com/@types/validator/-/validator-13.7.15.tgz#408c99d1b5f0eecc78109c11f896f72d1f026a10"
@@ -1861,6 +1866,11 @@ base64-js@^1.3.1:
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
+bcrypt-ts@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/bcrypt-ts/-/bcrypt-ts-5.0.2.tgz#8068af00de29cc6dce02766c46332158677643e1"
+  integrity sha512-gDwQ5784AkkfhHACh3jGcg1hUubyZyeq9AtVd5gXkcyHGVOC+mORjRIHSj+fHfqwY5vxwyBLXQpcfk8MpK0ROg==
+
 bcrypt@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/bcrypt/-/bcrypt-5.1.0.tgz#bbb27665dbc400480a524d8991ac7434e8529e17"
@@ -1868,6 +1878,11 @@ bcrypt@^5.1.0:
   dependencies:
     "@mapbox/node-pre-gyp" "^1.0.10"
     node-addon-api "^5.0.0"
+
+bcryptjs@^2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/bcryptjs/-/bcryptjs-2.4.3.tgz#9ab5627b93e60621ff7cdac5da9733027df1d0cb"
+  integrity sha512-V/Hy/X9Vt7f3BbPJEi8BdVFMByHi+jNXrYkW3huaybV/kQ0KJg0Y6PkEMbn+zeT+i+SiKZ/HMqJGIIt4LZDqNQ==
 
 binary-extensions@^2.0.0:
   version "2.2.0"
@@ -4081,10 +4096,22 @@ node-int64@^0.4.0:
   resolved "https://registry.yarnpkg.com/node-int64/-/node-int64-0.4.0.tgz#87a9065cdb355d3182d8f94ce11188b825c68a3b"
   integrity sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==
 
+node-mailer@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/node-mailer/-/node-mailer-0.1.1.tgz#609e14a9b2c34422540b3a66938163d1d2421500"
+  integrity sha512-L3YwTtPodsYr1sNPW/PxXw0rSOr/ldygaIph2YtXDwLGt9l8km/OjM0Wrr57Yf07JEEnDb3wApjhVdR0k5v0kw==
+  dependencies:
+    nodemailer ">= 0.1.15"
+
 node-releases@^2.0.8:
   version "2.0.10"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.10.tgz#c311ebae3b6a148c89b1813fd7c4d3c024ef537f"
   integrity sha512-5GFldHPXVG/YZmFzJvKK2zDSzPKhEp0+ZR5SVaoSag9fsL5YgHbUHDfnG5494ISANDcK4KwPXAx2xqVEydmd7w==
+
+"nodemailer@>= 0.1.15":
+  version "6.9.13"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.9.13.tgz#5b292bf1e92645f4852ca872c56a6ba6c4a3d3d6"
+  integrity sha512-7o38Yogx6krdoBf3jCAqnIN4oSQFx+fMa0I7dK1D+me9kBxx12D+/33wSb+fhOCtIxvYJ+4x4IMEhmhCKfAiOA==
 
 nopt@^5.0.0:
   version "5.0.0"
@@ -5185,6 +5212,11 @@ utils-merge@^1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==
 
+uuid@8.3.2:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
 uuid@9.0.0:
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
@@ -5194,6 +5226,14 @@ uuid@^9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
   integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
+
+uuidv4@^6.2.13:
+  version "6.2.13"
+  resolved "https://registry.yarnpkg.com/uuidv4/-/uuidv4-6.2.13.tgz#8f95ec5ef22d1f92c8e5d4c70b735d1c89572cb7"
+  integrity sha512-AXyzMjazYB3ovL3q051VLH06Ixj//Knx7QnUSi1T//Ie3io6CpsPu9nVMOx5MoLWh6xV0B9J0hIaxungxXUbPQ==
+  dependencies:
+    "@types/uuid" "8.3.4"
+    uuid "8.3.2"
 
 v8-compile-cache-lib@^3.0.1:
   version "3.0.1"
