@@ -3,18 +3,23 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { AuthService } from 'src/auth/auth.service';
+import { CreatePanelAdminDto } from './dto/create-panel-admin.dto';
+import { PasswordService } from 'src/auth/password/password.service';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly prisma: PrismaService,
-    @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService,
+    // private logger = new Logger(UsersService.name),
+
+    // private readonly authService: AuthService,
+    // private passwordService: PasswordService,
+    private readonly prisma: PrismaService, // @Inject(forwardRef(() => AuthService))
   ) {}
   // async create(createUserDto: any, user: any) {
   //   const role = await this.prisma.user.findUnique({
@@ -157,12 +162,12 @@ export class UsersService {
     });
   }
   async findById(id: string) {
-    const appUser = await this.prisma.user.findUnique({
+    const appUser = await this.prisma.user.findFirst({
       where: {
         id,
       },
     });
-    const panelUser = await this.prisma.panelUser.findUnique({
+    const panelUser = await this.prisma.panelUser.findFirst({
       where: {
         id,
       },
@@ -185,18 +190,11 @@ export class UsersService {
     return user;
   }
 
-  // async createPanelAdmin(
-  //   data: CreatePanelAdminDto,
-  //   role_id: any,
-  // ): Promise<any> {
+  // async createPanelAdmin(data: CreatePanelAdminDto, userId: any): Promise<any> {
   //   try {
-  //     const reqRole = await this.prisma.userRoles.findFirst({
-  //       where: {
-  //         id: role_id,
-  //       },
-  //     });
-  //     const reqRoleName = reqRole.name;
-  //     if (reqRoleName !== 'SUPER_ADMIN') {
+  //     const reqUser = await this.findById(userId);
+
+  //     if (!reqUser.isSUPER_ADMIN) {
   //       throw new HttpException(
   //         'You do not have permission for this operation',
   //         HttpStatus.FORBIDDEN,
@@ -226,36 +224,21 @@ export class UsersService {
   //       );
   //     }
 
-  //     let role: any;
-  //     let User: any;
-  //     const responseObj = await this.prisma.$transaction(async (tx) => {
-  //       role = await tx.userRoles.create({
-  //         data: {
-  //           name: 'ADMIN',
-  //         },
-  //       });
-
-  //       User = await tx.panelUser.create({
-  //         data: {
-  //           role: {
-  //             connect: {
-  //               id: role.id,
-  //             },
-  //           },
-  //           email: email,
-  //           password: await this.passwordService.hashPassword(password),
-  //           name: name,
-  //           familyName: familyName,
-  //         },
-  //       });
-  //       delete User.password;
-  //       const { accessToken, refreshToken } = await this.generateTokens(User);
-  //       return {
-  //         ...User,
-  //         tokens: { accessToken, refreshToken },
-  //       };
+  //     const user = await this.prisma.panelUser.create({
+  //       data: {
+  //         email: email,
+  //         password: await this.passwordService.hashPassword(password),
+  //         name: name,
+  //         familyName: familyName,
+  //       },
   //     });
-  //     return responseObj;
+  //     delete user.password;
+  //     const { accessToken, refreshToken } =
+  //       await this.authService.generateTokens(user);
+  //     return {
+  //       ...user,
+  //       tokens: { accessToken, refreshToken },
+  //     };
   //   } catch (err: any) {
   //     throw new HttpException(
   //       `Bad Request. Please check the payload -> ${err?.message} `,

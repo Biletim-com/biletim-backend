@@ -3,15 +3,18 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
+  Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreatePanelAdminDto } from './dto/create-panel-admin.dto';
 
 @Controller('users')
 @ApiTags('users')
@@ -49,5 +52,19 @@ export class UsersController {
   // @Get('me')
   // async me(@Request() req: any) {
   //   return this.usersService.me(req.user as any);
+  // }
+
+  // @ApiOperation({ summary: 'Create panel admin (Only SUPER ADMIN can use)' })
+  // @UseGuards(AuthGuard)
+  // @Post('/create-panel-admin')
+  // @HttpCode(201)
+  // async createPanelAdmin(
+  //   @Body() createPanelAdminDto: CreatePanelAdminDto,
+  //   @Req() req: any,
+  // ): Promise<any> {
+  //   return this.usersService.createPanelAdmin(
+  //     req?.user?.id,
+  //     createPanelAdminDto,
+  //   );
   // }
 }
