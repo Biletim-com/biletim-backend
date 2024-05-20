@@ -22,7 +22,7 @@ import {
 } from 'src/utils/emailTemplate';
 import { EmailType } from 'src/types/email-type';
 import * as nodemailer from 'nodemailer';
-import { CreatePanelAdminDto } from './dto/create-panel-admin.dto';
+import { CreatePanelAdminDto } from '../users/dto/create-panel-admin.dto';
 import { PanelUser, User } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
@@ -153,7 +153,7 @@ export class AuthService {
         );
       }
 
-      const User = await this.prisma.user.create({
+      const user = await this.prisma.user.create({
         data: {
           email: email,
           password: await this.passwordService.hashPassword(password),
@@ -161,10 +161,10 @@ export class AuthService {
           familyName: familyName,
         },
       });
-      delete User.password;
-      const { accessToken, refreshToken } = await this.generateTokens(User);
+      delete user.password;
+      const { accessToken, refreshToken } = await this.generateTokens(user);
       const responseObj = {
-        ...User,
+        ...user,
         tokens: { accessToken, refreshToken },
       };
       const { verificationCode } = await this.uniqueSixDigitNumber();
@@ -172,7 +172,7 @@ export class AuthService {
         data: {
           user: {
             connect: {
-              id: User.id,
+              id: user.id,
             },
           },
           verificationCode: verificationCode,
@@ -181,7 +181,7 @@ export class AuthService {
         },
       });
       const emailOptions = {
-        receiver: User.email,
+        receiver: user.email,
         subject: 'Verification Biletim Server',
         htmlHeader: 'Verification',
         htmlBody: 'Biletim Server user verification code',
@@ -210,20 +210,20 @@ export class AuthService {
       );
     }
     let user: any;
-    let UserId: any;
+    let userId: any;
     try {
-      UserId = await this.findUserIdByVerificationCode(verificationCode);
-      user = await this.usersService.findById(UserId);
+      userId = await this.findUserIdByVerificationCode(verificationCode);
+      user = await this.usersService.findById(userId);
       if (user.isVerified || user.isDeleted) {
         throw new BadRequestException('invalid verification code ');
       }
       const responseObj = await this.prisma.$transaction(async (tx) => {
         await tx.user.update({
-          where: { id: UserId },
+          where: { id: userId },
           data: { isVerified: true },
         });
         await tx.verification.update({
-          where: { user_id: UserId },
+          where: { user_id: userId },
           data: { isUsed: true },
         });
 
@@ -234,10 +234,10 @@ export class AuthService {
       return responseObj;
     } catch (err) {
       await this.prisma.verification.delete({
-        where: { user_id: UserId },
+        where: { user_id: userId },
       });
       await this.prisma.user.delete({
-        where: { id: UserId },
+        where: { id: userId },
       });
       throw new HttpException(
         `company verification error ->  ${err?.message}`,
@@ -268,7 +268,7 @@ export class AuthService {
         htmlBody:
           'You requested to reset your password. Click the button below to reset it.',
         htmlButton: 'Reset password',
-        htmlLink: `https://timetracker.westerops.com/reset-password?verificationCode=${verificationCode}`,
+        htmlLink: `${process.env.RESET_PASSWORD_URL}?verificationCode=${verificationCode}`,
       };
 
       await this.sendEmail(EmailType.RESET_PASSWORD, emailOptions);
@@ -375,21 +375,11 @@ export class AuthService {
         user_id: true,
       },
     });
-
-    const panelUserVerification =
-      await this.prisma.panelUserVerification.findFirst({
-        where: {
-          verificationCode: verificationCode,
-        },
-      });
-
-    if (userVerification) {
-      return userVerification.user_id;
-    } else if (panelUserVerification) {
-      return panelUserVerification.panelUser_id;
-    } else {
-      return HttpStatus.NOT_FOUND;
-    }
+    if (!userVerification)
+      throw new HttpException(
+        'Not found userId with verificationCode',
+        HttpStatus.NOT_FOUND,
+      );
   }
   async resetPasswordByEmail(email: string, newPassword: string) {
     const user = await this.usersService.findByEmail(email);
@@ -409,4 +399,154 @@ export class AuthService {
       data: { password: newPasswordHash, verificationCode: null, isUsed: true },
     });
   }
+
+  async changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string,
+  ) {
+    let user: any;
+    try {
+      user = await this.usersService.findById(userId);
+
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+      if (!isPasswordValid) {
+        throw new HttpException(
+          'Old password is incorrect',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (oldPassword === newPassword) {
+        throw new HttpException(
+          'New password must be different from the old password',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const saltRounds = 10;
+      const salt = await bcrypt.genSalt(saltRounds);
+      const newPasswordHash = await bcrypt.hash(newPassword, salt);
+
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { password: newPasswordHash },
+      });
+      return { message: 'your password changed', statusCode: 200 };
+    } catch (err: any) {
+      throw new HttpException(
+        `change password error -> ${err?.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async panelChangePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string,
+  ) {
+    let user: any;
+    try {
+      user = await this.usersService.findById(userId);
+
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+      if (!isPasswordValid) {
+        throw new HttpException(
+          'Old password is incorrect',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (oldPassword === newPassword) {
+        throw new HttpException(
+          'New password must be different from the old password',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const saltRounds = 10;
+      const salt = await bcrypt.genSalt(saltRounds);
+      const newPasswordHash = await bcrypt.hash(newPassword, salt);
+
+      await this.prisma.panelUser.update({
+        where: { id: user.id },
+        data: { password: newPasswordHash },
+      });
+      return { message: 'your password changed', statusCode: 200 };
+    } catch (err: any) {
+      throw new HttpException(
+        `change password error -> ${err?.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  // async signInGoogle(token: string) {
+  //   const url = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`;
+  //   try {
+  //     const response = await axios.get(url);
+  //     const userInfo = response.data;
+  //     // İsteğin başarılı olup, olmadığının kontrolü
+  //     if (response.status !== 200 || !userInfo) {
+  //       throw new BadRequestException(
+  //         `Google API request failed. Status: ${response.status}`,
+  //       );
+  //     }
+  //     // Kullanıcıyı e-posta adresiyle bulma
+  //     const user = await this.usersService.findByEmail(userInfo.email);
+
+  //     // Eğer kullanıcı yoksa, kayıt ol ve oturum aç
+  //     if (!user) {
+  //       console.log('REGISTER');
+  //       const password = token;
+  //       const signUpResult = await this.signUp({
+  //         email: userInfo.email,
+  //         password: password,
+  //         firstName: userInfo.given_name ?? 'firstname',
+  //         lastName: userInfo.family_name ?? 'lastname',
+  //       });
+
+  //       return signUpResult;
+  //     } else {
+  //       console.log('LOGIN');
+  //       // Eğer kullanıcı varsa, sadece oturum aç
+  //       const signInResult = await this.signInWithGoogle(user.email, userInfo);
+
+  //       return signInResult;
+  //     }
+  //   } catch (error) {
+  //     //HTTP hatası oluştuğunda veya başka bir hata durumunda buraya düşer
+  //     throw new BadRequestException(`ERR: Google API request failed`);
+  //   }
+  // }
+  // async signInWithGoogle(email: string, userInfo: any) {
+  //   const [user] = await this.usersService.findByEmail(email);
+
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
+
+  //   if (userInfo.email != email) {
+  //     throw new BadRequestException(
+  //       'Invalid Google token: emails do not match',
+  //     );
+  //   }
+
+  //   const userRoleWs = await this.wsService.getUserRoleActiveWs(user);
+  //   const activeWs = user.activeWs;
+
+  //   const { accessToken, refreshToken } = await this.generateTokens(user);
+  //   return { accessToken, refreshToken, userRoleWs, activeWs };
+  // }
 }

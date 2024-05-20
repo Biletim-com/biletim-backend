@@ -41,38 +41,26 @@ model User {
 }
 
 model PanelUser {
-  id                    String                 @id @default(uuid())
-  name                  String                 @db.VarChar(255)
-  familyName            String                 @db.VarChar(255)
-  email                 String                 @unique
-  password              String                 @db.VarChar(255)
-  phone                 String?                @db.VarChar(64)
-  address               String?                @db.VarChar(255)
-  isDeleted             Boolean                @default(false)
-  isVerified            Boolean                @default(false)
-  created_at            DateTime               @default(now())
-  company               Company?               @relation(fields: [company_id], references: [id])
-  company_id            String?                @db.VarChar(255)
-  panelUserVerification PanelUserVerification?
+  id            String   @id @default(uuid())
+  name          String   @db.VarChar(255)
+  familyName    String   @db.VarChar(255)
+  email         String   @unique
+  password      String   @db.VarChar(255)
+  phone         String?  @db.VarChar(64)
+  address       String?  @db.VarChar(255)
+  isDeleted     Boolean  @default(false)
+  isSUPER_ADMIN Boolean  @default(false)
+  created_at    DateTime @default(now())
+  company       Company? @relation(fields: [company_id], references: [id])
+  company_id    String?  @db.VarChar(255)
 }
 
 model Verification {
-  id               String  @id @default(uuid())
+  id               String   @id @default(uuid())
   verificationCode Int
-  isUsed           Boolean @default(false)
-  isExpired        Boolean @default(false)
-  user             User    @relation(fields: [user_id], references: [id])
-  user_id          String  @unique
-
-  createdAt DateTime @default(now())
-}
-
-model PanelUserVerification {
-  id               String    @id @default(uuid())
-  verificationCode Int
-  isUsed           Boolean   @default(false)
-  isExpired        Boolean   @default(false)
-  panelUser        PanelUser @relation(fields: [panelUser_id], references: [id])
-  panelUser_id     String    @unique
-  createdAt        DateTime  @default(now())
+  isUsed           Boolean  @default(false)
+  isExpired        Boolean  @default(false)
+  user             User     @relation(fields: [user_id], references: [id])
+  user_id          String   @unique
+  createdAt        DateTime @default(now())
 }

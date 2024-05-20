@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
+  IsString,
   IsStrongPassword,
   MinLength,
 } from 'class-validator';
@@ -42,6 +43,7 @@ export class RegisterUserRequest {
     minSymbols: 1,
     minUppercase: 1,
   })
+  @IsString()
   @IsNotEmpty()
   password!: string;
 }

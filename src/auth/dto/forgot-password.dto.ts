@@ -29,7 +29,7 @@ export class ResetPasswordDto {
   verificationCode!: string;
 
   @IsNotEmpty()
-  @IsStrongPassword()
+  @IsString()
   @IsStrongPassword({
     minLength: 8,
     minLowercase: 1,
