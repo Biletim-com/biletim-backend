@@ -26,7 +26,7 @@ export class ResetPasswordDto {
     description: 'verificationCode of the user',
     example: '42e72316-b830-40ed-9f1d-4a3d3b1efa31',
   })
-  verificationCode!: string;
+  forgotPasswordCode!: string;
 
   @IsNotEmpty()
   @IsString()
