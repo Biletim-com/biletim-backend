@@ -15,11 +15,11 @@ import { PasswordService } from 'src/auth/password/password.service';
 @Injectable()
 export class UsersService {
   constructor(
-    // private logger = new Logger(UsersService.name),
-
-    // private readonly authService: AuthService,
-    // private passwordService: PasswordService,
-    private readonly prisma: PrismaService, // @Inject(forwardRef(() => AuthService))
+    @Inject(forwardRef(() => AuthService))
+    private authService: AuthService,
+    @Inject(forwardRef(() => PasswordService))
+    private passwordService: PasswordService,
+    private prisma: PrismaService,
   ) {}
   // async create(createUserDto: any, user: any) {
   //   const role = await this.prisma.user.findUnique({
@@ -161,89 +161,102 @@ export class UsersService {
       where: { email },
     });
   }
-  async findById(id: string) {
+  async findPanelUserById(id: string) {
+    const panelUser = await this.prisma.panelUser.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!panelUser) {
+      throw new NotFoundException(`User not found with this id`);
+    }
+
+    return panelUser;
+  }
+
+  async findAppUserById(id: string) {
     const appUser = await this.prisma.user.findFirst({
       where: {
         id,
       },
     });
-    const panelUser = await this.prisma.panelUser.findFirst({
-      where: {
-        id,
-      },
-    });
-    if (appUser) {
-      return appUser;
-    } else if (panelUser) {
-      return panelUser;
-    } else {
-      return HttpStatus.NOT_FOUND;
+    if (!appUser) {
+      throw new NotFoundException(`User not found with this id`);
     }
+
+    return appUser;
   }
-  async getUserWithVerificationCode(verificationCode: string): Promise<any> {
+
+  async getUserWithForgotPasswordCode(
+    forgotPasswordCode: string,
+  ): Promise<any> {
     const user = await this.prisma.user.findFirst({
-      where: { verificationCode: verificationCode },
+      where: { forgotPasswordCode: forgotPasswordCode },
     });
     if (!user) {
-      throw new NotFoundException(`User with id ${verificationCode} not found`);
+      throw new NotFoundException(
+        `User with id ${forgotPasswordCode} not found`,
+      );
     }
     return user;
   }
 
-  // async createPanelAdmin(data: CreatePanelAdminDto, userId: any): Promise<any> {
-  //   try {
-  //     const reqUser = await this.findById(userId);
+  async createPanelAdmin(
+    data: CreatePanelAdminDto,
+    reqUserId: any,
+  ): Promise<any> {
+    let reqUser;
+    try {
+      reqUser = await this.findPanelUserById(reqUserId);
 
-  //     if (!reqUser.isSUPER_ADMIN) {
-  //       throw new HttpException(
-  //         'You do not have permission for this operation',
-  //         HttpStatus.FORBIDDEN,
-  //       );
-  //     }
+      if (!reqUser.isSUPER_ADMIN) {
+        throw new HttpException(
+          'You do not have permission for this operation',
+          HttpStatus.FORBIDDEN,
+        );
+      }
 
-  //     const { name, familyName, email, password } = data;
+      const { name, familyName, email, password } = data;
 
-  //     const existUser = await this.prisma.panelUser.findFirst({
-  //       where: {
-  //         email: email,
-  //       },
-  //     });
+      const existUser = await this.prisma.panelUser.findFirst({
+        where: {
+          email: email,
+        },
+      });
 
-  //     if (existUser) {
-  //       if (existUser.isDeleted) {
-  //         throw new HttpException(
-  //           'Your account is not active, please contact your administrator',
-  //           HttpStatus.BAD_REQUEST,
-  //         );
-  //       }
+      if (existUser) {
+        if (existUser.isDeleted) {
+          throw new HttpException(
+            'Your account is not active, please contact your administrator',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+        throw new HttpException(
+          'A user already exists with this email',
+          HttpStatus.CONFLICT,
+        );
+      }
 
-  //       this.logger.error('A user already exists with this email');
-  //       throw new HttpException(
-  //         'A user already exists with this email',
-  //         HttpStatus.CONFLICT,
-  //       );
-  //     }
-
-  //     const user = await this.prisma.panelUser.create({
-  //       data: {
-  //         email: email,
-  //         password: await this.passwordService.hashPassword(password),
-  //         name: name,
-  //         familyName: familyName,
-  //       },
-  //     });
-  //     delete user.password;
-  //     const { accessToken, refreshToken } =
-  //       await this.authService.generateTokens(user);
-  //     return {
-  //       ...user,
-  //       tokens: { accessToken, refreshToken },
-  //     };
-  //   } catch (err: any) {
-  //     throw new HttpException(
-  //       `Bad Request. Please check the payload -> ${err?.message} `,
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  // }
+      const user = await this.prisma.panelUser.create({
+        data: {
+          name: name,
+          familyName: familyName,
+          email: email,
+          password: await this.passwordService.hashPassword(password),
+        },
+      });
+      delete user.password;
+      const { accessToken, refreshToken } =
+        await this.authService.generateTokens(user);
+      return {
+        ...user,
+        tokens: { accessToken, refreshToken },
+      };
+    } catch (err: any) {
+      throw new HttpException(
+        `Bad Request. Please check the payload -> ${err?.message} `,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }

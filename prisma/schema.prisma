@@ -23,21 +23,21 @@ model Company {
 }
 
 model User {
-  id               String        @id @default(uuid())
-  name             String        @db.VarChar(255)
-  familyName       String        @db.VarChar(255)
-  email            String        @unique
-  password         String        @db.VarChar(255)
-  phone            String?       @db.VarChar(64)
-  address          String?       @db.VarChar(255)
-  isDeleted        Boolean       @default(false)
-  isVerified       Boolean       @default(false)
-  verificationCode String?       @db.Uuid
-  isUsed           Boolean?      @default(false)
-  created_at       DateTime      @default(now())
-  company          Company?      @relation(fields: [company_id], references: [id])
-  company_id       String?       @db.VarChar(255)
-  verification     Verification?
+  id                 String        @id @default(uuid())
+  name               String        @db.VarChar(255)
+  familyName         String        @db.VarChar(255)
+  email              String        @unique
+  password           String        @db.VarChar(255)
+  phone              String?       @db.VarChar(64)
+  address            String?       @db.VarChar(255)
+  isDeleted          Boolean       @default(false)
+  isVerified         Boolean       @default(false)
+  forgotPasswordCode String?       @db.Uuid
+  isUsed             Boolean?      @default(false)
+  created_at         DateTime      @default(now())
+  company            Company?      @relation(fields: [company_id], references: [id])
+  company_id         String?       @db.VarChar(255)
+  verification       Verification?
 }
 
 model PanelUser {

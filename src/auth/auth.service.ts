@@ -49,15 +49,21 @@ export class AuthService {
           email: email,
         },
       });
-      if (!user) {
+      if (!user || user.isDeleted) {
         throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+      }
+      if (!user.isVerified) {
+        throw new HttpException(
+          'user not yet verified',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
       const isPasswordValid = await this.passwordService.validatePassword(
         password,
         user.password,
       );
       if (!isPasswordValid) {
-        throw new HttpException('Unauthorized access', HttpStatus.UNAUTHORIZED);
+        throw new HttpException('invalid password  ', HttpStatus.UNAUTHORIZED);
       }
       delete user.password;
       const { accessToken, refreshToken } = await this.generateTokens(user);
@@ -213,7 +219,7 @@ export class AuthService {
     let userId: any;
     try {
       userId = await this.findUserIdByVerificationCode(verificationCode);
-      user = await this.usersService.findById(userId);
+      user = await this.usersService.findAppUserById(userId);
       if (user.isVerified || user.isDeleted) {
         throw new BadRequestException('invalid verification code ');
       }
@@ -232,11 +238,11 @@ export class AuthService {
       });
 
       return responseObj;
-    } catch (err) {
-      await this.prisma.verification.delete({
+    } catch (err: any) {
+      this.prisma.verification.delete({
         where: { user_id: userId },
       });
-      await this.prisma.user.delete({
+      this.prisma.user.delete({
         where: { id: userId },
       });
       throw new HttpException(
@@ -255,10 +261,10 @@ export class AuthService {
       if (!user) {
         throw new BadRequestException('Invalid email');
       }
-      const verificationCode: string = uuidv4();
+      const forgotPasswordCode: string = uuidv4();
       await this.prisma.user.update({
         where: { email: user.email },
-        data: { verificationCode, isUsed: false },
+        data: { forgotPasswordCode, isUsed: false },
       });
 
       const emailOptions = {
@@ -268,7 +274,7 @@ export class AuthService {
         htmlBody:
           'You requested to reset your password. Click the button below to reset it.',
         htmlButton: 'Reset password',
-        htmlLink: `${process.env.RESET_PASSWORD_URL}?verificationCode=${verificationCode}`,
+        htmlLink: `${process.env.RESET_PASSWORD_URL}?verificationCode=${forgotPasswordCode}`,
       };
 
       await this.sendEmail(EmailType.RESET_PASSWORD, emailOptions);
@@ -285,12 +291,12 @@ export class AuthService {
     }
   }
 
-  async resetPassword(verificationCode: string, newPassword: string) {
+  async resetPassword(forgotPasswordCode: string, newPassword: string) {
     try {
-      const user = await this.usersService.getUserWithVerificationCode(
-        verificationCode,
+      const user = await this.usersService.getUserWithForgotPasswordCode(
+        forgotPasswordCode,
       );
-      if (verificationCode !== user.verificationCode || user.isUsed) {
+      if (forgotPasswordCode !== user.forgotPasswordCode || user.isUsed) {
         throw new BadRequestException('invalid verification code ');
       }
       await this.resetPasswordByEmail(user.email, newPassword);
@@ -380,6 +386,7 @@ export class AuthService {
         'Not found userId with verificationCode',
         HttpStatus.NOT_FOUND,
       );
+    return userVerification.user_id;
   }
   async resetPasswordByEmail(email: string, newPassword: string) {
     const user = await this.usersService.findByEmail(email);
@@ -396,7 +403,11 @@ export class AuthService {
       where: {
         email: user.email,
       },
-      data: { password: newPasswordHash, verificationCode: null, isUsed: true },
+      data: {
+        password: newPasswordHash,
+        forgotPasswordCode: null,
+        isUsed: true,
+      },
     });
   }
 
@@ -407,7 +418,7 @@ export class AuthService {
   ) {
     let user: any;
     try {
-      user = await this.usersService.findById(userId);
+      user = await this.usersService.findAppUserById(userId);
 
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -453,7 +464,7 @@ export class AuthService {
   ) {
     let user: any;
     try {
-      user = await this.usersService.findById(userId);
+      user = await this.usersService.findPanelUserById(userId);
 
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
