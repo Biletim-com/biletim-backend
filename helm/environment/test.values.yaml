@@ -26,7 +26,7 @@ biletim_api:
   #nameSuffix: backend
   hostPrefix: biletimapi
   app: biletim-api
-  port: 8000
+  port: 8080
   image: harbor.westerops.com/biletim/api:vIMAGE_TAG
   resources:
     limits:

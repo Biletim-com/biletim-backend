@@ -16,7 +16,7 @@ services:
       - biletim-network
     restart: unless-stopped
   biletim-db:
-    image: postgres:14
+    image: postgres:15
     container_name: biletim-db
     restart: always
     ports:
