@@ -50,7 +50,7 @@ biletim_api:
     RESET_PASSWORD_URL: https://timetracker.westerops.com/reset-password
 
   volumeMounts:
-    finance-aggregator-miniapp-api: "/app/images"
+    biletim-api: "/app/images"
 
   volumes:
     - name: biletim-api
