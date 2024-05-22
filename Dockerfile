@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y openssl
 
 COPY package.json ./
 COPY prisma ./prisma/
-COPY images ./images/
 COPY *.lock ./
 
 RUN yarn install
