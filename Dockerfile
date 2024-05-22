@@ -28,7 +28,6 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/yarn.lock ./yarn.lock
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/images ./images
 COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
