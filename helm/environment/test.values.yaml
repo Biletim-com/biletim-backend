@@ -1,0 +1,94 @@
+nameOverride: ""
+fullnameOverride: ""
+
+chartVersion: ""
+releaseName: "biletim-api"
+targetNamespace: "default"
+chartName: "biletim-api"
+
+global:
+  imagePullSecrets:
+    - registry-harbor
+
+  ingress:
+    enabled: true
+    class:
+    domain: westerops.com
+    sslRedirect: true
+
+certs:
+  managed: true
+  issuerName: letsencrypt-prod
+
+biletim_api:
+  enabled: true
+  replicas: 1
+  #nameSuffix: backend
+  hostPrefix: biletimapi
+  app: biletim-api
+  port: 8000
+  image: harbor.westerops.com/biletim/api:vIMAGE_TAG
+  resources:
+    limits:
+      memory: 1Gi
+      cpu: 500m
+    requests:
+      memory: 10Mi
+      cpu: 10m
+  # configMapName: finance-aggregator-miniapp-api-config
+  env:
+    APP_PORT: 8080
+    NODE_ENV: development
+    POSTGRES_USER: biletim-user
+    POSTGRES_PASSWORD: sc8THlk4HIg2uf1RKcMI4aJdMwNv1OY1R8WKCSqOc77Vv07JSXESsQS7coUkhh3z
+    POSTGRES_HOST: biletim-db
+    POSTGRES_PORT: 5432
+    POSTGRES_DB: biletim
+    DATABASE_URL: postgresql://biletim-user:sc8THlk4HIg2uf1RKcMI4aJdMwNv1OY1R8WKCSqOc77Vv07JSXESsQS7coUkhh3z@biletim-db:5432/biletim?connect_timeout=300
+    JWT_SECRET: PEMPassPhrase
+    BCRYPT_SALT_ROUNDS: 12
+    RESET_PASSWORD_URL: https://timetracker.westerops.com/reset-password
+
+  volumeMounts:
+    finance-aggregator-miniapp-api: "/app/images"
+
+  volumes:
+    - name: biletim-api
+      persistentVolumeClaim:
+        claimName: biletim-api-pvc
+
+
+biletim_postgres:
+  enabled: true
+  replicas: 1
+  app: biletim-postgres
+  port: 5432
+  image: postgres:14
+  # configMapName: finance-aggregator-miniapp-db-config
+  env:
+    POSTGRES_USER: biletim-user
+    POSTGRES_PASSWORD: sc8THlk4HIg2uf1RKcMI4aJdMwNv1OY1R8WKCSqOc77Vv07JSXESsQS7coUkhh3z
+    POSTGRES_HOST: biletim-db
+    POSTGRES_PORT: 5432
+    POSTGRES_DB: biletim
+
+  volumeMounts:
+    db-data: "/var/lib/postgresql/data"
+
+  volumes:
+    - name: db-data
+      persistentVolumeClaim:
+        claimName: biletim-api-pvc
+
+  resources:
+    limits:
+      memory: 1Gi
+      cpu: 500m
+    requests:
+      memory: 10Mi
+      cpu: 10m
+
+
+ingress:
+  tlsSecret: biletim-api-tls
+  hostLabel: biletim-api-api

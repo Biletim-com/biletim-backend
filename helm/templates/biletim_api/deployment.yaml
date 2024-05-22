@@ -1,0 +1,66 @@
+{{- if .Values.biletim_api.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.biletim_api.app }}
+spec:
+  replicas: {{ $.Values.biletim_api.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.biletim_api.app }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.biletim_api.app }}
+    spec:
+      containers:
+        - name: {{ .Values.biletim_api.app }}
+          image: {{ .Values.biletim_api.image }}
+          {{- if and $.Values.biletim_api.command }}
+          command: 
+          {{- range $.Values.biletim_api.command }}
+          - {{ . }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+          {{- if and $.Values.biletim_api.volumeMounts }}
+          {{- range $key, $value := .Values.biletim_api.volumeMounts }}
+            - name: "{{ $key }}"
+              mountPath: "{{ $value }}"
+          {{- end }}
+          {{- end }}
+          # envFrom:
+          # - configMapRef:
+          #     name: {{ .Values.biletim_api.configMapName }}
+          env:
+          {{- if .Values.biletim_api.env }}
+          {{- range $key, $value := .Values.biletim_api.env }}
+            - name: "{{ $key }}"
+              value: "{{ $value }}"
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.biletim_api.resources | nindent 14 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.biletim_api.port }}
+              protocol: TCP
+      {{- if and $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range $.Values.global.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      {{- if and $.Values.biletim_api.volumes }}
+      volumes:
+      {{- range $.Values.biletim_api.volumes }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ .persistentVolumeClaim.claimName }}
+      {{- end }}
+      {{- end }}
+      restartPolicy: Always
+{{- end }}
+
