@@ -63,7 +63,7 @@ biletim_postgres:
   replicas: 1
   app: biletim-postgres
   port: 5432
-  image: postgres:14
+  image: postgres:15
   # configMapName: finance-aggregator-miniapp-db-config
   env:
     POSTGRES_USER: biletim-user
