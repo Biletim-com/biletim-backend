@@ -37,13 +37,6 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
-  // @HttpCode(200)
-  // @Post('/signin-google')
-  // async signInGoogle(@Body() body) {
-  //   const userInfo = await this.authService.signInGoogle(body.token);
-  //   return userInfo;
-  // }
-
   @ApiOperation({ summary: ' Register User' })
   @Post('/signup')
   @HttpCode(200)
