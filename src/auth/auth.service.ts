@@ -83,7 +83,7 @@ export class AuthService {
   async panelLogin(LoginUserRequestDto: LoginUserRequest): Promise<any> {
     const { email, password } = LoginUserRequestDto;
     try {
-      const user = await this.prisma.panelUser.findFirst({
+      const user = await this.prisma.panelUser.findUnique({
         where: {
           email: email,
         },
