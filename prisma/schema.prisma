@@ -60,7 +60,7 @@ model Verification {
   verificationCode Int
   isUsed           Boolean  @default(false)
   isExpired        Boolean  @default(false)
-  user             User     @relation(fields: [user_id], references: [id])
+  user             User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id          String   @unique
   createdAt        DateTime @default(now())
 }

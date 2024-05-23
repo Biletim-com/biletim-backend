@@ -22,8 +22,6 @@ import {
 } from 'src/utils/emailTemplate';
 import { EmailType } from 'src/types/email-type';
 import * as nodemailer from 'nodemailer';
-import { CreatePanelAdminDto } from '../users/dto/create-panel-admin.dto';
-import { PanelUser, User } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 
@@ -152,7 +150,11 @@ export class AuthService {
 
       const email = registerUserRequest.email.toLowerCase();
       const existUser = await this.usersService.findByEmail(email);
-      if (existUser) {
+      if (existUser && !existUser.isVerified) {
+        await this.prisma.user.delete({
+          where: { email: email },
+        });
+      } else if (existUser && existUser.isVerified) {
         throw new HttpException(
           'This email address is already in use',
           HttpStatus.CONFLICT,
@@ -239,12 +241,6 @@ export class AuthService {
 
       return responseObj;
     } catch (err: any) {
-      this.prisma.verification.delete({
-        where: { user_id: userId },
-      });
-      this.prisma.user.delete({
-        where: { id: userId },
-      });
       throw new HttpException(
         `company verification error ->  ${err?.message}`,
         HttpStatus.BAD_REQUEST,
@@ -298,6 +294,12 @@ export class AuthService {
       );
       if (forgotPasswordCode !== user.forgotPasswordCode || user.isUsed) {
         throw new BadRequestException('invalid verification code ');
+      }
+      if (user.password === newPassword) {
+        throw new HttpException(
+          'New password must be different from the old password',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       await this.resetPasswordByEmail(user.email, newPassword);
       return {
@@ -445,52 +447,6 @@ export class AuthService {
       const newPasswordHash = await bcrypt.hash(newPassword, salt);
 
       await this.prisma.user.update({
-        where: { id: user.id },
-        data: { password: newPasswordHash },
-      });
-      return { message: 'your password changed', statusCode: 200 };
-    } catch (err: any) {
-      throw new HttpException(
-        `change password error -> ${err?.message}`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  async panelChangePassword(
-    userId: string,
-    oldPassword: string,
-    newPassword: string,
-  ) {
-    let user: any;
-    try {
-      user = await this.usersService.findPanelUserById(userId);
-
-      if (!user) {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-      }
-
-      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
-
-      if (!isPasswordValid) {
-        throw new HttpException(
-          'Old password is incorrect',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      if (oldPassword === newPassword) {
-        throw new HttpException(
-          'New password must be different from the old password',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      const saltRounds = 10;
-      const salt = await bcrypt.genSalt(saltRounds);
-      const newPasswordHash = await bcrypt.hash(newPassword, salt);
-
-      await this.prisma.panelUser.update({
         where: { id: user.id },
         data: { password: newPasswordHash },
       });

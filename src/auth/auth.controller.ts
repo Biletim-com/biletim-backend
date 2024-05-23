@@ -13,7 +13,6 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RegisterUserRequest } from './dto/registerUserRequest.dto';
 import { RegisterCompanyDto } from './dto/register-company.dto';
 import { AuthGuard } from './auth.guard';
-import { CreatePanelAdminDto } from '../users/dto/create-panel-admin.dto';
 import { VerificationDto } from './dto/verification.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -91,23 +90,6 @@ export class AuthController {
     @Req() req: any,
   ): Promise<any> {
     return this.authService.changePassword(
-      req?.user?.id,
-      changePasswordDto.oldPassword,
-      changePasswordDto.newPassword,
-    );
-  }
-
-  @ApiOperation({
-    summary: 'Panel Change Password ',
-  })
-  @UseGuards(AuthGuard)
-  @HttpCode(200)
-  @Put('/panel/change-password')
-  async panelChangePassword(
-    @Body() changePasswordDto: ChangePasswordDto,
-    @Req() req: any,
-  ): Promise<any> {
-    return this.authService.panelChangePassword(
       req?.user?.id,
       changePasswordDto.oldPassword,
       changePasswordDto.newPassword,
