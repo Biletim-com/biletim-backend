@@ -48,19 +48,4 @@ export class UsersController {
   async delete(@Request() req: any, @Param('id') id: string) {
     return this.usersService.delete(req?.user?.sub, id);
   }
-
-  // @Get()
-  // async findAll(@Request() req: any) {
-  //   return this.usersService.findAll(req.user as any);
-  // }
-
-  // @Get(':id')
-  // async findOne(@Request() req: any, @Param('id') id: string) {
-  //   return this.usersService.findOne(req.user as any, id);
-  // }
-
-  // @Get('me')
-  // async me(@Request() req: any) {
-  //   return this.usersService.me(req.user as any);
-  // }
 }
