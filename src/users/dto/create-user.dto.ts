@@ -2,14 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsStrongPassword,
   Matches,
+  MinLength,
 } from 'class-validator';
 
-export class CreatePanelAdminDto {
+export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
+  @MinLength(2)
   @Matches(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/, {
     message: 'Ad alanı sadece harf içermelidir.',
   })
@@ -21,6 +24,7 @@ export class CreatePanelAdminDto {
 
   @IsString()
   @IsNotEmpty()
+  @MinLength(2)
   @Matches(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/, {
     message: 'Soyad alanı sadece harf içermelidir.',
   })
@@ -53,4 +57,20 @@ export class CreatePanelAdminDto {
     minUppercase: 1,
   })
   password!: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    description: 'phone number of user',
+    example: '12345678910',
+  })
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    description: 'address of user',
+    example: 'Atatürk mah. İzmir',
+  })
+  address?: string;
 }

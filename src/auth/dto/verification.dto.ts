@@ -6,7 +6,7 @@ export class VerificationDto {
   @IsNumber()
   @ApiProperty({
     description: 'verificationCode of the user',
-    example: '123456',
+    example: 123456,
   })
-  verificationCode!: string;
+  verificationCode!: number;
 }
