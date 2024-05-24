@@ -1,51 +1,51 @@
-{{- if .Values.biletim_postgres.enabled }}
+{{- if .Values.biletim_db.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.biletim_postgres.app }}
+  name: {{ .Values.biletim_db.app }}
 spec:
-  replicas: {{ $.Values.biletim_postgres.replicas }}
+  replicas: {{ $.Values.biletim_db.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.biletim_postgres.app }}
+      app: {{ .Values.biletim_db.app }}
   strategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
-        app: {{ .Values.biletim_postgres.app }}
+        app: {{ .Values.biletim_db.app }}
     spec:
       containers:
-        - name: {{ .Values.biletim_postgres.app }}
-          image: {{ .Values.biletim_postgres.image }}
-          {{- if and $.Values.biletim_postgres.command }}
+        - name: {{ .Values.biletim_db.app }}
+          image: {{ .Values.biletim_db.image }}
+          {{- if and $.Values.biletim_db.command }}
           command: 
-          {{- range $.Values.biletim_postgres.command }}
+          {{- range $.Values.biletim_db.command }}
            - {{ . }}
           {{- end }}
           {{- end }}
           volumeMounts:
-          {{- if and $.Values.biletim_postgres.volumeMounts }}
-          {{- range $key, $value := .Values.biletim_postgres.volumeMounts }}
+          {{- if and $.Values.biletim_db.volumeMounts }}
+          {{- range $key, $value := .Values.biletim_db.volumeMounts }}
             - name: "{{ $key }}"
               mountPath: "{{ $value }}"
           {{- end }}
           {{- end }}
           # envFrom:
           # - configMapRef:
-          #     name: {{ .Values.biletim_postgres.configMapName }}
+          #     name: {{ .Values.biletim_db.configMapName }}
           env:
-          {{- if .Values.biletim_postgres.env }}
-          {{- range $key, $value := .Values.biletim_postgres.env }}
+          {{- if .Values.biletim_db.env }}
+          {{- range $key, $value := .Values.biletim_db.env }}
             - name: "{{ $key }}"
               value: "{{ $value }}"
           {{- end }}
           {{- end }}
           resources:
-            {{- toYaml .Values.biletim_postgres.resources | nindent 12 }}
+            {{- toYaml .Values.biletim_db.resources | nindent 12 }}
           ports:
             - name: http
-              containerPort: {{ .Values.biletim_postgres.port }}
+              containerPort: {{ .Values.biletim_db.port }}
               protocol: TCP
       {{- if and $.Values.global.imagePullSecrets }}
       imagePullSecrets:
@@ -53,9 +53,9 @@ spec:
         - name: {{ . }}
       {{- end }}
       {{- end }}
-      {{- if and $.Values.biletim_postgres.volumes }}
+      {{- if and $.Values.biletim_db.volumes }}
       volumes:
-      {{- range $.Values.biletim_postgres.volumes }}
+      {{- range $.Values.biletim_db.volumes }}
         - name: {{ .name }}
           persistentVolumeClaim:
             claimName: {{ .persistentVolumeClaim.claimName }}

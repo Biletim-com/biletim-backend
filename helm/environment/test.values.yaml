@@ -58,10 +58,10 @@ biletim_api:
         claimName: biletim-api-pvc
 
 
-biletim_postgres:
+biletim_db:
   enabled: true
   replicas: 1
-  app: biletim-postgres
+  app: biletim-db
   port: 5432
   image: postgres:15.7
   # configMapName: finance-aggregator-miniapp-db-config
