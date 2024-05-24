@@ -9,7 +9,7 @@ spec:
   - name: http
     port: {{ .Values.biletim_db.port }}
     targetPort: {{ .Values.biletim_db.port }}
-    nodePort: 30400
+    nodePort: 30410
   selector:
     app: {{ .Values.biletim_db.app }}
 {{- end }}
