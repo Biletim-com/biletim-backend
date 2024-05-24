@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthService } from './auth.service';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -41,6 +42,14 @@ export class AuthGuard implements CanActivate {
 
     try {
       request['user'] = await this.authService.authenticate(parts[1]);
+      const decodedToken = jwtDecode(parts[1]);
+
+      if (Date.now() >= decodedToken.exp * 1000) {
+        throw new HttpException(
+          'Authorization: Token is expired',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
       return true;
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.UNAUTHORIZED);

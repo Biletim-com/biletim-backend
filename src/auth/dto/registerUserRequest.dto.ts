@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsString,
   IsStrongPassword,
+  Matches,
   MinLength,
 } from 'class-validator';
 
@@ -22,6 +23,9 @@ export class RegisterUserRequest {
   })
   @IsNotEmpty()
   @MinLength(2)
+  @Matches(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/, {
+    message: 'Ad alanı sadece harf içermelidir.',
+  })
   name!: string;
 
   @ApiProperty({
@@ -30,6 +34,9 @@ export class RegisterUserRequest {
   })
   @IsNotEmpty()
   @MinLength(2)
+  @Matches(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/, {
+    message: 'Soyad alanı sadece harf içermelidir.',
+  })
   familyName!: string;
 
   @ApiProperty({

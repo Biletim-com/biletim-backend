@@ -11,6 +11,8 @@ import { TicketsService } from './tickets/tickets.service';
 import { CommandModule } from 'nestjs-command';
 import { CommandService } from './commands/command.service';
 import { SuperAdminCommand } from './commands/super-admin.command';
+import { BiletallModule } from './tickets/biletall/biletall.module';
+import { PanelUsersModule } from './panel-users/panel-users.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { SuperAdminCommand } from './commands/super-admin.command';
     UsersModule,
     TicketsModule,
     CommandModule,
+    BiletallModule,
+    PanelUsersModule,
   ],
   controllers: [AppController],
   providers: [

@@ -9,8 +9,11 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { AuthService } from 'src/auth/auth.service';
-import { CreatePanelAdminDto } from './dto/create-panel-admin.dto';
 import { PasswordService } from 'src/auth/password/password.service';
+import { PanelUsersService } from 'src/panel-users/panel-users.service';
+import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from './dto/create-user.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -19,159 +22,127 @@ export class UsersService {
     private authService: AuthService,
     @Inject(forwardRef(() => PasswordService))
     private passwordService: PasswordService,
+    @Inject(forwardRef(() => PanelUsersService))
+    private panelUsersService: PanelUsersService,
     private prisma: PrismaService,
   ) {}
-  // async create(createUserDto: any, user: any) {
-  //   const role = await this.prisma.user.findUnique({
-  //     where: {
-  //       id: user.id,
-  //     },
-  //     include: {
-  //       role: true,
-  //     },
-  //   });
-  //   if (role.role.name !== 'admin') {
-  //     throw new HttpException('Unauthorized', 401);
-  //   }
+  async create(createUserDto: CreateUserDto, reqUserId: any): Promise<User> {
+    try {
+      const { password, name, familyName } = createUserDto;
 
-  //   return this.prisma.user.create({
-  //     data: createUserDto,
-  //   });
-  // }
-  // async findAll(reqUser: any) {
-  //   const sysUser = await this.prisma.user.findUnique({
-  //     include: {
-  //       role: true,
-  //       company: true,
-  //     },
-  //     where: {
-  //       id: reqUser.id,
-  //     },
-  //   });
+      const email = createUserDto.email.toLowerCase();
+      const existUser = await this.findByEmail(email);
+      if (existUser) {
+        throw new HttpException(
+          'This email address is already in use',
+          HttpStatus.CONFLICT,
+        );
+      }
 
-  //   if (sysUser.role.name == 'admin') {
-  //     return this.prisma.user.findMany();
-  //   } else {
-  //     return this.prisma.user.findMany({
-  //       where: {
-  //         company_id: sysUser.company.id,
-  //       },
-  //     });
-  //   }
-  // }
-  // async findOne(user: any, id: string) {
-  //   const userFound = await this.prisma.user.findUnique({
-  //     include: {
-  //       role: true,
-  //       company: true,
-  //     },
-  //     where: {
-  //       id: id,
-  //     },
-  //   });
-  //   if (!userFound) {
-  //     throw new HttpException('User not found', 404);
-  //   }
-  //   if (
-  //     userFound.role.name !== 'admin' &&
-  //     userFound.company_id !== user.company_id
-  //   ) {
-  //     throw new HttpException('Unauthorized', 401);
-  //   }
-  //   return this.prisma.user.findUnique({
-  //     where: {
-  //       id: id,
-  //     },
-  //     include: {
-  //       role: true,
-  //       company: true,
-  //     },
-  //   });
-  // }
+      const reqUser = await this.panelUsersService.findPanelUserById(reqUserId);
+      if (!reqUser || (reqUser && reqUser.isDeleted)) {
+        throw new HttpException(
+          'Your account is deleted, you cannot do this operation',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      const saltRounds = 10;
+      const salt = await bcrypt.genSalt(saltRounds);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const user = await this.prisma.user.create({
+        data: {
+          name: name,
+          familyName: familyName,
+          email: email,
+          password: hashedPassword,
+          isVerified: true,
+        },
+      });
+      delete user.password;
+      return user;
+    } catch (err: any) {
+      throw new HttpException(
+        `user create error ->  ${err?.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 
-  // async update(user: any, id: string, data: any) {
-  //   const userFound = await this.prisma.user.findUnique({
-  //     include: {
-  //       role: true,
-  //       company: true,
-  //     },
-  //     where: {
-  //       id: id,
-  //     },
-  //   });
-  //   if (!userFound) {
-  //     throw new HttpException('User not found', 404);
-  //   }
-  //   if (
-  //     userFound.role.name !== 'admin' &&
-  //     userFound.company_id !== user.company_id
-  //   ) {
-  //     throw new HttpException('Unauthorized', 401);
-  //   }
-  //   return this.prisma.user.update({
-  //     where: {
-  //       id: id,
-  //     },
-  //     data: data,
-  //   });
-  // }
-  // async remove(user: any, id: string) {
-  //   const userFound = await this.prisma.user.findUnique({
-  //     include: {
-  //       role: true,
-  //       company: true,
-  //     },
-  //     where: {
-  //       id: id,
-  //     },
-  //   });
-  //   if (!userFound) {
-  //     throw new HttpException('User not found', 404);
-  //   }
-  //   if (
-  //     userFound.role.name !== 'ADMIN' &&
-  //     userFound.company_id !== user.company_id
-  //   ) {
-  //     throw new HttpException('Unauthorized', 401);
-  //   }
-  //   return this.prisma.user.delete({
-  //     where: {
-  //       id: id,
-  //     },
-  //   });
-  // }
-  // async me(user: any) {
-  //   return this.prisma.user.findUnique({
-  //     include: {
-  //       role: true,
-  //       company: true,
-  //     },
-  //     where: {
-  //       id: user.id,
-  //     },
-  //   });
-  // }
+  async updateUser(userId: string, data: CreateUserDto): Promise<any> {
+    try {
+      const { email } = data;
+      const user = await this.findAppUserById(userId);
+      if (!user) {
+        throw new NotFoundException(`User with id ${userId} not found`);
+      }
+      if (data.password) {
+        data.password = await bcrypt.hash(data.password, 10);
+      }
+      if (user.isDeleted)
+        throw new HttpException(
+          'user not active, please contact your super admin',
+          HttpStatus.NOT_FOUND,
+        );
+      const checkEmail = await this.findByEmail(email);
+
+      if (checkEmail && user.email !== checkEmail.email)
+        throw new HttpException(
+          'this email address is already used by someone else',
+          HttpStatus.BAD_REQUEST,
+        );
+
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          ...data,
+        },
+      });
+      return { message: 'user updated', statusCode: 200 };
+    } catch (err: any) {
+      throw new HttpException(
+        `user update error -> ${err?.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async delete(reqUserId: string, userId: string) {
+    console.log(userId);
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          id: userId,
+        },
+      });
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+      const reqUser = await this.panelUsersService.findPanelUserById(reqUserId);
+      if (!reqUser || (reqUser && reqUser.isDeleted)) {
+        throw new HttpException(
+          'Your account is deleted, you cannot do this operation',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      await this.prisma.user.delete({
+        where: {
+          id: userId,
+        },
+      });
+      return { message: 'user deleted', statusCode: 200 };
+    } catch (err: any) {
+      throw new HttpException(
+        `user delete error -> ${err?.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
     });
-  }
-  async findPanelUserByEmail(email: string) {
-    return this.prisma.panelUser.findUnique({
-      where: { email },
-    });
-  }
-  async findPanelUserById(id: string) {
-    const panelUser = await this.prisma.panelUser.findUnique({
-      where: {
-        id,
-      },
-    });
-    if (!panelUser) {
-      throw new NotFoundException(`User not found with this id`);
-    }
-
-    return panelUser;
   }
 
   async findAppUserById(id: string) {
@@ -199,64 +170,5 @@ export class UsersService {
       );
     }
     return user;
-  }
-
-  async createPanelAdmin(
-    data: CreatePanelAdminDto,
-    reqUserId: any,
-  ): Promise<any> {
-    let reqUser;
-    try {
-      reqUser = await this.findPanelUserById(reqUserId);
-
-      if (!reqUser.isSUPER_ADMIN) {
-        throw new HttpException(
-          'You do not have permission for this operation',
-          HttpStatus.FORBIDDEN,
-        );
-      }
-
-      const { name, familyName, email, password } = data;
-
-      const existUser = await this.prisma.panelUser.findFirst({
-        where: {
-          email: email,
-        },
-      });
-
-      if (existUser) {
-        if (existUser.isDeleted) {
-          throw new HttpException(
-            'Your account is not active, please contact your administrator',
-            HttpStatus.BAD_REQUEST,
-          );
-        }
-        throw new HttpException(
-          'A user already exists with this email',
-          HttpStatus.CONFLICT,
-        );
-      }
-
-      const user = await this.prisma.panelUser.create({
-        data: {
-          name: name,
-          familyName: familyName,
-          email: email,
-          password: await this.passwordService.hashPassword(password),
-        },
-      });
-      delete user.password;
-      const { accessToken, refreshToken } =
-        await this.authService.generateTokens(user);
-      return {
-        ...user,
-        tokens: { accessToken, refreshToken },
-      };
-    } catch (err: any) {
-      throw new HttpException(
-        `Bad Request. Please check the payload -> ${err?.message} `,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
   }
 }
