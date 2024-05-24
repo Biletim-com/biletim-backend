@@ -127,6 +127,19 @@ export class PanelUsersService {
     }
   }
 
+  async createSuperAdmin(){
+    const user = await this.prisma.panelUser.create({
+      data: {
+        name: "Super",
+        familyName: "Admin",
+        email: "super@admin.com",
+        password: await this.passwordService.hashPassword("1234"),
+        isSUPER_ADMIN: true
+      },
+    });
+
+    return user
+  }
   async findPanelUserByEmail(email: string) {
     return this.prisma.panelUser.findUnique({
       where: { email },

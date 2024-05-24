@@ -27,7 +27,7 @@ sonarqube-check:
     - shared
     - shell  
   only:
-    - dev # or the name of your main branch
+    - devops # or the name of your main branch
 
 
 build_docker_image:
@@ -38,7 +38,7 @@ build_docker_image:
     - shared
     - shell
   only:
-    - dev
+    - devops
 
 push_image_repository:
   stage: push
@@ -49,7 +49,7 @@ push_image_repository:
     - shared
     - shell
   only:
-    - dev
+    - devops
 
 deploy:
   stage: deploy
@@ -68,4 +68,4 @@ deploy:
   tags:
     - kube20
   only:
-    - dev
+    - devops

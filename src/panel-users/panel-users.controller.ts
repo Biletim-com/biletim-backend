@@ -48,4 +48,16 @@ export class PanelUsersController {
       changePasswordDto.newPassword,
     );
   }
+
+
+  @ApiOperation({ summary: 'Create panel admin (Only SUPER ADMIN can use)' })
+  @UseGuards(AuthGuard)
+  @Post('/create-super-admin')
+  @HttpCode(201)
+  async createSuperAdmin(
+  ): Promise<any> {
+    return this.panelUsersService.createSuperAdmin(
+
+    );
+  }
 }
