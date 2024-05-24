@@ -51,7 +51,6 @@ export class PanelUsersController {
 
 
   @ApiOperation({ summary: 'Create panel admin (Only SUPER ADMIN can use)' })
-  @UseGuards(AuthGuard)
   @Post('/create-super-admin')
   @HttpCode(201)
   async createSuperAdmin(
