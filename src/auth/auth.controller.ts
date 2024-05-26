@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   HttpCode,
+  Patch,
   Post,
   Put,
   Req,
@@ -77,7 +78,7 @@ export class AuthController {
   })
   @UseGuards(AuthGuard)
   @HttpCode(200)
-  @Put('/change-password')
+  @Patch('/change-password')
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
     @Req() req: any,

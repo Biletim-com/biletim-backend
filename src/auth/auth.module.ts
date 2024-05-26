@@ -9,11 +9,13 @@ import { AuthGuard } from './auth.guard';
 import { AUTH_STRATEGY_TOKEN } from './auth.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { UsersModule } from 'src/users/users.module';
+import { PanelUsersModule } from 'src/panel-users/panel-users.module';
 
 @Module({
   imports: [
     HttpModule,
     PrismaModule,
+    PanelUsersModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '60s' },
