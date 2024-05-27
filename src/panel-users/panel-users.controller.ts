@@ -26,7 +26,7 @@ import { CreatePanelUserDto } from './dto/create-panel-user.dto';
 export class PanelUsersController {
   constructor(private readonly panelUsersService: PanelUsersService) {}
 
-  @ApiOperation({ summary: 'Get All Panel Users' })
+  @ApiOperation({ summary: 'Find All Panel Users' })
   @UseGuards(AuthGuard)
   @RequireAdmin()
   @HttpCode(200)
@@ -51,6 +51,22 @@ export class PanelUsersController {
   @Get('/find-one/:id')
   async findOne(@Param('id') id: string): Promise<PanelUser> {
     return await this.panelUsersService.findOne(id);
+  }
+
+  @ApiOperation({ summary: 'Create SUPER ADMIN For Panel' })
+  @Post('/create-super-admin/:key')
+  @HttpCode(201)
+  async createSuperAdmin(@Param('key') key: string): Promise<any> {
+    return this.panelUsersService.createSuperAdmin(key);
+  }
+
+  @ApiOperation({ summary: 'Delete SUPER ADMIN )' })
+  @UseGuards(AuthGuard)
+  @RequireAdmin()
+  @Delete('/super-admin/:id')
+  @HttpCode(201)
+  async deleteAdmin(@Param('id') id: string, @Req() req: any): Promise<any> {
+    return this.panelUsersService.deleteAdmin(id, req.user);
   }
 
   @ApiOperation({ summary: 'Create panel admin (Only SUPER ADMIN can use)' })

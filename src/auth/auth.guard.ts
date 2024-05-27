@@ -62,7 +62,7 @@ export class AuthGuard implements CanActivate {
       );
       if (requireAdmin && !isAdmin) {
         throw new HttpException(
-          'Forbidden: You do not have permission to access this resource',
+          ' You do not have permission to access this resource',
           HttpStatus.FORBIDDEN,
         );
       }

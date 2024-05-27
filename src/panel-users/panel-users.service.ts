@@ -13,6 +13,7 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { PanelUser } from '@prisma/client';
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
+import { EnvVariables } from 'src/common/env.variables';
 
 @Injectable()
 export class PanelUsersService {
@@ -83,6 +84,72 @@ export class PanelUsersService {
     }
     delete user.password;
     return user;
+  }
+
+  async createSuperAdmin(key: string): Promise<any> {
+    const adminVariables = EnvVariables.getSuperAdminVariables();
+    if (key !== adminVariables.superAdminKey)
+      throw new HttpException('key is not correct', HttpStatus.BAD_REQUEST);
+
+    const existUser = await this.prisma.panelUser.findFirst({
+      where: {
+        email: adminVariables.superAdminEmail,
+        isSUPER_ADMIN: true,
+      },
+    });
+    if (existUser) {
+      throw new HttpException('super admin already exist', HttpStatus.CONFLICT);
+    }
+
+    try {
+      const user = await this.prisma.panelUser.create({
+        data: {
+          name: 'SUPER',
+          familyName: 'ADMIN',
+          email: adminVariables.superAdminEmail,
+          password: bcrypt.hashSync(adminVariables.superAdminPassword, 10),
+          isSUPER_ADMIN: true,
+        },
+      });
+
+      delete user.password;
+
+      return { message: 'Super admin created', statusCode: '201' };
+    } catch (err: any) {
+      throw new HttpException(
+        `Super Admin create error -> ${err.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async deleteAdmin(id: string, req: any): Promise<any> {
+    try {
+      const ReqUser = await this.findPanelUserByEmail(req.email);
+      if (!ReqUser)
+        throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+
+      if (!ReqUser.isSUPER_ADMIN) {
+        throw new HttpException(
+          'You are not authorized to perform this action',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      const user = await this.findPanelUserById(id);
+
+      if (!user)
+        throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+
+      await this.prisma.panelUser.delete({
+        where: { id },
+      });
+      return { message: 'user deleted', statusCode: '200' };
+    } catch (err: any) {
+      throw new HttpException(
+        `Super Admin delete error -> ${err.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   async createPanelAdmin(data: CreatePanelUserDto): Promise<any> {
