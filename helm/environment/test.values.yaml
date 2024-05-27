@@ -67,7 +67,7 @@ biletim_postgres:
   # configMapName: finance-aggregator-miniapp-db-config
   env:
     POSTGRES_USER: biletim-user
-    POSTGRES_PASSWORD: sc8THlk4HIg2uf1RKcMI4aJdMwNv1OY1R8WKCSqOc77Vv07JSXESsQS7coUkhh3z
+    POSTGRES_PASSWORD: 1234
     POSTGRES_HOST: biletim-db
     POSTGRES_PORT: 5432
     POSTGRES_DB: biletim
