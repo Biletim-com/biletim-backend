@@ -147,18 +147,41 @@ export class AuthService {
   async register(registerUserRequest: RegisterUserRequest): Promise<any> {
     try {
       const { password, name, familyName } = registerUserRequest;
-
       const email = registerUserRequest.email.toLowerCase();
       const existUser = await this.usersService.findByEmail(email);
-      if (existUser && !existUser.isVerified) {
-        await this.prisma.user.delete({
-          where: { email: email },
-        });
-      } else if (existUser && existUser.isVerified) {
-        throw new HttpException(
-          'This email address is already in use',
-          HttpStatus.CONFLICT,
-        );
+
+      if (existUser) {
+        if (!existUser.isVerified) {
+          const { verificationCode } = await this.uniqueSixDigitNumber();
+          await this.prisma.verification.update({
+            where: { user_id: existUser.id },
+            data: {
+              verificationCode: verificationCode,
+              isExpired: false,
+              isUsed: false,
+            },
+          });
+
+          const emailOptions = {
+            receiver: email,
+            subject: 'Verification Biletim Server',
+            htmlHeader: 'Verification',
+            htmlBody: 'Biletim Server user verification code',
+            htmlLink: `${verificationCode}`,
+          };
+
+          await this.sendEmail(EmailType.SIGNUP, emailOptions);
+
+          throw new HttpException(
+            'A verification code has been sent to your email address. Please verify your account.',
+            HttpStatus.CONFLICT,
+          );
+        } else {
+          throw new HttpException(
+            'This email address is already in use.',
+            HttpStatus.CONFLICT,
+          );
+        }
       }
 
       const user = await this.prisma.user.create({
@@ -169,12 +192,15 @@ export class AuthService {
           familyName: familyName,
         },
       });
+
       delete user.password;
+
       const { accessToken, refreshToken } = await this.generateTokens(user);
       const responseObj = {
         ...user,
         tokens: { accessToken, refreshToken },
       };
+
       const { verificationCode } = await this.uniqueSixDigitNumber();
       await this.prisma.verification.create({
         data: {
@@ -188,8 +214,9 @@ export class AuthService {
           isUsed: false,
         },
       });
+
       const emailOptions = {
-        receiver: user.email,
+        receiver: email,
         subject: 'Verification Biletim Server',
         htmlHeader: 'Verification',
         htmlBody: 'Biletim Server user verification code',
@@ -202,7 +229,7 @@ export class AuthService {
     } catch (err: any) {
       Logger.error(err);
       throw new HttpException(
-        ` Bad Request. Please check the payload -> ${err?.message}`,
+        `Bad Request. Please check the payload -> ${err?.message}`,
         HttpStatus.BAD_REQUEST,
       );
     }

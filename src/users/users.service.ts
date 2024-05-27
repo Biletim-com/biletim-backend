@@ -3,7 +3,6 @@ import {
   HttpStatus,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
@@ -26,7 +25,66 @@ export class UsersService {
     private panelUsersService: PanelUsersService,
     private prisma: PrismaService,
   ) {}
-  async create(createUserDto: CreateUserDto, reqUserId: any): Promise<User> {
+
+  async getUsers(query): Promise<any> {
+    try {
+      const offset = !isNaN(parseInt(query.offset))
+        ? parseInt(query.offset)
+        : 0;
+      const limit = !isNaN(parseInt(query.limit)) ? parseInt(query.limit) : 10;
+      const fullName = query.fullName;
+      const compId = parseInt(query.company_id);
+
+      let whereConditions: any = {
+        AND: [],
+      };
+
+      if (fullName && fullName.length > 0) {
+        const name = fullName.toLowerCase().split(' ')[0];
+        const familyName = fullName.toLowerCase().split(' ')[1];
+        whereConditions.AND.push({
+          name: { contains: name, mode: 'insensitive' },
+        });
+        whereConditions.AND.push({
+          familyName: { contains: familyName, mode: 'insensitive' },
+        });
+      }
+
+      if (compId) {
+        whereConditions.AND.push({ company_id: { equals: compId } });
+      }
+
+      if (!whereConditions.AND.length) {
+        whereConditions = {};
+      }
+
+      const totalUsers = await this.prisma.user.findMany({
+        skip: offset,
+        take: limit,
+        where: whereConditions,
+      });
+      const users = totalUsers.map((user) => {
+        const { password, ...rest } = user;
+        return rest;
+      });
+      return users;
+    } catch (err: any) {
+      throw new HttpException(
+        `user get error -> ${err?.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async findOne(id: string): Promise<User> {
+    const user = await this.prisma.user.findFirst({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID '${id}' not found`);
+    }
+    delete user.password;
+    return user;
+  }
+  async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       const { password, name, familyName } = createUserDto;
 
@@ -36,14 +94,6 @@ export class UsersService {
         throw new HttpException(
           'This email address is already in use',
           HttpStatus.CONFLICT,
-        );
-      }
-
-      const reqUser = await this.panelUsersService.findPanelUserById(reqUserId);
-      if (!reqUser || (reqUser && reqUser.isDeleted)) {
-        throw new HttpException(
-          'Your account is deleted, you cannot do this operation',
-          HttpStatus.UNAUTHORIZED,
         );
       }
       const saltRounds = 10;
@@ -106,8 +156,7 @@ export class UsersService {
     }
   }
 
-  async delete(reqUserId: string, userId: string) {
-    console.log(userId);
+  async delete(userId: string) {
     try {
       const user = await this.prisma.user.findFirst({
         where: {
@@ -117,14 +166,6 @@ export class UsersService {
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
-      const reqUser = await this.panelUsersService.findPanelUserById(reqUserId);
-      if (!reqUser || (reqUser && reqUser.isDeleted)) {
-        throw new HttpException(
-          'Your account is deleted, you cannot do this operation',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-
       await this.prisma.user.delete({
         where: {
           id: userId,

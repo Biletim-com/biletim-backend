@@ -1,21 +1,24 @@
 import {
+  Injectable,
   CanActivate,
   ExecutionContext,
   HttpException,
   HttpStatus,
-  Injectable,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 import { AuthService } from './auth.service';
+import { Reflector } from '@nestjs/core';
 import { jwtDecode } from 'jwt-decode';
+import { PanelUsersService } from '../panel-users/panel-users.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
+    private readonly panelUsersService: PanelUsersService,
     private readonly authService: AuthService,
     private readonly reflector: Reflector,
   ) {}
-  async canActivate(context: ExecutionContext): Promise<any> {
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.get<boolean>(
       'isPublic',
       context.getHandler(),
@@ -32,6 +35,7 @@ export class AuthGuard implements CanActivate {
         HttpStatus.UNAUTHORIZED,
       );
     }
+
     const parts = header.split(' ');
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
       throw new HttpException(
@@ -41,15 +45,32 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      request['user'] = await this.authService.authenticate(parts[1]);
-      const decodedToken = jwtDecode(parts[1]);
-
+      const token = parts[1];
+      const decodedToken: any = jwtDecode(token);
+      console.log(token, 'token');
+      const user = await this.authService.authenticate(token);
+      request['user'] = user;
+      console.log(user, 'userrr');
       if (Date.now() >= decodedToken.exp * 1000) {
         throw new HttpException(
           'Authorization: Token is expired',
           HttpStatus.UNAUTHORIZED,
         );
       }
+      console.log(user.sub, 'useriddddd');
+      const isAdmin = await this.panelUsersService.isPanelUser(user.sub);
+      const requireAdmin = this.reflector.get<boolean>(
+        'requireAdmin',
+        context.getHandler(),
+      );
+      console.log(isAdmin, 'isadminn');
+      if (requireAdmin && !isAdmin) {
+        throw new HttpException(
+          'Forbidden: You do not have permission to access this resource',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
       return true;
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.UNAUTHORIZED);
