@@ -120,13 +120,13 @@ export class PanelUsersController {
   }
 
 
-  @ApiOperation({ summary: 'Create panel admin (Only SUPER ADMIN can use)' })
-  @Post('/create-super-admin')
-  @HttpCode(201)
-  async createSuperAdmin(
-  ): Promise<any> {
-    return this.panelUsersService.createSuperAdmin(
+  // @ApiOperation({ summary: 'Create panel admin (Only SUPER ADMIN can use)' })
+  // @Post('/create-super-admin')
+  // @HttpCode(201)
+  // async createSuperAdmin(
+  // ): Promise<any> {
+  //   return this.panelUsersService.createSuperAdmin(
 
-    );
-  }
+  //   );
+  // }
 }

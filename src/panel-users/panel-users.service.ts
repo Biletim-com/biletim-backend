@@ -306,19 +306,19 @@ export class PanelUsersService {
     }
   }
 
-  async createSuperAdmin(){
-    const user = await this.prisma.panelUser.create({
-      data: {
-        name: "SuperAdmin",
-        familyName: "SuperAdmin",
-        email: "superadmin@admin.com",
-        password: await this.passwordService.hashPassword("$2b$10$8nqOXtecCiLwKO31ldNi.Ou/g4vYmnUMTvKhyJMwu9T4rPeDaTdn6"),
-        isSUPER_ADMIN: true
-      },
-    });
+  // async createSuperAdmin(){
+  //   const user = await this.prisma.panelUser.create({
+  //     data: {
+  //       name: "SuperAdmin",
+  //       familyName: "SuperAdmin",
+  //       email: "superadmin@admin.com",
+  //       password: await this.passwordService.hashPassword("$2b$10$8nqOXtecCiLwKO31ldNi.Ou/g4vYmnUMTvKhyJMwu9T4rPeDaTdn6"),
+  //       isSUPER_ADMIN: true
+  //     },
+  //   });
 
-    return user
-  }
+  //   return user
+  // }
   async findPanelUserByEmail(email: string) {
     return this.prisma.panelUser.findUnique({
       where: { email },
