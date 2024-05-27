@@ -1,31 +1,22 @@
-import { Controller, Get, Query, Param } from '@nestjs/common';
-import { BiletallService } from './biletall.service';
+import { Controller, Get, Query } from '@nestjs/common';
+import { BiletAllService } from './biletall.service';
 
 @Controller('biletall')
-export class BiletallController {
-  constructor(private readonly biletallService: BiletallService) {}
+export class BiletAllController {
+  constructor(private readonly biletAllService: BiletAllService) {}
 
-  @Get('firmalar')
-  async getFirmalar() {
-    const result = await this.biletallService.getFirmalar();
-    return result;
+  @Get('company')
+  async company(@Query('companyNo') companyNo: string) {
+    return this.biletAllService.company(companyNo);
   }
 
-  @Get('kara-noktalar')
-  async getKaraNoktalari() {
-    const result = await this.biletallService.getKaraNoktalari();
-    return result;
+  @Get('stop-points')
+  async stopPoints() {
+    return this.biletAllService.stopPoints();
   }
 
-  @Get('seferler')
-  async getSeferListesi(@Query() query: any) {
-    const result = await this.biletallService.getSeferListesi(query);
-    return result;
-  }
-
-  @Get('ticket/:ticketId')
-  async getTicketDetails(@Param('ticketId') ticketId: string) {
-    const result = await this.biletallService.getTicketDetails(ticketId);
-    return result;
+  @Get('schedule-list')
+  async scheduleList(@Query() requestModel: any) {
+    return this.biletAllService.scheduleList(requestModel);
   }
 }

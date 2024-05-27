@@ -6,12 +6,12 @@ import { PrismaModule } from 'nestjs-prisma';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TicketsModule } from './tickets/tickets.module';
-import { BiletallService } from './tickets/biletall/biletall.service';
+import { BiletAllService } from './tickets/biletall/biletall.service';
 import { TicketsService } from './tickets/tickets.service';
 import { CommandModule } from 'nestjs-command';
 import { CommandService } from './commands/command.service';
 import { SuperAdminCommand } from './commands/super-admin.command';
-import { BiletallModule } from './tickets/biletall/biletall.module';
+import { BiletAllModule } from './tickets/biletall/biletall.module';
 import { PanelUsersModule } from './panel-users/panel-users.module';
 
 @Module({
@@ -22,7 +22,7 @@ import { PanelUsersModule } from './panel-users/panel-users.module';
     UsersModule,
     TicketsModule,
     CommandModule,
-    BiletallModule,
+    BiletAllModule,
     PanelUsersModule,
   ],
   controllers: [AppController],
@@ -30,7 +30,7 @@ import { PanelUsersModule } from './panel-users/panel-users.module';
     SuperAdminCommand,
     CommandService,
     AppService,
-    BiletallService,
+    BiletAllService,
     TicketsService,
   ],
 })

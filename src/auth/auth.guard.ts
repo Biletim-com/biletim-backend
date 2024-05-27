@@ -47,23 +47,19 @@ export class AuthGuard implements CanActivate {
     try {
       const token = parts[1];
       const decodedToken: any = jwtDecode(token);
-      console.log(token, 'token');
       const user = await this.authService.authenticate(token);
       request['user'] = user;
-      console.log(user, 'userrr');
       if (Date.now() >= decodedToken.exp * 1000) {
         throw new HttpException(
           'Authorization: Token is expired',
           HttpStatus.UNAUTHORIZED,
         );
       }
-      console.log(user.sub, 'useriddddd');
       const isAdmin = await this.panelUsersService.isPanelUser(user.sub);
       const requireAdmin = this.reflector.get<boolean>(
         'requireAdmin',
         context.getHandler(),
       );
-      console.log(isAdmin, 'isadminn');
       if (requireAdmin && !isAdmin) {
         throw new HttpException(
           'Forbidden: You do not have permission to access this resource',
