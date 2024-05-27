@@ -40,11 +40,11 @@ biletim_api:
     APP_PORT: 8080
     NODE_ENV: development
     POSTGRES_USER: biletim-user
-    POSTGRES_PASSWORD: sc8THlk4HIg2uf1RKcMI4aJdMwNv1OY1R8WKCSqOc77Vv07JSXESsQS7coUkhh3z
+    POSTGRES_PASSWORD: 1234
     POSTGRES_HOST: biletim-db
     POSTGRES_PORT: 5432
     POSTGRES_DB: biletim
-    DATABASE_URL: postgres://biletim-user:sc8THlk4HIg2uf1RKcMI4aJdMwNv1OY1R8WKCSqOc77Vv07JSXESsQS7coUkhh3z@biletim-db:5432/biletim?connect_timeout=300
+    DATABASE_URL: postgres://biletim-user:1234@biletim-db:5432/biletim?connect_timeout=300
     JWT_SECRET: PEMPassPhrase
     BCRYPT_SALT_ROUNDS: 12
     RESET_PASSWORD_URL: https://timetracker.westerops.com/reset-password
@@ -58,16 +58,16 @@ biletim_api:
         claimName: biletim-api-pvc
 
 
-biletim_postgres:
+biletim_db:
   enabled: true
   replicas: 1
-  app: biletim-postgres
+  app: biletim-db
   port: 5432
-  image: postgres:15
+  image: postgres:15.7
   # configMapName: finance-aggregator-miniapp-db-config
   env:
     POSTGRES_USER: biletim-user
-    POSTGRES_PASSWORD: sc8THlk4HIg2uf1RKcMI4aJdMwNv1OY1R8WKCSqOc77Vv07JSXESsQS7coUkhh3z
+    POSTGRES_PASSWORD: 1234
     POSTGRES_HOST: biletim-db
     POSTGRES_PORT: 5432
     POSTGRES_DB: biletim
