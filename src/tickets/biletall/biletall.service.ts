@@ -1,106 +1,92 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
-import { Client } from 'nestjs-soap';
+import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
+import axios from 'axios';
 
 @Injectable()
-export class BiletallService {
-  private readonly logger = new Logger(BiletallService.name);
-  private readonly parser = new xml2js.Parser({ explicitArray: false });
+export class BiletAllService {
+  private accountName = 'biletimcomWS';
+  private password = '2023.Biletimcom';
 
-  constructor(@Inject('BiletallClient') private readonly client: Client) {}
-
-  async getFirmalar() {
-    const requestXml = `<Firmalar_2 xmlns=""></Firmalar_2>`;
-    const requestYetki = `<Kullanici><Adi>biletimcomWS</Adi><Sifre>aa8809</Sifre></Kullanici>`;
-    const rawResponse = await this.client.XmlIslet({
-      xmlIslem: requestXml,
-      xmlYetki: requestYetki,
-    });
-    this.logger.log(`Raw Firmalar Response: ${JSON.stringify(rawResponse)}`);
-
-    if (!rawResponse) {
-      this.logger.error('Firmalar Response is undefined');
-      throw new Error('Firmalar Response is undefined');
-    }
-
-    const [result] = rawResponse;
-    return this.parseXml(result);
+  private getAccountDocument() {
+    const builder = new xml2js.Builder({ headless: true });
+    const accountDocument = {
+      Kullanici: {
+        Adi: this.accountName,
+        Sifre: this.password,
+      },
+    };
+    return builder.buildObject(accountDocument);
   }
 
-  async getKaraNoktalari() {
-    const requestXml = `<KaraNoktaGetirKomut xmlns=""></KaraNoktaGetirKomut>`;
-    const requestYetki = `<Kullanici><Adi>biletimcomWS</Adi><Sifre>aa8809</Sifre></Kullanici>`;
-    const rawResponse = await this.client.XmlIslet({
-      xmlIslem: requestXml,
-      xmlYetki: requestYetki,
-    });
-    this.logger.log(`Raw Firmalar Response: ${JSON.stringify(rawResponse)}`);
-
-    if (!rawResponse) {
-      this.logger.error('Firmalar Response is undefined');
-      throw new Error('Firmalar Response is undefined');
-    }
-
-    const [result] = rawResponse;
-    return this.parseXml(result);
+  private async strToXmlDocument(str: string): Promise<any> {
+    const parser = new xml2js.Parser({ explicitArray: false });
+    return parser.parseStringPromise(str);
   }
 
-  async getSeferListesi(params: any) {
-    const requestXml = `
-      <Sefer xmlns="">
-        <FirmaNo>0</FirmaNo>
-        <KalkisNoktaID>${params.KalkisNoktaID}</KalkisNoktaID>
-        <VarisNoktaID>${params.VarisNoktaID}</VarisNoktaID>
-        <Tarih>${params.Tarih}</Tarih>
-        <AraNoktaGelsin>${params.AraNoktaGelsin}</AraNoktaGelsin>
-        <IslemTipi>${params.IslemTipi}</IslemTipi>
-        <YolcuSayisi>${params.YolcuSayisi}</YolcuSayisi>
-        <Ip>${params.Ip}</Ip>
-      </Sefer>`;
-    const requestYetki = `<Kullanici><Adi>biletimcomWS</Adi><Sifre>aa8809</Sifre></Kullanici>`;
-    const rawResponse = await this.client.XmlIslet({
-      xmlIslem: requestXml,
-      xmlYetki: requestYetki,
-    });
-    this.logger.log(`Raw Firmalar Response: ${JSON.stringify(rawResponse)}`);
-
-    if (!rawResponse) {
-      this.logger.error('Firmalar Response is undefined');
-      throw new Error('Firmalar Response is undefined');
-    }
-
-    const [result] = rawResponse;
-    return this.parseXml(result);
+  async company(companyNo = ''): Promise<any> {
+    const builder = new xml2js.Builder({ headless: true });
+    const companyFilter = companyNo ? { FirmaNo: companyNo } : {};
+    const requestDocument = {
+      Firmalar: companyFilter,
+    };
+    const xml = builder.buildObject(requestDocument);
+    return this.run(xml, 'http://tempuri.org/XmlIslet');
   }
 
-  async getTicketDetails(ticketId: string) {
-    const requestXml = `
-      <BiletDetay xmlns="">
-        <TicketId>${ticketId}</TicketId>
-      </BiletDetay>`;
-    const requestYetki = `<Kullanici><Adi>biletimcomWS</Adi><Sifre>aa8809</Sifre></Kullanici>`;
-    const rawResponse = await this.client.XmlIslet({
-      xmlIslem: requestXml,
-      xmlYetki: requestYetki,
-    });
-    this.logger.log(`Raw Firmalar Response: ${JSON.stringify(rawResponse)}`);
-
-    if (!rawResponse) {
-      this.logger.error('Firmalar Response is undefined');
-      throw new Error('Firmalar Response is undefined');
-    }
-
-    const [result] = rawResponse;
-    return this.parseXml(result);
+  async stopPoints(): Promise<any> {
+    const builder = new xml2js.Builder({ headless: true });
+    const requestDocument = { KaraNoktaGetirKomut: {} };
+    const xml = builder.buildObject(requestDocument);
+    return this.run(xml, 'http://tempuri.org/XmlIslet');
   }
 
-  private async parseXml(xml: string): Promise<any> {
+  async scheduleList(requestModel: any): Promise<any> {
+    const builder = new xml2js.Builder({ headless: true });
+    const xml = builder.buildObject(requestModel);
+    return this.run(xml, 'http://tempuri.org/XmlIslet');
+  }
+
+  async ucusFiyat(ucusFiyatModel: any): Promise<any> {
+    const builder = new xml2js.Builder({ headless: true });
+    const xml = builder.buildObject(ucusFiyatModel);
+    return this.run(xml, 'http://tempuri.org/XmlIslet');
+  }
+
+  private async run(bodyXml: string, soapAction: string): Promise<any> {
+    const accountDocument = this.getAccountDocument();
+    const soapEnvelope = `
+      <?xml version="1.0" encoding="utf-8"?>
+      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <soap:Body>
+          <XmlIslet xmlns="http://tempuri.org/">
+            <xmlIslem>
+              ${bodyXml}
+            </xmlIslem>
+            <xmlYetki>
+              ${accountDocument}
+            </xmlYetki>
+          </XmlIslet>
+        </soap:Body>
+      </soap:Envelope>
+    `;
+
     try {
-      const parsedResult = await this.parser.parseStringPromise(xml);
-      return parsedResult;
+      const response = await axios.post(
+        'http://94.55.20.137/WSTEST/Service.asmx?wsdl',
+        soapEnvelope.trim(),
+        {
+          headers: {
+            'Content-Type': 'text/xml',
+            SOAPAction: soapAction,
+          },
+        },
+      );
+
+      const result = await xml2js.parseStringPromise(response.data);
+      return result;
     } catch (error) {
-      this.logger.error(`XML Parsing Error: ${error.message}`);
-      throw new Error('Error parsing XML response');
+      console.error('Error running XML request:', error);
+      throw new Error('Failed to process XML request');
     }
   }
 }
