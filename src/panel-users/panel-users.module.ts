@@ -9,5 +9,6 @@ import { UsersService } from 'src/users/users.service';
   imports: [forwardRef(() => AuthModule)],
   controllers: [PanelUsersController],
   providers: [PanelUsersService, PasswordService, UsersService],
+  exports: [PanelUsersService],
 })
 export class PanelUsersModule {}

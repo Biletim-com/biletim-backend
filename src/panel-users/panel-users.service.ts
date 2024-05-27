@@ -11,7 +11,8 @@ import { AuthService } from 'src/auth/auth.service';
 import { PasswordService } from 'src/auth/password/password.service';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { PanelUser } from '@prisma/client';
+import { CreatePanelUserDto } from './dto/create-panel-user.dto';
 
 @Injectable()
 export class PanelUsersService {
@@ -25,18 +26,67 @@ export class PanelUsersService {
     private prisma: PrismaService,
   ) {}
 
-  async createPanelAdmin(data: CreateUserDto, reqUserId: any): Promise<any> {
-    let reqUser;
+  async getUsers(query): Promise<any> {
     try {
-      reqUser = await this.findPanelUserById(reqUserId);
+      const offset = !isNaN(parseInt(query.offset))
+        ? parseInt(query.offset)
+        : 0;
+      const limit = !isNaN(parseInt(query.limit)) ? parseInt(query.limit) : 10;
+      const fullName = query.fullName;
+      const compId = parseInt(query.company_id);
 
-      if (!reqUser.isSUPER_ADMIN) {
-        throw new HttpException(
-          'You do not have permission for this operation',
-          HttpStatus.FORBIDDEN,
-        );
+      let whereConditions: any = {
+        AND: [],
+      };
+
+      if (fullName && fullName.length > 0) {
+        const name = fullName.toLowerCase().split(' ')[0];
+        const familyName = fullName.toLowerCase().split(' ')[1];
+        whereConditions.AND.push({
+          name: { contains: name, mode: 'insensitive' },
+        });
+        whereConditions.AND.push({
+          familyName: { contains: familyName, mode: 'insensitive' },
+        });
       }
 
+      if (compId) {
+        whereConditions.AND.push({ company_id: { equals: compId } });
+      }
+
+      if (!whereConditions.AND.length) {
+        whereConditions = {};
+      }
+
+      const totalUsers = await this.prisma.panelUser.findMany({
+        skip: offset,
+        take: limit,
+        where: whereConditions,
+      });
+      const users = totalUsers.map((user) => {
+        const { password, ...rest } = user;
+        return rest;
+      });
+      return users;
+    } catch (err: any) {
+      throw new HttpException(
+        `user get error -> ${err?.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async findOne(id: string): Promise<PanelUser> {
+    const user = await this.prisma.panelUser.findFirst({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID '${id}' not found`);
+    }
+    delete user.password;
+    return user;
+  }
+
+  async createPanelAdmin(data: CreatePanelUserDto): Promise<any> {
+    try {
       const { name, familyName, email, password } = data;
 
       const existUser = await this.prisma.panelUser.findFirst({
@@ -76,6 +126,68 @@ export class PanelUsersService {
     } catch (err: any) {
       throw new HttpException(
         `Bad Request. Please check the payload -> ${err?.message} `,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async updateUser(userId: string, data: CreatePanelUserDto): Promise<any> {
+    try {
+      const { email } = data;
+      const user = await this.findPanelUserById(userId);
+      if (!user) {
+        throw new NotFoundException(`User with id ${userId} not found`);
+      }
+      if (data.password) {
+        data.password = await bcrypt.hash(data.password, 10);
+      }
+      if (user.isDeleted)
+        throw new HttpException(
+          'user not active, please contact your super admin',
+          HttpStatus.NOT_FOUND,
+        );
+      const checkEmail = await this.findPanelUserByEmail(email);
+
+      if (checkEmail && user.email !== checkEmail.email)
+        throw new HttpException(
+          'this email address is already used by someone else',
+          HttpStatus.BAD_REQUEST,
+        );
+
+      await this.prisma.panelUser.update({
+        where: { id: userId },
+        data: {
+          ...data,
+        },
+      });
+      return { message: 'user updated', statusCode: 200 };
+    } catch (err: any) {
+      throw new HttpException(
+        `user update error -> ${err?.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async delete(userId: string): Promise<any> {
+    try {
+      const user = await this.prisma.panelUser.findFirst({
+        where: {
+          id: userId,
+        },
+      });
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+      await this.prisma.panelUser.delete({
+        where: {
+          id: userId,
+        },
+      });
+      return { message: 'user deleted', statusCode: 200 };
+    } catch (err: any) {
+      throw new HttpException(
+        `user delete error -> ${err?.message}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -143,5 +255,12 @@ export class PanelUsersService {
     }
 
     return panelUser;
+  }
+
+  async isPanelUser(userId: string): Promise<boolean> {
+    const panelUser = await this.prisma.panelUser.findFirst({
+      where: { id: userId },
+    });
+    return !!panelUser;
   }
 }
