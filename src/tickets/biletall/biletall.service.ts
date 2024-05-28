@@ -8,8 +8,8 @@ import {
 
 @Injectable()
 export class BiletAllService {
-  private accountName = 'biletimcomWS';
-  private password = 'aa8809';
+  private accountName = 'mail@golife.com.tr';
+  private password = 'ccb6bc';
 
   private getAccountDocument() {
     const builder = new xml2js.Builder({ headless: true });
