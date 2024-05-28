@@ -24,7 +24,7 @@ import { RequireAdmin } from 'src/decorators/roles.decorator';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ summary: 'Get All App Users' })
+  @ApiOperation({ summary: 'Find All App Users' })
   @UseGuards(AuthGuard)
   @HttpCode(200)
   @Get()
