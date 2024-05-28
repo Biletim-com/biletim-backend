@@ -1,13 +1,17 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { BiletAllService } from './biletall.service';
+import {
+  ScheduleListRequestDto,
+  CompanyRequestDto,
+} from './dto/biletall.dto';
 
 @Controller('biletall')
 export class BiletAllController {
   constructor(private readonly biletAllService: BiletAllService) {}
 
-  @Get('company')
-  async company(@Query('companyNo') companyNo: string) {
-    return this.biletAllService.company(companyNo);
+  @Post('company')
+  async company(@Body() requestDto: CompanyRequestDto) {
+    return this.biletAllService.company(requestDto);
   }
 
   @Get('stop-points')
@@ -15,8 +19,8 @@ export class BiletAllController {
     return this.biletAllService.stopPoints();
   }
 
-  @Get('schedule-list')
-  async scheduleList(@Query() requestModel: any) {
-    return this.biletAllService.scheduleList(requestModel);
+  @Post('schedule-list')
+  async scheduleList(@Body() requestDto: ScheduleListRequestDto) {
+    return this.biletAllService.scheduleList(requestDto);
   }
 }
