@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 import axios from 'axios';
+import {
+  CompanyRequestDto,
+  ScheduleListRequestDto,
+} from './dto/biletall.dto';
 
 @Injectable()
 export class BiletAllService {
   private accountName = 'biletimcomWS';
-  private password = '2023.Biletimcom';
+  private password = 'aa8809';
 
   private getAccountDocument() {
     const builder = new xml2js.Builder({ headless: true });
@@ -18,37 +22,33 @@ export class BiletAllService {
     return builder.buildObject(accountDocument);
   }
 
-  private async strToXmlDocument(str: string): Promise<any> {
-    const parser = new xml2js.Parser({ explicitArray: false });
-    return parser.parseStringPromise(str);
-  }
-
-  async company(companyNo = ''): Promise<any> {
-    const builder = new xml2js.Builder({ headless: true });
-    const companyFilter = companyNo ? { FirmaNo: companyNo } : {};
-    const requestDocument = {
-      Firmalar: companyFilter,
-    };
-    const xml = builder.buildObject(requestDocument);
-    return this.run(xml, 'http://tempuri.org/XmlIslet');
+  async company(requestDto: CompanyRequestDto): Promise<any> {
+    const firmalarXml = `<Firmalar>${requestDto.FirmaNo}</Firmalar>`;
+    return this.run(firmalarXml, 'http://tempuri.org/XmlIslet');
   }
 
   async stopPoints(): Promise<any> {
+    const firmalarXml = `<KaraNoktaGetirKomut/>`;
+    return this.run(firmalarXml, 'http://tempuri.org/XmlIslet');
+  }
+
+  async scheduleList(requestDto: ScheduleListRequestDto): Promise<any> {
     const builder = new xml2js.Builder({ headless: true });
-    const requestDocument = { KaraNoktaGetirKomut: {} };
+    const requestDocument = {
+      Sefer: {
+        FirmaNo: requestDto.FirmaNo,
+        KalkisNoktaID: requestDto.KalkisNoktaID,
+        VarisNoktaID: requestDto.VarisNoktaID,
+        Tarih: requestDto.Tarih,
+        IslemTipi: requestDto.IslemTipi,
+        YolcuSayisi: requestDto.YolcuSayisi,
+        Ip: requestDto.Ip,
+        ...(requestDto.AraNoktaGelsin !== undefined && {
+          AraNoktaGelsin: requestDto.AraNoktaGelsin ? 1 : 0,
+        }),
+      },
+    };
     const xml = builder.buildObject(requestDocument);
-    return this.run(xml, 'http://tempuri.org/XmlIslet');
-  }
-
-  async scheduleList(requestModel: any): Promise<any> {
-    const builder = new xml2js.Builder({ headless: true });
-    const xml = builder.buildObject(requestModel);
-    return this.run(xml, 'http://tempuri.org/XmlIslet');
-  }
-
-  async ucusFiyat(ucusFiyatModel: any): Promise<any> {
-    const builder = new xml2js.Builder({ headless: true });
-    const xml = builder.buildObject(ucusFiyatModel);
     return this.run(xml, 'http://tempuri.org/XmlIslet');
   }
 
@@ -56,7 +56,7 @@ export class BiletAllService {
     const accountDocument = this.getAccountDocument();
     const soapEnvelope = `
       <?xml version="1.0" encoding="utf-8"?>
-      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
         <soap:Body>
           <XmlIslet xmlns="http://tempuri.org/">
             <xmlIslem>
@@ -70,6 +70,8 @@ export class BiletAllService {
       </soap:Envelope>
     `;
 
+    console.log('SOAP Envelope:', soapEnvelope); // Log the SOAP envelope to check for errors
+
     try {
       const response = await axios.post(
         'http://94.55.20.137/WSTEST/Service.asmx?wsdl',
@@ -82,6 +84,7 @@ export class BiletAllService {
         },
       );
 
+      console.log('Response:', response.data); // Log the response to check for errors
       const result = await xml2js.parseStringPromise(response.data);
       return result;
     } catch (error) {
