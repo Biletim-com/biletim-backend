@@ -83,7 +83,7 @@ export class AuthController {
     @Req() req: any,
   ): Promise<any> {
     return this.authService.changePassword(
-      req?.user?.id,
+      req?.user?.sub,
       changePasswordDto.oldPassword,
       changePasswordDto.newPassword,
     );
