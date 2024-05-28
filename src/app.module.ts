@@ -8,9 +8,6 @@ import { UsersModule } from './users/users.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { BiletAllService } from './tickets/biletall/biletall.service';
 import { TicketsService } from './tickets/tickets.service';
-import { CommandModule } from 'nestjs-command';
-import { CommandService } from './commands/command.service';
-import { SuperAdminCommand } from './commands/super-admin.command';
 import { BiletAllModule } from './tickets/biletall/biletall.module';
 import { PanelUsersModule } from './panel-users/panel-users.module';
 
@@ -21,17 +18,10 @@ import { PanelUsersModule } from './panel-users/panel-users.module';
     AuthModule,
     UsersModule,
     TicketsModule,
-    CommandModule,
     BiletAllModule,
     PanelUsersModule,
   ],
   controllers: [AppController],
-  providers: [
-    SuperAdminCommand,
-    CommandService,
-    AppService,
-    BiletAllService,
-    TicketsService,
-  ],
+  providers: [AppService, BiletAllService, TicketsService],
 })
 export class AppModule {}
