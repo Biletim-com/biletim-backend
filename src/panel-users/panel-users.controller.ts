@@ -113,20 +113,9 @@ export class PanelUsersController {
     @Req() req: any,
   ): Promise<any> {
     return this.panelUsersService.panelChangePassword(
-      req?.user?.id,
+      req?.user?.sub,
       changePasswordDto.oldPassword,
       changePasswordDto.newPassword,
     );
   }
-
-
-  // @ApiOperation({ summary: 'Create panel admin (Only SUPER ADMIN can use)' })
-  // @Post('/create-super-admin')
-  // @HttpCode(201)
-  // async createSuperAdmin(
-  // ): Promise<any> {
-  //   return this.panelUsersService.createSuperAdmin(
-
-  //   );
-  // }
 }

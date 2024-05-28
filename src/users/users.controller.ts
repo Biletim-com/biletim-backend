@@ -64,8 +64,13 @@ export class UsersController {
   async updateUser(
     @Param('id') id: string,
     @Body() createUserDto: CreateUserDto,
+    @Req() req: any,
   ): Promise<any> {
-    return await this.usersService.updateUser(id, createUserDto);
+    return await this.usersService.updateUser(
+      req?.user?.sub,
+      id,
+      createUserDto,
+    );
   }
 
   @ApiOperation({ summary: 'Delete App User' })

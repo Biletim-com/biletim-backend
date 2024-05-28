@@ -46,7 +46,6 @@
     "class-validator": "^0.14.0",
     "csv-parse": "^5.5.2",
     "jwt-decode": "^4.0.0",
-    "nestjs-command": "^3.1.4",
     "nestjs-prisma": "^0.20.0",
     "nestjs-soap": "^3.0.2",
     "node-mailer": "^0.1.1",
