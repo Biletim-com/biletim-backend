@@ -8,8 +8,8 @@ import {
 
 @Injectable()
 export class BiletAllService {
-  private accountName = 'mail@golife.com.tr';
-  private password = 'ccb6bc';
+  private accountName = 'biletimcomWS';
+  private password = 'aa8809';
 
   private getAccountDocument() {
     const builder = new xml2js.Builder({ headless: true });
@@ -74,7 +74,7 @@ export class BiletAllService {
 
     try {
       const response = await axios.post(
-        'http://94.55.20.137/WSTEST/Service.asmx?wsdl',
+        'http://94.55.20.137/WSTEST/Service.asmx',
         soapEnvelope.trim(),
         {
           headers: {
