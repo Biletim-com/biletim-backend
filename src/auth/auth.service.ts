@@ -6,6 +6,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
   forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -24,11 +25,13 @@ import { EmailType } from 'src/types/email-type';
 import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
+import axios from 'axios';
+import AppleAuth from 'apple-auth';
 
 @Injectable()
 export class AuthService {
   private logger = new Logger(AuthService.name);
-
+  private readonly auth: AppleAuth;
   constructor(
     private prisma: PrismaService,
     private httpService: HttpService,
@@ -484,5 +487,81 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  async loginWithGoogle(token: string) {
+    const url = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`;
+    try {
+      const response = await axios.get(url);
+      const userInfo = response.data;
+      // İsteğin başarılı olup, olmadığının kontrolü
+      if (response.status !== 200 || !userInfo) {
+        throw new BadRequestException(
+          `Google API request failed. Status: ${response.status}`,
+        );
+      }
+      // Kullanıcıyı e-posta adresiyle bulma
+      const user = await this.usersService.findByEmail(userInfo.email);
+
+      // Eğer kullanıcı yoksa, kayıt ol ve oturum aç
+      if (!user) {
+        console.log('REGISTER');
+        const password: string = uuidv4();
+
+        const signUpResult = await this.signUpWithGoogle({
+          email: userInfo.email,
+          password: password,
+          name: userInfo.given_name ?? 'firstname',
+          familyName: userInfo.family_name ?? 'lastname',
+        });
+
+        return signUpResult;
+      } else {
+        console.log('LOGIN');
+        // Eğer kullanıcı varsa, sadece oturum aç
+        const signInResult = await this.signInWithGoogle(user.email, userInfo);
+
+        return signInResult;
+      }
+    } catch (error) {
+      //HTTP hatası oluştuğunda veya başka bir hata durumunda buraya düşer
+      throw new BadRequestException(`ERR: Google API request failed`);
+    }
+  }
+
+  async signUpWithGoogle(createUserDto: RegisterUserRequest): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  }> {
+    createUserDto.email = createUserDto.email.toLowerCase();
+    const existingUser = await this.usersService.findByEmail(
+      createUserDto.email,
+    );
+    if (existingUser) {
+      throw new HttpException(
+        'This email address already in use',
+        HttpStatus.CONFLICT,
+      );
+    }
+    const user = await this.usersService.create(createUserDto);
+
+    const { accessToken, refreshToken } = await this.generateTokens(user);
+    return { accessToken, refreshToken };
+  }
+
+  async signInWithGoogle(email: string, userInfo: any) {
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (userInfo.email != email) {
+      throw new BadRequestException(
+        'Invalid Google token: emails do not match',
+      );
+    }
+    const { accessToken, refreshToken } = await this.generateTokens(user);
+    return { accessToken, refreshToken };
   }
 }

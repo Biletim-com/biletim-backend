@@ -89,6 +89,13 @@ export class AuthController {
     );
   }
 
+  @HttpCode(200)
+  @Post('/login-google')
+  async loginWithGoogle(@Body() body) {
+    const userInfo = await this.authService.loginWithGoogle(body.token);
+    return userInfo;
+  }
+
   @Post('register-company')
   @HttpCode(200)
   async registerCompany(
