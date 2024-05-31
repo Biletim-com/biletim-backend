@@ -10,6 +10,8 @@ import { AUTH_STRATEGY_TOKEN } from './auth.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { PanelUsersModule } from 'src/panel-users/panel-users.module';
+// import { AppleStrategy } from '../apple/apple.strategy';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { PanelUsersModule } from 'src/panel-users/panel-users.module';
       signOptions: { expiresIn: '60s' },
     }),
     forwardRef(() => UsersModule),
+    ConfigModule.forRoot(),
   ],
   controllers: [AuthController],
   providers: [
@@ -31,6 +34,7 @@ import { PanelUsersModule } from 'src/panel-users/panel-users.module';
       provide: AUTH_STRATEGY_TOKEN,
       useClass: JwtStrategy,
     },
+    // AppleStrategy,
   ],
   exports: [AuthService, AuthGuard],
 })

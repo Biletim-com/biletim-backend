@@ -10,6 +10,7 @@ import { BiletAllService } from './tickets/biletall/biletall.service';
 import { TicketsService } from './tickets/tickets.service';
 import { BiletAllModule } from './tickets/biletall/biletall.module';
 import { PanelUsersModule } from './panel-users/panel-users.module';
+import { AppleModule } from './apple/apple.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PanelUsersModule } from './panel-users/panel-users.module';
     TicketsModule,
     BiletAllModule,
     PanelUsersModule,
+    AppleModule,
   ],
   controllers: [AppController],
   providers: [AppService, BiletAllService, TicketsService],
