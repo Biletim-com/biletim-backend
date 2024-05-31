@@ -26,12 +26,10 @@ import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
-import AppleAuth from 'apple-auth';
 
 @Injectable()
 export class AuthService {
   private logger = new Logger(AuthService.name);
-  private readonly auth: AppleAuth;
   constructor(
     private prisma: PrismaService,
     private httpService: HttpService,
