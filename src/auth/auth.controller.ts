@@ -83,10 +83,17 @@ export class AuthController {
     @Req() req: any,
   ): Promise<any> {
     return this.authService.changePassword(
-      req?.user?.id,
+      req?.user?.sub,
       changePasswordDto.oldPassword,
       changePasswordDto.newPassword,
     );
+  }
+
+  @HttpCode(200)
+  @Post('/login-google')
+  async loginWithGoogle(@Body() body) {
+    const userInfo = await this.authService.loginWithGoogle(body.token);
+    return userInfo;
   }
 
   @Post('register-company')

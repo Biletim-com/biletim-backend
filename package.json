@@ -29,6 +29,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@arendajaelu/nestjs-passport-apple": "^2.0.2",
     "@fastify/multipart": "^8.0.0",
     "@fastify/static": "^6.10.1",
     "@nestjs/axios": "^2.0.0",
@@ -36,7 +37,7 @@
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^10.0.3",
-    "@nestjs/passport": "^10.0.0",
+    "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-fastify": "^9.4.0",
     "@nestjs/swagger": "^6.3.0",
     "@prisma/client": "^4.13.0",
@@ -46,7 +47,6 @@
     "class-validator": "^0.14.0",
     "csv-parse": "^5.5.2",
     "jwt-decode": "^4.0.0",
-    "nestjs-command": "^3.1.4",
     "nestjs-prisma": "^0.20.0",
     "nestjs-soap": "^3.0.2",
     "node-mailer": "^0.1.1",
@@ -57,6 +57,8 @@
     "rxjs": "^7.2.0",
     "uuid": "^9.0.1",
     "uuidv4": "^6.2.13",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
     "xml2js": "^0.6.2",
     "yargs": "^17.7.2"
   },

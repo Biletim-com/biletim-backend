@@ -118,8 +118,19 @@ export class UsersService {
     }
   }
 
-  async updateUser(userId: string, data: CreateUserDto): Promise<any> {
+  async updateUser(
+    reqId: any,
+    userId: string,
+    data: CreateUserDto,
+  ): Promise<any> {
     try {
+      const reqUser = await this.panelUsersService.isPanelUser(reqId);
+      if (!reqUser && reqId !== userId) {
+        throw new HttpException(
+          'You are not authorized to perform this action',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
       const { email } = data;
       const user = await this.findAppUserById(userId);
       if (!user) {

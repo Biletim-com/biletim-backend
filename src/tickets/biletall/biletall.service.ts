@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 import axios from 'axios';
-import {
-  CompanyRequestDto,
-  ScheduleListRequestDto,
-} from './dto/biletall.dto';
+import { CompanyRequestDto, ScheduleListRequestDto } from './dto/biletall.dto';
 
 @Injectable()
 export class BiletAllService {
@@ -60,10 +57,10 @@ export class BiletAllService {
         <soap:Body>
           <XmlIslet xmlns="http://tempuri.org/">
             <xmlIslem>
-              ${bodyXml}
+              <KaraNoktaGetirKomut/>
             </xmlIslem>
             <xmlYetki>
-              ${accountDocument}
+              <Kullanici><Adi>biletimcomWS</Adi><Sifre>aa8809</Sifre></Kullanici>
             </xmlYetki>
           </XmlIslet>
         </soap:Body>

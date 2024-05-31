@@ -1,9 +1,6 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import { BiletAllService } from './biletall.service';
-import {
-  ScheduleListRequestDto,
-  CompanyRequestDto,
-} from './dto/biletall.dto';
+import { ScheduleListRequestDto, CompanyRequestDto } from './dto/biletall.dto';
 
 @Controller('biletall')
 export class BiletAllController {
