@@ -6,7 +6,6 @@ import { PrismaModule } from 'nestjs-prisma';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TicketsModule } from './tickets/tickets.module';
-import { BiletAllService } from './tickets/biletall/biletall.service';
 import { TicketsService } from './tickets/tickets.service';
 import { BiletAllModule } from './tickets/biletall/biletall.module';
 import { PanelUsersModule } from './panel-users/panel-users.module';
@@ -24,6 +23,6 @@ import { AppleModule } from './apple/apple.module';
     AppleModule,
   ],
   controllers: [AppController],
-  providers: [AppService, BiletAllService, TicketsService],
+  providers: [AppService, TicketsService],
 })
 export class AppModule {}
