@@ -1,32 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
 import { CompanyRequestDto, ScheduleListRequestDto } from './dto/biletall.dto';
 
 @Injectable()
 export class BiletAllService {
-  private accountName = 'biletimcomWS';
-  private password = 'aa8809';
-
-  private getAccountDocument() {
-    const builder = new xml2js.Builder({ headless: true });
-    const accountDocument = {
-      Kullanici: {
-        Adi: this.accountName,
-        Sifre: this.password,
-      },
-    };
-    return builder.buildObject(accountDocument);
-  }
+  constructor(private configService: ConfigService) {}
 
   async company(requestDto: CompanyRequestDto): Promise<any> {
     const firmalarXml = `<Firmalar>${requestDto.FirmaNo}</Firmalar>`;
-    return this.run(firmalarXml, 'http://tempuri.org/XmlIslet');
+    return this.run(firmalarXml);
   }
 
   async stopPoints(): Promise<any> {
     const firmalarXml = `<KaraNoktaGetirKomut/>`;
-    return this.run(firmalarXml, 'http://tempuri.org/XmlIslet');
+    return this.run(firmalarXml);
   }
 
   async scheduleList(requestDto: ScheduleListRequestDto): Promise<any> {
@@ -46,42 +35,43 @@ export class BiletAllService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    return this.run(xml, 'http://tempuri.org/XmlIslet');
+    return this.run(xml);
   }
 
-  private async run(bodyXml: string, soapAction: string): Promise<any> {
-    const accountDocument = this.getAccountDocument();
+  private async run(bodyXml: string): Promise<any> {
     const soapEnvelope = `
-      <?xml version="1.0" encoding="utf-8"?>
-      <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <?xml version="1.0" encoding="utf-8"?>
+      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://tempuri.org/">
         <soap:Body>
-          <XmlIslet xmlns="http://tempuri.org/">
-            <xmlIslem>
-              <KaraNoktaGetirKomut/>
-            </xmlIslem>
-            <xmlYetki>
-              <Kullanici><Adi>biletimcomWS</Adi><Sifre>aa8809</Sifre></Kullanici>
-            </xmlYetki>
-          </XmlIslet>
+          <tns:XmlIslet>
+            <tns:xmlIslem>
+              ${bodyXml}
+            </tns:xmlIslem>
+            <tns:xmlYetki>
+              <Kullanici>
+                <Adi>${this.configService.get<string>('BILETALL_WS_USERNAME')}</Adi>
+                <Sifre>${this.configService.get<string>('BILETALL_WS_PASSWORD')}</Sifre>
+              </Kullanici>
+            </tns:xmlYetki>
+          </tns:XmlIslet>
         </soap:Body>
-      </soap:Envelope>
-    `;
+      </soap:Envelope>`;
+    const config = {
+      headers: {
+        'Content-Type': 'text/xml; charset=utf-8',
+      },
+    };
 
-    console.log('SOAP Envelope:', soapEnvelope); // Log the SOAP envelope to check for errors
+    //console.log('SOAP Envelope:', soapEnvelope);
 
     try {
       const response = await axios.post(
-        'http://94.55.20.137/WSTEST/Service.asmx?wsdl',
+        this.configService.get<string>('BILETALL_WSDL_URI'), 
         soapEnvelope.trim(),
-        {
-          headers: {
-            'Content-Type': 'text/xml',
-            SOAPAction: soapAction,
-          },
-        },
+        config,
       );
 
-      console.log('Response:', response.data); // Log the response to check for errors
+      //console.log('Response:', response.data);
       const result = await xml2js.parseStringPromise(response.data);
       return result;
     } catch (error) {
