@@ -10,6 +10,9 @@ import { TicketsService } from './tickets/tickets.service';
 import { BiletAllModule } from './tickets/biletall/biletall.module';
 import { PanelUsersModule } from './panel-users/panel-users.module';
 import { AppleModule } from './apple/apple.module';
+import { HotelModule } from './hotel/hotel.module';
+import { HotelService } from './hotel/hotel.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -21,8 +24,10 @@ import { AppleModule } from './apple/apple.module';
     BiletAllModule,
     PanelUsersModule,
     AppleModule,
+    HotelModule,
+    HttpModule,
   ],
   controllers: [AppController],
-  providers: [AppService, TicketsService],
+  providers: [AppService, TicketsService, HotelService],
 })
 export class AppModule {}
