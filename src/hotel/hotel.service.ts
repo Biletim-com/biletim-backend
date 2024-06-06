@@ -1,6 +1,4 @@
-import { Injectable, HttpException, Inject } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
+import { Injectable, HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { SearchHotelsDto } from './dto/hotel.dto';
@@ -87,7 +85,6 @@ export class HotelService {
           payment_options: rate.payment_options,
         })),
       }));
-      console.log(JSON.stringify(hotels, null, 2));
       return hotels;
     } catch (error) {
       console.error(
