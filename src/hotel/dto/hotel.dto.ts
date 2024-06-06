@@ -7,6 +7,10 @@ import {
   ValidateNested,
   IsNumberString,
   IsCurrency,
+  IsNumber,
+  IsOptional,
+  IsBoolean,
+  IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -49,6 +53,38 @@ export class SearchHotelsDto {
   region_id: number;
 
   @ApiProperty({ description: 'Currency code', example: 'EUR' })
+  @IsString()
+  currency: string;
+}
+
+export class HotelPageDto {
+  @IsNotEmpty()
+  @IsString()
+  checkin: string;
+
+  @IsNotEmpty()
+  @IsString()
+  checkout: string;
+
+  @IsNotEmpty()
+  @IsString()
+  residency: string;
+
+  @IsNotEmpty()
+  @IsString()
+  language: string;
+
+  @ApiProperty({ description: 'List of guests', type: [GuestDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GuestDto)
+  guests: GuestDto[];
+
+  @IsNotEmpty()
+  @IsString()
+  id: string;
+
+  @IsNotEmpty()
   @IsString()
   currency: string;
 }

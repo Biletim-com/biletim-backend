@@ -1,7 +1,7 @@
-import { Injectable, HttpException } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { SearchHotelsDto } from './dto/hotel.dto';
+import { HotelPageDto, SearchHotelsDto } from './dto/hotel.dto';
 
 @Injectable()
 export class HotelService {
@@ -33,10 +33,6 @@ export class HotelService {
       const response = await axios.post(url, body, { headers });
       return response.data;
     } catch (error) {
-      console.error(
-        'Error making request:',
-        error.response?.data || error.message,
-      );
       throw new HttpException(
         'Failed to fetch data',
         error.response?.status || 500,
@@ -57,10 +53,6 @@ export class HotelService {
       const response = await axios.post(url, body, { headers });
       return response.data;
     } catch (error) {
-      console.error(
-        'Error making request:',
-        error.response?.data || error.message,
-      );
       throw new HttpException(
         'Failed to fetch data',
         error.response?.status || 500,
@@ -68,6 +60,28 @@ export class HotelService {
     }
   }
 
+  async hotelPageDetails(hotelPageDto: HotelPageDto): Promise<any> {
+    const url = `${this.baseUrl}/search/hp/`;
+
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    try {
+      const response = await axios.post(url, hotelPageDto, { headers });
+
+      if (response.data.data.hotels.length === 0) {
+        throw new HttpException(
+          'There are no rooms available in this date range',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return response.data;
+    } catch (error) {
+      throw new HttpException(
+        `hotel page details error ->  ${error?.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
   async searchHotels(searchDto: SearchHotelsDto): Promise<any> {
     const url = `${this.baseUrl}/search/serp/region/`;
 
@@ -87,10 +101,6 @@ export class HotelService {
       }));
       return hotels;
     } catch (error) {
-      console.error(
-        'Error making request:',
-        error.response?.data || error.message,
-      );
       throw new HttpException(
         'Failed to fetch hotel data',
         error.response?.status || 500,
