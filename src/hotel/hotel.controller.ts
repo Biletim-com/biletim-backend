@@ -4,7 +4,6 @@ import {
   Body,
   HttpException,
   HttpStatus,
-  Param,
 } from '@nestjs/common';
 import { HotelService } from './hotel.service';
 import { SearchHotelsDto } from './dto/hotel.dto';
