@@ -6,7 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { HotelService } from './hotel.service';
-import { SearchHotelsDto } from './dto/hotel.dto';
+import { HotelPageDto, SearchHotelsDto } from './dto/hotel.dto';
 
 @Controller('hotel')
 export class HotelController {
@@ -21,11 +21,26 @@ export class HotelController {
   }
 
   @Post('search-features-info')
-  async getHotelDetails(@Body() body: any): Promise<any> {
+  async hotelInfo(@Body() body: any): Promise<any> {
     try {
       const id = body.id;
       const language = body.language;
       const hotelDetails = await this.hotelService.hotelInfo(id, language);
+      return hotelDetails;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch hotel details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('search-reservation-page-details')
+  async hotelPageDetails(@Body() hotelPageDto: HotelPageDto): Promise<any> {
+    try {
+      const hotelDetails = await this.hotelService.hotelPageDetails(
+        hotelPageDto,
+      );
       return hotelDetails;
     } catch (error) {
       throw new HttpException(
