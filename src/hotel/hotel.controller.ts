@@ -4,15 +4,21 @@ import {
   Body,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { HotelService } from './hotel.service';
-import { HotelPageDto, SearchHotelsDto } from './dto/hotel.dto';
+import {
+  HotelPageDto,
+  QueryDto,
+  ResultHotelsDetailsDto,
+  SearchHotelsDto,
+} from './dto/hotel.dto';
 
 @Controller('hotel')
 export class HotelController {
   constructor(private readonly hotelService: HotelService) {}
 
-  @Post('search-autocomplete')
+  @Post('search/autocomplete')
   async search(
     @Body('query') query: string,
     @Body('language') language: string,
@@ -20,7 +26,7 @@ export class HotelController {
     return this.hotelService.search(query, language);
   }
 
-  @Post('search-features-info')
+  @Post('search/features-info')
   async hotelInfo(@Body() body: any): Promise<any> {
     try {
       const id = body.id;
@@ -35,7 +41,7 @@ export class HotelController {
     }
   }
 
-  @Post('search-reservation-page-details')
+  @Post('search/reservation-page-details')
   async hotelPageDetails(@Body() hotelPageDto: HotelPageDto): Promise<any> {
     try {
       const hotelDetails = await this.hotelService.hotelPageDetails(
@@ -50,11 +56,32 @@ export class HotelController {
     }
   }
 
-  @Post('search-reservation-by-region')
-  async searchHotels(@Body() searchHotelsDto: SearchHotelsDto): Promise<any> {
+  @Post('search/result-hotels-details')
+  async resultHotelsDetails(
+    @Body() resultHotelsDetails: ResultHotelsDetailsDto,
+  ): Promise<any> {
+    try {
+      const hotelsDetails = await this.hotelService.resultHotelsDetails(
+        resultHotelsDetails,
+      );
+      return hotelsDetails;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch hotel details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('search/reservation-by-region')
+  async searchHotels(
+    @Body() searchHotelsDto: SearchHotelsDto,
+    @Query() queryDto: QueryDto,
+  ): Promise<any> {
     try {
       const hotelDetails = await this.hotelService.searchHotels(
         searchHotelsDto,
+        queryDto,
       );
       return hotelDetails;
     } catch (error) {
