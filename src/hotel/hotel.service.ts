@@ -1,7 +1,12 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { HotelPageDto, SearchHotelsDto } from './dto/hotel.dto';
+import {
+  HotelPageDto,
+  QueryDto,
+  ResultHotelsDetailsDto,
+  SearchHotelsDto,
+} from './dto/hotel.dto';
 
 @Injectable()
 export class HotelService {
@@ -77,12 +82,37 @@ export class HotelService {
       return response.data;
     } catch (error) {
       throw new HttpException(
-        `hotel page details error ->  ${error?.message}`,
-        HttpStatus.BAD_REQUEST,
+        'Failed to fetch data',
+        error.response?.status || 500,
       );
     }
   }
-  async searchHotels(searchDto: SearchHotelsDto): Promise<any> {
+  async resultHotelsDetails(resultDto: ResultHotelsDetailsDto): Promise<any> {
+    const url = `${this.baseUrl}/search/serp/hotels/`;
+
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    try {
+      const response = await axios.post(url, resultDto, { headers });
+      if (response.data.data.hotels.length === 0) {
+        throw new HttpException(
+          'There are no rooms available in this date range',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return response.data;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch data',
+        error.response?.status || 500,
+      );
+    }
+  }
+
+  async searchHotels(
+    searchDto: SearchHotelsDto,
+    queryDto: QueryDto,
+  ): Promise<any> {
     const url = `${this.baseUrl}/search/serp/region/`;
 
     const headers = await this.getBasicAuthHeader(this.configService);
@@ -90,8 +120,13 @@ export class HotelService {
     try {
       const response = await axios.post(url, searchDto, { headers });
 
-      const hotels = response.data.data.hotels.map((hotel) => ({
+      let hotels = response.data.data.hotels.map((hotel) => ({
         id: hotel.id,
+        minRate: Math.min(
+          ...hotel.rates.map((rate) =>
+            Math.min(...rate.daily_prices.map((price) => parseFloat(price))),
+          ),
+        ),
         rates: hotel.rates.map((rate) => ({
           match_hash: rate.match_hash,
           daily_prices: rate.daily_prices,
@@ -99,6 +134,25 @@ export class HotelService {
           payment_options: rate.payment_options,
         })),
       }));
+
+      if (queryDto.minPrice !== undefined) {
+        hotels = hotels.filter((hotel) => hotel.minRate >= queryDto.minPrice);
+      }
+
+      if (queryDto.maxPrice !== undefined) {
+        hotels = hotels.filter((hotel) => hotel.minRate <= queryDto.maxPrice);
+      }
+
+      if (queryDto.sortOrder) {
+        hotels.sort((a, b) => {
+          if (queryDto.sortOrder === 'asc') {
+            return a.minRate - b.minRate;
+          } else {
+            return b.minRate - a.minRate;
+          }
+        });
+      }
+
       return hotels;
     } catch (error) {
       throw new HttpException(

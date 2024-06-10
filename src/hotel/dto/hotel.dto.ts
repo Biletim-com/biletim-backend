@@ -6,11 +6,10 @@ import {
   IsArray,
   ValidateNested,
   IsNumberString,
-  IsCurrency,
-  IsNumber,
   IsOptional,
-  IsBoolean,
   IsNotEmpty,
+  ArrayNotEmpty,
+  IsIn,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -87,4 +86,53 @@ export class HotelPageDto {
   @IsNotEmpty()
   @IsString()
   currency: string;
+}
+
+export class ResultHotelsDetailsDto {
+  @IsNotEmpty()
+  @IsString()
+  checkin: string;
+
+  @IsNotEmpty()
+  @IsString()
+  checkout: string;
+
+  @IsNotEmpty()
+  @IsString()
+  residency: string;
+
+  @IsNotEmpty()
+  @IsString()
+  language: string;
+
+  @ApiProperty({ description: 'List of guests', type: [GuestDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GuestDto)
+  guests: GuestDto[];
+
+  @IsNotEmpty()
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  ids: string[];
+
+  @IsNotEmpty()
+  @IsString()
+  currency: string;
+}
+
+export class QueryDto {
+  @IsOptional()
+  @IsNumberString({}, { message: 'minPrice must be a number' })
+  minPrice?: number;
+
+  @IsOptional()
+  @IsNumberString({}, { message: 'maxPrice must be a number' })
+  maxPrice?: number;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['asc', 'desc'])
+  sortOrder?: 'asc' | 'desc';
 }
