@@ -1,12 +1,18 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Req } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import {
+  BookingFinishDto,
+  CreditCardDataTokenizationDto,
   HotelPageDto,
+  OrderBookingFormDto,
+  PartnerDto,
+  PrebookDto,
   QueryDto,
   ResultHotelsDetailsDto,
   SearchHotelsDto,
 } from './dto/hotel.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class HotelService {
@@ -157,6 +163,112 @@ export class HotelService {
     } catch (error) {
       throw new HttpException(
         'Failed to fetch hotel data',
+        error.response?.status || 500,
+      );
+    }
+  }
+
+  async prebook(prebookDto: PrebookDto): Promise<any> {
+    const url = `${this.baseUrl}/hotel/prebook`;
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    try {
+      const response = await axios.post(url, prebookDto, { headers });
+      return response.data;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch data',
+        error.response?.status || 500,
+      );
+    }
+  }
+
+  async orderBookingForm(dto: OrderBookingFormDto, req: any): Promise<any> {
+    const partner_order_id: string = uuidv4();
+    const body = {
+      partner_order_id,
+      book_hash: dto.book_hash,
+      language: dto.language,
+      user_ip: req.ip,
+    };
+
+    const url = `${this.baseUrl}/hotel/order/booking/form/`;
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    try {
+      const response = await axios.post(url, body, { headers });
+      return response.data;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch data',
+        error.response?.status || 500,
+      );
+    }
+  }
+
+  async creditCardDataTokenization(
+    dto: CreditCardDataTokenizationDto,
+  ): Promise<any> {
+    ({ pay_uuid: dto.pay_uuid, init_uuid: dto.init_uuid } = {
+      pay_uuid: uuidv4(),
+      init_uuid: uuidv4(),
+    });
+    const url = 'https://api.payota.net/api/public/v1/manage/init_partners';
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    try {
+      const response = await axios.post(url, dto, { headers });
+      const responseJson = response.config.data;
+      const responseData = JSON.parse(responseJson);
+
+      return {
+        pay_uuid: responseData.pay_uuid,
+        init_uuid: responseData.init_uuid,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch data',
+        error.response?.status || 500,
+      );
+    }
+  }
+
+  async orderBookingFinish(dto: BookingFinishDto): Promise<any> {
+    const url = `${this.baseUrl}/hotel/order/booking/finish/`;
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    try {
+      if (dto.payment_type.type === 'now') {
+        if (!dto.payment_type.init_uuid || !dto.payment_type.pay_uuid) {
+          throw new HttpException(
+            'init_uuid and pay_uuid are required while payment_type is now',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        dto.return_path = 'https://biletimapi.westerops.com';
+      }
+
+      const response = await axios.post(url, dto, { headers });
+      return response.data;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch data',
+        error.response?.status || 500,
+      );
+    }
+  }
+
+  async orderBookingFinishStatus(dto: PartnerDto): Promise<any> {
+    const url = `${this.baseUrl}/hotel/order/booking/finish/status/`;
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    try {
+      const response = await axios.post(url, dto, { headers });
+      return response.data;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch data',
         error.response?.status || 500,
       );
     }

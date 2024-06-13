@@ -5,13 +5,19 @@ import {
   HttpException,
   HttpStatus,
   Query,
+  Req,
 } from '@nestjs/common';
 import { HotelService } from './hotel.service';
 import {
+  BookingFinishDto,
   HotelPageDto,
+  OrderBookingFormDto,
+  PartnerDto,
+  PrebookDto,
   QueryDto,
   ResultHotelsDetailsDto,
   SearchHotelsDto,
+  CreditCardDataTokenizationDto,
 } from './dto/hotel.dto';
 
 @Controller('hotel')
@@ -84,6 +90,87 @@ export class HotelController {
         queryDto,
       );
       return hotelDetails;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch hotel details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('order/prebook')
+  async prebook(@Body() prebookDto: PrebookDto): Promise<any> {
+    try {
+      const prebook = await this.hotelService.prebook(prebookDto);
+      return prebook;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch hotel details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('order/booking-form')
+  async orderBookingForm(
+    @Body() orderBookingFormDto: OrderBookingFormDto,
+    @Req() req: any,
+  ): Promise<any> {
+    try {
+      const orderBookingForm = await this.hotelService.orderBookingForm(
+        orderBookingFormDto,
+        req,
+      );
+      return orderBookingForm;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch hotel details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('order/credit-card-tokenization')
+  async creditCardDataTokenization(
+    @Body() CreditCardDataTokenizationDto: CreditCardDataTokenizationDto,
+  ): Promise<any> {
+    try {
+      const creditCardTokenization =
+        await this.hotelService.creditCardDataTokenization(
+          CreditCardDataTokenizationDto,
+        );
+      return creditCardTokenization;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch hotel details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('order/booking-finish')
+  async orderBookingFinish(
+    @Body() bookingFinishDto: BookingFinishDto,
+  ): Promise<any> {
+    try {
+      const orderBookingFinish = await this.hotelService.orderBookingFinish(
+        bookingFinishDto,
+      );
+      return orderBookingFinish;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch hotel details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('order/booking-finish-status')
+  async orderBookingFinishStatus(@Body() partnerDto: PartnerDto): Promise<any> {
+    try {
+      const orderBookingFinishStatus =
+        await this.hotelService.orderBookingFinishStatus(partnerDto);
+      return orderBookingFinishStatus;
     } catch (error) {
       throw new HttpException(
         'Failed to fetch hotel details',
