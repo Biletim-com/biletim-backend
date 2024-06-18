@@ -16,6 +16,7 @@ import {
   IsUUID,
   IsBoolean,
   IsEmail,
+  IsDate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -392,4 +393,171 @@ export class CreditCardDataTokenizationDto {
   @Type(() => CreditCardDataDto)
   @IsNotEmpty()
   credit_card_data_core: CreditCardDataDto;
+}
+
+export class WebhookDto {
+  data: {
+    partner_order_id: string;
+    status: string;
+  };
+  signature: {
+    signature: string;
+    timestamp: number;
+    token: string;
+  };
+}
+
+export class HotelOrderingDto {
+  @IsString()
+  @IsIn(['asc', 'desc'])
+  ordering_type: 'asc' | 'desc';
+
+  @IsString()
+  @IsIn([
+    'cancelled_at',
+    'checkin_at',
+    'checkout_at',
+    'created_at',
+    'free_cancellation_before',
+    'payment_due',
+    'payment_pending',
+  ])
+  ordering_by: string;
+}
+
+export class PaginationDto {
+  @IsInt()
+  page_size: number;
+
+  @IsInt()
+  page_number: number;
+}
+
+export class DateTimeRangeDto {
+  @IsDateString()
+  @IsOptional()
+  from_date?: string;
+
+  @IsDateString()
+  @IsOptional()
+  to_date?: string;
+}
+
+export class DateRangeDto {
+  @IsDate()
+  @IsOptional()
+  from_date?: string;
+
+  @IsDate()
+  @IsOptional()
+  to_date?: string;
+}
+
+export class SearchDto {
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DateTimeRangeDto)
+  cancelled_at?: DateTimeRangeDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DateRangeDto)
+  checkin_at?: DateRangeDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DateRangeDto)
+  checkout_at?: DateRangeDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DateTimeRangeDto)
+  created_at?: DateTimeRangeDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DateTimeRangeDto)
+  free_cancellation_before?: DateTimeRangeDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DateTimeRangeDto)
+  modified_at?: DateTimeRangeDto;
+
+  @IsOptional()
+  @IsOptional()
+  @Type(() => Number)
+  order_ids?: number[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DateRangeDto)
+  paid_at?: DateRangeDto;
+
+  @IsOptional()
+  @IsOptional()
+  @Type(() => String)
+  partner_order_ids?: string[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DateRangeDto)
+  payment_due?: DateRangeDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DateRangeDto)
+  payment_pending?: DateRangeDto;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['b2b-card', 'b2b-site', 'b2b-api', 'b2b-handmade'])
+  source?: 'b2b-card' | 'b2b-site' | 'b2b-api' | 'b2b-handmade';
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['cancelled', 'completed', 'failed', 'noshow', 'rejected'])
+  status?: 'cancelled' | 'completed' | 'failed' | 'noshow' | 'rejected';
+}
+
+export class OrderInformationTotalDto {
+  @ValidateNested()
+  @Type(() => HotelOrderingDto)
+  ordering: HotelOrderingDto;
+
+  @ValidateNested()
+  @Type(() => PaginationDto)
+  pagination: PaginationDto;
+
+  @ValidateNested()
+  @Type(() => SearchDto)
+  @IsOptional()
+  search?: SearchDto;
+
+  @IsOptional()
+  @IsString()
+  @IsIn([
+    'ar',
+    'bg',
+    'cs',
+    'de',
+    'el',
+    'en',
+    'es',
+    'fr',
+    'he',
+    'hu',
+    'it',
+    'nl',
+    'pl',
+    'pt',
+    'ro',
+    'ru',
+    'sr',
+    'sq',
+    'tr',
+    'zh_CN',
+    'pt_PT',
+  ])
+  language?: string;
 }

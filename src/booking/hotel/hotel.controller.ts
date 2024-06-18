@@ -18,6 +18,8 @@ import {
   ResultHotelsDetailsDto,
   SearchHotelsDto,
   CreditCardDataTokenizationDto,
+  WebhookDto,
+  OrderInformationTotalDto,
 } from './dto/hotel.dto';
 
 @Controller('hotel')
@@ -171,6 +173,43 @@ export class HotelController {
       const orderBookingFinishStatus =
         await this.hotelService.orderBookingFinishStatus(partnerDto);
       return orderBookingFinishStatus;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch hotel details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('order/webhook')
+  async handleWebhook(@Body() WebhookDto: WebhookDto): Promise<any> {
+    return this.hotelService.handleWebhook(WebhookDto);
+  }
+
+  @Post('order/info')
+  async orderInfo(
+    @Body() orderInformationTotalDto: OrderInformationTotalDto,
+  ): Promise<any> {
+    try {
+      const orderInfo = await this.hotelService.orderInfo(
+        orderInformationTotalDto,
+      );
+      return orderInfo;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch hotel details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('order/cancel')
+  async orderCancellation(@Body() partner_order_id: PartnerDto): Promise<any> {
+    try {
+      const orderCancel = await this.hotelService.orderCancellation(
+        partner_order_id,
+      );
+      return orderCancel;
     } catch (error) {
       throw new HttpException(
         'Failed to fetch hotel details',
