@@ -6,13 +6,16 @@ import {
   CreditCardDataTokenizationDto,
   HotelPageDto,
   OrderBookingFormDto,
+  OrderInformationTotalDto,
   PartnerDto,
   PrebookDto,
   QueryDto,
   ResultHotelsDetailsDto,
   SearchHotelsDto,
+  WebhookDto,
 } from './dto/hotel.dto';
 import { v4 as uuidv4 } from 'uuid';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class HotelService {
@@ -265,6 +268,73 @@ export class HotelService {
 
     try {
       const response = await axios.post(url, dto, { headers });
+      return response.data;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch data',
+        error.response?.status || 500,
+      );
+    }
+  }
+
+  async handleWebhook(body: WebhookDto): Promise<any> {
+    try {
+      const apiKey = this.configService.get<string>('HOTEL_WS_PASSWORD');
+      const { signature, timestamp, token } = body.signature;
+
+      if (!apiKey || !timestamp || !token || !signature) {
+        throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
+      }
+
+      const encodedToken = crypto
+        .createHmac('sha256', apiKey)
+        .update(`${timestamp}${token}`)
+        .digest('hex');
+
+      if (encodedToken !== signature) {
+        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      }
+
+      return {
+        isValid: true,
+        data: {
+          partner_order_id: body.data.partner_order_id,
+          status: body.data.status,
+        },
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Internal Server Error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
+  async orderInfo(dto: OrderInformationTotalDto): Promise<any> {
+    const url = `${this.baseUrl}/hotel/order/info/`;
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    try {
+      const response = await axios.post(url, dto, { headers });
+      return response.data;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch data',
+        error.response?.status || 500,
+      );
+    }
+  }
+
+  async orderCancellation(partner_order_id: PartnerDto): Promise<any> {
+    const url = `${this.baseUrl}/hotel/order/cancel/`;
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    try {
+      const response = await axios.post(url, partner_order_id, { headers });
       return response.data;
     } catch (error) {
       throw new HttpException(
