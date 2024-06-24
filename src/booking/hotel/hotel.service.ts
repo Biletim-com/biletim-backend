@@ -45,7 +45,7 @@ export class HotelService {
 
     try {
       const response = await axios.post(url, body, { headers });
-      return response.data;
+      return response.data.data;
     } catch (error) {
       throw new HttpException(
         'Failed to fetch data',
@@ -344,11 +344,11 @@ export class HotelService {
     }
   }
 
-  async downloadVoucher(partner_order_id: string): Promise<Buffer> {
+  async downloadInfoInvoice(partner_order_id: string): Promise<Buffer> {
     const headers = await this.getBasicAuthHeader(this.configService);
     const params = { partner_order_id };
     const jsonData = encodeURIComponent(JSON.stringify(params));
-    const url = `https://api.worldota.net/api/b2b/v3/hotel/order/document/info_invoice/download/?data=${jsonData}`;
+    const url = `${this.baseUrl}/hotel/order/document/info_invoice/download/?data=${jsonData}`;
 
     try {
       const response = await axios.get(url, {
@@ -358,7 +358,6 @@ export class HotelService {
 
       return response.data;
     } catch (error) {
-      console.error('Error downloading voucher:', error);
       throw new HttpException(
         'Failed to download voucher',
         HttpStatus.INTERNAL_SERVER_ERROR,
