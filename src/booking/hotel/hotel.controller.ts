@@ -6,6 +6,8 @@ import {
   HttpStatus,
   Query,
   Req,
+  Res,
+  Get,
 } from '@nestjs/common';
 import { HotelService } from './hotel.service';
 import {
@@ -21,6 +23,7 @@ import {
   WebhookDto,
   OrderInformationTotalDto,
 } from './dto/hotel.dto';
+import { FastifyReply } from 'fastify';
 
 @Controller('hotel')
 export class HotelController {
@@ -213,6 +216,46 @@ export class HotelController {
     } catch (error) {
       throw new HttpException(
         'Failed to fetch hotel details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('download-voucher')
+  async downloadVoucher(
+    @Query('partner_order_id') partner_order_id: string,
+    @Res() res: FastifyReply,
+  ) {
+    if (!partner_order_id) {
+      throw new HttpException(
+        'partner_order_id and language are required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    try {
+      const voucher = await this.hotelService.downloadVoucher(partner_order_id);
+
+      try {
+        const jsonResponse = JSON.parse(voucher.toString('utf8'));
+
+        res.status(500).send({
+          message: 'Failed to download voucher',
+          error: jsonResponse,
+        });
+      } catch (e) {
+        res
+          .header('Content-Type', 'application/pdf')
+          .header(
+            'Content-Disposition',
+            `attachment; filename=voucher_${partner_order_id}.pdf`,
+          )
+          .header('Content-Length', voucher.length.toString())
+          .send(voucher);
+      }
+    } catch (error) {
+      throw new HttpException(
+        'Failed to download voucher',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
