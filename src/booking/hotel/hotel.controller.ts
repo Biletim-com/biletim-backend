@@ -29,7 +29,7 @@ import { FastifyReply } from 'fastify';
 export class HotelController {
   constructor(private readonly hotelService: HotelService) {}
 
-  @Post('search/autocomplete')
+  @Post('/search/autocomplete')
   async search(
     @Body('query') query: string,
     @Body('language') language: string,
@@ -37,7 +37,7 @@ export class HotelController {
     return this.hotelService.search(query, language);
   }
 
-  @Post('search/features-info')
+  @Post('/search/features-info')
   async hotelInfo(@Body() body: any): Promise<any> {
     try {
       const id = body.id;
@@ -52,7 +52,7 @@ export class HotelController {
     }
   }
 
-  @Post('search/reservation-page-details')
+  @Post('/search/reservation-page-details')
   async hotelPageDetails(@Body() hotelPageDto: HotelPageDto): Promise<any> {
     try {
       const hotelDetails = await this.hotelService.hotelPageDetails(
@@ -67,7 +67,7 @@ export class HotelController {
     }
   }
 
-  @Post('search/result-hotels-details')
+  @Post('/search/result-hotels-details')
   async resultHotelsDetails(
     @Body() resultHotelsDetails: ResultHotelsDetailsDto,
   ): Promise<any> {
@@ -84,7 +84,7 @@ export class HotelController {
     }
   }
 
-  @Post('search/reservation-by-region')
+  @Post('/search/reservation-by-region')
   async searchHotels(
     @Body() searchHotelsDto: SearchHotelsDto,
     @Query() queryDto: QueryDto,
@@ -103,7 +103,7 @@ export class HotelController {
     }
   }
 
-  @Post('order/prebook')
+  @Post('/order/prebook')
   async prebook(@Body() prebookDto: PrebookDto): Promise<any> {
     try {
       const prebook = await this.hotelService.prebook(prebookDto);
@@ -116,7 +116,7 @@ export class HotelController {
     }
   }
 
-  @Post('order/booking-form')
+  @Post('/order/booking-form')
   async orderBookingForm(
     @Body() orderBookingFormDto: OrderBookingFormDto,
     @Req() req: any,
@@ -135,7 +135,7 @@ export class HotelController {
     }
   }
 
-  @Post('order/credit-card-tokenization')
+  @Post('/order/credit-card-tokenization')
   async creditCardDataTokenization(
     @Body() CreditCardDataTokenizationDto: CreditCardDataTokenizationDto,
   ): Promise<any> {
@@ -153,7 +153,7 @@ export class HotelController {
     }
   }
 
-  @Post('order/booking-finish')
+  @Post('/order/booking-finish')
   async orderBookingFinish(
     @Body() bookingFinishDto: BookingFinishDto,
   ): Promise<any> {
@@ -170,7 +170,7 @@ export class HotelController {
     }
   }
 
-  @Post('order/booking-finish-status')
+  @Post('/order/booking-finish-status')
   async orderBookingFinishStatus(@Body() partnerDto: PartnerDto): Promise<any> {
     try {
       const orderBookingFinishStatus =
@@ -184,12 +184,12 @@ export class HotelController {
     }
   }
 
-  @Post('order/webhook')
+  @Post('/order/webhook')
   async handleWebhook(@Body() WebhookDto: WebhookDto): Promise<any> {
     return this.hotelService.handleWebhook(WebhookDto);
   }
 
-  @Post('order/info')
+  @Post('/order/info')
   async orderInfo(
     @Body() orderInformationTotalDto: OrderInformationTotalDto,
   ): Promise<any> {
@@ -206,7 +206,7 @@ export class HotelController {
     }
   }
 
-  @Post('order/cancel')
+  @Post('/order/cancel')
   async orderCancellation(@Body() partner_order_id: PartnerDto): Promise<any> {
     try {
       const orderCancel = await this.hotelService.orderCancellation(
@@ -221,23 +221,25 @@ export class HotelController {
     }
   }
 
-  @Get('download-voucher')
-  async downloadVoucher(
+  @Get('/download/info-invoice')
+  async downloadInfoInvoice(
     @Query('partner_order_id') partner_order_id: string,
     @Res() res: FastifyReply,
   ) {
     if (!partner_order_id) {
       throw new HttpException(
-        'partner_order_id and language are required',
+        'partner_order_id is required',
         HttpStatus.BAD_REQUEST,
       );
     }
 
     try {
-      const voucher = await this.hotelService.downloadVoucher(partner_order_id);
+      const invoice = await this.hotelService.downloadInfoInvoice(
+        partner_order_id,
+      );
 
       try {
-        const jsonResponse = JSON.parse(voucher.toString('utf8'));
+        const jsonResponse = JSON.parse(invoice.toString('utf8'));
 
         res.status(500).send({
           message: 'Failed to download voucher',
@@ -250,8 +252,8 @@ export class HotelController {
             'Content-Disposition',
             `attachment; filename=voucher_${partner_order_id}.pdf`,
           )
-          .header('Content-Length', voucher.length.toString())
-          .send(voucher);
+          .header('Content-Length', invoice.length.toString())
+          .send(invoice);
       }
     } catch (error) {
       throw new HttpException(
