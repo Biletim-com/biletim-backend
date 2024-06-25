@@ -8,6 +8,7 @@ import {
   Req,
   Res,
   Get,
+  Param,
 } from '@nestjs/common';
 import { HotelService } from './hotel.service';
 import {
@@ -118,11 +119,19 @@ export class HotelController {
 
   @Post('/order/booking-form')
   async orderBookingForm(
+    @Query('currency_code') currency_code: string,
     @Body() orderBookingFormDto: OrderBookingFormDto,
     @Req() req: any,
   ): Promise<any> {
+    if (currency_code !== currency_code.toUpperCase() || !currency_code) {
+      throw new HttpException(
+        'currency_code is required and must be uppercase',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     try {
       const orderBookingForm = await this.hotelService.orderBookingForm(
+        currency_code,
         orderBookingFormDto,
         req,
       );

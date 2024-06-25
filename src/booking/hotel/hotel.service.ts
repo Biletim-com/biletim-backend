@@ -186,7 +186,11 @@ export class HotelService {
     }
   }
 
-  async orderBookingForm(dto: OrderBookingFormDto, req: any): Promise<any> {
+  async orderBookingForm(
+    currency_code: string,
+    dto: OrderBookingFormDto,
+    req: any,
+  ): Promise<any> {
     const partner_order_id: string = uuidv4();
     const body = {
       partner_order_id,
@@ -200,7 +204,12 @@ export class HotelService {
 
     try {
       const response = await axios.post(url, body, { headers });
-      return response.data;
+      const responseData = response.data.data;
+      responseData.payment_types = responseData.payment_types.filter(
+        (payment) => payment.currency_code === currency_code,
+      );
+
+      return responseData;
     } catch (error) {
       throw new HttpException(
         'Failed to fetch data',
