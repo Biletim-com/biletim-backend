@@ -17,8 +17,59 @@ import {
   IsBoolean,
   IsEmail,
   IsDate,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+
+export class AutocompleteDto {
+  @ApiProperty({ example: 'hotel' })
+  @IsString()
+  @IsNotEmpty()
+  query: string;
+
+  @ApiProperty({
+    example: 'en',
+    enum: [
+      'ar',
+      'bg',
+      'de',
+      'el',
+      'en',
+      'es',
+      'fr',
+      'it',
+      'hu',
+      'pl',
+      'pt',
+      'ro',
+      'ru',
+      'sr',
+      'sq',
+      'tr',
+    ],
+  })
+  @IsString()
+  @IsOptional()
+  @IsEnum([
+    'ar',
+    'bg',
+    'de',
+    'el',
+    'en',
+    'es',
+    'fr',
+    'it',
+    'hu',
+    'pl',
+    'pt',
+    'ro',
+    'ru',
+    'sr',
+    'sq',
+    'tr',
+  ])
+  language?: string;
+}
 
 class GuestDto {
   @ApiProperty({ description: 'Number of adults', example: 2 })

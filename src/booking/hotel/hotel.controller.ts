@@ -23,22 +23,30 @@ import {
   CreditCardDataTokenizationDto,
   WebhookDto,
   OrderInformationTotalDto,
+  AutocompleteDto,
 } from './dto/hotel.dto';
 import { FastifyReply } from 'fastify';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Hotel')
 @Controller('hotel')
 export class HotelController {
   constructor(private readonly hotelService: HotelService) {}
 
   @Post('/search/autocomplete')
-  async search(
-    @Body('query') query: string,
-    @Body('language') language: string,
-  ): Promise<any> {
-    return this.hotelService.search(query, language);
+  async search(@Body() autocompleteDto: AutocompleteDto): Promise<any> {
+    try {
+      const { query, language } = autocompleteDto;
+      return this.hotelService.search(query, language);
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch hotel details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  @Post('/search/features-info')
+  @Post('/search/hotel-details')
   async hotelInfo(@Body() body: any): Promise<any> {
     try {
       const id = body.id;
@@ -53,7 +61,7 @@ export class HotelController {
     }
   }
 
-  @Post('/search/reservation-page-details')
+  @Post('/search/reservation-by-hotel')
   async hotelPageDetails(@Body() hotelPageDto: HotelPageDto): Promise<any> {
     try {
       const hotelDetails = await this.hotelService.hotelPageDetails(
