@@ -18,9 +18,7 @@ async function bootstrap() {
   const prismaService: PrismaService = app.get(PrismaService);
   prismaService.enableShutdownHooks(app);
 
-  const { httpAdapter } = app.get(HttpAdapterHost);
-
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+  app.useGlobalFilters(new PrismaClientExceptionFilter());
   await app.register(multipart);
 
   const docOptions = new DocumentBuilder()

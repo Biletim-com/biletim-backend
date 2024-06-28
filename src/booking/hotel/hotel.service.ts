@@ -4,15 +4,15 @@ import axios from 'axios';
 import {
   BookingFinishDto,
   CreditCardDataTokenizationDto,
-  HotelPageDto,
   OrderBookingFormDto,
-  OrderInformationTotalDto,
+  OrderTotalInformationDto,
   PartnerDto,
   PrebookDto,
   QueryDto,
-  ResultHotelsDetailsDto,
-  SearchHotelsDto,
+  SearchReservationByHotelDto,
+  SearchReservationsHotelsDto,
   WebhookDto,
+  searchReservationByRegionIdDto,
 } from './dto/hotel.dto';
 import { v4 as uuidv4 } from 'uuid';
 import * as crypto from 'crypto';
@@ -46,80 +46,16 @@ export class HotelService {
     try {
       const response = await axios.post(url, body, { headers });
       return response.data.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        'Failed to fetch data',
-        error.response?.status || 500,
+        `search autocomplete error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
-  async hotelInfo(id: string, language: string): Promise<any> {
-    const url = `${this.baseUrl}/hotel/info/`;
-    const headers = await this.getBasicAuthHeader(this.configService);
-
-    const body = {
-      id,
-      language,
-    };
-
-    try {
-      const response = await axios.post(url, body, { headers });
-      return response.data;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch data',
-        error.response?.status || 500,
-      );
-    }
-  }
-
-  async hotelPageDetails(hotelPageDto: HotelPageDto): Promise<any> {
-    const url = `${this.baseUrl}/search/hp/`;
-
-    const headers = await this.getBasicAuthHeader(this.configService);
-
-    try {
-      const response = await axios.post(url, hotelPageDto, { headers });
-
-      if (response.data.data.hotels.length === 0) {
-        throw new HttpException(
-          'There are no rooms available in this date range',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      return response.data;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch data',
-        error.response?.status || 500,
-      );
-    }
-  }
-  async resultHotelsDetails(resultDto: ResultHotelsDetailsDto): Promise<any> {
-    const url = `${this.baseUrl}/search/serp/hotels/`;
-
-    const headers = await this.getBasicAuthHeader(this.configService);
-
-    try {
-      const response = await axios.post(url, resultDto, { headers });
-      if (response.data.data.hotels.length === 0) {
-        throw new HttpException(
-          'There are no rooms available in this date range',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      return response.data;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch data',
-        error.response?.status || 500,
-      );
-    }
-  }
-
-  async searchHotels(
-    searchDto: SearchHotelsDto,
+  async searchReservationByRegionId(
+    searchDto: searchReservationByRegionIdDto,
     queryDto: QueryDto,
   ): Promise<any> {
     const url = `${this.baseUrl}/search/serp/region/`;
@@ -163,10 +99,79 @@ export class HotelService {
       }
 
       return hotels;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        'Failed to fetch hotel data',
-        error.response?.status || 500,
+        `search reservation by region id error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async searchReservationsHotels(
+    resultDto: SearchReservationsHotelsDto,
+  ): Promise<any> {
+    const url = `${this.baseUrl}/search/serp/hotels/`;
+
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    try {
+      const response = await axios.post(url, resultDto, { headers });
+      if (response.data.data.hotels.length === 0) {
+        throw new HttpException(
+          'There are no rooms available in this date range',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return response.data;
+    } catch (error: any) {
+      throw new HttpException(
+        `search reservations by hotel ids error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async searchReservationByHotelId(
+    body: SearchReservationByHotelDto,
+  ): Promise<any> {
+    const url = `${this.baseUrl}/search/hp/`;
+
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    try {
+      const response = await axios.post(url, body, { headers });
+
+      if (response.data.data.hotels.length === 0) {
+        throw new HttpException(
+          'There are no rooms available in this date range',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return response.data;
+    } catch (error: any) {
+      throw new HttpException(
+        `search reservation by hotel id error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async hotelDetails(id: string, language: string): Promise<any> {
+    const url = `${this.baseUrl}/hotel/info/`;
+    const headers = await this.getBasicAuthHeader(this.configService);
+
+    const body = {
+      id,
+      language,
+    };
+
+    try {
+      const response = await axios.post(url, body, { headers });
+      return response.data;
+    } catch (error: any) {
+      throw new HttpException(
+        `search detail page of hotel error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -178,10 +183,10 @@ export class HotelService {
     try {
       const response = await axios.post(url, prebookDto, { headers });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        'Failed to fetch data',
-        error.response?.status || 500,
+        `prebook error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -189,14 +194,14 @@ export class HotelService {
   async orderBookingForm(
     currency_code: string,
     dto: OrderBookingFormDto,
-    req: any,
+    ip: any,
   ): Promise<any> {
     const partner_order_id: string = uuidv4();
     const body = {
       partner_order_id,
       book_hash: dto.book_hash,
       language: dto.language,
-      user_ip: req.ip,
+      user_ip: ip,
     };
 
     const url = `${this.baseUrl}/hotel/order/booking/form/`;
@@ -210,10 +215,10 @@ export class HotelService {
       );
 
       return responseData;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        'Failed to fetch data',
-        error.response?.status || 500,
+        `order booking form error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -237,10 +242,10 @@ export class HotelService {
         pay_uuid: responseData.pay_uuid,
         init_uuid: responseData.init_uuid,
       };
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        'Failed to fetch data',
-        error.response?.status || 500,
+        `credit card data tokenization error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -263,10 +268,10 @@ export class HotelService {
 
       const response = await axios.post(url, dto, { headers });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        'Failed to fetch data',
-        error.response?.status || 500,
+        `order booking finish error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -278,10 +283,10 @@ export class HotelService {
     try {
       const response = await axios.post(url, dto, { headers });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        'Failed to fetch data',
-        error.response?.status || 500,
+        `order booking finish status  error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -323,17 +328,17 @@ export class HotelService {
     }
   }
 
-  async orderInfo(dto: OrderInformationTotalDto): Promise<any> {
+  async orderInfo(dto: OrderTotalInformationDto): Promise<any> {
     const url = `${this.baseUrl}/hotel/order/info/`;
     const headers = await this.getBasicAuthHeader(this.configService);
 
     try {
       const response = await axios.post(url, dto, { headers });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        'Failed to fetch data',
-        error.response?.status || 500,
+        `order info error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -345,10 +350,10 @@ export class HotelService {
     try {
       const response = await axios.post(url, partner_order_id, { headers });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        'Failed to fetch data',
-        error.response?.status || 500,
+        `order cancellation error -> ${error?.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -366,9 +371,9 @@ export class HotelService {
       });
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        'Failed to download voucher',
+        `download info invoice error -> ${error?.message}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

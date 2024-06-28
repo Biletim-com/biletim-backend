@@ -8,123 +8,93 @@ import {
   Req,
   Res,
   Get,
-  Param,
 } from '@nestjs/common';
 import { HotelService } from './hotel.service';
 import {
   BookingFinishDto,
-  HotelPageDto,
   OrderBookingFormDto,
   PartnerDto,
   PrebookDto,
   QueryDto,
-  ResultHotelsDetailsDto,
-  SearchHotelsDto,
   CreditCardDataTokenizationDto,
   WebhookDto,
-  OrderInformationTotalDto,
   AutocompleteDto,
+  HotelDetailsDto,
+  SearchReservationByHotelDto,
+  searchReservationByRegionIdDto,
+  OrderTotalInformationDto,
+  SearchReservationsHotelsDto,
 } from './dto/hotel.dto';
 import { FastifyReply } from 'fastify';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Hotel')
 @Controller('hotel')
 export class HotelController {
   constructor(private readonly hotelService: HotelService) {}
 
+  @ApiOperation({ summary: 'Search Autocomplete' })
   @Post('/search/autocomplete')
   async search(@Body() autocompleteDto: AutocompleteDto): Promise<any> {
-    try {
-      const { query, language } = autocompleteDto;
-      return this.hotelService.search(query, language);
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch hotel details',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    const { query, language } = autocompleteDto;
+    return this.hotelService.search(query, language);
   }
 
-  @Post('/search/hotel-details')
-  async hotelInfo(@Body() body: any): Promise<any> {
-    try {
-      const id = body.id;
-      const language = body.language;
-      const hotelDetails = await this.hotelService.hotelInfo(id, language);
-      return hotelDetails;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch hotel details',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  @Post('/search/reservation-by-hotel')
-  async hotelPageDetails(@Body() hotelPageDto: HotelPageDto): Promise<any> {
-    try {
-      const hotelDetails = await this.hotelService.hotelPageDetails(
-        hotelPageDto,
-      );
-      return hotelDetails;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch hotel details',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  @Post('/search/result-hotels-details')
-  async resultHotelsDetails(
-    @Body() resultHotelsDetails: ResultHotelsDetailsDto,
-  ): Promise<any> {
-    try {
-      const hotelsDetails = await this.hotelService.resultHotelsDetails(
-        resultHotelsDetails,
-      );
-      return hotelsDetails;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch hotel details',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
+  @ApiOperation({ summary: 'Search Reservation By Region Id' })
   @Post('/search/reservation-by-region')
-  async searchHotels(
-    @Body() searchHotelsDto: SearchHotelsDto,
+  async searchReservationByRegionId(
+    @Body() searchHotelsDto: searchReservationByRegionIdDto,
     @Query() queryDto: QueryDto,
   ): Promise<any> {
-    try {
-      const hotelDetails = await this.hotelService.searchHotels(
-        searchHotelsDto,
-        queryDto,
-      );
-      return hotelDetails;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch hotel details',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return this.hotelService.searchReservationByRegionId(
+      searchHotelsDto,
+      queryDto,
+    );
   }
 
+  @ApiOperation({
+    summary: 'Search Reservation By Hotel Ids  For One and More Hotels',
+  })
+  @Post('/search/reservation-hotels-pages')
+  async searchReservationsHotels(
+    @Body() searchReservationsHotelsDto: SearchReservationsHotelsDto,
+  ): Promise<any> {
+    return this.hotelService.searchReservationsHotels(
+      searchReservationsHotelsDto,
+    );
+  }
+
+  @ApiOperation({
+    summary: 'Search Reservation By Hotel Id  For Just One Hotel',
+  })
+  @Post('/search/reservation-hotel-page')
+  async searchReservationByHotelId(
+    @Body() searchReservationByHotelDto: SearchReservationByHotelDto,
+  ): Promise<any> {
+    return this.hotelService.searchReservationByHotelId(
+      searchReservationByHotelDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Search Details Page of Hotel By Hotel Id' })
+  @Post('/search/hotel-details')
+  async hotelDetails(@Body() hotelDetailsDto: HotelDetailsDto): Promise<any> {
+    const { id, language } = hotelDetailsDto;
+    return this.hotelService.hotelDetails(id, language);
+  }
+
+  @ApiOperation({
+    summary: 'Availability Query of The Selected Hotel Room (Prebook)',
+  })
   @Post('/order/prebook')
   async prebook(@Body() prebookDto: PrebookDto): Promise<any> {
-    try {
-      const prebook = await this.hotelService.prebook(prebookDto);
-      return prebook;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch hotel details',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return this.hotelService.prebook(prebookDto);
   }
 
+  @ApiOperation({
+    summary:
+      'Order Booking Form For Saving the Reservation Request to The System',
+  })
   @Post('/order/booking-form')
   async orderBookingForm(
     @Query('currency_code') currency_code: string,
@@ -137,11 +107,17 @@ export class HotelController {
         HttpStatus.BAD_REQUEST,
       );
     }
+    if (!req.ip) {
+      throw new HttpException(
+        'Request ip  is required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     try {
       const orderBookingForm = await this.hotelService.orderBookingForm(
         currency_code,
         orderBookingFormDto,
-        req,
+        req.ip,
       );
       return orderBookingForm;
     } catch (error) {
@@ -152,24 +128,21 @@ export class HotelController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Credit Card Data Tokenization',
+  })
   @Post('/order/credit-card-tokenization')
   async creditCardDataTokenization(
     @Body() CreditCardDataTokenizationDto: CreditCardDataTokenizationDto,
   ): Promise<any> {
-    try {
-      const creditCardTokenization =
-        await this.hotelService.creditCardDataTokenization(
-          CreditCardDataTokenizationDto,
-        );
-      return creditCardTokenization;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch hotel details',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return this.hotelService.creditCardDataTokenization(
+      CreditCardDataTokenizationDto,
+    );
   }
 
+  @ApiOperation({
+    summary: 'Order Booking Finish',
+  })
   @Post('/order/booking-finish')
   async orderBookingFinish(
     @Body() bookingFinishDto: BookingFinishDto,
@@ -187,18 +160,12 @@ export class HotelController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Order Booking Finish Status',
+  })
   @Post('/order/booking-finish-status')
   async orderBookingFinishStatus(@Body() partnerDto: PartnerDto): Promise<any> {
-    try {
-      const orderBookingFinishStatus =
-        await this.hotelService.orderBookingFinishStatus(partnerDto);
-      return orderBookingFinishStatus;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch hotel details',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return this.hotelService.orderBookingFinishStatus(partnerDto);
   }
 
   @Post('/order/webhook')
@@ -206,23 +173,19 @@ export class HotelController {
     return this.hotelService.handleWebhook(WebhookDto);
   }
 
+  @ApiOperation({
+    summary: 'Order Information',
+  })
   @Post('/order/info')
   async orderInfo(
-    @Body() orderInformationTotalDto: OrderInformationTotalDto,
+    @Body() orderTotalInformationDto: OrderTotalInformationDto,
   ): Promise<any> {
-    try {
-      const orderInfo = await this.hotelService.orderInfo(
-        orderInformationTotalDto,
-      );
-      return orderInfo;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch hotel details',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return this.hotelService.orderInfo(orderTotalInformationDto);
   }
 
+  @ApiOperation({
+    summary: 'Order Cancellation',
+  })
   @Post('/order/cancel')
   async orderCancellation(@Body() partner_order_id: PartnerDto): Promise<any> {
     try {
@@ -238,6 +201,9 @@ export class HotelController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Download Info Invoice',
+  })
   @Get('/download/info-invoice')
   async downloadInfoInvoice(
     @Query('partner_order_id') partner_order_id: string,
