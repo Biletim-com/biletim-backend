@@ -8,9 +8,7 @@ import {
   IsNumberString,
   IsOptional,
   IsNotEmpty,
-  ArrayNotEmpty,
   IsIn,
-  IsNumber,
   MinLength,
   MaxLength,
   IsUUID,
@@ -296,14 +294,13 @@ export class SearchReservationsHotelsDto {
 
   @ApiProperty({
     description: 'List of hotels ids. (Required). Maximum 300 items.',
-    example: [1, 2, 3],
-    required: true,
+    example: ['test_hotel'],
   })
   @IsArray()
   @IsNotEmpty()
   @ArrayMaxSize(300)
-  @IsInt({ each: true })
-  ids: number[];
+  @IsString({ each: true })
+  ids!: string[];
 
   @ApiProperty({
     description: "Currency of the rooms' price in the response. (Optional)",
@@ -511,8 +508,10 @@ export class PrebookDto {
     description: 'Unique id of the rate. (Required)',
     example: 'someUniqueHashValue',
   })
+  @IsNotEmpty()
   @IsString()
-  @Length(1, 256)
+  @MinLength(1)
+  @MaxLength(256)
   hash!: string;
 
   @ApiProperty({
@@ -528,13 +527,6 @@ export class PrebookDto {
 }
 
 export class OrderBookingFormDto {
-  @ApiProperty({
-    description:
-      'Id (UUID) of the booking (at the partner) made by the partner (Required)',
-    example: 'unique-partner-order-id',
-  })
-  @IsString()
-  @Length(1, 256)
   partner_order_id!: string;
 
   @ApiProperty({
@@ -556,23 +548,39 @@ export class OrderBookingFormDto {
 }
 
 class CreditCardDataDto {
+  @ApiProperty({
+    description: 'Year (Required)',
+    example: '24',
+  })
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
   @MaxLength(2)
   year!: string;
 
+  @ApiProperty({
+    description: 'Card Number (Required)',
+    example: '4111111111111111',
+  })
   @IsString()
   @IsNotEmpty()
   @MinLength(13)
   @MaxLength(19)
   card_number!: string;
 
+  @ApiProperty({
+    description: 'Card Holder (Required)',
+    example: 'Test',
+  })
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
   card_holder!: string;
 
+  @ApiProperty({
+    description: 'Month (Required)',
+    example: '03',
+  })
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
@@ -584,31 +592,15 @@ export class CreditCardDataTokenizationDto {
   @ApiProperty({
     description:
       'Identifier of the booking order item made by the partner (identifier created at Emerging Travel Group) (Required)',
-    example: 'unique-object-id',
+    example: 'order id',
   })
   @IsNotEmpty()
   @IsString()
   @Length(1, 20)
   object_id!: string;
 
-  @ApiProperty({
-    description:
-      'Universally unique identifier (UUID4) token of the booking payment check made by the partner (Required)',
-    example: 'unique-pay-uuid',
-  })
-  @IsNotEmpty()
-  @IsString()
-  @Length(36, 36)
   pay_uuid!: string;
 
-  @ApiProperty({
-    description:
-      'Universally unique identifier (UUID4) token of the booking payment operation made by the partner (Required)',
-    example: 'unique-init-uuid',
-  })
-  @IsNotEmpty()
-  @IsString()
-  @Length(36, 36)
   init_uuid!: string;
 
   @ApiProperty({
@@ -706,10 +698,6 @@ export class PartnerDto {
   @MaxLength(256)
   comment?: string;
 
-  @ApiProperty({
-    description: 'Amount sell B2B2C (Optional)',
-    example: 1000,
-  })
   @IsOptional()
   @MinLength(1)
   amount_sell_b2b2c?: number;
@@ -848,10 +836,6 @@ export class UpsellDataDto {
   @IsIn(['early_checkin', 'late_checkout'])
   name?: 'early_checkin' | 'late_checkout';
 
-  @ApiProperty({
-    description: 'Upsell UID (Optional)',
-    example: 'unique-uid',
-  })
   @MinLength(1)
   @IsString()
   @IsOptional()
@@ -861,7 +845,7 @@ export class UpsellDataDto {
 export class BookingFinishDto {
   @ApiProperty({
     description: 'User information (Required)',
-    type: [UserDto],
+    type: UserDto,
   })
   @ValidateNested()
   @Type(() => UserDto)
@@ -870,12 +854,12 @@ export class BookingFinishDto {
 
   @ApiProperty({
     description: 'Partner information (Required)',
-    type: [PartnerDto],
+    type: PartnerDto,
   })
   @ValidateNested()
   @Type(() => PartnerDto)
   @IsNotEmpty()
-  partner: PartnerDto;
+  partner!: PartnerDto;
 
   @ApiProperty({
     description: 'Language code (Required)',
@@ -918,7 +902,7 @@ export class BookingFinishDto {
 
   @ApiProperty({
     description: 'Payment type (Required)',
-    type: [PaymentTypeDto],
+    type: PaymentTypeDto,
   })
   @ValidateNested()
   @Type(() => PaymentTypeDto)
@@ -1026,7 +1010,7 @@ export class DateRangeDto {
 export class SearchDto {
   @ApiProperty({
     description: 'Cancellation date range (Optional)',
-    type: [DateTimeRangeDto],
+    type: DateTimeRangeDto,
   })
   @IsOptional()
   @ValidateNested()
@@ -1035,7 +1019,7 @@ export class SearchDto {
 
   @ApiProperty({
     description: 'Check-in date range (Optional)',
-    type: [DateRangeDto],
+    type: DateRangeDto,
   })
   @IsOptional()
   @ValidateNested()
@@ -1044,7 +1028,7 @@ export class SearchDto {
 
   @ApiProperty({
     description: 'Check-out date range (Optional)',
-    type: [DateRangeDto],
+    type: DateRangeDto,
   })
   @IsOptional()
   @ValidateNested()
@@ -1053,7 +1037,7 @@ export class SearchDto {
 
   @ApiProperty({
     description: 'Creation date range (Optional)',
-    type: [DateTimeRangeDto],
+    type: DateTimeRangeDto,
   })
   @IsOptional()
   @ValidateNested()
@@ -1062,7 +1046,7 @@ export class SearchDto {
 
   @ApiProperty({
     description: 'Free cancellation before date range (Optional)',
-    type: [DateTimeRangeDto],
+    type: DateTimeRangeDto,
   })
   @IsOptional()
   @ValidateNested()
@@ -1071,7 +1055,7 @@ export class SearchDto {
 
   @ApiProperty({
     description: 'Modification date range (Optional)',
-    type: [DateTimeRangeDto],
+    type: DateTimeRangeDto,
   })
   @IsOptional()
   @ValidateNested()
@@ -1088,7 +1072,7 @@ export class SearchDto {
 
   @ApiProperty({
     description: 'Paid date range (Optional)',
-    type: [DateRangeDto],
+    type: DateRangeDto,
   })
   @IsOptional()
   @ValidateNested()
@@ -1105,7 +1089,7 @@ export class SearchDto {
 
   @ApiProperty({
     description: 'Payment due date range (Optional)',
-    type: [DateRangeDto],
+    type: DateRangeDto,
   })
   @IsOptional()
   @ValidateNested()
@@ -1114,7 +1098,7 @@ export class SearchDto {
 
   @ApiProperty({
     description: 'Payment pending date range (Optional)',
-    type: [DateRangeDto],
+    type: DateRangeDto,
   })
   @IsOptional()
   @ValidateNested()
@@ -1161,7 +1145,7 @@ export class OrderTotalInformationDto {
 
   @ApiProperty({
     description: 'Search criteria (Optional)',
-    type: [SearchDto],
+    type: SearchDto,
   })
   @ValidateNested()
   @Type(() => SearchDto)

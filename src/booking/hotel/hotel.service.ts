@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, Req } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import {
@@ -176,12 +176,12 @@ export class HotelService {
     }
   }
 
-  async prebook(prebookDto: PrebookDto): Promise<any> {
+  async prebook(body: PrebookDto): Promise<any> {
     const url = `${this.baseUrl}/hotel/prebook`;
     const headers = await this.getBasicAuthHeader(this.configService);
 
     try {
-      const response = await axios.post(url, prebookDto, { headers });
+      const response = await axios.post(url, body, { headers });
       return response.data;
     } catch (error: any) {
       throw new HttpException(
@@ -235,12 +235,11 @@ export class HotelService {
 
     try {
       const response = await axios.post(url, dto, { headers });
-      const responseJson = response.config.data;
-      const responseData = JSON.parse(responseJson);
+      const responseData = response.config.data;
 
       return {
-        pay_uuid: responseData.pay_uuid,
         init_uuid: responseData.init_uuid,
+        pay_uuid: responseData.pay_uuid,
       };
     } catch (error: any) {
       throw new HttpException(
