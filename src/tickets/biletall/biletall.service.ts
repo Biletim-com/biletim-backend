@@ -22,19 +22,23 @@ export class BiletAllService {
   private async run(bodyXml: string): Promise<any> {
     const soapEnvelope = `
     <?xml version="1.0" encoding="utf-8"?>
-      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://tempuri.org/">
+      <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
         <soap:Body>
-          <tns:XmlIslet>
-            <tns:xmlIslem>
+          <XmlIslet xmlns="http://tempuri.org/">
+            <xmlIslem>
               ${bodyXml}
-            </tns:xmlIslem>
-            <tns:xmlYetki>
-              <Kullanici>
-                <Adi>${this.configService.get<string>('BILETALL_WS_USERNAME')}</Adi>
-                <Sifre>${this.configService.get<string>('BILETALL_WS_PASSWORD')}</Sifre>
+            </xmlIslem>
+            <xmlYetki>
+              <Kullanici xmlns="">
+                <Adi>${this.configService.get<string>(
+                  'BILETALL_TEST_WS_USERNAME',
+                )}</Adi>
+                <Sifre>${this.configService.get<string>(
+                  'BILETALL_TEST_WS_PASSWORD',
+                )}</Sifre>
               </Kullanici>
-            </tns:xmlYetki>
-          </tns:XmlIslet>
+            </xmlYetki>
+          </XmlIslet>
         </soap:Body>
       </soap:Envelope>`;
     const config = {
@@ -45,13 +49,15 @@ export class BiletAllService {
 
     try {
       const response = await axios.post(
-        this.configService.get<string>('BILETALL_WSDL_URI'), 
+        this.configService.get<string>('BILETALL_TEST_WSDL_URI'),
         soapEnvelope.trim(),
         config,
       );
-
-      const result = await xml2js.parseStringPromise(response.data);
-      return result;
+      console.log(soapEnvelope);
+      const jsonResponse = await xml2js.parseStringPromise(response.data, {
+        explicitArray: false,
+      });
+      return jsonResponse;
     } catch (error) {
       console.error('Error running XML request:', error);
       throw new Error('Failed to process XML request');
@@ -59,12 +65,12 @@ export class BiletAllService {
   }
 
   async company(requestDto: CompanyRequestDto): Promise<any> {
-    const firmalarXml = `<Firmalar><FirmaNo>${requestDto.FirmaNo}</FirmaNo></Firmalar>`;
+    const firmalarXml = `<Firmalar_2 xmlns=""><FirmaNo>${requestDto.FirmaNo}</FirmaNo></Firmalar_2>`;
     return this.run(firmalarXml);
   }
 
   async stopPoints(): Promise<any> {
-    const stopPointsXml = `<KaraNoktaGetirKomut/>`;
+    const stopPointsXml = `<KaraNoktaGetirKomut xmlns=""/>`;
     return this.run(stopPointsXml);
   }
 
@@ -72,16 +78,17 @@ export class BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Sefer: {
+        $: {
+          xmlns: '',
+        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         VarisNoktaID: requestDto.VarisNoktaID,
         Tarih: requestDto.Tarih,
+        AraNoktaGelsin: requestDto.AraNoktaGelsin ? 1 : 0,
         IslemTipi: requestDto.IslemTipi,
         YolcuSayisi: requestDto.YolcuSayisi,
         Ip: requestDto.Ip,
-        ...(requestDto.AraNoktaGelsin !== undefined && {
-          AraNoktaGelsin: requestDto.AraNoktaGelsin ? 1 : 0,
-        }),
       },
     };
     const xml = builder.buildObject(requestDocument);
@@ -92,6 +99,9 @@ export class BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Otobus: {
+        $: {
+          xmlns: '',
+        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         VarisNoktaID: requestDto.VarisNoktaID,
@@ -112,6 +122,9 @@ export class BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       OtobusKoltukKontrol: {
+        $: {
+          xmlns: '',
+        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         VarisNoktaID: requestDto.VarisNoktaID,
@@ -122,7 +135,13 @@ export class BiletAllService {
         SeferTakipNo: requestDto.SeferTakipNo,
         Ip: requestDto.Ip,
         Koltuklar: {
-          Koltuk: requestDto.Koltuklar.map(koltuk => ({
+          $: {
+            xmlns: '',
+          },
+          Koltuk: requestDto.Koltuklar.map((koltuk) => ({
+            $: {
+              xmlns: '',
+            },
             KoltukNo: koltuk.KoltukNo,
             Cinsiyet: koltuk.Cinsiyet,
           })),
@@ -137,6 +156,9 @@ export class BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       BinecegiYer: {
+        $: {
+          xmlns: '',
+        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         YerelSaat: requestDto.YerelSaat,
@@ -147,16 +169,21 @@ export class BiletAllService {
     return this.run(xml);
   }
 
-  async serviceInformation(requestDto: ServiceInformationRequestDto): Promise<any> {
+  async serviceInformation(
+    requestDto: ServiceInformationRequestDto,
+  ): Promise<any> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Servis_2: {
+        $: {
+          xmlns: '',
+        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         YerelSaat: requestDto.YerelSaat,
         HatNo: requestDto.HatNo,
-        Tarih: new Date(requestDto.Tarih).toISOString(),
-        Saat: new Date(requestDto.Saat).toISOString(),
+        Tarih: requestDto.Tarih,
+        Saat: requestDto.Saat,
       },
     };
     const xml = builder.buildObject(requestDocument);
@@ -167,6 +194,9 @@ export class BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       IslemSatis: {
+        $: {
+          xmlns: '',
+        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         VarisNoktaID: requestDto.VarisNoktaID,
@@ -192,19 +222,26 @@ export class BiletAllService {
           acc[`TcKimlikNo${index + 1}`] = passenger.TcKimlikNo;
           acc[`PasaportUlkeKod${index + 1}`] = passenger.PasaportUlkeKod;
           acc[`PasaportNo${index + 1}`] = passenger.PasaportNo;
-          if (passenger.BinecegiYer) acc[`BinecegiYer${index + 1}`] = passenger.BinecegiYer;
-          if (passenger.ServisYeriKalkis) acc[`ServisYeriKalkis${index + 1}`] = passenger.ServisYeriKalkis;
-          if (passenger.ServisYeriVaris) acc[`ServisYeriVaris${index + 1}`] = passenger.ServisYeriVaris;
+          if (passenger.BinecegiYer)
+            acc[`BinecegiYer${index + 1}`] = passenger.BinecegiYer;
+          if (passenger.ServisYeriKalkis)
+            acc[`ServisYeriKalkis${index + 1}`] = passenger.ServisYeriKalkis;
+          if (passenger.ServisYeriVaris)
+            acc[`ServisYeriVaris${index + 1}`] = passenger.ServisYeriVaris;
           return acc;
         }, {}),
         WebYolcu: {
+          $: {
+            xmlns: '',
+          },
           WebUyeNo: requestDto.WebYolcu.WebUyeNo,
           Ip: requestDto.WebYolcu.Ip,
           Email: requestDto.WebYolcu.Email,
           ...(requestDto.WebYolcu.KrediKartNo && {
             KrediKartNo: requestDto.WebYolcu.KrediKartNo,
             KrediKartSahip: requestDto.WebYolcu.KrediKartSahip,
-            KrediKartGecerlilikTarihi: requestDto.WebYolcu.KrediKartGecerlilikTarihi,
+            KrediKartGecerlilikTarihi:
+              requestDto.WebYolcu.KrediKartGecerlilikTarihi,
             KrediKartCCV2: requestDto.WebYolcu.KrediKartCCV2,
           }),
           ...(requestDto.WebYolcu.OnOdemeKullan && {
@@ -232,6 +269,9 @@ export class BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Hat: {
+        $: {
+          xmlns: '',
+        },
         FirmaNo: requestDto.FirmaNo,
         HatNo: requestDto.HatNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,

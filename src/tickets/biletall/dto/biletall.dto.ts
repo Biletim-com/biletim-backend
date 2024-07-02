@@ -7,7 +7,7 @@ export class ScheduleListRequestDto {
   KalkisNoktaID: number;
   VarisNoktaID: number;
   Tarih: string;
-  AraNoktaGelsin?: boolean;
+  AraNoktaGelsin?: number;
   IslemTipi: number;
   YolcuSayisi = 1;
   Ip: string;
@@ -34,7 +34,7 @@ export class BusSeatControlRequestDto {
   Saat: string;
   HatNo: number;
   IslemTipi: number;
-  SeferTakipNo: string;
+  SeferTakipNo: number;
   Ip: string;
   Koltuklar: BusSeatRequestDto[];
 }
@@ -116,6 +116,6 @@ export class BusRouteRequestDto {
   KalkisNoktaID: number;
   VarisNoktaID: number;
   BilgiIslemAdi: string;
-  SeferTakipNo: string;
+  SeferTakipNo: number;
   Tarih: string;
 }
