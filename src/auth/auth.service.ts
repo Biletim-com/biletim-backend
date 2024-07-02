@@ -137,10 +137,10 @@ export class AuthService {
       type: 'refresh',
     };
     const accessToken = this.jwtService.sign(accessTokenPayload, {
-      expiresIn: '5d',
+      expiresIn: '40s',
     });
     const refreshToken = this.jwtService.sign(refreshTokenPayload, {
-      expiresIn: '20d',
+      expiresIn: '60s',
     });
     return { accessToken, refreshToken };
   }
@@ -561,5 +561,33 @@ export class AuthService {
     }
     const { accessToken, refreshToken } = await this.generateTokens(user);
     return { accessToken, refreshToken };
+  }
+
+  async createAccessToken(user: any) {
+    const accessTokenPayload = {
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+      familyName: user.familyName,
+    };
+    const accessToken: string = this.jwtService.sign(accessTokenPayload, {
+      expiresIn: '60s',
+    });
+    return accessToken;
+  }
+
+  async findAndValidateUserByRefreshToken(token: any): Promise<any> {
+    try {
+      const decoded = this.jwtService.verify(token);
+      console.log(decoded);
+      if (decoded?.type != 'refresh') {
+        throw new Error('Invalid refresh token');
+      }
+      const userId = decoded.sub;
+      const user = await this.usersService.findOne(userId);
+      return user;
+    } catch (error) {
+      throw new Error('Invalid refresh token');
+    }
   }
 }

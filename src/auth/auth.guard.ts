@@ -47,14 +47,55 @@ export class AuthGuard implements CanActivate {
     try {
       const token = parts[1];
       const decodedToken: any = jwtDecode(token);
-      const user = await this.authService.authenticate(token);
-      request['user'] = user;
+      const userAgent = request.headers['user-agent'];
+      console.log(`User-Agent: ${userAgent}`);
+      console.log(request.headers['refresh-token']);
+      console.log(request.headers);
+      let newAccessToken: any;
       if (Date.now() >= decodedToken.exp * 1000) {
-        throw new HttpException(
-          'Authorization: Token is expired',
-          HttpStatus.UNAUTHORIZED,
+        const refreshToken = request.headers['refresh-token'];
+
+        if (!refreshToken) {
+          throw new HttpException(
+            'Authorization: Token is expired and no refresh token available',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+
+        const decodedRefreshToken: any = jwtDecode(refreshToken);
+        const isRefreshTokenExpired =
+          Date.now() >= decodedRefreshToken.exp * 1000;
+
+        if (isRefreshTokenExpired) {
+          throw new HttpException(
+            'Authorization: Refresh token is expired',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+
+        const findedUserWithRefreshToken =
+          await this.authService.findAndValidateUserByRefreshToken(
+            refreshToken,
+          );
+
+        if (!findedUserWithRefreshToken) {
+          throw new HttpException(
+            'Authorization: Refresh token is invalid or expired',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+
+        newAccessToken = this.authService.createAccessToken(
+          findedUserWithRefreshToken,
         );
+
+        request.headers.authorization = `Bearer ${newAccessToken}`;
       }
+      const user = newAccessToken
+        ? await this.authService.authenticate(newAccessToken)
+        : await this.authService.authenticate(token);
+      request['user'] = user;
+
       const isAdmin = await this.panelUsersService.isPanelUser(user.sub);
       const requireAdmin = this.reflector.get<boolean>(
         'requireAdmin',

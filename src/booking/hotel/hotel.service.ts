@@ -16,6 +16,17 @@ import {
 } from './dto/hotel.dto';
 import { v4 as uuidv4 } from 'uuid';
 import * as crypto from 'crypto';
+// import {
+//   createReadStream,
+//   createWriteStream,
+//   unlinkSync,
+//   readFileSync,
+//   writeFileSync,
+// } from 'fs';
+// import * as readline from 'readline';
+// import { ZstdCodec } from 'zstd-codec';
+// import * as fs from 'fs';
+//  const { ZstdCodec } = require('zstd-codec');
 
 @Injectable()
 export class HotelService {
@@ -377,4 +388,83 @@ export class HotelService {
       );
     }
   }
+
+  // async allHotels(inventory: string, language: string): Promise<void> {
+  //   const body = { inventory, language };
+  //   const url = `${this.baseUrl}/hotel/info/incremental_dump/`;
+
+  //   console.log('Request Body:', body);
+  //   console.log('Request URL:', url);
+
+  //   try {
+  //     const headers = await this.getBasicAuthHeader(this.configService);
+  //     console.log('Request Headers:', headers);
+
+  //     const response = await axios.post(url, body, { headers });
+  //     console.log('Response Data:', response.data);
+
+  //     const fileUrl: string = response.data.data.url;
+  //     console.log("Dosya URL'si:", fileUrl);
+
+  //     const responseStream = await axios({
+  //       method: 'get',
+  //       url: fileUrl,
+  //       responseType: 'stream',
+  //     });
+
+  //     const tempFilePath = '/tmp/downloaded.zst';
+  //     const tempFileStream = createWriteStream(tempFilePath);
+  //     console.log('Temp File Path:', tempFilePath);
+
+  //     await new Promise((resolve, reject) => {
+  //       responseStream.data.pipe(tempFileStream);
+  //       responseStream.data.on('end', resolve);
+  //       responseStream.data.on('error', reject);
+  //     });
+  //     console.log('File downloaded and saved to temp file path');
+
+  //     ZstdCodec.run((zstd) => {
+  //       const simple = new zstd.Simple();
+  //       const compressedData = readFileSync(tempFilePath);
+  //       const decompressedData = simple.decompress(
+  //         new Uint8Array(compressedData),
+  //       );
+
+  //       const decompressedFilePath = '/tmp/decompressed.json';
+  //       writeFileSync(decompressedFilePath, decompressedData);
+  //       console.log('Decompressed File Path:', decompressedFilePath);
+
+  //       const rl = readline.createInterface({
+  //         input: createReadStream(decompressedFilePath),
+  //         crlfDelay: Infinity,
+  //       });
+
+  //       rl.on('line', (line) => {
+  //         try {
+  //           const parsedLine = JSON.parse(line);
+  //           if (parsedLine.hotels && Array.isArray(parsedLine.hotels)) {
+  //             parsedLine.hotels.forEach((hotel) => {
+  //               console.log('Hotel Name:', hotel.name);
+  //             });
+  //           }
+  //         } catch (error) {
+  //           console.error('Error parsing line:', error);
+  //         }
+  //       });
+
+  //       rl.on('close', () => {
+  //         console.log('Finished processing the file.');
+
+  //         unlinkSync(decompressedFilePath);
+  //         console.log('Temporary file deleted.');
+  //       });
+  //     });
+  //   } catch (error) {
+  //     console.error('Error occurred:', error);
+  //     throw new HttpException(
+  //       'Failed to fetch data',
+  //       error.response?.status || 500,
+  //     );
+  //   }
+  // }
 }
