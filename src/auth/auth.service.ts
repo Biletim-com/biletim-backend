@@ -137,7 +137,7 @@ export class AuthService {
       type: 'refresh',
     };
     const accessToken = this.jwtService.sign(accessTokenPayload, {
-      expiresIn: '40s',
+      expiresIn: '30s',
     });
     const refreshToken = this.jwtService.sign(refreshTokenPayload, {
       expiresIn: '60s',
@@ -571,7 +571,7 @@ export class AuthService {
       familyName: user.familyName,
     };
     const accessToken: string = this.jwtService.sign(accessTokenPayload, {
-      expiresIn: '60s',
+      expiresIn: '30s',
     });
     return accessToken;
   }
