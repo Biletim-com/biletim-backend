@@ -245,4 +245,17 @@ export class HotelController {
       );
     }
   }
+
+  // @Post('all-hotels')
+  // async fetchAllHotels(
+  //   @Body('inventory') inventory: string,
+  //   @Body('language') language: string,
+  // ): Promise<any> {
+  //   try {
+  //     const result = await this.hotelService.allHotels(inventory, language);
+  //     return result;
+  //   } catch (error) {
+  //     throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+  //   }
+  // }
 }
