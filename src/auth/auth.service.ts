@@ -26,6 +26,7 @@ import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
+import { PanelUsersService } from 'src/panel-users/panel-users.service';
 
 @Injectable()
 export class AuthService {
@@ -35,6 +36,7 @@ export class AuthService {
     private httpService: HttpService,
     @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
+    private panelUsersService: PanelUsersService,
     private jwtService: JwtService,
     private passwordService: PasswordService,
     @Inject(AUTH_STRATEGY_TOKEN) private readonly authStrategy: AuthStrategy,
@@ -117,8 +119,10 @@ export class AuthService {
   }
 
   async authenticate(access_token: string): Promise<any> {
+    console.log(access_token, 'llllll');
     try {
       const user = await this.authStrategy.validate(access_token);
+      console.log(user, 'authanticate');
       return Promise.resolve(user);
     } catch (err: any) {
       Logger.error(err?.message);
@@ -564,6 +568,7 @@ export class AuthService {
   }
 
   async createAccessToken(user: any) {
+    console.log(user);
     const accessTokenPayload = {
       sub: user.id,
       email: user.email,
@@ -584,7 +589,8 @@ export class AuthService {
         throw new Error('Invalid refresh token');
       }
       const userId = decoded.sub;
-      const user = await this.usersService.findOne(userId);
+      const user = await this.panelUsersService.findPanelUserById(userId);
+      console.log(user, 'userrrrrr');
       return user;
     } catch (error) {
       throw new Error('Invalid refresh token');
