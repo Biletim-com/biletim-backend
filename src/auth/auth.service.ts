@@ -119,10 +119,8 @@ export class AuthService {
   }
 
   async authenticate(access_token: string): Promise<any> {
-    console.log(access_token, 'llllll');
     try {
       const user = await this.authStrategy.validate(access_token);
-      console.log(user, 'authanticate');
       return Promise.resolve(user);
     } catch (err: any) {
       Logger.error(err?.message);
@@ -568,7 +566,6 @@ export class AuthService {
   }
 
   async createAccessToken(user: any) {
-    console.log(user);
     const accessTokenPayload = {
       sub: user.id,
       email: user.email,
@@ -582,15 +579,21 @@ export class AuthService {
   }
 
   async findAndValidateUserByRefreshToken(token: any): Promise<any> {
+    let user: any;
     try {
       const decoded = this.jwtService.verify(token);
-      console.log(decoded);
+
       if (decoded?.type != 'refresh') {
         throw new Error('Invalid refresh token');
       }
       const userId = decoded.sub;
-      const user = await this.panelUsersService.findPanelUserById(userId);
-      console.log(user, 'userrrrrr');
+      const isPanelUser = await this.panelUsersService.isPanelUser(userId);
+      if (isPanelUser) {
+        user = await this.panelUsersService.findPanelUserById(userId);
+      } else {
+        user = await this.usersService.findOne(userId);
+      }
+
       return user;
     } catch (error) {
       throw new Error('Invalid refresh token');

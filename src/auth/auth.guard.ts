@@ -48,14 +48,12 @@ export class AuthGuard implements CanActivate {
       const decodedToken: any = jwtDecode(token);
       const userAgent = request.headers['user-agent'];
       console.log(`User-Agent: ${userAgent}`);
-      console.log(request.headers['refresh-token']);
-      console.log(request.headers);
+
       let newAccessToken: any;
       let findedUserWithRefreshToken: any;
       if (Date.now() >= decodedToken.exp * 1000) {
-        console.log(Date.now() >= decodedToken.exp * 1000, 'dateeee');
         const refreshToken = request.headers['refresh-token'];
-        console.log('refreshe ihtiyaç oldu', refreshToken);
+
         if (!refreshToken) {
           throw new HttpException(
             'Authorization: Token is expired and no refresh token available',
@@ -89,7 +87,6 @@ export class AuthGuard implements CanActivate {
         newAccessToken = this.authService.createAccessToken(
           findedUserWithRefreshToken,
         );
-        console.log(newAccessToken, 'new accesss');
         request.headers.authorization = `Bearer ${newAccessToken}`;
       }
       const user = findedUserWithRefreshToken
@@ -98,7 +95,6 @@ export class AuthGuard implements CanActivate {
 
       request['user'] = user;
       const isAdmin = await this.panelUsersService.isPanelUser(user.sub);
-      console.log(isAdmin, 'issadminn');
       const requireAdmin = this.reflector.get<boolean>(
         'requireAdmin',
         context.getHandler(),
