@@ -35,7 +35,6 @@ export class AuthGuard implements CanActivate {
         HttpStatus.UNAUTHORIZED,
       );
     }
-
     const parts = header.split(' ');
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
       throw new HttpException(
@@ -52,9 +51,11 @@ export class AuthGuard implements CanActivate {
       console.log(request.headers['refresh-token']);
       console.log(request.headers);
       let newAccessToken: any;
+      let findedUserWithRefreshToken: any;
       if (Date.now() >= decodedToken.exp * 1000) {
+        console.log(Date.now() >= decodedToken.exp * 1000, 'dateeee');
         const refreshToken = request.headers['refresh-token'];
-
+        console.log('refreshe ihtiyaç oldu', refreshToken);
         if (!refreshToken) {
           throw new HttpException(
             'Authorization: Token is expired and no refresh token available',
@@ -73,7 +74,7 @@ export class AuthGuard implements CanActivate {
           );
         }
 
-        const findedUserWithRefreshToken =
+        findedUserWithRefreshToken =
           await this.authService.findAndValidateUserByRefreshToken(
             refreshToken,
           );
@@ -88,15 +89,16 @@ export class AuthGuard implements CanActivate {
         newAccessToken = this.authService.createAccessToken(
           findedUserWithRefreshToken,
         );
-
+        console.log(newAccessToken, 'new accesss');
         request.headers.authorization = `Bearer ${newAccessToken}`;
       }
-      const user = newAccessToken
-        ? await this.authService.authenticate(newAccessToken)
+      const user = findedUserWithRefreshToken
+        ? findedUserWithRefreshToken
         : await this.authService.authenticate(token);
-      request['user'] = user;
 
+      request['user'] = user;
       const isAdmin = await this.panelUsersService.isPanelUser(user.sub);
+      console.log(isAdmin, 'issadminn');
       const requireAdmin = this.reflector.get<boolean>(
         'requireAdmin',
         context.getHandler(),
