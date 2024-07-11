@@ -139,10 +139,10 @@ export class AuthService {
       type: 'refresh',
     };
     const accessToken = this.jwtService.sign(accessTokenPayload, {
-      expiresIn: '30s',
+      expiresIn: '2d',
     });
     const refreshToken = this.jwtService.sign(refreshTokenPayload, {
-      expiresIn: '60s',
+      expiresIn: '7d',
     });
     return { accessToken, refreshToken };
   }
@@ -573,7 +573,7 @@ export class AuthService {
       familyName: user.familyName,
     };
     const accessToken: string = this.jwtService.sign(accessTokenPayload, {
-      expiresIn: '30s',
+      expiresIn: '2d',
     });
     return accessToken;
   }
