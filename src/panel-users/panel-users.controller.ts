@@ -17,8 +17,8 @@ import { PanelUser } from '@prisma/client';
 import { PanelUsersService } from './panel-users.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { ChangePasswordDto } from '../auth/dto/change-password.dto';
-import { RequireAdmin } from '../../decorators/roles.decorator';
-import { CurrentUser } from '../../decorators/current-user.decorator';
+import { RequireAdmin } from '../decorators/roles.decorator';
+import { CurrentUser } from '../decorators/current-user.decorator';
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
 
 @ApiBearerAuth()

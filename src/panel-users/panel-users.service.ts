@@ -13,7 +13,7 @@ import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { PanelUser } from '@prisma/client';
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
-import { EnvVariables } from '../../common/env.variables';
+import { EnvVariables } from '../common/env.variables';
 
 @Injectable()
 export class PanelUsersService {
