@@ -10,13 +10,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
+
+import { UsersService } from './users.service';
+import { AuthGuard } from '../auth/auth.guard';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
-import { CurrentUser } from 'src/decorators/current-user.decorator';
-import { RequireAdmin } from 'src/decorators/roles.decorator';
+import { CurrentUser } from '../../decorators/current-user.decorator';
+import { RequireAdmin } from '../../decorators/roles.decorator';
 
 @ApiBearerAuth()
 @Controller('users')

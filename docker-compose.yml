@@ -15,6 +15,9 @@ services:
     networks:
       - biletim-network
     restart: unless-stopped
+    volumes:
+      - ./src:/app/src
+
   biletim-db:
     image: postgres:15
     container_name: biletim-db
@@ -27,6 +30,7 @@ services:
       - biletim-vol:/var/lib/postgresql/data
     networks:
       - biletim-network
+
 volumes:
   biletim-vol:
     name: biletim-vol

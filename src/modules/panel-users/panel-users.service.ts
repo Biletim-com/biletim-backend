@@ -7,13 +7,13 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
-import { AuthService } from 'src/auth/auth.service';
-import { PasswordService } from 'src/auth/password/password.service';
-import { UsersService } from 'src/users/users.service';
+import { AuthService } from '../auth/auth.service';
+import { PasswordService } from '../auth/password/password.service';
+import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { PanelUser } from '@prisma/client';
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
-import { EnvVariables } from 'src/common/env.variables';
+import { EnvVariables } from '../../common/env.variables';
 
 @Injectable()
 export class PanelUsersService {
@@ -22,8 +22,6 @@ export class PanelUsersService {
     private authService: AuthService,
     @Inject(forwardRef(() => PasswordService))
     private passwordService: PasswordService,
-    @Inject(forwardRef(() => UsersService))
-    private usersService: UsersService,
     private prisma: PrismaService,
   ) {}
 

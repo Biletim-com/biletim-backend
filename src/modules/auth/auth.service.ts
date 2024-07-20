@@ -16,7 +16,7 @@ import { LoginUserRequest } from './dto/loginUserRequest.dto';
 import { PasswordService } from './password/password.service';
 import { RegisterUserRequest } from './dto/registerUserRequest.dto';
 import { RegisterCompanyDto } from './dto/register-company.dto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/modules/users/users.service';
 import {
   RESET_PASSWORD_EMAIL_TEMPLATE,
   SIGNUP_VERIFY_EMAIL_TEMPLATE,
