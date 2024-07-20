@@ -1,17 +1,30 @@
 import {
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
+import { AuthService } from 'src/auth/auth.service';
+import { PasswordService } from 'src/auth/password/password.service';
+import { PanelUsersService } from 'src/panel-users/panel-users.service';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    @Inject(forwardRef(() => AuthService))
+    private authService: AuthService,
+    @Inject(forwardRef(() => PasswordService))
+    private passwordService: PasswordService,
+    @Inject(forwardRef(() => PanelUsersService))
+    private panelUsersService: PanelUsersService,
+    private prisma: PrismaService,
+  ) {}
 
   async getUsers(query): Promise<any> {
     try {
