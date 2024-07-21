@@ -11,6 +11,8 @@ import { HotelModule } from './booking/hotel/hotel.module';
 import { HotelService } from './booking/hotel/hotel.service';
 import { HttpModule } from '@nestjs/axios';
 import { BookingModule } from './booking/booking.module';
+import { ConfigModule } from './configs/config.module';
+import { PostgreSQLProviderModule } from './providers/database/postgresql/provider.module';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { BookingModule } from './booking/booking.module';
     HttpModule,
     BookingModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, TicketsService, HotelService],
+  controllers: [],
+  providers: [TicketsService, HotelService],
 })
 export class AppModule {}

@@ -17,6 +17,7 @@ import { PostgreSQLEnvVarsValidation } from './database/postgresql/config.valida
 @Module({
   imports: [
     NestJsConfigModule.forRoot({
+      isGlobal: true,
       load: [appConfiguration, postgresqlConfiguration],
       validate: async (config) =>
         Promise.all([

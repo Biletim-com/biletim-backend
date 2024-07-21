@@ -3,7 +3,6 @@
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 import axios from 'axios';
-import { ConfigService } from '@nestjs/config';
 import {
   CompanyRequestDto,
   ScheduleListRequestDto,
@@ -15,9 +14,11 @@ import {
   BusRouteRequestDto,
 } from './dto/biletall.dto';
 
+import { AppConfigService } from '@app/configs/app/config.service';
+
 @Injectable()
 export class BiletAllService {
-  constructor(private configService: ConfigService) {}
+  constructor(private appConfigService: AppConfigService) {}
 
   private async run(bodyXml: string): Promise<any> {
     const soapEnvelope = `
@@ -30,12 +31,8 @@ export class BiletAllService {
             </xmlIslem>
             <xmlYetki>
               <Kullanici xmlns="">
-                <Adi>${this.configService.get<string>(
-                  'BILETALL_TEST_WS_USERNAME',
-                )}</Adi>
-                <Sifre>${this.configService.get<string>(
-                  'BILETALL_TEST_WS_PASSWORD',
-                )}</Sifre>
+                <Adi>${this.appConfigService.biletAllUsername}</Adi>
+                <Sifre>${this.appConfigService.biletAllPassword}</Sifre>
               </Kullanici>
             </xmlYetki>
           </XmlIslet>
@@ -49,7 +46,7 @@ export class BiletAllService {
 
     try {
       const response = await axios.post(
-        this.configService.get<string>('BILETALL_TEST_WSDL_URI'),
+        this.appConfigService.biletAllURI,
         soapEnvelope.trim(),
         config,
       );

@@ -28,4 +28,22 @@ export class AppConfigService {
       this.configurationNamespace,
     ).corsWhitelist;
   }
+
+  get biletAllURI(): string {
+    return this.configService.get<TAppConfiguration>(
+      this.configurationNamespace,
+    ).biletAllURI;
+  }
+
+  get biletAllUsername(): string {
+    return this.configService.get<TAppConfiguration>(
+      this.configurationNamespace,
+    ).biletAllUsername;
+  }
+
+  get biletAllPassword(): string {
+    return this.configService.get<TAppConfiguration>(
+      this.configurationNamespace,
+    ).biletAllPassword;
+  }
 }
