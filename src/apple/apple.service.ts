@@ -1,8 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
 import { v4 as uuidv4 } from 'uuid';
-import { AuthService } from 'src/auth/auth.service';
+
+import { AuthService } from '@app/auth/auth.service';
+import { UsersService } from '@app/modules/users/users.service';
 
 @Injectable()
 export class AppleService {

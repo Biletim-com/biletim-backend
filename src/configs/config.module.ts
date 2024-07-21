@@ -4,29 +4,78 @@ import {
   ConfigService,
 } from '@nestjs/config';
 
-import appConfiguration from './app/configuration';
-import postgresqlConfiguration from './database/postgresql/configuration';
 import { ConfigValidator } from './config.validator';
 
-import { AppConfigService } from './app/config.service';
-import { AppEnvVarsValidation } from './app/config.validator';
+import appConfiguration, {
+  AppConfigService,
+  AppEnvVarsValidation,
+} from './app';
 
-import { PostgreSQLConfigService } from './database/postgresql/config.service';
-import { PostgreSQLEnvVarsValidation } from './database/postgresql/config.validator';
+import authConfiguration, {
+  AuthConfigService,
+  AuthEnvVarsValidation,
+} from './auth';
+
+import postgresqlConfiguration, {
+  PostgreSQLConfigService,
+  PostgreSQLEnvVarsValidation,
+} from './database/postgresql';
+
+import biletAllApiConfiguration, {
+  BiletAllApiConfigService,
+  BiletAllApiEnvVarsValidation,
+} from './bilet-all-api';
+
+import hotelApiConfiguration, {
+  HotelApiConfigService,
+  HotelApiEnvVarsValidation,
+} from './hotel-api';
+
+import superAdminConfiguration, {
+  SuperAdminConfigService,
+  SuperAdminEnvVarsValidation,
+} from './super-admin';
 
 @Module({
   imports: [
     NestJsConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfiguration, postgresqlConfiguration],
+      load: [
+        appConfiguration,
+        authConfiguration,
+        postgresqlConfiguration,
+        biletAllApiConfiguration,
+        hotelApiConfiguration,
+        superAdminConfiguration,
+      ],
       validate: async (config) =>
         Promise.all([
           ConfigValidator.validate(AppEnvVarsValidation, config),
+          ConfigValidator.validate(AuthEnvVarsValidation, config),
           ConfigValidator.validate(PostgreSQLEnvVarsValidation, config),
+          ConfigValidator.validate(BiletAllApiEnvVarsValidation, config),
+          ConfigValidator.validate(HotelApiEnvVarsValidation, config),
+          ConfigValidator.validate(SuperAdminEnvVarsValidation, config),
         ]),
     }),
   ],
-  providers: [ConfigService, AppConfigService, PostgreSQLConfigService],
-  exports: [ConfigService, AppConfigService, PostgreSQLConfigService],
+  providers: [
+    ConfigService,
+    AppConfigService,
+    AuthConfigService,
+    PostgreSQLConfigService,
+    BiletAllApiConfigService,
+    HotelApiConfigService,
+    SuperAdminConfigService,
+  ],
+  exports: [
+    ConfigService,
+    AppConfigService,
+    AuthConfigService,
+    PostgreSQLConfigService,
+    BiletAllApiConfigService,
+    HotelApiConfigService,
+    SuperAdminConfigService,
+  ],
 })
 export class ConfigModule {}

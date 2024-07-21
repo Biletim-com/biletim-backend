@@ -11,22 +11,24 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'nestjs-prisma';
-import { AUTH_STRATEGY_TOKEN, AuthStrategy } from './auth.strategy';
-import { LoginUserRequest } from './dto/loginUserRequest.dto';
-import { PasswordService } from './password/password.service';
-import { RegisterUserRequest } from './dto/registerUserRequest.dto';
-import { RegisterCompanyDto } from './dto/register-company.dto';
-import { UsersService } from '../users/users.service';
-import {
-  RESET_PASSWORD_EMAIL_TEMPLATE,
-  SIGNUP_VERIFY_EMAIL_TEMPLATE,
-} from 'src/utils/emailTemplate';
-import { EmailType } from 'src/types/email-type';
 import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
-import { PanelUsersService } from 'src/panel-users/panel-users.service';
+
+import {
+  RESET_PASSWORD_EMAIL_TEMPLATE,
+  SIGNUP_VERIFY_EMAIL_TEMPLATE,
+} from '@app/common/utils/emailTemplate';
+import { EmailType } from '@app/common/enums/email-type.enum';
+import { PanelUsersService } from '@app/modules/panel-users/panel-users.service';
+import { UsersService } from '@app/modules/users/users.service';
+
+import { AUTH_STRATEGY_TOKEN, AuthStrategy } from './auth.strategy';
+import { LoginUserRequest } from './dto/login-user-request.dto';
+import { PasswordService } from './password/password.service';
+import { RegisterUserRequest } from './dto/register-user-request.dto';
+import { RegisterCompanyDto } from './dto/register-company.dto';
 
 @Injectable()
 export class AuthService {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 
-import { PostgreSQLConfigService } from '../../../configs/database/postgresql/config.service';
+import { PostgreSQLConfigService } from '@app/configs/database/postgresql';
 
 @Injectable()
 export class PostgreSQLProviderService implements TypeOrmOptionsFactory {

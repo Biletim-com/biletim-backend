@@ -8,9 +8,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginUserRequest } from './dto/loginUserRequest.dto';
+import { LoginUserRequest } from './dto/login-user-request.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { RegisterUserRequest } from './dto/registerUserRequest.dto';
+import { RegisterUserRequest } from './dto/register-user-request.dto';
 import { RegisterCompanyDto } from './dto/register-company.dto';
 import { AuthGuard } from './auth.guard';
 import { VerificationDto } from './dto/verification.dto';

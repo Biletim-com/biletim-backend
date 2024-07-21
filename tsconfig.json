@@ -18,6 +18,8 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
+      "@app/auth": ["src/auth"],
+      "@app/auth/*": ["src/auth/*"],
       "@app/common": ["src/common"],
       "@app/common/*": ["src/common/*"],
       "@app/configs": ["src/configs"],

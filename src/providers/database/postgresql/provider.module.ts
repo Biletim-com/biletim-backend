@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import type { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 
-import { ConfigModule } from '../../../configs/config.module';
-import { PostgreSQLConfigService } from '../../../configs/database/postgresql/config.service';
+import { ConfigModule } from '@app/configs/config.module';
+import { PostgreSQLConfigService } from '@app/configs/database/postgresql';
 import { PostgreSQLProviderService } from './provider.service';
-
-import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 
 @Module({
   imports: [
