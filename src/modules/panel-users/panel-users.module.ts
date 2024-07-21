@@ -1,7 +1,9 @@
 import { Module, forwardRef } from '@nestjs/common';
+
 import { AuthModule } from '@app/auth/auth.module';
 import { PasswordService } from '@app/auth/password/password.service';
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
+import { SuperAdminConfigService } from '@app/configs/super-admin';
 
 import { UsersService } from '../users/users.service';
 
@@ -21,7 +23,8 @@ import { PanelUsersController } from './panel-users.controller';
     PasswordService,
     UsersService,
     PanelUserRepository,
+    SuperAdminConfigService,
   ],
-  exports: [PanelUsersService],
+  exports: [PanelUsersService, SuperAdminConfigService],
 })
 export class PanelUsersModule {}

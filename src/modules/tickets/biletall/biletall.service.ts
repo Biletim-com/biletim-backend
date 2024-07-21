@@ -16,7 +16,7 @@ import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 
 @Injectable()
 export class BiletAllService {
-  constructor(private bilterAllApiConfigService: BiletAllApiConfigService) {}
+  constructor(private biletAllApiConfigService: BiletAllApiConfigService) {}
 
   private async run(bodyXml: string): Promise<any> {
     const soapEnvelope = `
@@ -29,8 +29,8 @@ export class BiletAllService {
             </xmlIslem>
             <xmlYetki>
               <Kullanici xmlns="">
-                <Adi>${this.bilterAllApiConfigService.biletAllApiUsername}</Adi>
-                <Sifre>${this.bilterAllApiConfigService.biletAllApiPassword}</Sifre>
+                <Adi>${this.biletAllApiConfigService.biletAllApiUsername}</Adi>
+                <Sifre>${this.biletAllApiConfigService.biletAllApiPassword}</Sifre>
               </Kullanici>
             </xmlYetki>
           </XmlIslet>
@@ -44,7 +44,7 @@ export class BiletAllService {
 
     try {
       const response = await axios.post(
-        this.bilterAllApiConfigService.biletAllApiBaseUrl,
+        this.biletAllApiConfigService.biletAllApiBaseUrl,
         soapEnvelope.trim(),
         config,
       );

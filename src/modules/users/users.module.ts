@@ -9,12 +9,15 @@ import { UsersService } from './users.service';
 import { User } from './users.entity';
 import { UserRepository } from './users.repository';
 import { Verification } from './verification/verification.entity';
+
+import { PanelUsersModule } from '../panel-users/panel-users.module';
 import { PanelUsersService } from '../panel-users/panel-users.service';
 
 @Module({
   imports: [
     forwardRef(() => AuthModule),
     PostgreSQLProviderModule.forFeature([User, Verification]),
+    PanelUsersModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, PasswordService, PanelUsersService, UserRepository],
