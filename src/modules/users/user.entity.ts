@@ -1,16 +1,16 @@
 import { Entity, Column, OneToOne } from 'typeorm';
 
-import { BaseEntity } from '@app/common/database/entities/base.entity';
+import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
 import { Verification } from './verification/verification.entity';
 
-@Entity('user')
-export class User extends BaseEntity {
+@Entity('users')
+export class User extends AbstractEntity<User> {
   @Column()
   name: string;
 
   @Column({ name: 'family_name' })
-  familyName: number;
+  familyName: string;
 
   @Column({ unique: true })
   email: string;
@@ -36,6 +36,8 @@ export class User extends BaseEntity {
   @Column({ name: 'is_used', default: false })
   isUsed: boolean;
 
-  @OneToOne(() => Verification, (verification) => verification.user)
+  @OneToOne(() => Verification, (verification) => verification.user, {
+    cascade: ['insert', 'update'],
+  })
   verification: Verification;
 }

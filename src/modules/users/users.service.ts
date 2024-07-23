@@ -6,15 +6,17 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
 import * as bcrypt from 'bcrypt';
-import { User } from '@prisma/client';
+import { ILike } from 'typeorm';
 
 import { AuthService } from '@app/auth/auth.service';
 import { PasswordService } from '@app/auth/password/password.service';
+import { UUIDv4 } from '@app/common/types';
 
 import { PanelUsersService } from '../panel-users/panel-users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UsersRepository } from './users.repository';
+import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
@@ -25,47 +27,29 @@ export class UsersService {
     private passwordService: PasswordService,
     @Inject(forwardRef(() => PanelUsersService))
     private panelUsersService: PanelUsersService,
-    private prisma: PrismaService,
+    private usersRepository: UsersRepository,
   ) {}
 
-  async getUsers(query): Promise<any> {
+  async getUsers(
+    fullName?: string,
+    offset = 0,
+    limit = 10,
+  ): Promise<Omit<User, 'password'>[]> {
     try {
-      const offset = !isNaN(parseInt(query.offset))
-        ? parseInt(query.offset)
-        : 0;
-      const limit = !isNaN(parseInt(query.limit)) ? parseInt(query.limit) : 10;
-      const fullName = query.fullName;
-      const compId = parseInt(query.company_id);
+      // TODO: this is a wrong implementation. what if the user has a middlename
+      const [firstName, lastName] =
+        fullName && fullName.length > 0 ? fullName?.split(' ') : [];
 
-      let whereConditions: any = {
-        AND: [],
-      };
-
-      if (fullName && fullName.length > 0) {
-        const name = fullName.toLowerCase().split(' ')[0];
-        const familyName = fullName.toLowerCase().split(' ')[1];
-        whereConditions.AND.push({
-          name: { contains: name, mode: 'insensitive' },
-        });
-        whereConditions.AND.push({
-          familyName: { contains: familyName, mode: 'insensitive' },
-        });
-      }
-
-      if (compId) {
-        whereConditions.AND.push({ company_id: { equals: compId } });
-      }
-
-      if (!whereConditions.AND.length) {
-        whereConditions = {};
-      }
-
-      const totalUsers = await this.prisma.user.findMany({
+      const totalUsers = await this.usersRepository.find({
         skip: offset,
         take: limit,
-        where: whereConditions,
+        where: {
+          name: ILike(`%${firstName}%`),
+          familyName: ILike(`%${lastName}%`),
+        },
       });
       const users = totalUsers.map((user) => {
+        // TODO: this should be done in a Return DTO in controllers
         const { password, ...rest } = user;
         return rest;
       });
@@ -78,8 +62,8 @@ export class UsersService {
     }
   }
 
-  async findOne(id: string): Promise<User> {
-    const user = await this.prisma.user.findFirst({ where: { id } });
+  async findOne(id: UUIDv4): Promise<User> {
+    const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID '${id}' not found`);
     }
@@ -101,15 +85,15 @@ export class UsersService {
       const saltRounds = 10;
       const salt = await bcrypt.genSalt(saltRounds);
       const hashedPassword = await bcrypt.hash(password, salt);
-      const user = await this.prisma.user.create({
-        data: {
+      const user = await this.usersRepository.save(
+        new User({
           name: name,
           familyName: familyName,
           email: email,
           password: hashedPassword,
           isVerified: true,
-        },
-      });
+        }),
+      );
       delete user.password;
       return user;
     } catch (err: any) {
@@ -122,7 +106,7 @@ export class UsersService {
 
   async updateUser(
     reqId: any,
-    userId: string,
+    userId: UUIDv4,
     data: CreateUserDto,
   ): Promise<any> {
     try {
@@ -154,12 +138,14 @@ export class UsersService {
           HttpStatus.BAD_REQUEST,
         );
 
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: {
+      await this.usersRepository.update(
+        {
+          id: userId,
+        },
+        {
           ...data,
         },
-      });
+      );
       return { message: 'user updated', statusCode: 200 };
     } catch (err: any) {
       throw new HttpException(
@@ -169,20 +155,16 @@ export class UsersService {
     }
   }
 
-  async delete(userId: string) {
+  async delete(userId: UUIDv4) {
     try {
-      const user = await this.prisma.user.findFirst({
-        where: {
-          id: userId,
-        },
+      const user = await this.usersRepository.findOneBy({
+        id: userId,
       });
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
-      await this.prisma.user.delete({
-        where: {
-          id: userId,
-        },
+      await this.usersRepository.delete({
+        id: userId,
       });
       return { message: 'user deleted', statusCode: 200 };
     } catch (err: any) {
@@ -194,16 +176,14 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    return this.prisma.user.findUnique({
-      where: { email },
+    return this.usersRepository.findOneBy({
+      email,
     });
   }
 
-  async findAppUserById(id: string) {
-    const appUser = await this.prisma.user.findFirst({
-      where: {
-        id,
-      },
+  async findAppUserById(id: UUIDv4) {
+    const appUser = await this.usersRepository.findOneBy({
+      id,
     });
     if (!appUser) {
       throw new NotFoundException(`User not found with this id`);
@@ -215,8 +195,8 @@ export class UsersService {
   async getUserWithForgotPasswordCode(
     forgotPasswordCode: string,
   ): Promise<any> {
-    const user = await this.prisma.user.findFirst({
-      where: { forgotPasswordCode: forgotPasswordCode },
+    const user = await this.usersRepository.findOneBy({
+      forgotPasswordCode,
     });
     if (!user) {
       throw new NotFoundException(

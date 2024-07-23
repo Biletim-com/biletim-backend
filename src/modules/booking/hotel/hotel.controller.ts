@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import {
   Controller,
   Post,
@@ -25,7 +26,6 @@ import {
   CreditCardDataTokenizationDto,
   WebhookDto,
 } from './dto/hotel.dto';
-import { FastifyReply } from 'fastify';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Hotel')
@@ -207,7 +207,7 @@ export class HotelController {
   @Get('/download/info-invoice')
   async downloadInfoInvoice(
     @Query('partner_order_id') partner_order_id: string,
-    @Res() res: FastifyReply,
+    @Res() res: Response,
   ) {
     if (!partner_order_id) {
       throw new HttpException(

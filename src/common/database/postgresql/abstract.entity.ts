@@ -6,7 +6,7 @@ import {
 
 import { UUIDv4 } from '@app/common/types';
 
-export abstract class BaseEntity {
+export abstract class AbstractEntity<T> {
   @PrimaryGeneratedColumn('uuid')
   id: UUIDv4;
 
@@ -19,4 +19,8 @@ export abstract class BaseEntity {
     nullable: false,
   })
   udpatedAt: Date;
+
+  constructor(entity: Partial<T>) {
+    Object.assign(this, entity);
+  }
 }

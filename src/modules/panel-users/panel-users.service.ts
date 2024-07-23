@@ -6,15 +6,17 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
-import { PanelUser } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { ILike } from 'typeorm';
 
 import { AuthService } from '@app/auth/auth.service';
 import { PasswordService } from '@app/auth/password/password.service';
 import { SuperAdminConfigService } from '@app/configs/super-admin/config.service';
+import { UUIDv4 } from '@app/common/types';
 
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
+import { PanelUsersRepository } from './panel-users.repository';
+import { PanelUser } from './panel-user.entity';
 
 @Injectable()
 export class PanelUsersService {
@@ -24,47 +26,29 @@ export class PanelUsersService {
     @Inject(forwardRef(() => PasswordService))
     private passwordService: PasswordService,
     private superAdminConfigService: SuperAdminConfigService,
-    private prisma: PrismaService,
+    private panelUsersRepository: PanelUsersRepository,
   ) {}
 
-  async getUsers(query): Promise<any> {
+  async getUsers(
+    fullName?: string,
+    offset = 0,
+    limit = 10,
+  ): Promise<Omit<PanelUser, 'password'>[]> {
     try {
-      const offset = !isNaN(parseInt(query.offset))
-        ? parseInt(query.offset)
-        : 0;
-      const limit = !isNaN(parseInt(query.limit)) ? parseInt(query.limit) : 10;
-      const fullName = query.fullName;
-      const compId = parseInt(query.company_id);
+      // TODO: this is a wrong implementation. what if the user has a middlename
+      const [firstName, lastName] =
+        fullName && fullName.length > 0 ? fullName?.split(' ') : [];
 
-      let whereConditions: any = {
-        AND: [],
-      };
-
-      if (fullName && fullName.length > 0) {
-        const name = fullName.toLowerCase().split(' ')[0];
-        const familyName = fullName.toLowerCase().split(' ')[1];
-        whereConditions.AND.push({
-          name: { contains: name, mode: 'insensitive' },
-        });
-        whereConditions.AND.push({
-          familyName: { contains: familyName, mode: 'insensitive' },
-        });
-      }
-
-      if (compId) {
-        whereConditions.AND.push({ company_id: { equals: compId } });
-      }
-
-      if (!whereConditions.AND.length) {
-        whereConditions = {};
-      }
-
-      const totalUsers = await this.prisma.panelUser.findMany({
+      const totalUsers = await this.panelUsersRepository.find({
         skip: offset,
         take: limit,
-        where: whereConditions,
+        where: {
+          name: ILike(`%${firstName}%`),
+          familyName: ILike(`%${lastName}%`),
+        },
       });
       const users = totalUsers.map((user) => {
+        // TODO: this should be done in a Return DTO in controllers
         const { password, ...rest } = user;
         return rest;
       });
@@ -77,8 +61,8 @@ export class PanelUsersService {
     }
   }
 
-  async findOne(id: string): Promise<PanelUser> {
-    const user = await this.prisma.panelUser.findFirst({ where: { id } });
+  async findOne(id: UUIDv4): Promise<PanelUser> {
+    const user = await this.panelUsersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID '${id}' not found`);
     }
@@ -93,27 +77,26 @@ export class PanelUsersService {
     if (key !== superAdminKey)
       throw new HttpException('key is not correct', HttpStatus.BAD_REQUEST);
 
-    const existUser = await this.prisma.panelUser.findFirst({
-      where: {
-        email: superAdminEmail,
-        isSUPER_ADMIN: true,
-      },
+    const existUser = await this.panelUsersRepository.findOneBy({
+      email: superAdminEmail,
+      isSuperAdmin: true,
     });
     if (existUser) {
       throw new HttpException('super admin already exist', HttpStatus.CONFLICT);
     }
 
     try {
-      const user = await this.prisma.panelUser.create({
-        data: {
+      const user = await this.panelUsersRepository.save(
+        new PanelUser({
           name: 'SUPER',
           familyName: 'ADMIN',
           email: superAdminEmail,
           password: bcrypt.hashSync(superAdminPassword, 10),
-          isSUPER_ADMIN: true,
-        },
-      });
+          isSuperAdmin: true,
+        }),
+      );
 
+      // TODO: this should done in a controller with a DTO
       delete user.password;
 
       return { message: 'Super admin created', statusCode: '201' };
@@ -125,13 +108,13 @@ export class PanelUsersService {
     }
   }
 
-  async deleteAdmin(id: string, req: any): Promise<any> {
+  async deleteAdmin(id: UUIDv4, req: any): Promise<any> {
     try {
       const ReqUser = await this.findPanelUserByEmail(req.email);
       if (!ReqUser)
         throw new HttpException('user not found', HttpStatus.NOT_FOUND);
 
-      if (!ReqUser.isSUPER_ADMIN) {
+      if (!ReqUser.isSuperAdmin) {
         throw new HttpException(
           'You are not authorized to perform this action',
           HttpStatus.FORBIDDEN,
@@ -142,9 +125,7 @@ export class PanelUsersService {
       if (!user)
         throw new HttpException('user not found', HttpStatus.NOT_FOUND);
 
-      await this.prisma.panelUser.delete({
-        where: { id },
-      });
+      await this.panelUsersRepository.delete({ id });
       return { message: 'user deleted', statusCode: '200' };
     } catch (err: any) {
       throw new HttpException(
@@ -158,10 +139,8 @@ export class PanelUsersService {
     try {
       const { name, familyName, email, password } = data;
 
-      const existUser = await this.prisma.panelUser.findFirst({
-        where: {
-          email: email,
-        },
+      const existUser = await this.panelUsersRepository.findOneBy({
+        email,
       });
 
       if (existUser) {
@@ -177,14 +156,14 @@ export class PanelUsersService {
         );
       }
 
-      const user = await this.prisma.panelUser.create({
-        data: {
+      const user = await this.panelUsersRepository.save(
+        new PanelUser({
           name: name,
           familyName: familyName,
           email: email,
           password: await this.passwordService.hashPassword(password),
-        },
-      });
+        }),
+      );
       delete user.password;
       const { accessToken, refreshToken } =
         await this.authService.generateTokens(user);
@@ -200,7 +179,7 @@ export class PanelUsersService {
     }
   }
 
-  async updateUser(userId: string, data: CreatePanelUserDto): Promise<any> {
+  async updateUser(userId: UUIDv4, data: CreatePanelUserDto): Promise<any> {
     try {
       const { email } = data;
       const user = await this.findPanelUserById(userId);
@@ -223,12 +202,12 @@ export class PanelUsersService {
           HttpStatus.BAD_REQUEST,
         );
 
-      await this.prisma.panelUser.update({
-        where: { id: userId },
-        data: {
+      await this.panelUsersRepository.update(
+        { id: userId },
+        {
           ...data,
         },
-      });
+      );
       return { message: 'user updated', statusCode: 200 };
     } catch (err: any) {
       throw new HttpException(
@@ -238,20 +217,16 @@ export class PanelUsersService {
     }
   }
 
-  async delete(userId: string): Promise<any> {
+  async delete(userId: UUIDv4): Promise<any> {
     try {
-      const user = await this.prisma.panelUser.findFirst({
-        where: {
-          id: userId,
-        },
+      const user = await this.panelUsersRepository.findOneBy({
+        id: userId,
       });
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
-      await this.prisma.panelUser.delete({
-        where: {
-          id: userId,
-        },
+      await this.panelUsersRepository.delete({
+        id: userId,
       });
       return { message: 'user deleted', statusCode: 200 };
     } catch (err: any) {
@@ -263,7 +238,7 @@ export class PanelUsersService {
   }
 
   async panelChangePassword(
-    userId: string,
+    userId: UUIDv4,
     oldPassword: string,
     newPassword: string,
   ) {
@@ -295,10 +270,10 @@ export class PanelUsersService {
       const salt = await bcrypt.genSalt(saltRounds);
       const newPasswordHash = await bcrypt.hash(newPassword, salt);
 
-      await this.prisma.panelUser.update({
-        where: { id: user.id },
-        data: { password: newPasswordHash },
-      });
+      await this.panelUsersRepository.update(
+        { id: user.id },
+        { password: newPasswordHash },
+      );
       return { message: 'your password changed', statusCode: 200 };
     } catch (err: any) {
       throw new HttpException(
@@ -309,15 +284,11 @@ export class PanelUsersService {
   }
 
   async findPanelUserByEmail(email: string) {
-    return this.prisma.panelUser.findUnique({
-      where: { email },
-    });
+    return this.panelUsersRepository.findOneBy({ email });
   }
-  async findPanelUserById(id: string) {
-    const panelUser = await this.prisma.panelUser.findFirst({
-      where: {
-        id,
-      },
+  async findPanelUserById(id: UUIDv4) {
+    const panelUser = await this.panelUsersRepository.findOneBy({
+      id,
     });
     if (!panelUser) {
       throw new NotFoundException(`Panel User not found with this id`);
@@ -326,9 +297,9 @@ export class PanelUsersService {
     return panelUser;
   }
 
-  async isPanelUser(userId: string): Promise<boolean> {
-    const panelUser = await this.prisma.panelUser.findFirst({
-      where: { id: userId },
+  async isPanelUser(userId: UUIDv4): Promise<boolean> {
+    const panelUser = await this.panelUsersRepository.findOneBy({
+      id: userId,
     });
     return !!panelUser;
   }

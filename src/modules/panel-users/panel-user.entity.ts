@@ -1,14 +1,14 @@
 import { Entity, Column } from 'typeorm';
 
-import { BaseEntity } from '@app/common/database/entities/base.entity';
+import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
-@Entity('panel_user')
-export class PanelUser extends BaseEntity {
+@Entity('panel_users')
+export class PanelUser extends AbstractEntity<PanelUser> {
   @Column()
   name: string;
 
   @Column({ name: 'family_name' })
-  familyName: number;
+  familyName: string;
 
   @Column({ unique: true })
   email: string;

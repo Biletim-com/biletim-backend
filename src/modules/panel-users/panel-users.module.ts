@@ -7,8 +7,8 @@ import { SuperAdminConfigService } from '@app/configs/super-admin';
 
 import { UsersService } from '../users/users.service';
 
-import { PanelUser } from './panel-users.entity';
-import { PanelUserRepository } from './panel-users.repository';
+import { PanelUser } from './panel-user.entity';
+import { PanelUsersRepository } from './panel-users.repository';
 import { PanelUsersService } from './panel-users.service';
 import { PanelUsersController } from './panel-users.controller';
 
@@ -22,9 +22,9 @@ import { PanelUsersController } from './panel-users.controller';
     PanelUsersService,
     PasswordService,
     UsersService,
-    PanelUserRepository,
+    PanelUsersRepository,
     SuperAdminConfigService,
   ],
-  exports: [PanelUsersService, SuperAdminConfigService],
+  exports: [SuperAdminConfigService, PanelUsersService, PanelUsersRepository],
 })
 export class PanelUsersModule {}

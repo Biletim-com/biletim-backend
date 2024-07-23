@@ -1,6 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { PrismaModule } from 'nestjs-prisma';
 import { HttpModule } from '@nestjs/axios';
 
 import { UsersModule } from '@app/modules/users/users.module';
@@ -17,7 +16,6 @@ import { PasswordService } from './password/password.service';
 @Module({
   imports: [
     HttpModule,
-    PrismaModule,
     PanelUsersModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,

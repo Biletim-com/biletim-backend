@@ -95,12 +95,4 @@ export class AuthController {
     const userInfo = await this.authService.loginWithGoogle(body.token);
     return userInfo;
   }
-
-  @Post('register-company')
-  @HttpCode(200)
-  async registerCompany(
-    @Body() registerCompanyDto: RegisterCompanyDto,
-  ): Promise<any> {
-    return this.authService.registerCompany(registerCompanyDto);
-  }
 }

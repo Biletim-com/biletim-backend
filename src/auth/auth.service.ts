@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios';
 import {
   BadRequestException,
   HttpException,
@@ -9,8 +8,8 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'nestjs-prisma';
 import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
@@ -23,35 +22,37 @@ import {
 import { EmailType } from '@app/common/enums/email-type.enum';
 import { PanelUsersService } from '@app/modules/panel-users/panel-users.service';
 import { UsersService } from '@app/modules/users/users.service';
+import { UUIDv4 } from '@app/common/types';
 
 import { AUTH_STRATEGY_TOKEN, AuthStrategy } from './auth.strategy';
 import { LoginUserRequest } from './dto/login-user-request.dto';
 import { PasswordService } from './password/password.service';
 import { RegisterUserRequest } from './dto/register-user-request.dto';
-import { RegisterCompanyDto } from './dto/register-company.dto';
+import { UsersRepository } from '@app/modules/users/users.repository';
+import { User } from '@app/modules/users/user.entity';
+import { VerificationsRepository } from '@app/modules/users/verification/verification.repository';
+import { Verification } from '@app/modules/users/verification/verification.entity';
+import { PanelUser } from '@app/modules/panel-users/panel-user.entity';
 
 @Injectable()
 export class AuthService {
   private logger = new Logger(AuthService.name);
   constructor(
-    private prisma: PrismaService,
-    private httpService: HttpService,
     @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
+    private usersRepository: UsersRepository,
+    private verificationsRepository: VerificationsRepository,
     private panelUsersService: PanelUsersService,
     private jwtService: JwtService,
     private passwordService: PasswordService,
+    private dataSource: DataSource,
     @Inject(AUTH_STRATEGY_TOKEN) private readonly authStrategy: AuthStrategy,
   ) {}
 
   async login(LoginUserRequestDto: LoginUserRequest): Promise<any> {
     const { email, password } = LoginUserRequestDto;
     try {
-      const user = await this.prisma.user.findFirst({
-        where: {
-          email: email,
-        },
-      });
+      const user = await this.usersService.findByEmail(email);
       if (!user || user.isDeleted) {
         throw new HttpException('user not found', HttpStatus.NOT_FOUND);
       }
@@ -69,13 +70,11 @@ export class AuthService {
         throw new HttpException('invalid password  ', HttpStatus.UNAUTHORIZED);
       }
       delete user.password;
-      const { accessToken, refreshToken } = await this.generateTokens(user);
-      const responseObj = {
+      const { accessToken, refreshToken } = this.generateTokens(user);
+      return {
         ...user,
         tokens: { accessToken, refreshToken },
       };
-
-      return Promise.resolve(responseObj);
     } catch (err: any) {
       Logger.error(err);
       throw new HttpException(
@@ -88,11 +87,7 @@ export class AuthService {
   async panelLogin(LoginUserRequestDto: LoginUserRequest): Promise<any> {
     const { email, password } = LoginUserRequestDto;
     try {
-      const user = await this.prisma.panelUser.findUnique({
-        where: {
-          email: email,
-        },
-      });
+      const user = await this.panelUsersService.findPanelUserByEmail(email);
       if (!user) {
         throw new HttpException('user not found', HttpStatus.NOT_FOUND);
       }
@@ -104,7 +99,7 @@ export class AuthService {
         throw new HttpException('Unauthorized access', HttpStatus.UNAUTHORIZED);
       }
       delete user.password;
-      const { accessToken, refreshToken } = await this.generateTokens(user);
+      const { accessToken, refreshToken } = this.generateTokens(user);
       const responseObj = {
         ...user,
         tokens: { accessToken, refreshToken },
@@ -129,7 +124,7 @@ export class AuthService {
       throw new Error(err?.message);
     }
   }
-  async generateTokens(user: any) {
+  generateTokens(user: User | PanelUser) {
     const accessTokenPayload = {
       sub: user.id,
       email: user.email,
@@ -158,14 +153,14 @@ export class AuthService {
       if (existUser) {
         if (!existUser.isVerified) {
           const { verificationCode } = await this.uniqueSixDigitNumber();
-          await this.prisma.verification.update({
-            where: { user_id: existUser.id },
-            data: {
+          await this.verificationsRepository.update(
+            { user: { id: existUser.id } },
+            {
               verificationCode: verificationCode,
               isExpired: false,
               isUsed: false,
             },
-          });
+          );
 
           const emailOptions = {
             receiver: email,
@@ -189,36 +184,32 @@ export class AuthService {
         }
       }
 
-      const user = await this.prisma.user.create({
-        data: {
+      const user = await this.usersRepository.save(
+        new User({
           email: email,
           password: await this.passwordService.hashPassword(password),
           name: name,
           familyName: familyName,
-        },
-      });
+        }),
+      );
 
       delete user.password;
 
-      const { accessToken, refreshToken } = await this.generateTokens(user);
+      const { accessToken, refreshToken } = this.generateTokens(user);
       const responseObj = {
         ...user,
         tokens: { accessToken, refreshToken },
       };
 
       const { verificationCode } = await this.uniqueSixDigitNumber();
-      await this.prisma.verification.create({
-        data: {
-          user: {
-            connect: {
-              id: user.id,
-            },
-          },
+      await this.verificationsRepository.save(
+        new Verification({
+          user,
           verificationCode: verificationCode,
           isExpired: false,
           isUsed: false,
-        },
-      });
+        }),
+      );
 
       const emailOptions = {
         receiver: email,
@@ -249,29 +240,24 @@ export class AuthService {
         'verificationCode must be 6 characters long.',
       );
     }
-    let user: any;
-    let userId: any;
     try {
-      userId = await this.findUserIdByVerificationCode(verificationCode);
-      user = await this.usersService.findAppUserById(userId);
+      const userId = await this.findUserIdByVerificationCode(verificationCode);
+      const user = await this.usersService.findAppUserById(userId);
       if (user.isVerified || user.isDeleted) {
         throw new BadRequestException('invalid verification code ');
       }
-      const responseObj = await this.prisma.$transaction(async (tx) => {
-        await tx.user.update({
-          where: { id: userId },
-          data: { isVerified: true },
-        });
-        await tx.verification.update({
-          where: { user_id: userId },
-          data: { isUsed: true },
-        });
 
-        const { accessToken, refreshToken } = await this.generateTokens(user);
-        return { accessToken, refreshToken };
-      });
+      const updatedUser = await this.usersRepository.save(
+        new User({
+          id: userId,
+          isVerified: true,
+          verification: new Verification({
+            isUsed: true,
+          }),
+        }),
+      );
 
-      return responseObj;
+      return this.generateTokens(updatedUser);
     } catch (err: any) {
       throw new HttpException(
         `company verification error ->  ${err?.message}`,
@@ -282,18 +268,18 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     try {
-      const user = await this.prisma.user.findFirst({
-        where: { email: email.toLowerCase() },
+      const user = await this.usersRepository.findOneBy({
+        email: email.toLowerCase(),
       });
 
       if (!user) {
         throw new BadRequestException('Invalid email');
       }
       const forgotPasswordCode: string = uuidv4();
-      await this.prisma.user.update({
-        where: { email: user.email },
-        data: { forgotPasswordCode, isUsed: false },
-      });
+      await this.usersRepository.update(
+        { email: user.email },
+        { forgotPasswordCode, isUsed: false },
+      );
 
       const emailOptions = {
         receiver: user.email,
@@ -346,16 +332,8 @@ export class AuthService {
     }
   }
 
-  async registerCompany(registerCompanyDto: RegisterCompanyDto) {
-    return this.prisma.company.create({
-      data: {
-        ...registerCompanyDto,
-      },
-    });
-  }
-
   async sendEmail(type: EmailType, options: any) {
-    let html;
+    let html: string;
     const { receiver, subject, htmlHeader, htmlBody, htmlButton, htmlLink } =
       options;
 
@@ -407,20 +385,16 @@ export class AuthService {
   }
 
   async findUserIdByVerificationCode(verificationCode: number) {
-    const userVerification = await this.prisma.verification.findFirst({
-      where: {
-        verificationCode: verificationCode,
-      },
-      select: {
-        user_id: true,
-      },
+    const userVerification = await this.verificationsRepository.findOne({
+      where: { verificationCode: verificationCode },
+      relations: { user: true },
     });
     if (!userVerification)
       throw new HttpException(
         'Not found userId with verificationCode',
         HttpStatus.NOT_FOUND,
       );
-    return userVerification.user_id;
+    return userVerification.user.id;
   }
   async resetPasswordByEmail(email: string, newPassword: string) {
     const user = await this.usersService.findByEmail(email);
@@ -433,26 +407,25 @@ export class AuthService {
     const salt = await bcrypt.genSalt(saltRounds);
     const newPasswordHash = await bcrypt.hash(newPassword, salt);
 
-    await this.prisma.user.update({
-      where: {
+    await this.usersRepository.update(
+      {
         email: user.email,
       },
-      data: {
+      {
         password: newPasswordHash,
         forgotPasswordCode: null,
         isUsed: true,
       },
-    });
+    );
   }
 
   async changePassword(
-    userId: string,
+    userId: UUIDv4,
     oldPassword: string,
     newPassword: string,
   ) {
-    let user: any;
     try {
-      user = await this.usersService.findAppUserById(userId);
+      const user = await this.usersService.findAppUserById(userId);
 
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -478,10 +451,10 @@ export class AuthService {
       const salt = await bcrypt.genSalt(saltRounds);
       const newPasswordHash = await bcrypt.hash(newPassword, salt);
 
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: { password: newPasswordHash },
-      });
+      await this.usersRepository.update(
+        { id: user.id },
+        { password: newPasswordHash },
+      );
       return { message: 'your password changed', statusCode: 200 };
     } catch (err: any) {
       throw new HttpException(
@@ -547,8 +520,7 @@ export class AuthService {
     }
     const user = await this.usersService.create(createUserDto);
 
-    const { accessToken, refreshToken } = await this.generateTokens(user);
-    return { accessToken, refreshToken };
+    return this.generateTokens(user);
   }
 
   async signInWithGoogle(email: string, userInfo: any) {
@@ -563,8 +535,7 @@ export class AuthService {
         'Invalid Google token: emails do not match',
       );
     }
-    const { accessToken, refreshToken } = await this.generateTokens(user);
-    return { accessToken, refreshToken };
+    return this.generateTokens(user);
   }
 
   async createAccessToken(user: any) {

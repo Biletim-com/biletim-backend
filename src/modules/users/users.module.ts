@@ -4,11 +4,13 @@ import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/pro
 import { AuthModule } from '@app/auth/auth.module';
 import { PasswordService } from '@app/auth/password/password.service';
 
-import { UsersController } from './users.controller';
+import { User } from './user.entity';
 import { UsersService } from './users.service';
-import { User } from './users.entity';
-import { UserRepository } from './users.repository';
+import { UsersRepository } from './users.repository';
+import { UsersController } from './users.controller';
+
 import { Verification } from './verification/verification.entity';
+import { VerificationsRepository } from './verification/verification.repository';
 
 import { PanelUsersModule } from '../panel-users/panel-users.module';
 import { PanelUsersService } from '../panel-users/panel-users.service';
@@ -20,7 +22,13 @@ import { PanelUsersService } from '../panel-users/panel-users.service';
     PanelUsersModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, PasswordService, PanelUsersService, UserRepository],
-  exports: [UsersService],
+  providers: [
+    UsersService,
+    PasswordService,
+    PanelUsersService,
+    UsersRepository,
+    VerificationsRepository,
+  ],
+  exports: [UsersService, UsersRepository, VerificationsRepository],
 })
 export class UsersModule {}

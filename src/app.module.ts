@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'nestjs-prisma';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@app/configs/config.module';
 
@@ -22,7 +21,6 @@ import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/pro
   imports: [
     ConfigModule,
     PostgreSQLProviderModule,
-    PrismaModule.forRoot({ isGlobal: true }),
     AuthModule,
     UsersModule,
     TicketsModule,

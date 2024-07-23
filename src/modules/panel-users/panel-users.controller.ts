@@ -8,18 +8,21 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PanelUser } from '@prisma/client';
 
 import { AuthGuard } from '@app/auth/auth.guard';
 import { ChangePasswordDto } from '@app/auth/dto/change-password.dto';
 import { RequireAdmin, CurrentUser } from '@app/common/decorators';
+import { UUIDv4 } from '@app/common/types';
 
+import { PanelUser } from './panel-user.entity';
 import { PanelUsersService } from './panel-users.service';
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
+import { GetPanelUsersQuery } from './dto/get-panel-users-query.dto';
 
 @ApiBearerAuth()
 @Controller('panel')
@@ -32,8 +35,10 @@ export class PanelUsersController {
   @RequireAdmin()
   @HttpCode(200)
   @Get('/all')
-  async getUsers(@Req() req: any): Promise<PanelUser[]> {
-    return this.panelUsersService.getUsers(req.query);
+  async getUsers(
+    @Query() { fullName, offset, limit }: GetPanelUsersQuery,
+  ): Promise<Omit<PanelUser, 'password'>[]> {
+    return this.panelUsersService.getUsers(fullName?.trim(), offset, limit);
   }
 
   @ApiOperation({ summary: 'Find Me Panel User' })
@@ -50,7 +55,7 @@ export class PanelUsersController {
   @RequireAdmin()
   @HttpCode(200)
   @Get('/find-one/:id')
-  async findOne(@Param('id') id: string): Promise<PanelUser> {
+  async findOne(@Param('id') id: UUIDv4): Promise<PanelUser> {
     return await this.panelUsersService.findOne(id);
   }
 
@@ -66,8 +71,11 @@ export class PanelUsersController {
   @RequireAdmin()
   @Delete('/super-admin/:id')
   @HttpCode(201)
-  async deleteAdmin(@Param('id') id: string, @Req() req: any): Promise<any> {
-    return this.panelUsersService.deleteAdmin(id, req.user);
+  async deleteAdmin(
+    @Param('id') id: UUIDv4,
+    @CurrentUser() user: any,
+  ): Promise<any> {
+    return this.panelUsersService.deleteAdmin(id, user);
   }
 
   @ApiOperation({ summary: 'Create panel admin (Only SUPER ADMIN can use)' })
@@ -87,7 +95,7 @@ export class PanelUsersController {
   @HttpCode(200)
   @Put('/:id')
   async updateUser(
-    @Param('id') id: string,
+    @Param('id') id: UUIDv4,
     @Body() createUserDto: CreatePanelUserDto,
   ): Promise<any> {
     return await this.panelUsersService.updateUser(id, createUserDto);
@@ -98,7 +106,7 @@ export class PanelUsersController {
   @RequireAdmin()
   @HttpCode(200)
   @Delete('/:id')
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id') id: UUIDv4) {
     return this.panelUsersService.delete(id);
   }
 

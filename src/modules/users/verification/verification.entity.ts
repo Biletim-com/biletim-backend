@@ -1,11 +1,11 @@
 import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
 
-import { BaseEntity } from '@app/common/database/entities/base.entity';
+import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
-import { User } from '../users.entity';
+import { User } from '../user.entity';
 
-@Entity('verification')
-export class Verification extends BaseEntity {
+@Entity('verifications')
+export class Verification extends AbstractEntity<Verification> {
   @Column({ name: 'verification_code' })
   verificationCode: number;
 
