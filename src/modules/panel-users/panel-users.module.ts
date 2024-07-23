@@ -11,6 +11,8 @@ import { PanelUser } from './panel-user.entity';
 import { PanelUsersRepository } from './panel-users.repository';
 import { PanelUsersService } from './panel-users.service';
 import { PanelUsersController } from './panel-users.controller';
+import { UsersRepository } from '../users/users.repository';
+import { VerificationsRepository } from '../users/verification/verification.repository';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { PanelUsersController } from './panel-users.controller';
     PanelUsersService,
     PasswordService,
     UsersService,
+    UsersRepository,
+    VerificationsRepository,
     PanelUsersRepository,
     SuperAdminConfigService,
   ],
