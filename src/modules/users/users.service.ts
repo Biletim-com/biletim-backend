@@ -7,7 +7,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { ILike } from 'typeorm';
+import { FindOptions, FindOptionsRelations, ILike } from 'typeorm';
 
 import { AuthService } from '@app/auth/auth.service';
 import { PasswordService } from '@app/auth/password/password.service';
@@ -181,9 +181,10 @@ export class UsersService {
     });
   }
 
-  async findAppUserById(id: UUIDv4) {
-    const appUser = await this.usersRepository.findOneBy({
-      id,
+  async findAppUserById(id: UUIDv4, findOptions?: FindOptionsRelations<User>) {
+    const appUser = await this.usersRepository.findOne({
+      where: { id },
+      relations: findOptions,
     });
     if (!appUser) {
       throw new NotFoundException(`User not found with this id`);

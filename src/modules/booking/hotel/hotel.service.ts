@@ -74,13 +74,21 @@ export class HotelService {
     searchDto: searchReservationByRegionIdDto,
     queryDto: QueryDto,
   ): Promise<any> {
+    const [checkin] = searchDto.checkin.toISOString().split('T');
+    const [checkout] = searchDto.checkout.toISOString().split('T');
     const url = `${this.baseUrl}/search/serp/region/`;
-
     const headers = this.getBasicAuthHeader;
 
     try {
-      const response = await axios.post(url, searchDto, { headers });
-
+      const response = await axios.post(
+        url,
+        {
+          ...searchDto,
+          checkin,
+          checkout,
+        },
+        { headers },
+      );
       let hotels = response.data.data.hotels.map((hotel) => ({
         id: hotel.id,
         minRate: Math.min(
