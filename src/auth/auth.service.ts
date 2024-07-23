@@ -8,7 +8,6 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
-import { DataSource } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
@@ -45,7 +44,6 @@ export class AuthService {
     private panelUsersService: PanelUsersService,
     private jwtService: JwtService,
     private passwordService: PasswordService,
-    private dataSource: DataSource,
     @Inject(AUTH_STRATEGY_TOKEN) private readonly authStrategy: AuthStrategy,
   ) {}
 
@@ -149,7 +147,7 @@ export class AuthService {
       const { password, name, familyName } = registerUserRequest;
       const email = registerUserRequest.email.toLowerCase();
       const existUser = await this.usersService.findByEmail(email);
-
+      console.log({ existUser });
       if (existUser) {
         if (!existUser.isVerified) {
           const { verificationCode } = await this.uniqueSixDigitNumber();
@@ -161,7 +159,7 @@ export class AuthService {
               isUsed: false,
             },
           );
-
+          console.log('Update finished');
           const emailOptions = {
             receiver: email,
             subject: 'Verification Biletim Server',
@@ -188,8 +186,8 @@ export class AuthService {
         new User({
           email: email,
           password: await this.passwordService.hashPassword(password),
-          name: name,
           familyName: familyName,
+          name: name,
         }),
       );
 
@@ -242,7 +240,9 @@ export class AuthService {
     }
     try {
       const userId = await this.findUserIdByVerificationCode(verificationCode);
-      const user = await this.usersService.findAppUserById(userId);
+      const user = await this.usersService.findAppUserById(userId, {
+        verification: true,
+      });
       if (user.isVerified || user.isDeleted) {
         throw new BadRequestException('invalid verification code ');
       }
@@ -252,11 +252,11 @@ export class AuthService {
           id: userId,
           isVerified: true,
           verification: new Verification({
+            id: user.verification.id,
             isUsed: true,
           }),
         }),
       );
-
       return this.generateTokens(updatedUser);
     } catch (err: any) {
       throw new HttpException(
