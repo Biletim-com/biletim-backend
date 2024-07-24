@@ -1,10 +1,10 @@
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: ''
+fullnameOverride: ''
 
-chartVersion: ""
-releaseName: "biletim-api"
-targetNamespace: "default"
-chartName: "biletim-api"
+chartVersion: ''
+releaseName: 'biletim-api'
+targetNamespace: 'default'
+chartName: 'biletim-api'
 
 global:
   imagePullSecrets:
@@ -48,15 +48,20 @@ biletim_api:
     JWT_SECRET: PEMPassPhrase
     BCRYPT_SALT_ROUNDS: 12
     RESET_PASSWORD_URL: https://timetracker.westerops.com/reset-password
+    BILETALL_WSDL_URI: http://94.55.20.137/WSTEST/Service.asmx
+    BILETALL_WS_USERNAME: biletimcomWS
+    BILETALL_WS_PASSWORD: aa8809
+    HOTEL_API_BASE_URL: https://api.worldota.net/api/b2b/v3
+    HOTEL_WS_USERNAME: 8175
+    HOTEL_WS_PASSWORD: 88346326-e817-4e3f-8852-44185a44e606
 
   volumeMounts:
-    biletim-api: "/app/images"
+    biletim-api: '/app/images'
 
   volumes:
     - name: biletim-api
       persistentVolumeClaim:
         claimName: biletim-api-pvc
-
 
 biletim_db:
   enabled: true
@@ -73,7 +78,7 @@ biletim_db:
     POSTGRES_DB: biletim
 
   volumeMounts:
-    db-data: "/var/lib/postgresql/data"
+    db-data: '/var/lib/postgresql/data'
 
   volumes:
     - name: db-data
@@ -87,7 +92,6 @@ biletim_db:
     requests:
       memory: 10Mi
       cpu: 10m
-
 
 ingress:
   tlsSecret: biletim-api-tls

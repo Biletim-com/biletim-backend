@@ -1,25 +1,15 @@
 import { ValidationPipe } from '@nestjs/common';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { PrismaClientExceptionFilter, PrismaService } from 'nestjs-prisma';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
-import multipart from '@fastify/multipart';
 import { AppModule } from './app.module';
+import { AppConfigService } from './configs/app';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-  );
-  app.useGlobalPipes(new ValidationPipe());
-  const prismaService: PrismaService = app.get(PrismaService);
-  prismaService.enableShutdownHooks(app);
+  const app = await NestFactory.create(AppModule);
 
-  app.useGlobalFilters(new PrismaClientExceptionFilter());
-  await app.register(multipart);
+  const appConfigService = app.get<AppConfigService>(AppConfigService);
+
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   const docOptions = new DocumentBuilder()
     .setTitle('Biletim API')
@@ -32,6 +22,6 @@ async function bootstrap() {
 
   app.enableCors();
 
-  await app.listen(process.env.APP_PORT || 8080, '0.0.0.0');
+  await app.listen(appConfigService.port, '0.0.0.0');
 }
 bootstrap();

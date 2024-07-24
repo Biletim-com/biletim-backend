@@ -1,24 +1,26 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from 'nestjs-prisma';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { TicketsModule } from './tickets/tickets.module';
-import { TicketsService } from './tickets/tickets.service';
-import { BiletAllModule } from './tickets/biletall/biletall.module';
-import { PanelUsersModule } from './panel-users/panel-users.module';
-import { AppleModule } from './apple/apple.module';
-import { HotelModule } from './booking/hotel/hotel.module';
-import { HotelService } from './booking/hotel/hotel.service';
 import { HttpModule } from '@nestjs/axios';
-import { BookingModule } from './booking/booking.module';
+import { ConfigModule } from '@app/configs/config.module';
+
+// Auth Module
+import { AuthModule } from '@app/auth/auth.module';
+import { AppleModule } from './apple/apple.module';
+
+// App Modules
+import { UsersModule } from '@app/modules/users/users.module';
+import { TicketsModule } from '@app/modules/tickets/tickets.module';
+import { BiletAllModule } from '@app/modules/tickets/biletall/biletall.module';
+import { PanelUsersModule } from '@app/modules/panel-users/panel-users.module';
+import { HotelModule } from '@app/modules/booking/hotel/hotel.module';
+import { BookingModule } from '@app/modules/booking/booking.module';
+
+// Providers
+import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    PrismaModule.forRoot({ isGlobal: true }),
+    ConfigModule,
+    PostgreSQLProviderModule,
     AuthModule,
     UsersModule,
     TicketsModule,
@@ -29,7 +31,7 @@ import { BookingModule } from './booking/booking.module';
     HttpModule,
     BookingModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, TicketsService, HotelService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

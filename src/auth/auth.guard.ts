@@ -8,7 +8,8 @@ import {
 import { AuthService } from './auth.service';
 import { Reflector } from '@nestjs/core';
 import { jwtDecode } from 'jwt-decode';
-import { PanelUsersService } from '../panel-users/panel-users.service';
+
+import { PanelUsersService } from '@app/modules/panel-users/panel-users.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
