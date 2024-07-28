@@ -1,20 +1,21 @@
-// TODO: export each class to their own file
-
 export class CompanyRequestDto {
   FirmaNo: string;
 }
 
+// request to be sent to get the available dates
 export class ScheduleListRequestDto {
   FirmaNo: number;
   KalkisNoktaID: number;
   VarisNoktaID: number;
   Tarih: string;
-  AraNoktaGelsin?: number;
+  AraNoktaGelsin?: boolean;
   IslemTipi: number;
   YolcuSayisi = 1;
   Ip: string;
 }
 
+// info regarding the bus
+// plate, driver...
 export class BusSearchRequestDto {
   FirmaNo: number;
   KalkisNoktaID: number;
@@ -28,6 +29,7 @@ export class BusSearchRequestDto {
   Ip: string;
 }
 
+// check wether the passenger can buy the requested ticket based on their gender
 export class BusSeatControlRequestDto {
   FirmaNo: number;
   KalkisNoktaID: number;
@@ -36,13 +38,14 @@ export class BusSeatControlRequestDto {
   Saat: string;
   HatNo: number;
   IslemTipi: number;
-  SeferTakipNo: number;
+  SeferTakipNo: string;
   Ip: string;
   Koltuklar: BusSeatRequestDto[];
 }
-
 export class BusSeatRequestDto {
   KoltukNo: number;
+  // male - 2
+  // female - 1
   Cinsiyet: number;
 }
 
@@ -62,6 +65,7 @@ export class ServiceInformationRequestDto {
   Saat: string;
 }
 
+// purchase
 export class BusSaleRequestDto {
   FirmaNo: number;
   KalkisNoktaID: number;
@@ -118,6 +122,6 @@ export class BusRouteRequestDto {
   KalkisNoktaID: number;
   VarisNoktaID: number;
   BilgiIslemAdi: string;
-  SeferTakipNo: number;
+  SeferTakipNo: string;
   Tarih: string;
 }

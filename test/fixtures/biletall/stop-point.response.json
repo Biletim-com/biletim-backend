@@ -1,0 +1,55 @@
+{
+  "soap:Envelope": {
+    "$": {
+      "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/",
+      "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+      "xmlns:xsd": "http://www.w3.org/2001/XMLSchema"
+    },
+    "soap:Body": [
+      {
+        "XmlIsletResponse": [
+          {
+            "$": {
+              "xmlns": "http://tempuri.org/"
+            },
+            "XmlIsletResult": [
+              {
+                "KaraNoktalar": [
+                  {
+                    "$": {
+                      "xmlns": ""
+                    },
+                    "KaraNokta": [
+                      {
+                        "ID": ["1640"],
+                        "SeyahatSehirID": ["5"],
+                        "UlkeKodu": ["AL"],
+                        "Bolge": [""],
+                        "Ad": ["Tiran (Arnavutluk)"],
+                        "Aciklama": [""],
+                        "MerkezMi": ["1"],
+                        "BagliOlduguNoktaID": ["0"],
+                        "AramadaGorunsun": ["True"]
+                      },
+                      {
+                        "ID": ["1404"],
+                        "SeyahatSehirID": ["304"],
+                        "UlkeKodu": ["AZ"],
+                        "Bolge": [""],
+                        "Ad": ["Bakü (Azerbaycan)"],
+                        "Aciklama": [""],
+                        "MerkezMi": ["1"],
+                        "BagliOlduguNoktaID": ["0"],
+                        "AramadaGorunsun": ["True"]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
