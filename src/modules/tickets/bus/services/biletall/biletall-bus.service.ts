@@ -1,6 +1,14 @@
+// src/biletall/biletall.service.ts
+
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 import axios from 'axios';
+
+import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
+
+import { BiletAllBusParser } from './biletall-bus.parser';
+
+// dtos
 import {
   CompanyRequestDto,
   ScheduleListRequestDto,
@@ -10,30 +18,49 @@ import {
   ServiceInformationRequestDto,
   BusSaleRequestDto,
   BusRouteRequestDto,
-} from './dto/biletall.dto';
+} from '../../dto/biletall.dto';
 
-import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
+// types
+import { BusFeature } from './types/biletall-bus-bus-feature.type';
+import {
+  BiletAllCompany,
+  BiletAllCompanyResponse,
+} from './types/biletall-bus-company';
+import {
+  BiletAllStopPoint,
+  BiletAllStopPointResponse,
+} from './types/biletall-bus-stop-points.type';
+import {
+  BusSchedule,
+  BusScheduleResponse,
+} from './types/biletall-bus-trip-search.type';
+import { BusResponse } from './types/biletall-bus-bus-search.type';
+import { BusSeatAvailabilityResponse } from './types/biletall-bus-but-seat-availability.type';
+import { RouteDetailResponse } from './types/biletall-bus-route.type';
 
 @Injectable()
-export class BiletAllService {
-  constructor(private biletAllApiConfigService: BiletAllApiConfigService) {}
+export class BiletAllBusService {
+  constructor(
+    private biletAllApiConfigService: BiletAllApiConfigService,
+    private biletAllBusParser: BiletAllBusParser,
+  ) {}
 
-  private async run(bodyXml: string): Promise<any> {
+  private async run<T>(bodyXml: string): Promise<T> {
     const soapEnvelope = `
     <?xml version="1.0" encoding="utf-8"?>
-      <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://tempuri.org/">
         <soap:Body>
-          <XmlIslet xmlns="http://tempuri.org/">
-            <xmlIslem>
+          <tns:XmlIslet>
+            <tns:xmlIslem>
               ${bodyXml}
-            </xmlIslem>
-            <xmlYetki>
-              <Kullanici xmlns="">
+            </tns:xmlIslem>
+            <tns:xmlYetki>
+              <Kullanici>
                 <Adi>${this.biletAllApiConfigService.biletAllApiUsername}</Adi>
                 <Sifre>${this.biletAllApiConfigService.biletAllApiPassword}</Sifre>
               </Kullanici>
-            </xmlYetki>
-          </XmlIslet>
+            </tns:xmlYetki>
+          </tns:XmlIslet>
         </soap:Body>
       </soap:Envelope>`;
     const config = {
@@ -48,55 +75,53 @@ export class BiletAllService {
         soapEnvelope.trim(),
         config,
       );
-      console.log(soapEnvelope);
-      const jsonResponse = await xml2js.parseStringPromise(response.data, {
-        explicitArray: false,
-      });
-      return jsonResponse;
+      return xml2js.parseStringPromise(response.data) as T;
     } catch (error) {
       console.error('Error running XML request:', error);
       throw new Error('Failed to process XML request');
     }
   }
 
-  async company(requestDto: CompanyRequestDto): Promise<any> {
-    const firmalarXml = `<Firmalar_2 xmlns=""><FirmaNo>${requestDto.FirmaNo}</FirmaNo></Firmalar_2>`;
-    return this.run(firmalarXml);
+  async company(requestDto: CompanyRequestDto): Promise<BiletAllCompany[]> {
+    const companiesXml = `<Firmalar><FirmaNo>${requestDto.FirmaNo}</FirmaNo></Firmalar>`;
+    const res = await this.run<BiletAllCompanyResponse>(companiesXml);
+    return this.biletAllBusParser.parseCompany(res);
   }
 
-  async stopPoints(): Promise<any> {
-    const stopPointsXml = `<KaraNoktaGetirKomut xmlns=""/>`;
-    return this.run(stopPointsXml);
+  async stopPoints(): Promise<BiletAllStopPoint[]> {
+    const stopPointsXml = `<KaraNoktaGetirKomut/>`;
+    const res = await this.run<BiletAllStopPointResponse>(stopPointsXml);
+    return this.biletAllBusParser.parseStopPoints(res);
   }
 
-  async scheduleList(requestDto: ScheduleListRequestDto): Promise<any> {
+  async scheduleList(requestDto: ScheduleListRequestDto): Promise<{
+    schedules: BusSchedule[];
+    features: BusFeature[];
+  }> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Sefer: {
-        $: {
-          xmlns: '',
-        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         VarisNoktaID: requestDto.VarisNoktaID,
         Tarih: requestDto.Tarih,
-        AraNoktaGelsin: requestDto.AraNoktaGelsin ? 1 : 0,
         IslemTipi: requestDto.IslemTipi,
         YolcuSayisi: requestDto.YolcuSayisi,
         Ip: requestDto.Ip,
+        ...(requestDto.AraNoktaGelsin !== undefined && {
+          AraNoktaGelsin: requestDto.AraNoktaGelsin ? '1' : '0',
+        }),
       },
     };
     const xml = builder.buildObject(requestDocument);
-    return this.run(xml);
+    const res = await this.run<BusScheduleResponse>(xml);
+    return this.biletAllBusParser.parseBusSchedule(res);
   }
 
   async busSearch(requestDto: BusSearchRequestDto): Promise<any> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Otobus: {
-        $: {
-          xmlns: '',
-        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         VarisNoktaID: requestDto.VarisNoktaID,
@@ -110,16 +135,14 @@ export class BiletAllService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    return this.run(xml);
+    const res = await this.run<BusResponse>(xml);
+    return this.biletAllBusParser.parseBusResponse(res);
   }
 
-  async busSeatControl(requestDto: BusSeatControlRequestDto): Promise<any> {
+  async busSeatControl(requestDto: BusSeatControlRequestDto): Promise<boolean> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       OtobusKoltukKontrol: {
-        $: {
-          xmlns: '',
-        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         VarisNoktaID: requestDto.VarisNoktaID,
@@ -130,13 +153,7 @@ export class BiletAllService {
         SeferTakipNo: requestDto.SeferTakipNo,
         Ip: requestDto.Ip,
         Koltuklar: {
-          $: {
-            xmlns: '',
-          },
           Koltuk: requestDto.Koltuklar.map((koltuk) => ({
-            $: {
-              xmlns: '',
-            },
             KoltukNo: koltuk.KoltukNo,
             Cinsiyet: koltuk.Cinsiyet,
           })),
@@ -144,16 +161,15 @@ export class BiletAllService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    return this.run(xml);
+    const res = await this.run<BusSeatAvailabilityResponse>(xml);
+    return this.biletAllBusParser.parseBusSeatAvailability(res);
   }
 
+  // TODO: could not get a successful response
   async boardingPoint(requestDto: BoardingPointRequestDto): Promise<any> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       BinecegiYer: {
-        $: {
-          xmlns: '',
-        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         YerelSaat: requestDto.YerelSaat,
@@ -164,34 +180,30 @@ export class BiletAllService {
     return this.run(xml);
   }
 
+  // TODO: could not get a successful response
   async serviceInformation(
     requestDto: ServiceInformationRequestDto,
   ): Promise<any> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Servis_2: {
-        $: {
-          xmlns: '',
-        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         YerelSaat: requestDto.YerelSaat,
         HatNo: requestDto.HatNo,
-        Tarih: requestDto.Tarih,
-        Saat: requestDto.Saat,
+        Tarih: new Date(requestDto.Tarih).toISOString(),
+        Saat: new Date(requestDto.Saat).toISOString(),
       },
     };
     const xml = builder.buildObject(requestDocument);
     return this.run(xml);
   }
 
+  // TODO: Add parser for this one
   async saleRequest(requestDto: BusSaleRequestDto): Promise<any> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       IslemSatis: {
-        $: {
-          xmlns: '',
-        },
         FirmaNo: requestDto.FirmaNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
         VarisNoktaID: requestDto.VarisNoktaID,
@@ -226,9 +238,6 @@ export class BiletAllService {
           return acc;
         }, {}),
         WebYolcu: {
-          $: {
-            xmlns: '',
-          },
           WebUyeNo: requestDto.WebYolcu.WebUyeNo,
           Ip: requestDto.WebYolcu.Ip,
           Email: requestDto.WebYolcu.Email,
@@ -264,9 +273,6 @@ export class BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Hat: {
-        $: {
-          xmlns: '',
-        },
         FirmaNo: requestDto.FirmaNo,
         HatNo: requestDto.HatNo,
         KalkisNoktaID: requestDto.KalkisNoktaID,
@@ -277,6 +283,7 @@ export class BiletAllService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    return this.run(xml);
+    const res = await this.run<RouteDetailResponse>(xml);
+    return this.biletAllBusParser.parseRouteDetail(res);
   }
 }

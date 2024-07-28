@@ -1,0 +1,221 @@
+{
+  "soap:Envelope": {
+    "$": {
+      "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/",
+      "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+      "xmlns:xsd": "http://www.w3.org/2001/XMLSchema"
+    },
+    "soap:Body": [
+      {
+        "XmlIsletResponse": [
+          {
+            "$": {
+              "xmlns": "http://tempuri.org/"
+            },
+            "XmlIsletResult": [
+              {
+                "NewDataSet": [
+                  {
+                    "$": {
+                      "xmlns": ""
+                    },
+                    "xs:schema": [
+                      {
+                        "$": {
+                          "id": "NewDataSet",
+                          "xmlns": "",
+                          "xmlns:xs": "http://www.w3.org/2001/XMLSchema",
+                          "xmlns:msdata": "urn:schemas-microsoft-com:xml-msdata"
+                        },
+                        "xs:element": [
+                          {
+                            "$": {
+                              "name": "NewDataSet",
+                              "msdata:IsDataSet": "true",
+                              "msdata:UseCurrentLocale": "true"
+                            },
+                            "xs:complexType": [
+                              {
+                                "xs:choice": [
+                                  {
+                                    "$": {
+                                      "minOccurs": "0",
+                                      "maxOccurs": "unbounded"
+                                    },
+                                    "xs:element": [
+                                      {
+                                        "$": {
+                                          "name": "Table"
+                                        },
+                                        "xs:complexType": [
+                                          {
+                                            "xs:sequence": [
+                                              {
+                                                "xs:element": [
+                                                  {
+                                                    "$": {
+                                                      "name": "Firma_No",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Firmaadi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "FirmaLogo",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BosSubeKodu",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BosKullaniciKodu",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Bilet_Seri_No_Takip",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Bilet_Seri_No",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "WebAdresi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Telefon",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Sat_Koltuk_Adet",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Rez_Koltuk_Adet",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "FirmaNoStr",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "FirmaOtobusteMaxAyniUyeKartliIslemSayisi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "FirmaCokluCinsiyetIslemYapabilir",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "SefereKadarIptalEdilebilmeSuresiDakika",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletIptalAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "AcikParaKullanimAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "Table": [
+                      {
+                        "Firma_No": ["37"],
+                        "Firmaadi": ["İnci Turizm"],
+                        "FirmaLogo": [
+                          "https://eticket.ipektr.com/wsbos3/LogoVer.Aspx?fnum=37"
+                        ],
+                        "BosSubeKodu": ["32011"],
+                        "BosKullaniciKodu": ["32011"],
+                        "Bilet_Seri_No_Takip": ["0"],
+                        "Bilet_Seri_No": ["0"],
+                        "WebAdresi": ["http://eticket.ipektr.com/Firms_37/"],
+                        "Telefon": ["0 352 444 44 38"],
+                        "Sat_Koltuk_Adet": ["100"],
+                        "Rez_Koltuk_Adet": ["100"],
+                        "FirmaNoStr": ["37"],
+                        "FirmaOtobusteMaxAyniUyeKartliIslemSayisi": ["255"],
+                        "FirmaCokluCinsiyetIslemYapabilir": ["1"],
+                        "SefereKadarIptalEdilebilmeSuresiDakika": ["60"],
+                        "BiletIptalAktifMi": ["1"],
+                        "AcikParaKullanimAktifMi": ["1"]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
