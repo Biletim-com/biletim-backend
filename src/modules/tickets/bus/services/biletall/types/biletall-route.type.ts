@@ -1,4 +1,4 @@
-import { SoapEnvelope } from './biletall-bus-soap-envelope.type';
+import { SoapEnvelope } from './biletall-soap-envelope.type';
 
 export type RouteDetail = {
   VarisYeri: string;

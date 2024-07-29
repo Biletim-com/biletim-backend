@@ -20,7 +20,7 @@ export class PostgreSQLProviderService implements TypeOrmOptionsFactory {
       synchronize: false,
       logging: this.postgreSQLConfigService.logging,
       migrations: [`${__dirname}/../../../database/migrations/*{.ts,.js}`],
-      migrationsRun: true,
+      // migrationsRun: true,
       entities: [`${__dirname}/../../../modules/**/*.entity{.ts,.js}`],
     };
   }

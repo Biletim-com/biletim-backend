@@ -9,7 +9,7 @@ async function bootstrap() {
 
   const appConfigService = app.get<AppConfigService>(AppConfigService);
 
-  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+  app.useGlobalPipes(new ValidationPipe());
 
   const docOptions = new DocumentBuilder()
     .setTitle('Biletim API')

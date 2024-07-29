@@ -1,5 +1,5 @@
-import { SoapEnvelope } from './biletall-bus-soap-envelope.type';
-import { ActionResult } from './biletall-bus-action-result.type';
+import { SoapEnvelope } from './biletall-soap-envelope.type';
+import { ActionResult } from './biletall-action-result.type';
 
 type BusSeatAvailabilityResponseDataSet = {
   IslemSonuc: ActionResult[];

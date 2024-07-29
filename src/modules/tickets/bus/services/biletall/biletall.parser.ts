@@ -4,37 +4,34 @@ import { ObjectTyped } from '@app/common/utils/object-typed.util';
 import { BiletAllResponseError } from '@app/common/errors/biletall/biletall-response.error';
 
 // types
-import { SoapEnvelope } from './types/biletall-bus-soap-envelope.type';
-import { ErrorResponse } from './types/biletall-bus-error.type';
-import { BusFeature } from './types/biletall-bus-bus-feature.type';
-import { ActionResult } from './types/biletall-bus-action-result.type';
+import { SoapEnvelope } from './types/biletall-soap-envelope.type';
+import { ErrorResponse } from './types/biletall-error.type';
+import { BusFeature } from './types/biletall-bus-feature.type';
+import { ActionResult } from './types/biletall-action-result.type';
 import {
   BiletAllCompany,
   BiletAllCompanyResponse,
-} from './types/biletall-bus-company';
+} from './types/biletall-company';
 import {
   BiletAllStopPoint,
   BiletAllStopPointResponse,
-} from './types/biletall-bus-stop-points.type';
+} from './types/biletall-stop-points.type';
 import {
   BusSchedule,
   BusScheduleResponse,
-} from './types/biletall-bus-trip-search.type';
+} from './types/biletall-trip-search.type';
 import {
   BusResponse,
   BusTrip,
   PaymentRule,
   Seat,
   TravelType,
-} from './types/biletall-bus-bus-search.type';
-import { BusSeatAvailabilityResponse } from './types/biletall-bus-but-seat-availability.type';
-import {
-  RouteDetail,
-  RouteDetailResponse,
-} from './types/biletall-bus-route.type';
+} from './types/biletall-bus-search.type';
+import { BusSeatAvailabilityResponse } from './types/biletall-bus-seat-availability.type';
+import { RouteDetail, RouteDetailResponse } from './types/biletall-route.type';
 
 @Injectable()
-export class BiletAllBusParser {
+export class BiletAllParser {
   private isErrorResponse(response: any): response is ErrorResponse {
     return (
       Array.isArray(response?.IslemSonuc) &&

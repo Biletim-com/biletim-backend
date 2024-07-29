@@ -6,7 +6,7 @@ import axios from 'axios';
 
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 
-import { BiletAllBusParser } from './biletall-bus.parser';
+import { BiletAllParser } from './biletall.parser';
 
 // dtos
 import {
@@ -21,28 +21,28 @@ import {
 } from '../../dto/biletall.dto';
 
 // types
-import { BusFeature } from './types/biletall-bus-bus-feature.type';
+import { BusFeature } from './types/biletall-bus-feature.type';
 import {
   BiletAllCompany,
   BiletAllCompanyResponse,
-} from './types/biletall-bus-company';
+} from './types/biletall-company';
 import {
   BiletAllStopPoint,
   BiletAllStopPointResponse,
-} from './types/biletall-bus-stop-points.type';
+} from './types/biletall-stop-points.type';
 import {
   BusSchedule,
   BusScheduleResponse,
-} from './types/biletall-bus-trip-search.type';
-import { BusResponse } from './types/biletall-bus-bus-search.type';
-import { BusSeatAvailabilityResponse } from './types/biletall-bus-but-seat-availability.type';
-import { RouteDetailResponse } from './types/biletall-bus-route.type';
+} from './types/biletall-trip-search.type';
+import { BusResponse } from './types/biletall-bus-search.type';
+import { BusSeatAvailabilityResponse } from './types/biletall-bus-seat-availability.type';
+import { RouteDetailResponse } from './types/biletall-route.type';
 
 @Injectable()
-export class BiletAllBusService {
+export class BiletAllService {
   constructor(
     private biletAllApiConfigService: BiletAllApiConfigService,
-    private biletAllBusParser: BiletAllBusParser,
+    private biletAllParser: BiletAllParser,
   ) {}
 
   private async run<T>(bodyXml: string): Promise<T> {
@@ -85,13 +85,13 @@ export class BiletAllBusService {
   async company(requestDto: CompanyRequestDto): Promise<BiletAllCompany[]> {
     const companiesXml = `<Firmalar><FirmaNo>${requestDto.FirmaNo}</FirmaNo></Firmalar>`;
     const res = await this.run<BiletAllCompanyResponse>(companiesXml);
-    return this.biletAllBusParser.parseCompany(res);
+    return this.biletAllParser.parseCompany(res);
   }
 
   async stopPoints(): Promise<BiletAllStopPoint[]> {
     const stopPointsXml = `<KaraNoktaGetirKomut/>`;
     const res = await this.run<BiletAllStopPointResponse>(stopPointsXml);
-    return this.biletAllBusParser.parseStopPoints(res);
+    return this.biletAllParser.parseStopPoints(res);
   }
 
   async scheduleList(requestDto: ScheduleListRequestDto): Promise<{
@@ -115,7 +115,7 @@ export class BiletAllBusService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BusScheduleResponse>(xml);
-    return this.biletAllBusParser.parseBusSchedule(res);
+    return this.biletAllParser.parseBusSchedule(res);
   }
 
   async busSearch(requestDto: BusSearchRequestDto): Promise<any> {
@@ -136,7 +136,7 @@ export class BiletAllBusService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BusResponse>(xml);
-    return this.biletAllBusParser.parseBusResponse(res);
+    return this.biletAllParser.parseBusResponse(res);
   }
 
   async busSeatControl(requestDto: BusSeatControlRequestDto): Promise<boolean> {
@@ -162,7 +162,7 @@ export class BiletAllBusService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BusSeatAvailabilityResponse>(xml);
-    return this.biletAllBusParser.parseBusSeatAvailability(res);
+    return this.biletAllParser.parseBusSeatAvailability(res);
   }
 
   // TODO: could not get a successful response
@@ -284,6 +284,6 @@ export class BiletAllBusService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<RouteDetailResponse>(xml);
-    return this.biletAllBusParser.parseRouteDetail(res);
+    return this.biletAllParser.parseRouteDetail(res);
   }
 }

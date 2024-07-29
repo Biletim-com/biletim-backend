@@ -1,7 +1,5 @@
-// src/biletall/biletall.controller.ts
-
-import { Controller, Post, Body, Get } from '@nestjs/common';
-import { BiletAllBusService } from './services/biletall/biletall-bus.service';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
+import { BiletAllService } from './services/biletall/biletall.service';
 import {
   CompanyRequestDto,
   ScheduleListRequestDto,
@@ -12,54 +10,63 @@ import {
   BusSaleRequestDto,
   BusRouteRequestDto,
 } from './dto/biletall.dto';
+import { BusService } from './services/bus.service';
 
 @Controller('bus')
 export class BusController {
-  constructor(private readonly biletAllBusService: BiletAllBusService) {}
+  constructor(
+    private readonly biletAllService: BiletAllService,
+    private readonly busService: BusService,
+  ) {}
 
   @Get('company')
   async company(@Body() requestDto: CompanyRequestDto): Promise<any> {
-    return this.biletAllBusService.company(requestDto);
+    return this.biletAllService.company(requestDto);
   }
 
   @Get('stop-points')
   async stopPoints() {
-    return this.biletAllBusService.stopPoints();
+    return this.biletAllService.stopPoints();
+  }
+
+  @Get('stop-point')
+  async stopPointsByName(@Query('name') name: string) {
+    return this.busService.getStopPointsByName(name);
   }
 
   @Post('schedule-list')
   async scheduleList(@Body() requestDto: ScheduleListRequestDto) {
-    return this.biletAllBusService.scheduleList(requestDto);
+    return this.biletAllService.scheduleList(requestDto);
   }
 
   @Post('bus-search')
   async busSearch(@Body() requestDto: BusSearchRequestDto) {
-    return this.biletAllBusService.busSearch(requestDto);
+    return this.biletAllService.busSearch(requestDto);
   }
 
   @Post('bus-seat-control')
   async busSeatControl(@Body() requestDto: BusSeatControlRequestDto) {
-    const result = await this.biletAllBusService.busSeatControl(requestDto);
+    const result = await this.biletAllService.busSeatControl(requestDto);
     return { isAvailable: result };
   }
 
   @Post('boarding-point')
   async boardingPoint(@Body() requestDto: BoardingPointRequestDto) {
-    return this.biletAllBusService.boardingPoint(requestDto);
+    return this.biletAllService.boardingPoint(requestDto);
   }
 
   @Post('service-information')
   async serviceInformation(@Body() requestDto: ServiceInformationRequestDto) {
-    return this.biletAllBusService.serviceInformation(requestDto);
+    return this.biletAllService.serviceInformation(requestDto);
   }
 
   @Post('sale-request')
   async saleRequest(@Body() requestDto: BusSaleRequestDto) {
-    return this.biletAllBusService.saleRequest(requestDto);
+    return this.biletAllService.saleRequest(requestDto);
   }
 
   @Post('get-route')
   async getRoute(@Body() requestDto: BusRouteRequestDto) {
-    return this.biletAllBusService.getRoute(requestDto);
+    return this.biletAllService.getRoute(requestDto);
   }
 }
