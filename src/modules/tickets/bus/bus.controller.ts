@@ -10,6 +10,8 @@ import {
   BusSaleRequestDto,
   BusRouteRequestDto,
 } from './dto/biletall.dto';
+import { StopPointSearchQueryDto } from './dto/stop-point-search-query.dto';
+
 import { BusService } from './services/bus.service';
 
 @Controller('bus')
@@ -24,13 +26,8 @@ export class BusController {
     return this.biletAllService.company(requestDto);
   }
 
-  @Get('stop-points')
-  async stopPoints() {
-    return this.biletAllService.stopPoints();
-  }
-
-  @Get('stop-point')
-  async stopPointsByName(@Query('name') name: string) {
+  @Get('stop-point-search')
+  async stopPointsByName(@Query() { name }: StopPointSearchQueryDto) {
     return this.busService.getStopPointsByName(name);
   }
 
