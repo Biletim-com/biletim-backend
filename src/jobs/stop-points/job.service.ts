@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { StopPoint } from '@app/modules/tickets/bus/models/stop-point.entity';
@@ -11,16 +11,17 @@ import { BiletAllStopPoint } from '@app/modules/tickets/bus/services/biletall/ty
 @Injectable()
 export class StopPointsCronJobService implements OnModuleInit {
   private readonly chunkSize = 500;
+  private readonly logger = new Logger(StopPointsCronJobService.name);
   constructor(
     private readonly biletAllBusService: BiletAllService,
     private readonly stopPointsRepository: StopPointsRepository,
   ) {}
 
   onModuleInit() {
-    this.fetchData();
+    this.saveBusTerminalsToDb();
   }
 
-  public splitIntoChunks = (
+  private splitIntoChunks = (
     array: BiletAllStopPoint[],
   ): BiletAllStopPoint[][] => {
     const chunks: BiletAllStopPoint[][] = [];
@@ -30,15 +31,25 @@ export class StopPointsCronJobService implements OnModuleInit {
     return chunks;
   };
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  private async fetchData() {
-    console.log('Fetching data from BiletAll...');
+  private async fetchBusStopPointsDataFromBiletAll(): Promise<
+    BiletAllStopPoint[][]
+  > {
     try {
+      this.logger.log('Fetching data from BiletAll');
       const response = await this.biletAllBusService.stopPoints();
-      const responseChunks = this.splitIntoChunks(response);
+      return this.splitIntoChunks(response);
+    } catch (error) {
+      this.logger.error('Error fetching data from BiletAll', error);
+    }
+  }
 
-      responseChunks.forEach((responseChunk) => {
-        const entities = responseChunk.map((biletAllStopPoint) => {
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  private async saveBusTerminalsToDb() {
+    const busStopPointsChunks = await this.fetchBusStopPointsDataFromBiletAll();
+    try {
+      this.logger.log('Saving Bus Terminals to DB');
+      busStopPointsChunks.forEach((busStopPointsChunk) => {
+        const entities = busStopPointsChunk.map((busStopPoint) => {
           const {
             ID,
             SeyahatSehirID,
@@ -49,7 +60,7 @@ export class StopPointsCronJobService implements OnModuleInit {
             MerkezMi,
             BagliOlduguNoktaID,
             AramadaGorunsun,
-          } = biletAllStopPoint;
+          } = busStopPoint;
 
           return new StopPoint({
             externalId: Number(ID),
@@ -70,7 +81,7 @@ export class StopPointsCronJobService implements OnModuleInit {
         });
       });
     } catch (error) {
-      console.error('Error fetching data from BiletAll:', error);
+      this.logger.error('Error saving bus terminals to DB', error);
     }
   }
 }

@@ -22,6 +22,8 @@
       "@app/auth/*": ["src/auth/*"],
       "@app/common": ["src/common"],
       "@app/common/*": ["src/common/*"],
+      "@app/jobs": ["src/jons"],
+      "@app/jobs/*": ["src/jobs/*"],
       "@app/configs": ["src/configs"],
       "@app/configs/*": ["src/configs/*"],
       "@app/providers": ["src/providers"],

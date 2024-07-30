@@ -1,6 +1,8 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Logger } from 'nestjs-pino';
+
 import { AppModule } from './app.module';
 import { AppConfigService } from './configs/app';
 
@@ -10,6 +12,7 @@ async function bootstrap() {
   const appConfigService = app.get<AppConfigService>(AppConfigService);
 
   app.useGlobalPipes(new ValidationPipe());
+  app.useLogger(app.get<Logger>(Logger));
 
   const docOptions = new DocumentBuilder()
     .setTitle('Biletim API')

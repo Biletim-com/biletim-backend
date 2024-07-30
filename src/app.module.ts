@@ -3,6 +3,9 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@app/configs/config.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
+// Common
+import { LoggerModule } from '@app/common/logger/logger.module';
+
 // Auth Module
 import { AuthModule } from '@app/auth/auth.module';
 import { AppleModule } from './apple/apple.module';
@@ -18,11 +21,14 @@ import { BookingModule } from '@app/modules/booking/booking.module';
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
 
 // Interceptors
-import { ErrorInterceptor } from './common/interceptors/error.interseptor';
-import { JobsModule } from './jobs/jobs.module';
+import { ErrorInterceptor } from '@app/common/interceptors/error.interseptor';
+
+// Jobs
+import { JobsModule } from '@app/jobs/jobs.module';
 
 @Module({
   imports: [
+    LoggerModule,
     ConfigModule,
     PostgreSQLProviderModule,
     JobsModule,
