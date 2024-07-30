@@ -19,11 +19,13 @@ import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/pro
 
 // Interceptors
 import { ErrorInterceptor } from './common/interceptors/error.interseptor';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
     ConfigModule,
     PostgreSQLProviderModule,
+    JobsModule,
     AuthModule,
     UsersModule,
     TicketsModule,

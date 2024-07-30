@@ -1,4 +1,4 @@
-import { ErrorResponse } from './biletall-bus-error.type';
+import { ErrorResponse } from './biletall-error.type';
 
 export type SoapEnvelope<T> = {
   'soap:Envelope': {
