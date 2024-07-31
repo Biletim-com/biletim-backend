@@ -9,8 +9,14 @@ import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { BiletAllParser } from './biletall.parser';
 
 // dtos
-import { BusCompanyDto } from '../../dto/bus-company.dto';
-import { ScheduleListDto } from '../../dto/bus-schedule-list.dto';
+import {
+  BusCompanyDto,
+  BusCompanyResponseDto,
+} from '../../dto/bus-company.dto';
+import {
+  BusScheduleResponseDto,
+  ScheduleListDto,
+} from '../../dto/bus-schedule-list.dto';
 import { BusSearchDto } from '../../dto/bus-search.dto';
 import { BusSeatControlDto } from '../../dto/bus-seat-control.dto';
 import { BoardingPointDto } from '../../dto/bus-boarding-point.dto';
@@ -79,10 +85,11 @@ export class BiletAllService {
     }
   }
 
-  async company(requestDto: BusCompanyDto): Promise<BiletAllCompany[]> {
+  async company(requestDto: BusCompanyDto): Promise<BusCompanyResponseDto[]> {
     const companiesXml = `<Firmalar><FirmaNo>${requestDto.companyNo}</FirmaNo></Firmalar>`;
     const res = await this.run<BiletAllCompanyResponse>(companiesXml);
-    return this.biletAllParser.parseCompany(res);
+    const companies = this.biletAllParser.parseCompany(res);
+    return BusCompanyResponseDto.finalVersionBusCompanyResponse(companies);
   }
 
   async stopPoints(): Promise<BiletAllStopPoint[]> {
@@ -92,7 +99,7 @@ export class BiletAllService {
   }
 
   async scheduleList(requestDto: ScheduleListDto): Promise<{
-    schedules: BusSchedule[];
+    schedules: BusScheduleResponseDto[];
     features: BusFeature[];
   }> {
     const builder = new xml2js.Builder({ headless: true });
@@ -109,8 +116,19 @@ export class BiletAllService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    const res = await this.run<BusScheduleResponse>(xml);
-    return this.biletAllParser.parseBusSchedule(res);
+    const res = await this.run<BusScheduleResponse>(xml); // run metodunun API servisinde implement edildiğinden emin olun
+
+    // BusScheduleResponse ve BusFeature'den gelen veri ile DTO'ları oluştur
+    const { schedules, features } = this.biletAllParser.parseBusSchedule(res);
+
+    // BusScheduleResponseDto'lar oluşturuluyor
+    const busScheduleDtos =
+      BusScheduleResponseDto.finalVersionBusScheduleResponse({
+        schedules,
+        features,
+      });
+
+    return { schedules: busScheduleDtos, features };
   }
 
   async busSearch(requestDto: BusSearchDto): Promise<any> {
