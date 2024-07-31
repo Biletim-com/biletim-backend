@@ -17,6 +17,7 @@ import { BoardingPointDto } from '../../dto/bus-boarding-point.dto';
 import { ServiceInformationDto } from '../../dto/bus-service-information.dto';
 import { BusPurchaseDto } from '../../dto/bus-purchase.dto';
 import { BusRouteDto } from '../../dto/bus-route.dto';
+
 // types
 import { BusFeature } from './types/biletall-bus-feature.type';
 import {
@@ -34,6 +35,8 @@ import {
 import { BusResponse } from './types/biletall-bus-search.type';
 import { BusSeatAvailabilityResponse } from './types/biletall-bus-seat-availability.type';
 import { RouteDetailResponse } from './types/biletall-route.type';
+import { ServiceInformationResponse } from './types/biletall-service-information.type';
+import { BoardingPointResponse } from './types/biletall-boarding-point.type';
 
 @Injectable()
 export class BiletAllService {
@@ -73,6 +76,10 @@ export class BiletAllService {
         config,
       );
       return xml2js.parseStringPromise(response.data) as T;
+      // const resp =
+      //   '<NewDataSet><Table> <Saat>2018-12-10T02:30:00+03:00</Saat></Table> <Table><Yer /><Saat>2018-12-10T02:30:00+03:00</Saat> <Internette_Gozuksunmu>0</Internette_Gozuksunmu></Table><Table><Yer> BELSİN GİRİŞ </Yer> <Saat>2018-12-10T02:30:00+03:00</Saat> <Internette_Gozuksunmu>1</Internette_Gozuksunmu></Table> <Table><Yer> FUZULİ</Yer> <Saat>2018-12-10T02:30:00+03:00</Saat> <Internette_Gozuksunmu>1</Internette_Gozuksunmu></Table> <Table><Yer> HIMMETD SHEL</Yer> <Saat>2018-12-10T02:30:00+03:00</Saat> <Internette_Gozuksunmu>1</Internette_Gozuksunmu></Table> <Table><Yer> TOYOTA</Yer> <Saat>2018-12-10T02:30:00+03:00</Saat> <Internette_Gozuksunmu>1</Internette_Gozuksunmu></Table> <Table><Yer>AĞAÇ İŞLERİ</Yer> <Saat>2018-12-10T02:40:00+03:00</Saat> <Internette_Gozuksunmu>1</Internette_Gozuksunmu></Table> </NewDataSet>';
+      // const testResp = `<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><XmlIsletResponse xmlns="http://tempuri.org/"><XmlIsletResult>${resp}</XmlIsletResult></XmlIsletResponse></soap:Body></soap:Envelope>`;
+      // return xml2js.parseStringPromise(testResp) as T;
     } catch (error) {
       console.error('Error running XML request:', error);
       throw new Error('Failed to process XML request');
@@ -160,7 +167,6 @@ export class BiletAllService {
     return this.biletAllParser.parseBusSeatAvailability(res);
   }
 
-  // TODO: could not get a successful response
   async boardingPoint(requestDto: BoardingPointDto): Promise<any> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
@@ -172,10 +178,10 @@ export class BiletAllService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    return this.run(xml);
+    const res = await this.run<BoardingPointResponse>(xml);
+    return this.biletAllParser.parseBoordingPoint(res);
   }
 
-  // TODO: could not get a successful response
   async serviceInformation(requestDto: ServiceInformationDto): Promise<any> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
@@ -189,7 +195,8 @@ export class BiletAllService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    return this.run(xml);
+    const res = await this.run<ServiceInformationResponse>(xml);
+    return this.biletAllParser.parseServiceInformation(res);
   }
 
   // TODO: Add parser for this one
