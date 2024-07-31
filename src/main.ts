@@ -11,7 +11,7 @@ async function bootstrap() {
 
   const appConfigService = app.get<AppConfigService>(AppConfigService);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useLogger(app.get<Logger>(Logger));
 
   const docOptions = new DocumentBuilder()
