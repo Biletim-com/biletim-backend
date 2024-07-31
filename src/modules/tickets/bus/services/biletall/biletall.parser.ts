@@ -29,6 +29,14 @@ import {
 } from './types/biletall-bus-search.type';
 import { BusSeatAvailabilityResponse } from './types/biletall-bus-seat-availability.type';
 import { RouteDetail, RouteDetailResponse } from './types/biletall-route.type';
+import {
+  ServiceInformation,
+  ServiceInformationResponse,
+} from './types/biletall-service-information.type';
+import {
+  BoardingPoint,
+  BoardingPointResponse,
+} from './types/biletall-boarding-point.type';
 
 @Injectable()
 export class BiletAllParser {
@@ -197,6 +205,36 @@ export class BiletAllParser {
         routeDetailParsed[key] = value;
       }
       return routeDetailParsed;
+    });
+  };
+
+  public parseBoordingPoint = (response: BoardingPointResponse) => {
+    const extractedResult = this.extractResult(response);
+    const newDataSet = extractedResult['NewDataSet'][0];
+    const table = newDataSet['Table'];
+
+    return table.map((entry) => {
+      const boardingBointsParsed: BoardingPoint = Object.assign({});
+      for (const [key, [value]] of Object.entries(entry)) {
+        boardingBointsParsed[key] = value;
+      }
+      return boardingBointsParsed;
+    });
+  };
+
+  public parseServiceInformation = (
+    response: ServiceInformationResponse,
+  ): ServiceInformation[] => {
+    const extractedResult = this.extractResult(response);
+    const newDataSet = extractedResult['NewDataSet'][0];
+    const table = newDataSet['Table'];
+
+    return table.map((entry) => {
+      const serviceInformationParsed: ServiceInformation = Object.assign({});
+      for (const [key, [value]] of ObjectTyped.entries(entry)) {
+        serviceInformationParsed[key] = value;
+      }
+      return serviceInformationParsed;
     });
   };
 }
