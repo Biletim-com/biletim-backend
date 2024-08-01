@@ -26,18 +26,12 @@ import { BusRouteDto } from '../../dto/bus-route.dto';
 
 // types
 import { BusFeature } from './types/biletall-bus-feature.type';
-import {
-  BiletAllCompany,
-  BiletAllCompanyResponse,
-} from './types/biletall-company';
+import { BiletAllCompanyResponse } from './types/biletall-company';
 import {
   BiletAllStopPoint,
   BiletAllStopPointResponse,
 } from './types/biletall-stop-points.type';
-import {
-  BusSchedule,
-  BusScheduleResponse,
-} from './types/biletall-trip-search.type';
+import { BusScheduleResponse } from './types/biletall-trip-search.type';
 import { BusResponse } from './types/biletall-bus-search.type';
 import { BusSeatAvailabilityResponse } from './types/biletall-bus-seat-availability.type';
 import { RouteDetailResponse } from './types/biletall-route.type';
@@ -123,12 +117,9 @@ export class BiletAllService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    const res = await this.run<BusScheduleResponse>(xml); // run metodunun API servisinde implement edildiğinden emin olun
-
-    // BusScheduleResponse ve BusFeature'den gelen veri ile DTO'ları oluştur
+    const res = await this.run<BusScheduleResponse>(xml);
     const { schedules, features } = this.biletAllParser.parseBusSchedule(res);
 
-    // BusScheduleResponseDto'lar oluşturuluyor
     const busScheduleDtos =
       BusScheduleResponseDto.finalVersionBusScheduleResponse({
         schedules,

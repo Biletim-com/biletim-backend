@@ -46,7 +46,6 @@ export class HotelController {
     @Body() searchHotelsDto: searchReservationByRegionIdDto,
     @Query() queryDto: QueryDto,
   ): Promise<any> {
-    console.log('CONTROLLER STARTED');
     return this.hotelService.searchReservationByRegionId(
       searchHotelsDto,
       queryDto,
