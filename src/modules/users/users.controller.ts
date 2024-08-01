@@ -36,7 +36,7 @@ export class UsersController {
   async getUsers(
     @Query() { fullName, offset, limit }: GetUsersQuery,
   ): Promise<Omit<User, 'password'>[]> {
-    return this.usersService.getUsers(fullName, offset, limit);
+    return this.usersService.getUsers(fullName?.trim(), offset, limit);
   }
 
   @ApiOperation({ summary: 'Find Me App User' })
