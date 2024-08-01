@@ -35,23 +35,31 @@ export class PanelUsersService {
     limit = 10,
   ): Promise<Omit<PanelUser, 'password'>[]> {
     try {
-      // TODO: this is a wrong implementation. what if the user has a middlename
-      const [firstName, lastName] =
-        fullName && fullName.length > 0 ? fullName?.split(' ') : [];
+      const nameParts = fullName ? fullName.trim().split(' ') : [];
+      const firstName = nameParts.length > 0 ? nameParts[0] : '';
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+      const whereCondition: any = {};
+
+      if (firstName) {
+        whereCondition.name = ILike(`%${firstName}%`);
+      }
+
+      if (lastName) {
+        whereCondition.familyName = ILike(`%${lastName}%`);
+      }
 
       const totalUsers = await this.panelUsersRepository.find({
         skip: offset,
         take: limit,
-        where: {
-          name: ILike(`%${firstName}%`),
-          familyName: ILike(`%${lastName}%`),
-        },
+        where: whereCondition,
       });
+
       const users = totalUsers.map((user) => {
-        // TODO: this should be done in a Return DTO in controllers
         const { password, ...rest } = user;
         return rest;
       });
+
       return users;
     } catch (err: any) {
       throw new HttpException(
