@@ -1,8 +1,8 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
-import { StopPoint } from '@app/modules/tickets/bus/models/stop-point.entity';
-import { StopPointsRepository } from '@app/modules/tickets/bus/repositories/stop-points.repository';
+import { BusTerminal } from '@app/modules/tickets/bus/models/bus-terminal.entity';
+import { BusTerminalsRepository } from '@app/modules/tickets/bus/repositories/bus-terminals.repository';
 import { BiletAllService } from '@app/modules/tickets/bus/services/biletall/biletall.service';
 
 // types
@@ -14,7 +14,7 @@ export class StopPointsCronJobService implements OnModuleInit {
   private readonly logger = new Logger(StopPointsCronJobService.name);
   constructor(
     private readonly biletAllBusService: BiletAllService,
-    private readonly stopPointsRepository: StopPointsRepository,
+    private readonly busTerminalsRepository: BusTerminalsRepository,
   ) {}
 
   onModuleInit() {
@@ -62,7 +62,7 @@ export class StopPointsCronJobService implements OnModuleInit {
             AramadaGorunsun,
           } = busStopPoint;
 
-          return new StopPoint({
+          return new BusTerminal({
             externalId: Number(ID),
             cityId: Number(SeyahatSehirID),
             countryCode: UlkeKodu,
@@ -75,7 +75,7 @@ export class StopPointsCronJobService implements OnModuleInit {
           });
         });
 
-        this.stopPointsRepository.upsert(entities, {
+        this.busTerminalsRepository.upsert(entities, {
           conflictPaths: ['externalId'],
           skipUpdateIfNoValuesChanged: true,
         });
