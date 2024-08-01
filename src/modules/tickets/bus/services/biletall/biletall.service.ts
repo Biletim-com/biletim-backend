@@ -126,7 +126,10 @@ export class BiletAllService {
         features,
       });
 
-    return { schedules: busScheduleDtos, features };
+    return {
+      schedules: busScheduleDtos.schedules,
+      features: busScheduleDtos.features,
+    };
   }
 
   async busSearch(requestDto: BusSearchDto): Promise<any> {

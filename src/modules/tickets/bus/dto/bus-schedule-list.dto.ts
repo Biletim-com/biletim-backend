@@ -179,30 +179,43 @@ export class BusScheduleResponseDto {
     this.seatSelectionAvailable = schedule.KoltukSecimiVar;
     this.tripCode = schedule.SeferKod;
 
-    // Her bir feature'ı mapleyerek busFeatures dizisini oluştur
-    this.busFeatures = features
-      .filter((feature) =>
-        schedule.OTipOzellik.split(',').includes(feature.O_Tip_Ozellik),
-      )
-      .map((feature) => ({
-        typeFeature: feature.O_Tip_Ozellik,
-        typeFeatureDescription: feature.O_Tip_Ozellik_Aciklama,
-        typeFeatureDetail: feature.O_Tip_Ozellik_Detay,
-        typeFeatureIcon: feature.O_Tip_Ozellik_Icon,
-      }));
+    this.busFeatures = features.map((feature) => ({
+      typeFeature: feature.O_Tip_Ozellik,
+      typeFeatureDescription: feature.O_Tip_Ozellik_Aciklama,
+      typeFeatureDetail: feature.O_Tip_Ozellik_Detay,
+      typeFeatureIcon: feature.O_Tip_Ozellik_Icon,
+    }));
   }
 
   static finalVersionBusScheduleResponse(scheduleLists: {
     schedules: BusSchedule[];
     features: BusFeature[];
-  }): BusScheduleResponseDto[] {
-    return scheduleLists.schedules.map((schedule) => {
-      // Her bir schedule için ilgili features'ları filtrele
-      const features = scheduleLists.features.filter((feature) =>
-        schedule.OTipOzellik.split(',').includes(feature.O_Tip_Ozellik),
-      );
+  }): { schedules: BusScheduleResponseDto[]; features: any[] } {
+    return {
+      schedules: scheduleLists.schedules.map((schedule) => {
+        const featureIndexes = Array.from(schedule.OTipOzellik)
+          .map((char, index) => (char === '1' ? index : -1))
+          .filter((index) => index !== -1);
 
-      return new BusScheduleResponseDto(schedule, features);
-    });
+        const busFeatures = featureIndexes
+          .map((index) =>
+            scheduleLists.features.find(
+              (feature) => parseInt(feature.O_Tip_Ozellik) === index,
+            ),
+          )
+          .filter((feature) => feature !== undefined);
+
+        return new BusScheduleResponseDto(
+          schedule,
+          busFeatures as BusFeature[],
+        );
+      }),
+      features: scheduleLists.features.map((feature) => ({
+        typeFeature: feature.O_Tip_Ozellik,
+        typeFeatureDescription: feature.O_Tip_Ozellik_Aciklama,
+        typeFeatureDetail: feature.O_Tip_Ozellik_Detay,
+        typeFeatureIcon: feature.O_Tip_Ozellik_Icon,
+      })),
+    };
   }
 }
