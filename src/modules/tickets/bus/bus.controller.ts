@@ -15,7 +15,7 @@ import { BoardingPointDto } from './dto/bus-boarding-point.dto';
 import { ServiceInformationDto } from './dto/bus-service-information.dto';
 import { BusPurchaseDto } from './dto/bus-purchase.dto';
 import { BusRouteDto } from './dto/bus-route.dto';
-import { StopPointSearchQueryDto } from './dto/stop-point-search-query.dto';
+import { BusTerminalSearchQueryDto } from './dto/bus-terminal-search-query.dto';
 
 @Controller('bus')
 export class BusController {
@@ -29,9 +29,9 @@ export class BusController {
     return this.biletAllService.company(requestDto);
   }
 
-  @Get('stop-point-search')
-  async stopPointsByName(@Query() { name }: StopPointSearchQueryDto) {
-    return this.busService.getStopPointsByName(name);
+  @Get('bus-terminal-search')
+  async busTerminalsByName(@Query() { name }: BusTerminalSearchQueryDto) {
+    return this.busService.getBusTerminalsByName(name);
   }
 
   @Post('schedule-list')
