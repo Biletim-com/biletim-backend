@@ -235,7 +235,7 @@ export class BiletAllService {
     );
   }
 
-  async getRoute(requestDto: BusRouteDto): Promise<any> {
+  async getRoute(requestDto: BusRouteDto): Promise<RouteDetailResponseDto[]> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Hat: {
@@ -250,7 +250,8 @@ export class BiletAllService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<RouteDetailResponse>(xml);
-    return this.biletAllParser.parseRouteDetail(res);
+    const routeDetails = this.biletAllParser.parseRouteDetail(res);
+    return RouteDetailResponseDto.finalVersionRouteDetailResponse(routeDetails);
   }
 
   async saleRequest(requestDto: BusPurchaseDto): Promise<any> {
@@ -320,24 +321,5 @@ export class BiletAllService {
     };
     const xml = builder.buildObject(requestDocument);
     return this.run(xml);
-  }
-
-  async getRoute(requestDto: BusRouteDto): Promise<RouteDetailResponseDto[]> {
-    const builder = new xml2js.Builder({ headless: true });
-    const requestDocument = {
-      Hat: {
-        FirmaNo: requestDto.companyNo,
-        HatNo: requestDto.routeNumber,
-        KalkisNoktaID: requestDto.departurePointID,
-        VarisNoktaID: requestDto.arrivalPointID,
-        BilgiIslemAdi: requestDto.infoTechnologyName,
-        SeferTakipNo: requestDto.tripTrackingNumber,
-        Tarih: requestDto.date,
-      },
-    };
-    const xml = builder.buildObject(requestDocument);
-    const res = await this.run<RouteDetailResponse>(xml);
-    const routeDetails = this.biletAllParser.parseRouteDetail(res);
-    return RouteDetailResponseDto.finalVersionRouteDetailResponse(routeDetails);
   }
 }

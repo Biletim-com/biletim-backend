@@ -23,7 +23,7 @@ import {
   ServiceInformationResponseDto,
 } from './dto/bus-service-information.dto';
 import { BusPurchaseDto } from './dto/bus-purchase.dto';
-import { BusRouteDto } from './dto/bus-route.dto';
+import { BusRouteDto, RouteDetailResponseDto } from './dto/bus-route.dto';
 import { BusTerminalSearchQueryDto } from './dto/bus-terminal-search-query.dto';
 
 @Controller('bus')
