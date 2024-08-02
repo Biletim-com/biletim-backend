@@ -2,8 +2,8 @@ import { Entity, Column, Index } from 'typeorm';
 
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
-@Entity('stop_points')
-export class StopPoint extends AbstractEntity<StopPoint> {
+@Entity('bus_terminals')
+export class BusTerminal extends AbstractEntity<BusTerminal> {
   @Column({ name: 'external_id', unique: true })
   externalId: number;
 

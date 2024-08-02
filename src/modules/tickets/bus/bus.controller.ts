@@ -23,8 +23,8 @@ import {
   ServiceInformationResponseDto,
 } from './dto/bus-service-information.dto';
 import { BusPurchaseDto } from './dto/bus-purchase.dto';
-import { BusRouteDto, RouteDetailResponseDto } from './dto/bus-route.dto';
-import { StopPointSearchQueryDto } from './dto/stop-point-search-query.dto';
+import { BusRouteDto } from './dto/bus-route.dto';
+import { BusTerminalSearchQueryDto } from './dto/bus-terminal-search-query.dto';
 
 @Controller('bus')
 export class BusController {
@@ -40,9 +40,9 @@ export class BusController {
     return this.biletAllService.company(requestDto);
   }
 
-  @Get('stop-point-search')
-  async stopPointsByName(@Query() { name }: StopPointSearchQueryDto) {
-    return this.busService.getStopPointsByName(name);
+  @Get('bus-terminal-search')
+  async busTerminalsByName(@Query() { name }: BusTerminalSearchQueryDto) {
+    return this.busService.getBusTerminalsByName(name);
   }
 
   @Post('schedule-list')
@@ -84,15 +84,15 @@ export class BusController {
     return this.biletAllService.serviceInformation(requestDto);
   }
 
-  @Post('sale-request')
-  async saleRequest(@Body() requestDto: BusPurchaseDto) {
-    return this.biletAllService.saleRequest(requestDto);
-  }
-
   @Post('get-route')
   async getRoute(
     @Body() requestDto: BusRouteDto,
   ): Promise<RouteDetailResponseDto[]> {
     return this.biletAllService.getRoute(requestDto);
+  }
+
+  @Post('sale-request')
+  async saleRequest(@Body() requestDto: BusPurchaseDto) {
+    return this.biletAllService.saleRequest(requestDto);
   }
 }
