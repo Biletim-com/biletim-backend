@@ -20,6 +20,7 @@ export class BusService {
     return this.busTerminalsRepostiory
       .createQueryBuilder('bus_terminals')
       .where("bus_terminals.name_text @@ to_tsquery('simple', :name)")
+      .andWhere('bus_terminals.appear_in_search = true')
       .setParameters({ name: formattedSearchTerm })
       .getMany();
   }

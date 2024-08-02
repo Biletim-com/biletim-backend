@@ -60,13 +60,13 @@ export class BusController {
     return this.biletAllService.serviceInformation(requestDto);
   }
 
-  @Post('sale-request')
-  async saleRequest(@Body() requestDto: BusPurchaseDto) {
-    return this.biletAllService.saleRequest(requestDto);
-  }
-
   @Post('get-route')
   async getRoute(@Body() requestDto: BusRouteDto) {
     return this.biletAllService.getRoute(requestDto);
+  }
+
+  @Post('sale-request')
+  async saleRequest(@Body() requestDto: BusPurchaseDto) {
+    return this.biletAllService.saleRequest(requestDto);
   }
 }
