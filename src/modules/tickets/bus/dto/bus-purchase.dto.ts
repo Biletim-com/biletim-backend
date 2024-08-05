@@ -1,4 +1,5 @@
 import {
+  ArrayMinSize,
   IsArray,
   IsDateString,
   IsInt,
@@ -7,12 +8,14 @@ import {
   IsPositive,
   IsString,
   Length,
-  MaxLength,
-  MinLength,
+  ValidateNested,
 } from 'class-validator';
 import { BusPassengerInfoDto } from './bus-passenger-info.dto';
 import { BusWebPassengerDto } from './bus-web-passenger.dto';
 import { Type } from 'class-transformer';
+
+// types
+import { DateISODate, DateTime } from '@app/common/types';
 
 // purchase
 export class BusPurchaseDto {
@@ -20,40 +23,34 @@ export class BusPurchaseDto {
   @IsOptional()
   companyNo?: string;
 
-  @MinLength(2)
-  @MaxLength(30)
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
-  departurePointID: string;
+  departurePointId: number;
 
-  @MinLength(2)
-  @MaxLength(30)
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
-  arrivalPointID: string;
+  arrivalPointId: number;
 
   @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
-  date: Date;
+  date: DateISODate;
 
-  @IsDateString(
-    {},
-    { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
-  )
+  @IsDateString()
   @IsNotEmpty()
-  time: string;
+  time: DateTime;
 
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
-  routeNumber: string;
+  routeNumber: number;
 
   @IsString()
   @IsNotEmpty()
   tripTrackingNumber: string;
 
   @IsArray()
+  @ValidateNested({ each: true })
+  @ArrayMinSize(1)
   @Type(() => BusPassengerInfoDto)
-  @IsNotEmpty()
   passengers: BusPassengerInfoDto[];
 
   @IsString()
@@ -67,30 +64,7 @@ export class BusPurchaseDto {
   @IsNotEmpty()
   totalTicketPrice: number;
 
-  @IsString()
-  @IsNotEmpty()
-  passengerCount: string;
-
-  @IsInt()
-  @IsOptional()
-  ticketSeriesNo?: number;
-
-  @IsInt()
-  @IsOptional()
-  paymentType?: number;
-
-  @IsInt()
-  @IsOptional()
-  travelType?: number;
-
-  @IsArray()
+  @ValidateNested()
   @Type(() => BusWebPassengerDto)
   webPassenger: BusWebPassengerDto;
-
-  constructor(partial: Partial<BusPassengerInfoDto>) {
-    Object.assign(this, partial);
-    this.ticketSeriesNo = this.ticketSeriesNo ?? 1;
-    this.paymentType = this.paymentType ?? 0;
-    this.travelType = this.travelType ?? 0;
-  }
 }

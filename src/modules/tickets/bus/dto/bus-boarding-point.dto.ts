@@ -6,7 +6,7 @@ import {
 } from 'class-validator';
 import { BoardingPoint } from '../services/biletall/types/biletall-boarding-point.type';
 
-export class BoardingPointDto {
+export class BoardingPointRequestDto {
   @IsString()
   @IsOptional()
   companyNo?: string;
@@ -27,7 +27,7 @@ export class BoardingPointDto {
   routeNumber: string;
 }
 
-export class BoardingPointResponseDto {
+export class BoardingPointDto {
   place: string[];
   time: string[];
   visibleOnInternet: string[];
@@ -36,13 +36,5 @@ export class BoardingPointResponseDto {
     this.place = boardingPoint.Yer;
     this.time = boardingPoint.Saat;
     this.visibleOnInternet = boardingPoint.Internette_Gozuksunmu;
-  }
-
-  static finalVersionBoardingPointResponse(
-    boardingPoints: BoardingPoint[],
-  ): BoardingPointResponseDto[] {
-    return boardingPoints.map(
-      (boardingPoint) => new BoardingPointResponseDto(boardingPoint),
-    );
   }
 }

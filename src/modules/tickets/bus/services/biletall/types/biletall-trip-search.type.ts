@@ -62,7 +62,7 @@ export type BusSchedule = {
   SeferKod: string;
 };
 
-type BusScheduleDataSet = {
+type BusScheduleAndFeaturesDataSet = {
   NewDataSet: Array<{
     Table: Array<{
       [K in keyof BusSchedule]: [string];
@@ -73,4 +73,5 @@ type BusScheduleDataSet = {
   }>;
 };
 
-export type BusScheduleResponse = SoapEnvelope<BusScheduleDataSet>;
+export type BusScheduleAndFeaturesResponse =
+  SoapEnvelope<BusScheduleAndFeaturesDataSet>;

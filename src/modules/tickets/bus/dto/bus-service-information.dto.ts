@@ -1,24 +1,25 @@
 import { IsDateString, IsOptional } from 'class-validator';
-import { BoardingPointDto } from './bus-boarding-point.dto';
+import { BoardingPointRequestDto } from './bus-boarding-point.dto';
 import { ServiceInformation } from '../services/biletall/types/biletall-service-information.type';
+import { DateTime } from '@app/common/types';
 
-export class ServiceInformationDto extends BoardingPointDto {
+export class ServiceInformationRequestDto extends BoardingPointRequestDto {
   @IsDateString(
     {},
     { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
   )
   @IsOptional()
-  date?: Date;
+  date?: DateTime;
 
   @IsDateString(
     {},
     { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
   )
   @IsOptional()
-  time?: string;
+  time?: DateTime;
 }
 
-export class ServiceInformationResponseDto {
+export class ServiceInformationDto {
   place: string;
   time: string;
   visibleOnInternet: string;
@@ -27,14 +28,5 @@ export class ServiceInformationResponseDto {
     this.place = serviceInformation.Yer;
     this.time = serviceInformation.Saat;
     this.visibleOnInternet = serviceInformation.Internette_Gozuksunmu;
-  }
-
-  static finalVersionServiceInformationResponse(
-    serviceInformations: ServiceInformation[],
-  ): ServiceInformationResponseDto[] {
-    return serviceInformations.map(
-      (serviceInformation) =>
-        new ServiceInformationResponseDto(serviceInformation),
-    );
   }
 }

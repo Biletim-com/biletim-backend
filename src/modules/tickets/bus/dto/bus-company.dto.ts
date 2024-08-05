@@ -1,7 +1,7 @@
 import { IsOptional, IsString } from 'class-validator';
-import { BiletAllCompany } from '../services/biletall/types/biletall-company';
+import { BiletAllCompany } from '../services/biletall/types/biletall-company.type';
 
-export class BusCompanyDto {
+export class BusCompanyRequestDto {
   @IsString()
   @IsOptional()
   companyNo?: string;
@@ -12,7 +12,7 @@ export class BusCompanyDto {
   }
 }
 
-export class BusCompanyResponseDto {
+export class BusCompanyDto {
   companyNumber: string;
   companyName: string;
   companyLogo: string;
@@ -52,11 +52,5 @@ export class BusCompanyResponseDto {
       company.SefereKadarIptalEdilebilmeSuresiDakika;
     this.isTicketCancellationActive = company.BiletIptalAktifMi;
     this.isOpenMoneyUsageActive = company.AcikParaKullanimAktifMi;
-  }
-
-  static finalVersionBusCompanyResponse(
-    companies: BiletAllCompany[],
-  ): BusCompanyResponseDto[] {
-    return companies.map((company) => new BusCompanyResponseDto(company));
   }
 }
