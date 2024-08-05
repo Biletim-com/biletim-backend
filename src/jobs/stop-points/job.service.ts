@@ -5,8 +5,8 @@ import { BusTerminal } from '@app/modules/tickets/bus/models/bus-terminal.entity
 import { BusTerminalsRepository } from '@app/modules/tickets/bus/repositories/bus-terminals.repository';
 import { BiletAllService } from '@app/modules/tickets/bus/services/biletall/biletall.service';
 
-// types
-import { BiletAllStopPoint } from '@app/modules/tickets/bus/services/biletall/types/biletall-stop-points.type';
+// dto
+import { BusStopPointDto } from '@app/modules/tickets/bus/dto/bus-stop-point.dto';
 
 @Injectable()
 export class StopPointsCronJobService implements OnModuleInit {
@@ -21,10 +21,8 @@ export class StopPointsCronJobService implements OnModuleInit {
     this.saveBusTerminalsToDb();
   }
 
-  private splitIntoChunks = (
-    array: BiletAllStopPoint[],
-  ): BiletAllStopPoint[][] => {
-    const chunks: BiletAllStopPoint[][] = [];
+  private splitIntoChunks = (array: BusStopPointDto[]): BusStopPointDto[][] => {
+    const chunks: BusStopPointDto[][] = [];
     for (let i = 0; i < array.length; i += this.chunkSize) {
       chunks.push(array.slice(i, i + this.chunkSize));
     }
@@ -32,7 +30,7 @@ export class StopPointsCronJobService implements OnModuleInit {
   };
 
   private async fetchBusStopPointsDataFromBiletAll(): Promise<
-    BiletAllStopPoint[][]
+    BusStopPointDto[][]
   > {
     try {
       this.logger.log('Fetching data from BiletAll');
@@ -51,27 +49,27 @@ export class StopPointsCronJobService implements OnModuleInit {
       busStopPointsChunks.forEach((busStopPointsChunk) => {
         const entities = busStopPointsChunk.map((busStopPoint) => {
           const {
-            ID,
-            SeyahatSehirID,
-            UlkeKodu,
-            Bolge,
-            Ad,
-            Aciklama,
-            MerkezMi,
-            BagliOlduguNoktaID,
-            AramadaGorunsun,
+            id,
+            cityId,
+            countryCode,
+            region,
+            name,
+            description,
+            isCenter,
+            affiliatedCenterId,
+            appearInSearch,
           } = busStopPoint;
 
           return new BusTerminal({
-            externalId: Number(ID),
-            cityId: Number(SeyahatSehirID),
-            countryCode: UlkeKodu,
-            region: Bolge ? Bolge : null,
-            name: Ad,
-            description: Aciklama ? Aciklama : null,
-            isCenter: MerkezMi === '1' ? true : false,
-            affiliatedCenterId: Number(BagliOlduguNoktaID),
-            appearInSearch: AramadaGorunsun === 'True',
+            externalId: Number(id),
+            cityId: Number(cityId),
+            countryCode,
+            region,
+            name,
+            description,
+            isCenter,
+            affiliatedCenterId: Number(affiliatedCenterId),
+            appearInSearch,
           });
         });
 
