@@ -7,24 +7,28 @@ import { BiletAllService } from './services/biletall/biletall.service';
 import { BusService } from './services/bus.service';
 
 // dto
-import { BusCompanyDto, BusCompanyResponseDto } from './dto/bus-company.dto';
+import { BusCompanyDto, BusCompanyRequestDto } from './dto/bus-company.dto';
 import {
-  BusScheduleResponseDto,
-  ScheduleListDto,
+  BusScheduleRequestDto,
+  BusScheduleAndBusFeaturesDto,
 } from './dto/bus-schedule-list.dto';
-import { BusSearchDto, BusSearchResponseDto } from './dto/bus-search.dto';
-import { BusSeatControlDto } from './dto/bus-seat-control.dto';
+import { BusSearchRequestDto, BusSearchDto } from './dto/bus-search.dto';
+import {
+  BusSeatAvailabilityDto,
+  BusSeatAvailabilityRequestDto,
+} from './dto/bus-seat-availability.dto';
 import {
   BoardingPointDto,
-  BoardingPointResponseDto,
+  BoardingPointRequestDto,
 } from './dto/bus-boarding-point.dto';
 import {
+  ServiceInformationRequestDto,
   ServiceInformationDto,
-  ServiceInformationResponseDto,
 } from './dto/bus-service-information.dto';
 import { BusPurchaseDto } from './dto/bus-purchase.dto';
-import { BusRouteDto, RouteDetailResponseDto } from './dto/bus-route.dto';
+import { BusRouteRequestDto, BusRouteDetailDto } from './dto/bus-route.dto';
 import { BusTerminalSearchQueryDto } from './dto/bus-terminal-search-query.dto';
+import { BusTerminal } from './models/bus-terminal.entity';
 
 @Controller('bus')
 export class BusController {
@@ -35,84 +39,58 @@ export class BusController {
 
   @Get('company')
   async company(
-    @Body() requestDto: BusCompanyDto,
-  ): Promise<BusCompanyResponseDto[]> {
-    const companies = await this.biletAllService.company(requestDto);
-    return BusCompanyResponseDto.finalVersionBusCompanyResponse(companies);
+    @Body() requestDto: BusCompanyRequestDto,
+  ): Promise<BusCompanyDto[]> {
+    return this.biletAllService.company(requestDto);
   }
 
   @Get('bus-terminal-search')
-  async busTerminalsByName(@Query() { name }: BusTerminalSearchQueryDto) {
+  async busTerminalsByName(
+    @Query() { name }: BusTerminalSearchQueryDto,
+  ): Promise<BusTerminal[]> {
     return this.busService.getBusTerminalsByName(name);
   }
 
   @Post('schedule-list')
-  async scheduleList(@Body() requestDto: ScheduleListDto): Promise<{
-    schedules: BusScheduleResponseDto[];
-    features: BusScheduleResponseDto[];
-  }> {
-    const { schedules, features } = await this.biletAllService.scheduleList(
-      requestDto,
-    );
-    return BusScheduleResponseDto.finalVersionBusScheduleResponse({
-      schedules,
-      features,
-    });
+  async scheduleList(
+    @Body() requestDto: BusScheduleRequestDto,
+  ): Promise<BusScheduleAndBusFeaturesDto> {
+    return this.biletAllService.scheduleList(requestDto);
   }
 
   @Post('bus-search')
-  async busSearch(@Body() requestDto: BusSearchDto): Promise<{
-    trips: BusSearchResponseDto[];
-    seats: BusSearchResponseDto[];
-    travelTypes: BusSearchResponseDto[];
-    features: BusSearchResponseDto[];
-    paymentRules: BusSearchResponseDto[];
-  }> {
-    const { trips, seats, travelTypes, features, paymentRules } =
-      await this.biletAllService.busSearch(requestDto);
-    return BusSearchResponseDto.finalVersionBusSearchResponse(
-      trips,
-      seats,
-      travelTypes,
-      features,
-      paymentRules,
-    );
+  async busSearch(
+    @Body() requestDto: BusSearchRequestDto,
+  ): Promise<BusSearchDto> {
+    return await this.biletAllService.busSearch(requestDto);
   }
 
-  @Post('bus-seat-control')
-  async busSeatControl(@Body() requestDto: BusSeatControlDto) {
-    const result = await this.biletAllService.busSeatControl(requestDto);
-    return { isAvailable: result };
+  @Post('bus-seat-availability')
+  async busSeatAvailability(
+    @Body() requestDto: BusSeatAvailabilityRequestDto,
+  ): Promise<BusSeatAvailabilityDto> {
+    return this.biletAllService.busSeatAvailability(requestDto);
   }
 
   @Post('boarding-point')
   async boardingPoint(
-    @Body() requestDto: BoardingPointDto,
-  ): Promise<BoardingPointResponseDto[]> {
-    const boardingPoints = await this.biletAllService.boardingPoint(requestDto);
-    return BoardingPointResponseDto.finalVersionBoardingPointResponse(
-      boardingPoints,
-    );
+    @Body() requestDto: BoardingPointRequestDto,
+  ): Promise<BoardingPointDto[]> {
+    return this.biletAllService.boardingPoint(requestDto);
   }
 
   @Post('service-information')
   async serviceInformation(
-    @Body() requestDto: ServiceInformationDto,
-  ): Promise<ServiceInformationResponseDto[]> {
-    const serviceInformations = await this.biletAllService.serviceInformation(
-      requestDto,
-    );
-    return ServiceInformationResponseDto.finalVersionServiceInformationResponse(
-      serviceInformations,
-    );
+    @Body() requestDto: ServiceInformationRequestDto,
+  ): Promise<ServiceInformationDto[]> {
+    return this.biletAllService.serviceInformation(requestDto);
   }
 
   @Post('get-route')
   async getRoute(
-    @Body() requestDto: BusRouteDto,
-  ): Promise<RouteDetailResponseDto[]> {
-    const routeDetails = await this.biletAllService.getRoute(requestDto);
-    return RouteDetailResponseDto.finalVersionRouteDetailResponse(routeDetails);
+    @Body() requestDto: BusRouteRequestDto,
+  ): Promise<BusRouteDetailDto[]> {
+    return this.biletAllService.getRoute(requestDto);
   }
 
   @Post('sale-request')

@@ -1,6 +1,7 @@
-import { BusSeatGender } from '@app/common/enums/bus-seat-gender.enum';
-import { isTurkishCitizen } from '@app/common/enums/is-turkish-citizen.enum';
+import { Gender } from '@app/common/enums/bus-seat-gender.enum';
+import { Transform } from 'class-transformer';
 import {
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -34,25 +35,36 @@ const turkishToEnglish = (text: string): string => {
 export class BusPassengerInfoDto {
   @IsString()
   @IsNotEmpty()
-  seatNo: string;
+  seatNo: number;
 
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => turkishToEnglish(value))
   firstName: string;
 
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => turkishToEnglish(value))
   lastName: string;
 
-  @IsEnum(BusSeatGender)
+  @ValidateIf((o) => o.firstName && o.lastName)
+  @Length(0, 20, {
+    message:
+      'The full name (combination of firstName and lastName) is longer than 20.',
+  })
+  get fullName() {
+    return `${this.firstName}${this.lastName}`;
+  }
+
+  @IsEnum(Gender)
   @IsNotEmpty()
-  gender: BusSeatGender;
+  gender: Gender;
 
-  @IsEnum(isTurkishCitizen)
+  @IsBoolean()
   @IsOptional()
-  isTurkishCitizen: number;
+  isTurkishCitizen?: boolean;
 
-  @ValidateIf((o) => o.isTurkishCitizen === isTurkishCitizen.CITIZEN)
+  @ValidateIf((o) => o.isTurkishCitizen === true)
   @IsNotEmpty({
     message: 'TR ID Number is mandatory for Turkish citizens',
   })
@@ -60,14 +72,14 @@ export class BusPassengerInfoDto {
   @Length(11, 11, {
     message: 'TR ID Number must be 11 characters length',
   })
-  turkishIdNumber?;
+  turkishIdNumber?: string;
 
-  @ValidateIf((o) => o.isTurkishCitizen === isTurkishCitizen.FOREIGNER)
+  @ValidateIf((o) => o.isTurkishCitizen === false)
   @IsOptional()
   @IsString()
   passportCountryCode?: string;
 
-  @ValidateIf((o) => o.isTurkishCitizen === isTurkishCitizen.FOREIGNER)
+  @ValidateIf((o) => o.isTurkishCitizen === false)
   @IsOptional()
   @IsString()
   passportNumber?: string;
@@ -86,17 +98,4 @@ export class BusPassengerInfoDto {
   @MaxLength(15)
   @IsOptional()
   arrivalServiceLocation?: string;
-
-  constructor(partial: Partial<BusPassengerInfoDto>) {
-    Object.assign(this, partial);
-    this.isTurkishCitizen = this.isTurkishCitizen ?? 1;
-    this.firstName = turkishToEnglish(this.firstName);
-    this.lastName = turkishToEnglish(this.lastName);
-    const fullName = `${this.firstName}${this.lastName}`;
-    if (fullName.length > 20) {
-      throw new Error(
-        'First name and last name combined must not exceed 20 characters.',
-      );
-    }
-  }
 }

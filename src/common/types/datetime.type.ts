@@ -9,7 +9,7 @@ type TMilliseconds = `${number}${number}${number}`;
 /**
  * Represent a string like `2021-01-08`
  */
-type DateISODate = `${TYear}-${TMonth}-${TDay}`;
+export type DateISODate = `${TYear}-${TMonth}-${TDay}`;
 
 /**
  * Represent a string like `14:42:34.678`

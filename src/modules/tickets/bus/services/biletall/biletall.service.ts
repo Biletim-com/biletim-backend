@@ -9,39 +9,42 @@ import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { BiletAllParser } from './biletall.parser';
 
 // dtos
+import { BusCompanyDto, BusCompanyRequestDto } from '../../dto/bus-company.dto';
 import {
-  BusCompanyDto,
-  BusCompanyResponseDto,
-} from '../../dto/bus-company.dto';
-import {
-  BusScheduleResponseDto,
-  ScheduleListDto,
+  BusScheduleAndBusFeaturesDto,
+  BusScheduleRequestDto,
 } from '../../dto/bus-schedule-list.dto';
-import { BusSearchDto, BusSearchResponseDto } from '../../dto/bus-search.dto';
-import { BusSeatControlDto } from '../../dto/bus-seat-control.dto';
+import { BusSearchDto, BusSearchRequestDto } from '../../dto/bus-search.dto';
 import {
   BoardingPointDto,
-  BoardingPointResponseDto,
+  BoardingPointRequestDto,
 } from '../../dto/bus-boarding-point.dto';
 import {
   ServiceInformationDto,
-  ServiceInformationResponseDto,
+  ServiceInformationRequestDto,
 } from '../../dto/bus-service-information.dto';
 import { BusPurchaseDto } from '../../dto/bus-purchase.dto';
-import { BusRouteDto, RouteDetailResponseDto } from '../../dto/bus-route.dto';
+import { BusRouteDetailDto, BusRouteRequestDto } from '../../dto/bus-route.dto';
 
 // types
-import { BiletAllCompanyResponse } from './types/biletall-company';
+import { BiletAllCompanyResponse } from './types/biletall-company.type';
 import {
   BiletAllStopPoint,
   BiletAllStopPointResponse,
 } from './types/biletall-stop-points.type';
-import { BusScheduleResponse } from './types/biletall-trip-search.type';
+import { BusScheduleAndFeaturesResponse } from './types/biletall-trip-search.type';
 import { BusResponse } from './types/biletall-bus-search.type';
 import { BusSeatAvailabilityResponse } from './types/biletall-bus-seat-availability.type';
 import { RouteDetailResponse } from './types/biletall-route.type';
 import { ServiceInformationResponse } from './types/biletall-service-information.type';
 import { BoardingPointResponse } from './types/biletall-boarding-point.type';
+
+// enums
+import { Gender } from '@app/common/enums/bus-seat-gender.enum';
+import {
+  BusSeatAvailabilityDto,
+  BusSeatAvailabilityRequestDto,
+} from '../../dto/bus-seat-availability.dto';
 
 @Injectable()
 export class BiletAllService {
@@ -91,11 +94,10 @@ export class BiletAllService {
     }
   }
 
-  async company(requestDto: BusCompanyDto) {
+  async company(requestDto: BusCompanyRequestDto): Promise<BusCompanyDto[]> {
     const companiesXml = `<Firmalar><FirmaNo>${requestDto.companyNo}</FirmaNo></Firmalar>`;
     const res = await this.run<BiletAllCompanyResponse>(companiesXml);
-    const companies = this.biletAllParser.parseCompany(res);
-    return companies;
+    return this.biletAllParser.parseCompany(res);
   }
 
   async stopPoints(): Promise<BiletAllStopPoint[]> {
@@ -104,13 +106,15 @@ export class BiletAllService {
     return this.biletAllParser.parseStopPoints(res);
   }
 
-  async scheduleList(requestDto: ScheduleListDto) {
+  async scheduleList(
+    requestDto: BusScheduleRequestDto,
+  ): Promise<BusScheduleAndBusFeaturesDto> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Sefer: {
         FirmaNo: requestDto.companyNo,
-        KalkisNoktaID: requestDto.departurePointID,
-        VarisNoktaID: requestDto.arrivalPointID,
+        KalkisNoktaID: requestDto.departurePointId,
+        VarisNoktaID: requestDto.arrivalPointId,
         Tarih: requestDto.date,
         AraNoktaGelsin: requestDto.includeIntermediatePoints,
         IslemTipi: requestDto.operationType,
@@ -119,18 +123,17 @@ export class BiletAllService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    const res = await this.run<BusScheduleResponse>(xml);
-    const { schedules, features } = this.biletAllParser.parseBusSchedule(res);
-    return { schedules, features };
+    const res = await this.run<BusScheduleAndFeaturesResponse>(xml);
+    return this.biletAllParser.parseBusSchedule(res);
   }
 
-  async busSearch(requestDto: BusSearchDto) {
+  async busSearch(requestDto: BusSearchRequestDto): Promise<BusSearchDto> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Otobus: {
         FirmaNo: requestDto.companyNo,
-        KalkisNoktaID: requestDto.departurePointID,
-        VarisNoktaID: requestDto.arrivalPointID,
+        KalkisNoktaID: requestDto.departurePointId,
+        VarisNoktaID: requestDto.arrivalPointId,
         Tarih: requestDto.date,
         Saat: requestDto.time,
         HatNo: requestDto.routeNumber,
@@ -142,18 +145,18 @@ export class BiletAllService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BusResponse>(xml);
-    const { trips, seats, travelTypes, features, paymentRules } =
-      this.biletAllParser.parseBusResponse(res);
-    return { trips, seats, travelTypes, features, paymentRules };
+    return this.biletAllParser.parseBusSearchResponse(res);
   }
 
-  async busSeatControl(requestDto: BusSeatControlDto): Promise<boolean> {
+  async busSeatAvailability(
+    requestDto: BusSeatAvailabilityRequestDto,
+  ): Promise<BusSeatAvailabilityDto> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       OtobusKoltukKontrol: {
         FirmaNo: requestDto.companyNo,
-        KalkisNoktaID: requestDto.departurePointID,
-        VarisNoktaID: requestDto.arrivalPointID,
+        KalkisNoktaID: requestDto.departurePointId,
+        VarisNoktaID: requestDto.arrivalPointId,
         Tarih: requestDto.date,
         Saat: requestDto.time,
         HatNo: requestDto.routeNumber,
@@ -173,7 +176,9 @@ export class BiletAllService {
     return this.biletAllParser.parseBusSeatAvailability(res);
   }
 
-  async boardingPoint(requestDto: BoardingPointDto) {
+  async boardingPoint(
+    requestDto: BoardingPointRequestDto,
+  ): Promise<BoardingPointDto[]> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       BinecegiYer: {
@@ -185,11 +190,12 @@ export class BiletAllService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BoardingPointResponse>(xml);
-    const boardingPoints = this.biletAllParser.parseBoordingPoint(res);
-    return boardingPoints;
+    return this.biletAllParser.parseBoardingPoint(res);
   }
 
-  async serviceInformation(requestDto: ServiceInformationDto) {
+  async serviceInformation(
+    requestDto: ServiceInformationRequestDto,
+  ): Promise<ServiceInformationDto[]> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Servis_2: {
@@ -203,19 +209,17 @@ export class BiletAllService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<ServiceInformationResponse>(xml);
-    const serviceInformations =
-      this.biletAllParser.parseServiceInformation(res);
-    return serviceInformations;
+    return this.biletAllParser.parseServiceInformation(res);
   }
 
-  async getRoute(requestDto: BusRouteDto) {
+  async getRoute(requestDto: BusRouteRequestDto): Promise<BusRouteDetailDto[]> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Hat: {
         FirmaNo: requestDto.companyNo,
         HatNo: requestDto.routeNumber,
-        KalkisNoktaID: requestDto.departurePointID,
-        VarisNoktaID: requestDto.arrivalPointID,
+        KalkisNoktaID: requestDto.departurePointId,
+        VarisNoktaID: requestDto.arrivalPointId,
         BilgiIslemAdi: requestDto.infoTechnologyName,
         SeferTakipNo: requestDto.tripTrackingNumber,
         Tarih: requestDto.date,
@@ -223,37 +227,57 @@ export class BiletAllService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<RouteDetailResponse>(xml);
-    const routeDetails = this.biletAllParser.parseRouteDetail(res);
-    return routeDetails;
+    return this.biletAllParser.parseRouteDetail(res);
   }
 
   async saleRequest(requestDto: BusPurchaseDto): Promise<any> {
     const builder = new xml2js.Builder({ headless: true });
-    let FirmaAciklama: any;
-    let HatirlaticiNot: any;
+
+    const {
+      companyNo,
+      departurePointId,
+      arrivalPointId,
+      date,
+      time,
+      routeNumber,
+      passengers,
+      tripTrackingNumber,
+      webPassenger: { ip },
+    } = requestDto;
+
+    const passengerCount = passengers.length.toString();
+
+    const { paymentRules } = await this.busSearch({
+      companyNo,
+      departurePointId,
+      arrivalPointId,
+      date,
+      time,
+      routeNumber,
+      operationType: 0,
+      passengerCount,
+      tripTrackingNumber,
+      ip,
+    });
+
     const requestDocument = {
       IslemSatis: {
-        FirmaNo: requestDto.companyNo,
-        KalkisNoktaID: requestDto.departurePointID,
-        VarisNoktaID: requestDto.arrivalPointID,
-        Tarih: new Date(requestDto.date).toISOString(),
-        Saat: new Date(requestDto.time).toISOString(),
+        FirmaNo: companyNo,
+        KalkisNoktaID: departurePointId,
+        VarisNoktaID: arrivalPointId,
+        // Tarih: requestDto.date.toISOString(),
+        Tarih: '2024-08-06',
+        // Saat: requestDto.time.toISOString(),
+        Saat: '1900-01-01T02:30:00+02:00',
         HatNo: requestDto.routeNumber,
         SeferNo: requestDto.tripTrackingNumber,
-        TelefonNo: requestDto.phoneNumber,
-        ToplamBiletFiyati: requestDto.totalTicketPrice,
-        YolcuSayisi: requestDto.passengers.length,
-        BiletSeriNo: requestDto.ticketSeriesNo,
-        OdemeSekli: requestDto.paymentType,
-        FirmaAciklama,
-        HatirlaticiNot,
-        SeyahatTipi: requestDto.travelType,
+        KalkisTerminalAdiSaatleri: '',
         ...requestDto.passengers.reduce((acc, passenger, index) => {
           acc[`KoltukNo${index + 1}`] = passenger.seatNo;
           acc[`Adi${index + 1}`] = passenger.firstName;
           acc[`Soyadi${index + 1}`] = passenger.lastName;
-          acc[`Cinsiyet${index + 1}`] = passenger.gender;
-          acc[`TcVatandasiMi${index + 1}`] = passenger.isTurkishCitizen;
+          acc[`Cinsiyet${index + 1}`] = Gender[passenger.gender];
+          acc[`TcVatandasiMi${index + 1}`] = passenger.isTurkishCitizen ? 1 : 0;
           acc[`TcKimlikNo${index + 1}`] = passenger.turkishIdNumber;
           acc[`PasaportUlkeKod${index + 1}`] = passenger.passportCountryCode;
           acc[`PasaportNo${index + 1}`] = passenger.passportNumber;
@@ -267,8 +291,16 @@ export class BiletAllService {
               passenger.arrivalServiceLocation;
           return acc;
         }, {}),
+        TelefonNo: requestDto.phoneNumber,
+        ToplamBiletFiyati: requestDto.totalTicketPrice,
+        YolcuSayisi: requestDto.passengers.length,
+        BiletSeriNo: 1,
+        OdemeSekli: 0,
+        FirmaAciklama: undefined,
+        HatirlaticiNot: undefined,
+        SeyahatTipi: 0,
         WebYolcu: {
-          WebUyeNo: requestDto.webPassenger.webMemberNo,
+          WebUyeNo: 0,
           Ip: requestDto.webPassenger.ip,
           Email: requestDto.webPassenger.email,
           ...(requestDto.webPassenger.creditCardNo && {
@@ -282,17 +314,12 @@ export class BiletAllService {
             OnOdemeKullan: requestDto.webPassenger.prepaymentUsage,
             OnOdemeTutar: requestDto.webPassenger.prepaymentAmount,
           }),
-          ...(requestDto.webPassenger.openTicketPnrNo && {
-            AcikPnrNo: requestDto.webPassenger.openTicketPnrNo,
-            AcikPnrSoyad: requestDto.webPassenger.openTicketLastName,
-          }),
-          ...(requestDto.webPassenger.openTicketAmount && {
-            AcikTutar: requestDto.webPassenger.openTicketAmount,
-          }),
         },
       },
     };
+
     const xml = builder.buildObject(requestDocument);
-    return this.run(xml);
+    return xml;
+    // return this.run(xml);
   }
 }
