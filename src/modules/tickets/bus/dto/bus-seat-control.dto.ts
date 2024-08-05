@@ -12,7 +12,7 @@ export class BusSeatControlDto extends OmitType(BusSearchDto, [
   @ValidateNested({ each: true })
   @Type(() => BusSeatDto)
   @IsNotEmpty()
-  seats!: BusSeatDto[];
+  seats: BusSeatDto[];
 
   constructor(partial: Partial<BusSeatControlDto>) {
     super(partial);

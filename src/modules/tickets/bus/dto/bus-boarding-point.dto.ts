@@ -1,25 +1,30 @@
-import { IsDateString, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { BoardingPoint } from '../services/biletall/types/biletall-boarding-point.type';
 
 export class BoardingPointDto {
-  @IsInt()
+  @IsString()
   @IsOptional()
-  companyNo?: number;
+  companyNo?: string;
 
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  departurePointID!: number;
+  departurePointID: string;
 
   @IsDateString(
     {},
     { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
   )
   @IsNotEmpty()
-  localTime!: string;
+  localTime: string;
 
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  routeNumber!: number;
+  routeNumber: string;
 }
 
 export class BoardingPointResponseDto {

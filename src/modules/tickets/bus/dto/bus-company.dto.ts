@@ -1,14 +1,14 @@
-import { IsInt, IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { BiletAllCompany } from '../services/biletall/types/biletall-company';
 
 export class BusCompanyDto {
-  @IsInt()
+  @IsString()
   @IsOptional()
-  companyNo?: number;
+  companyNo?: string;
 
   constructor(partial: Partial<BusCompanyDto>) {
     Object.assign(this, partial);
-    this.companyNo = this.companyNo ?? 0;
+    this.companyNo = this.companyNo ?? '0';
   }
 }
 

@@ -2,7 +2,6 @@ import { BusSeatGender } from '@app/common/enums/bus-seat-gender.enum';
 import { isTurkishCitizen } from '@app/common/enums/is-turkish-citizen.enum';
 import {
   IsEnum,
-  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -33,25 +32,25 @@ const turkishToEnglish = (text: string): string => {
 };
 
 export class BusPassengerInfoDto {
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  seatNo!: number;
+  seatNo: string;
 
   @IsString()
   @IsNotEmpty()
-  firstName!: string;
+  firstName: string;
 
   @IsString()
   @IsNotEmpty()
-  lastName!: string;
+  lastName: string;
 
   @IsEnum(BusSeatGender)
   @IsNotEmpty()
-  gender!: BusSeatGender;
+  gender: BusSeatGender;
 
   @IsEnum(isTurkishCitizen)
   @IsOptional()
-  isTurkishCitizen!: number;
+  isTurkishCitizen: number;
 
   @ValidateIf((o) => o.isTurkishCitizen === isTurkishCitizen.CITIZEN)
   @IsNotEmpty({

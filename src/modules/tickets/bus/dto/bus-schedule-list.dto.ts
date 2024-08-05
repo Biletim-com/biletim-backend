@@ -4,28 +4,28 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  Min,
+  MinLength,
 } from 'class-validator';
 import { BusSchedule } from '../services/biletall/types/biletall-trip-search.type';
 import { BusFeature } from '../services/biletall/types/biletall-bus-feature.type';
 
 // request to be sent to get the available dates
 export class ScheduleListDto {
-  @IsInt()
+  @IsString()
   @IsOptional()
-  companyNo?: number;
+  companyNo?: string;
 
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  departurePointID!: number;
+  departurePointID: string;
 
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  arrivalPointID!: number;
+  arrivalPointID: string;
 
   @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
-  date!: Date;
+  date: Date;
 
   @IsInt()
   @IsOptional()
@@ -35,18 +35,18 @@ export class ScheduleListDto {
   @IsOptional()
   operationType?: number;
 
-  @IsInt()
+  @IsString()
   @IsOptional()
-  @Min(1)
-  passengerCount?: number;
+  @MinLength(1)
+  passengerCount?: string;
 
   @IsNotEmpty()
   @IsString()
-  ip!: string;
+  ip: string;
 
   constructor(partial: Partial<ScheduleListDto>) {
     Object.assign(this, partial);
-    this.companyNo = this.companyNo ?? 0;
+    this.companyNo = this.companyNo ?? '0';
     this.includeIntermediatePoints = this.includeIntermediatePoints ?? 1;
     this.operationType = this.operationType ?? 0;
   }

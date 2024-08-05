@@ -91,11 +91,11 @@ export class BiletAllService {
     }
   }
 
-  async company(requestDto: BusCompanyDto): Promise<BusCompanyResponseDto[]> {
+  async company(requestDto: BusCompanyDto) {
     const companiesXml = `<Firmalar><FirmaNo>${requestDto.companyNo}</FirmaNo></Firmalar>`;
     const res = await this.run<BiletAllCompanyResponse>(companiesXml);
     const companies = this.biletAllParser.parseCompany(res);
-    return BusCompanyResponseDto.finalVersionBusCompanyResponse(companies);
+    return companies;
   }
 
   async stopPoints(): Promise<BiletAllStopPoint[]> {
@@ -104,10 +104,7 @@ export class BiletAllService {
     return this.biletAllParser.parseStopPoints(res);
   }
 
-  async scheduleList(requestDto: ScheduleListDto): Promise<{
-    schedules: BusScheduleResponseDto[];
-    features: BusScheduleResponseDto[];
-  }> {
+  async scheduleList(requestDto: ScheduleListDto) {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Sefer: {
@@ -124,20 +121,10 @@ export class BiletAllService {
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BusScheduleResponse>(xml);
     const { schedules, features } = this.biletAllParser.parseBusSchedule(res);
-
-    return BusScheduleResponseDto.finalVersionBusScheduleResponse({
-      schedules,
-      features,
-    });
+    return { schedules, features };
   }
 
-  async busSearch(requestDto: BusSearchDto): Promise<{
-    trips: BusSearchResponseDto[];
-    seats: BusSearchResponseDto[];
-    travelTypes: BusSearchResponseDto[];
-    features: BusSearchResponseDto[];
-    paymentRules: BusSearchResponseDto[];
-  }> {
+  async busSearch(requestDto: BusSearchDto) {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Otobus: {
@@ -157,13 +144,7 @@ export class BiletAllService {
     const res = await this.run<BusResponse>(xml);
     const { trips, seats, travelTypes, features, paymentRules } =
       this.biletAllParser.parseBusResponse(res);
-    return BusSearchResponseDto.finalVersionBusSearchResponse(
-      trips,
-      seats,
-      travelTypes,
-      features,
-      paymentRules,
-    );
+    return { trips, seats, travelTypes, features, paymentRules };
   }
 
   async busSeatControl(requestDto: BusSeatControlDto): Promise<boolean> {
@@ -192,9 +173,7 @@ export class BiletAllService {
     return this.biletAllParser.parseBusSeatAvailability(res);
   }
 
-  async boardingPoint(
-    requestDto: BoardingPointDto,
-  ): Promise<BoardingPointResponseDto[]> {
+  async boardingPoint(requestDto: BoardingPointDto) {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       BinecegiYer: {
@@ -207,14 +186,10 @@ export class BiletAllService {
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BoardingPointResponse>(xml);
     const boardingPoints = this.biletAllParser.parseBoordingPoint(res);
-    return BoardingPointResponseDto.finalVersionBoardingPointResponse(
-      boardingPoints,
-    );
+    return boardingPoints;
   }
 
-  async serviceInformation(
-    requestDto: ServiceInformationDto,
-  ): Promise<ServiceInformationResponseDto[]> {
+  async serviceInformation(requestDto: ServiceInformationDto) {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Servis_2: {
@@ -230,12 +205,10 @@ export class BiletAllService {
     const res = await this.run<ServiceInformationResponse>(xml);
     const serviceInformations =
       this.biletAllParser.parseServiceInformation(res);
-    return ServiceInformationResponseDto.finalVersionServiceInformationResponse(
-      serviceInformations,
-    );
+    return serviceInformations;
   }
 
-  async getRoute(requestDto: BusRouteDto): Promise<RouteDetailResponseDto[]> {
+  async getRoute(requestDto: BusRouteDto) {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Hat: {
@@ -251,7 +224,7 @@ export class BiletAllService {
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<RouteDetailResponse>(xml);
     const routeDetails = this.biletAllParser.parseRouteDetail(res);
-    return RouteDetailResponseDto.finalVersionRouteDetailResponse(routeDetails);
+    return routeDetails;
   }
 
   async saleRequest(requestDto: BusPurchaseDto): Promise<any> {
