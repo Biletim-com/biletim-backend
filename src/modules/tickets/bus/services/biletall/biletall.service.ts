@@ -3,6 +3,7 @@
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 import axios from 'axios';
+import * as dayjs from 'dayjs';
 
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 
@@ -25,13 +26,11 @@ import {
 } from '../../dto/bus-service-information.dto';
 import { BusPurchaseDto } from '../../dto/bus-purchase.dto';
 import { BusRouteDetailDto, BusRouteRequestDto } from '../../dto/bus-route.dto';
+import { BusStopPointDto } from '../../dto/bus-stop-point.dto';
 
 // types
 import { BiletAllCompanyResponse } from './types/biletall-company.type';
-import {
-  BiletAllStopPoint,
-  BiletAllStopPointResponse,
-} from './types/biletall-stop-points.type';
+import { BusStopPointResponse } from './types/biletall-bus-stop-points.type';
 import { BusScheduleAndFeaturesResponse } from './types/biletall-trip-search.type';
 import { BusResponse } from './types/biletall-bus-search.type';
 import { BusSeatAvailabilityResponse } from './types/biletall-bus-seat-availability.type';
@@ -100,9 +99,9 @@ export class BiletAllService {
     return this.biletAllParser.parseCompany(res);
   }
 
-  async stopPoints(): Promise<BiletAllStopPoint[]> {
+  async stopPoints(): Promise<BusStopPointDto[]> {
     const stopPointsXml = `<KaraNoktaGetirKomut/>`;
-    const res = await this.run<BiletAllStopPointResponse>(stopPointsXml);
+    const res = await this.run<BusStopPointResponse>(stopPointsXml);
     return this.biletAllParser.parseStopPoints(res);
   }
 
@@ -134,7 +133,7 @@ export class BiletAllService {
         FirmaNo: requestDto.companyNo,
         KalkisNoktaID: requestDto.departurePointId,
         VarisNoktaID: requestDto.arrivalPointId,
-        Tarih: requestDto.date,
+        Tarih: dayjs(requestDto.date).format('YYYY-MM-DD'),
         Saat: requestDto.time,
         HatNo: requestDto.routeNumber,
         IslemTipi: requestDto.operationType,
@@ -230,6 +229,40 @@ export class BiletAllService {
     return this.biletAllParser.parseRouteDetail(res);
   }
 
+  // this method needs to define the payment strategy
+  // Otobus cevap xml"i içerisinde,
+  // OnOdemeAktifMi aktif mi parametresi sıfır geliyor ise firma posundan işlem yapılmalı.
+  // 1 geliyor ise ön ödemeli satış(kendi posunuz ile) yapılabilinir.
+  private async transactionRules(busSearchDto: BusSearchRequestDto) {
+    const { paymentRules } = await this.busSearch({
+      companyNo: busSearchDto.companyNo,
+      departurePointId: busSearchDto.departurePointId,
+      arrivalPointId: busSearchDto.arrivalPointId,
+      date: busSearchDto.date,
+      time: busSearchDto.time,
+      routeNumber: busSearchDto.routeNumber,
+      operationType: busSearchDto.operationType,
+      passengerCount: busSearchDto.passengerCount,
+      tripTrackingNumber: busSearchDto.tripTrackingNumber,
+      ip: busSearchDto.ip,
+    });
+    const rules = [];
+    if (paymentRules.prePaymentActive) {
+      rules.push('VIRTUAL_POS');
+    } else {
+      rules.push('BUS_COMPANY_VIRTUAL_POS');
+    }
+
+    if (
+      paymentRules.payment3DSecureActive &&
+      paymentRules.payment3DSecureMandatory
+    ) {
+      rules.push('3D_SECURE');
+    }
+
+    console.log({ rules });
+  }
+
   async saleRequest(requestDto: BusPurchaseDto): Promise<any> {
     const builder = new xml2js.Builder({ headless: true });
 
@@ -247,7 +280,7 @@ export class BiletAllService {
 
     const passengerCount = passengers.length.toString();
 
-    const { paymentRules } = await this.busSearch({
+    await this.transactionRules({
       companyNo,
       departurePointId,
       arrivalPointId,
@@ -265,12 +298,10 @@ export class BiletAllService {
         FirmaNo: companyNo,
         KalkisNoktaID: departurePointId,
         VarisNoktaID: arrivalPointId,
-        // Tarih: requestDto.date.toISOString(),
-        Tarih: '2024-08-06',
-        // Saat: requestDto.time.toISOString(),
-        Saat: '1900-01-01T02:30:00+02:00',
-        HatNo: requestDto.routeNumber,
-        SeferNo: requestDto.tripTrackingNumber,
+        Tarih: dayjs(date).format('YYYY-MM-DD'),
+        Saat: time,
+        HatNo: routeNumber,
+        SeferNo: tripTrackingNumber,
         KalkisTerminalAdiSaatleri: '',
         ...requestDto.passengers.reduce((acc, passenger, index) => {
           acc[`KoltukNo${index + 1}`] = passenger.seatNo;
@@ -293,7 +324,7 @@ export class BiletAllService {
         }, {}),
         TelefonNo: requestDto.phoneNumber,
         ToplamBiletFiyati: requestDto.totalTicketPrice,
-        YolcuSayisi: requestDto.passengers.length,
+        YolcuSayisi: passengerCount,
         BiletSeriNo: 1,
         OdemeSekli: 0,
         FirmaAciklama: undefined,
@@ -301,7 +332,7 @@ export class BiletAllService {
         SeyahatTipi: 0,
         WebYolcu: {
           WebUyeNo: 0,
-          Ip: requestDto.webPassenger.ip,
+          Ip: ip,
           Email: requestDto.webPassenger.email,
           ...(requestDto.webPassenger.creditCardNo && {
             KrediKartNo: requestDto.webPassenger.creditCardNo,

@@ -276,10 +276,10 @@ export class CompanyPaymentRulesDto {
 
 export class BusSearchDto {
   constructor(
-    public trips: BusTripDto[],
+    public trip: BusTripDto,
     public seats: BusSeatDto[],
     public travelTypes: BusTravelTypeDto[],
     public features: BusFeaturesDto[],
-    public paymentRules: CompanyPaymentRulesDto[],
+    public paymentRules: CompanyPaymentRulesDto,
   ) {}
 }

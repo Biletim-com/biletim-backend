@@ -6,6 +6,8 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
+import * as dayjs from 'dayjs';
 
 // types
 import { BusSchedule } from '../services/biletall/types/biletall-trip-search.type';
@@ -30,6 +32,7 @@ export class BusScheduleRequestDto {
 
   @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
+  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
   date: DateISODate;
 
   @IsInt()

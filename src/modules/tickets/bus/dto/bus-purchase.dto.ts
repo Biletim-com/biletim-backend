@@ -10,9 +10,11 @@ import {
   Length,
   ValidateNested,
 } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import * as dayjs from 'dayjs';
+
 import { BusPassengerInfoDto } from './bus-passenger-info.dto';
 import { BusWebPassengerDto } from './bus-web-passenger.dto';
-import { Type } from 'class-transformer';
 
 // types
 import { DateISODate, DateTime } from '@app/common/types';
@@ -33,6 +35,7 @@ export class BusPurchaseDto {
 
   @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
+  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
   date: DateISODate;
 
   @IsDateString()
