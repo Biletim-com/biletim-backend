@@ -16,60 +16,60 @@ import { Type } from 'class-transformer';
 
 // purchase
 export class BusPurchaseDto {
-  @IsInt()
+  @IsString()
   @IsOptional()
-  companyNo?: number;
+  companyNo?: string;
 
   @MinLength(2)
   @MaxLength(30)
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  departurePointID!: string;
+  departurePointID: string;
 
   @MinLength(2)
   @MaxLength(30)
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  arrivalPointID!: string;
+  arrivalPointID: string;
 
   @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
-  date!: Date;
+  date: Date;
 
   @IsDateString(
     {},
     { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
   )
   @IsNotEmpty()
-  time!: string;
-
-  @IsInt()
-  @IsNotEmpty()
-  routeNumber!: number;
+  time: string;
 
   @IsString()
   @IsNotEmpty()
-  tripTrackingNumber!: string;
+  routeNumber: string;
+
+  @IsString()
+  @IsNotEmpty()
+  tripTrackingNumber: string;
 
   @IsArray()
   @Type(() => BusPassengerInfoDto)
   @IsNotEmpty()
-  passengers!: BusPassengerInfoDto[];
+  passengers: BusPassengerInfoDto[];
 
   @IsString()
   @IsNotEmpty()
   @Length(10, 10, {
     message: 'phone Number must be 10 characters length',
   })
-  phoneNumber!: string;
+  phoneNumber: string;
 
   @IsPositive()
   @IsNotEmpty()
-  totalTicketPrice!: number;
+  totalTicketPrice: number;
 
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  passengerCount!: number;
+  passengerCount: string;
 
   @IsInt()
   @IsOptional()

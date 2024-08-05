@@ -1,19 +1,13 @@
-import {
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Matches,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 export class BusWebPassengerDto {
-  @IsInt()
+  @IsString()
   @IsOptional()
-  webMemberNo?: number;
+  webMemberNo?: string;
 
   @IsNotEmpty()
   @IsString()
-  ip!: string;
+  ip: string;
 
   @IsString()
   @IsOptional()
@@ -72,6 +66,6 @@ export class BusWebPassengerDto {
 
   constructor(partial: Partial<BusWebPassengerDto>) {
     Object.assign(this, partial);
-    this.webMemberNo = this.webMemberNo ?? 0;
+    this.webMemberNo = this.webMemberNo ?? '0';
   }
 }

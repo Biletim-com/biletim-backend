@@ -37,7 +37,8 @@ export class BusController {
   async company(
     @Body() requestDto: BusCompanyDto,
   ): Promise<BusCompanyResponseDto[]> {
-    return this.biletAllService.company(requestDto);
+    const companies = await this.biletAllService.company(requestDto);
+    return BusCompanyResponseDto.finalVersionBusCompanyResponse(companies);
   }
 
   @Get('bus-terminal-search')
@@ -50,7 +51,13 @@ export class BusController {
     schedules: BusScheduleResponseDto[];
     features: BusScheduleResponseDto[];
   }> {
-    return this.biletAllService.scheduleList(requestDto);
+    const { schedules, features } = await this.biletAllService.scheduleList(
+      requestDto,
+    );
+    return BusScheduleResponseDto.finalVersionBusScheduleResponse({
+      schedules,
+      features,
+    });
   }
 
   @Post('bus-search')
@@ -61,7 +68,15 @@ export class BusController {
     features: BusSearchResponseDto[];
     paymentRules: BusSearchResponseDto[];
   }> {
-    return this.biletAllService.busSearch(requestDto);
+    const { trips, seats, travelTypes, features, paymentRules } =
+      await this.biletAllService.busSearch(requestDto);
+    return BusSearchResponseDto.finalVersionBusSearchResponse(
+      trips,
+      seats,
+      travelTypes,
+      features,
+      paymentRules,
+    );
   }
 
   @Post('bus-seat-control')
@@ -74,21 +89,30 @@ export class BusController {
   async boardingPoint(
     @Body() requestDto: BoardingPointDto,
   ): Promise<BoardingPointResponseDto[]> {
-    return this.biletAllService.boardingPoint(requestDto);
+    const boardingPoints = await this.biletAllService.boardingPoint(requestDto);
+    return BoardingPointResponseDto.finalVersionBoardingPointResponse(
+      boardingPoints,
+    );
   }
 
   @Post('service-information')
   async serviceInformation(
     @Body() requestDto: ServiceInformationDto,
   ): Promise<ServiceInformationResponseDto[]> {
-    return this.biletAllService.serviceInformation(requestDto);
+    const serviceInformations = await this.biletAllService.serviceInformation(
+      requestDto,
+    );
+    return ServiceInformationResponseDto.finalVersionServiceInformationResponse(
+      serviceInformations,
+    );
   }
 
   @Post('get-route')
   async getRoute(
     @Body() requestDto: BusRouteDto,
   ): Promise<RouteDetailResponseDto[]> {
-    return this.biletAllService.getRoute(requestDto);
+    const routeDetails = await this.biletAllService.getRoute(requestDto);
+    return RouteDetailResponseDto.finalVersionRouteDetailResponse(routeDetails);
   }
 
   @Post('sale-request')

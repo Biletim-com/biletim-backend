@@ -1,7 +1,7 @@
 // info regarding the bus
 
 import {} from '@app/common/types/datetime.type';
-import { IsDateString, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 import { ScheduleListDto } from './bus-schedule-list.dto';
 import { OmitType } from '@nestjs/swagger/dist/type-helpers/omit-type.helper';
 import {
@@ -21,11 +21,11 @@ export class BusSearchDto extends OmitType(ScheduleListDto, [
     { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
   )
   @IsNotEmpty()
-  time!: string;
+  time: string;
 
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  routeNumber!: number;
+  routeNumber: string;
 
   @IsString()
   @IsNotEmpty()
@@ -39,104 +39,100 @@ export class BusSearchDto extends OmitType(ScheduleListDto, [
 }
 
 export class BusSearchResponseDto {
-  LocalDateTime?: string;
-  InternetDateTime?: string;
-  DepartureName?: string;
-  ArrivalName?: string;
-  RouteNumber?: string;
-  PriceChangeable?: string;
-  TicketPrice1?: string;
-  TicketPrice2?: string;
-  TicketPrice3?: string;
-  InternetTicketPrice?: string;
-  ClassDifferenceTicketPrice?: string;
-  SingleSeatDifferenceTicketPrice?: string;
-  GuestTicketPrice?: string;
-  SellsGuestTickets?: string;
-  SellsDiscountedTicketsForDisabled?: string;
-  SellsQuotaTickets?: string;
-  IsReservationActive?: string;
-  IsSaleActive?: string;
-  MaximumReservationDateTime?: string;
-  BusType?: string;
-  BusTypeClass?: string;
-  BusTypeSecondFloorRow?: string;
-  BusPlate?: string;
-  BusCaptainName?: string;
-  BusHostessName?: string;
-  DepartureTime?: string;
-  BusTripMessage?: string;
-  BusBranchMessage?: string;
-  PlatformNumber?: string;
-  DepartureTerminalName?: string;
-  NightDescription?: string;
-  MaximumEmptyFemaleSeats?: string;
-  BranchTicketPort?: string;
-  TotalPassengerPoints?: string;
-  PassengerPointsMultiplier?: string;
-  OccupancyRateDiscountApplied?: string;
-  BusTypeFeature?: string;
-  BackwardSeats?: string;
-  IDNumberRequiredForBranchSale?: string;
-  TravelDuration?: string;
-  TripTypeDescription?: string;
-  BusTypeDescription?: string;
-  CompanyBestPriceActive?: string;
-  BusMessage?: string;
-  Facilities?: string;
-  Payment3DSecureActive?: string;
-  Payment3DSecureMandatory?: string;
-  PaypalUpperLimit?: string;
-  MaximumEmptyMaleSeats?: string;
-  SellableSeatCount?: string;
-  ReservationCannotBeMadeReason?: string;
-  CompanyMaxTotalTicketPrice?: string;
-  CanProcessWithPassportNumber?: string;
-  CanSelectSeatsOfDifferentGenders?: string;
-  BusSeatLayout?: string;
-  BusHESCodeMandatory?: string;
-  DoubleSeatCanBeSoldToSinglePassenger?: string;
-  SingleSeatsFullDoubleSeatsSalePossible?: string;
-  ApproximateTravelDuration?: string;
-  TravelDurationDisplayType?: string;
-  CanSelectSeatsWithDifferentPrices?: string;
-  TicketCancellationActive?: string;
-  OpenMoneyUsageActive?: string;
-  CancellationTimeUntilDepartureMinutes?: string;
-  DeparturePointID?: string;
-  DeparturePoint?: string;
-  ArrivalPointID?: string;
-  ArrivalPoint?: string;
-
-  SeatString?: string;
-  SeatNumber?: string;
-  Status?: string;
-  AdjacentStatus?: string;
-  InternetSeatPrice?: string;
-
-  TravelType?: string;
-  TravelName?: string;
-  TicketPrice?: string;
-  TicketPriceClassDifference?: string;
-  SingleSeatPriceDifference?: string;
-
+  localDateTime?: string;
+  internetDateTime?: string;
+  departureName?: string;
+  arrivalName?: string;
+  routeNumber?: string;
+  priceChangeable?: string;
+  ticketPrice1?: string;
+  ticketPrice2?: string;
+  ticketPrice3?: string;
+  internetTicketPrice?: string;
+  classDifferenceTicketPrice?: string;
+  singleSeatDifferenceTicketPrice?: string;
+  guestTicketPrice?: string;
+  sellsGuestTickets?: string;
+  sellsDiscountedTicketsForDisabled?: string;
+  sellsQuotaTickets?: string;
+  isReservationActive?: string;
+  isSaleActive?: string;
+  maximumReservationDateTime?: string;
+  busType?: string;
+  busTypeClass?: string;
+  busTypeSecondFloorRow?: string;
+  busPlate?: string;
+  busCaptainName?: string;
+  busHostessName?: string;
+  departureTime?: string;
+  busTripMessage?: string;
+  busBranchMessage?: string;
+  platformNumber?: string;
+  departureTerminalName?: string;
+  nightDescription?: string;
+  maximumEmptyFemaleSeats?: string;
+  branchTicketPort?: string;
+  totalPassengerPoints?: string;
+  passengerPointsMultiplier?: string;
+  occupancyRateDiscountApplied?: string;
+  busTypeFeature?: string;
+  backwardSeats?: string;
+  idNumberRequiredForBranchSale?: string;
+  travelDuration?: string;
+  tripTypeDescription?: string;
+  busTypeDescription?: string;
+  companyBestPriceActive?: string;
+  busMessage?: string;
+  facilities?: string;
+  payment3DSecureActive?: string;
+  payment3DSecureMandatory?: string;
+  paypalUpperLimit?: string;
+  maximumEmptyMaleSeats?: string;
+  sellableSeatCount?: string;
+  reservationCannotBeMadeReason?: string;
+  companyMaxTotalTicketPrice?: string;
+  canProcessWithPassportNumber?: string;
+  canSelectSeatsOfDifferentGenders?: string;
+  busSeatLayout?: string;
+  busHESCodeMandatory?: string;
+  doubleSeatCanBeSoldToSinglePassenger?: string;
+  singleSeatsFullDoubleSeatsSalePossible?: string;
+  approximateTravelDuration?: string;
+  travelDurationDisplayType?: string;
+  canSelectSeatsWithDifferentPrices?: string;
+  ticketCancellationActive?: string;
+  openMoneyUsageActive?: string;
+  cancellationTimeUntilDepartureMinutes?: string;
+  departurePointID?: string;
+  departurePoint?: string;
+  arrivalPointID?: string;
+  arrivalPoint?: string;
+  seatString?: string;
+  seatNumber?: string;
+  status?: string;
+  adjacentStatus?: string;
+  internetSeatPrice?: string;
+  travelType?: string;
+  travelName?: string;
+  ticketPrice?: string;
+  ticketPriceClassDifference?: string;
+  singleSeatPriceDifference?: string;
   typeFeature?: string;
   typeFeatureDescription?: string;
   typeFeatureDetail?: string;
   typeFeatureIcon?: string;
-
-  PaymentRule3DSecureActive?: string;
-  PaymentRule3DSecureMandatory?: string;
-  OpenMoneyPaymentActive?: string;
-  PrePaymentActive?: string;
-  ParakodPaymentActive?: string;
-  BkmPaymentActive?: string;
-  PaypalPaymentActive?: string;
-  PaymentRulePaypalUpperLimit?: string;
-  HopiActive?: string;
-  MasterpassActive?: string;
-  FastPayPaymentActive?: string;
-  GarantiPayPaymentActive?: string;
+  paymentRule3DSecureActive?: string;
+  paymentRule3DSecureMandatory?: string;
+  openMoneyPaymentActive?: string;
+  prePaymentActive?: string;
+  parakodPaymentActive?: string;
+  bkmPaymentActive?: string;
+  paypalPaymentActive?: string;
+  paymentRulePaypalUpperLimit?: string;
+  hopiActive?: string;
+  masterpassActive?: string;
+  fastPayPaymentActive?: string;
+  garantiPayPaymentActive?: string;
 
   constructor(
     trip?: BusTrip,
@@ -146,97 +142,98 @@ export class BusSearchResponseDto {
     paymentRule?: PaymentRule,
   ) {
     if (trip) {
-      this.LocalDateTime = trip.YerelTarihSaat;
-      this.InternetDateTime = trip.InternetTarihSaat;
-      this.DepartureName = trip.KalkisAdi;
-      this.ArrivalName = trip.VarisAdi;
-      this.RouteNumber = trip.HatNo;
-      this.PriceChangeable = trip.FiyatDegistirebilir;
-      this.TicketPrice1 = trip.BiletFiyati1;
-      this.TicketPrice2 = trip.BiletFiyati2;
-      this.TicketPrice3 = trip.BiletFiyati3;
-      this.InternetTicketPrice = trip.BiletFiyatiInternet;
-      this.ClassDifferenceTicketPrice = trip.BiletFiyatiSinifFarki;
-      this.SingleSeatDifferenceTicketPrice = trip.BiletTekKoltukFarki;
-      this.GuestTicketPrice = trip.BiletFiyatiMisafir;
-      this.SellsGuestTickets = trip.MisafirBiletSatar;
-      this.SellsDiscountedTicketsForDisabled = trip.OzurluIndirmliBiletSatar;
-      this.SellsQuotaTickets = trip.KontenjanliBiletSatar;
-      this.IsReservationActive = trip.RezervasyonAktifMi;
-      this.IsSaleActive = trip.SatisAktifMi;
-      this.MaximumReservationDateTime = trip.MaximumRezerveTarihiSaati;
-      this.BusType = trip.OtobusTip;
-      this.BusTypeClass = trip.OtobusTipSinif;
-      this.BusTypeSecondFloorRow = trip.OtobusTipIkinciKatSira;
-      this.BusPlate = trip.OtobusPlaka;
-      this.BusCaptainName = trip.OtobusKaptanAdi;
-      this.BusHostessName = trip.OtobusHostesAdi;
-      this.DepartureTime = trip.Okalkti;
-      this.BusTripMessage = trip.OtobusSeferMesaji;
-      this.BusBranchMessage = trip.OtobusSubeMesaji;
-      this.PlatformNumber = trip.PeronNo;
-      this.DepartureTerminalName = trip.KalkisTerminalAdi;
-      this.NightDescription = trip.GeceAciklamasi;
-      this.MaximumEmptyFemaleSeats = trip.MaximumBosBayanYaniSayisi;
-      this.BranchTicketPort = trip.SubeBiletPort;
-      this.TotalPassengerPoints = trip.YolcuUyePuanToplam;
-      this.PassengerPointsMultiplier = trip.YolcuUyePuanCarpan;
-      this.OccupancyRateDiscountApplied = trip.DolulukOraniIndirimiYapildi;
-      this.BusTypeFeature = trip.OTipOzellik;
-      this.BackwardSeats = trip.YonuTersKoltuklar;
-      this.IDNumberRequiredForBranchSale =
+      this.localDateTime = trip.YerelTarihSaat;
+      this.internetDateTime = trip.InternetTarihSaat;
+      this.departureName = trip.KalkisAdi;
+      this.arrivalName = trip.VarisAdi;
+      this.routeNumber = trip.HatNo;
+      this.priceChangeable = trip.FiyatDegistirebilir;
+      this.ticketPrice1 = trip.BiletFiyati1;
+      this.ticketPrice2 = trip.BiletFiyati2;
+      this.ticketPrice3 = trip.BiletFiyati3;
+      this.internetTicketPrice = trip.BiletFiyatiInternet;
+      this.classDifferenceTicketPrice = trip.BiletFiyatiSinifFarki;
+      this.singleSeatDifferenceTicketPrice = trip.BiletTekKoltukFarki;
+      this.guestTicketPrice = trip.BiletFiyatiMisafir;
+      this.sellsGuestTickets = trip.MisafirBiletSatar;
+      this.sellsDiscountedTicketsForDisabled = trip.OzurluIndirmliBiletSatar;
+      this.sellsQuotaTickets = trip.KontenjanliBiletSatar;
+      this.isReservationActive = trip.RezervasyonAktifMi;
+      this.isSaleActive = trip.SatisAktifMi;
+      this.maximumReservationDateTime = trip.MaximumRezerveTarihiSaati;
+      this.busType = trip.OtobusTip;
+      this.busTypeClass = trip.OtobusTipSinif;
+      this.busTypeSecondFloorRow = trip.OtobusTipIkinciKatSira;
+      this.busPlate = trip.OtobusPlaka;
+      this.busCaptainName = trip.OtobusKaptanAdi;
+      this.busHostessName = trip.OtobusHostesAdi;
+      this.departureTime = trip.Okalkti;
+      this.busTripMessage = trip.OtobusSeferMesaji;
+      this.busBranchMessage = trip.OtobusSubeMesaji;
+      this.platformNumber = trip.PeronNo;
+      this.departureTerminalName = trip.KalkisTerminalAdi;
+      this.nightDescription = trip.GeceAciklamasi;
+      this.maximumEmptyFemaleSeats = trip.MaximumBosBayanYaniSayisi;
+      this.branchTicketPort = trip.SubeBiletPort;
+      this.totalPassengerPoints = trip.YolcuUyePuanToplam;
+      this.passengerPointsMultiplier = trip.YolcuUyePuanCarpan;
+      this.occupancyRateDiscountApplied = trip.DolulukOraniIndirimiYapildi;
+      this.busTypeFeature = trip.OTipOzellik;
+      this.backwardSeats = trip.YonuTersKoltuklar;
+      this.idNumberRequiredForBranchSale =
         trip.SubeSatistaTcKimlikNoYazmakZorunlu;
-      this.TravelDuration = trip.SeyahatSuresi;
-      this.TripTypeDescription = trip.SeferTipiAciklamasi;
-      this.BusTypeDescription = trip.OTipAciklamasi;
-      this.CompanyBestPriceActive = trip.FirmaEnUygunFiyatAktifMi;
-      this.BusMessage = trip.OtobusMesaj;
-      this.Facilities = trip.Tesisler;
-      this.Payment3DSecureActive = trip.Odeme3DSecureAktifMi;
-      this.Payment3DSecureMandatory = trip.Odeme3DSecureZorunluMu;
-      this.PaypalUpperLimit = trip.PaypalUstLimit;
-      this.MaximumEmptyMaleSeats = trip.MaximumBosBayYaniSayisi;
-      this.SellableSeatCount = trip.SatilabilirKoltukSayi;
-      this.ReservationCannotBeMadeReason = trip.RezervasyonNedenYapilamaz;
-      this.CompanyMaxTotalTicketPrice = trip.FirmaMaxToplamBiletFiyati;
-      this.CanProcessWithPassportNumber = trip.PasaportNoIleIslemYapilirMi;
-      this.CanSelectSeatsOfDifferentGenders =
+      this.travelDuration = trip.SeyahatSuresi;
+      this.tripTypeDescription = trip.SeferTipiAciklamasi;
+      this.busTypeDescription = trip.OTipAciklamasi;
+      this.companyBestPriceActive = trip.FirmaEnUygunFiyatAktifMi;
+      this.busMessage = trip.OtobusMesaj;
+      this.facilities = trip.Tesisler;
+      this.payment3DSecureActive = trip.Odeme3DSecureAktifMi;
+      this.payment3DSecureMandatory = trip.Odeme3DSecureZorunluMu;
+      this.paypalUpperLimit = trip.PaypalUstLimit;
+      this.maximumEmptyMaleSeats = trip.MaximumBosBayYaniSayisi;
+      this.sellableSeatCount = trip.SatilabilirKoltukSayi;
+      this.reservationCannotBeMadeReason = trip.RezervasyonNedenYapilamaz;
+      this.companyMaxTotalTicketPrice = trip.FirmaMaxToplamBiletFiyati;
+      this.canProcessWithPassportNumber = trip.PasaportNoIleIslemYapilirMi;
+      this.canSelectSeatsOfDifferentGenders =
         trip.FarkliCinsiyetteKoltuklarSecilebilirMi;
-      this.BusSeatLayout = trip.OtobusKoltukBoslukSemasi;
-      this.BusHESCodeMandatory = trip.OtobusHesKoduZorunluMu;
-      this.DoubleSeatCanBeSoldToSinglePassenger =
+      this.busSeatLayout = trip.OtobusKoltukBoslukSemasi;
+      this.busHESCodeMandatory = trip.OtobusHesKoduZorunluMu;
+      this.doubleSeatCanBeSoldToSinglePassenger =
         trip.CiftKoltukTekYolcuyaSatilabilirMi;
-      this.SingleSeatsFullDoubleSeatsSalePossible =
+      this.singleSeatsFullDoubleSeatsSalePossible =
         trip.TekliKoltuklarDoluysaCiftliKoltuktanSatisYapilabilirMi;
-      this.ApproximateTravelDuration = trip.YaklasikSeyahatSuresi;
-      this.TravelDurationDisplayType = trip.SeyahatSuresiGosterimTipi;
-      this.CanSelectSeatsWithDifferentPrices =
+      this.approximateTravelDuration = trip.YaklasikSeyahatSuresi;
+      this.travelDurationDisplayType = trip.SeyahatSuresiGosterimTipi;
+      this.canSelectSeatsWithDifferentPrices =
         trip.FarkliFiyattaKoltuklarSecilebilirMi;
-      this.TicketCancellationActive = trip.BiletIptalAktifMi;
-      this.OpenMoneyUsageActive = trip.AcikParaKullanimAktifMi;
-      this.CancellationTimeUntilDepartureMinutes =
+      this.ticketCancellationActive = trip.BiletIptalAktifMi;
+      this.openMoneyUsageActive = trip.AcikParaKullanimAktifMi;
+      this.cancellationTimeUntilDepartureMinutes =
         trip.SefereKadarIptalEdilebilmeSuresiDakika;
-      this.DeparturePointID = trip.KalkisNoktaID;
-      this.DeparturePoint = trip.KalkisNokta;
-      this.ArrivalPointID = trip.VarisNoktaID;
-      this.ArrivalPoint = trip.VarisNokta;
+      this.departurePointID = trip.KalkisNoktaID;
+      this.departurePoint = trip.KalkisNokta;
+      this.arrivalPointID = trip.VarisNoktaID;
+      this.arrivalPoint = trip.VarisNokta;
     }
 
     if (seat) {
-      this.SeatString = seat.KoltukStr;
-      this.SeatNumber = seat.KoltukNo;
-      this.Status = seat.Durum;
-      this.AdjacentStatus = seat.DurumYan;
-      this.InternetSeatPrice = seat.KoltukFiyatiInternet;
+      this.seatString = seat.KoltukStr;
+      this.seatNumber = seat.KoltukNo;
+      this.status = seat.Durum;
+      this.adjacentStatus = seat.DurumYan;
+      this.internetSeatPrice = seat.KoltukFiyatiInternet;
     }
 
     if (travelType) {
-      this.TravelType = travelType.SeyahatTipi;
-      this.TravelName = travelType.SeyahatAdi;
-      this.TicketPrice = travelType.BiletFiyati;
-      this.TicketPriceClassDifference = travelType.BiletFiyatSinifFarki;
-      this.SingleSeatPriceDifference = travelType.BiletTekKoltukFarki;
+      this.travelType = travelType.SeyahatTipi;
+      this.travelName = travelType.SeyahatAdi;
+      this.ticketPrice = travelType.BiletFiyati;
+      this.ticketPriceClassDifference = travelType.BiletFiyatSinifFarki;
+      this.singleSeatPriceDifference = travelType.BiletTekKoltukFarki;
     }
+
     if (feature) {
       this.typeFeature = feature.O_Tip_Ozellik;
       this.typeFeatureDescription = feature.O_Tip_Ozellik_Aciklama;
@@ -245,18 +242,18 @@ export class BusSearchResponseDto {
     }
 
     if (paymentRule) {
-      this.PaymentRule3DSecureActive = paymentRule.Odeme3DSecureAktifMi;
-      this.PaymentRule3DSecureMandatory = paymentRule.Odeme3DSecureZorunluMu;
-      this.OpenMoneyPaymentActive = paymentRule.AcikParaliOdemeAktifMi;
-      this.PrePaymentActive = paymentRule.OnOdemeAktifMi;
-      this.ParakodPaymentActive = paymentRule.ParakodOdemeAktifMi;
-      this.BkmPaymentActive = paymentRule.BkmOdemeAktifMi;
-      this.PaypalPaymentActive = paymentRule.PaypalOdemeAktifMi;
-      this.PaymentRulePaypalUpperLimit = paymentRule.PaypalUstLimit;
-      this.HopiActive = paymentRule.HopiAktifMi;
-      this.MasterpassActive = paymentRule.MasterpassAktifMi;
-      this.FastPayPaymentActive = paymentRule.FastPayOdemeAktifMi;
-      this.GarantiPayPaymentActive = paymentRule.GarantiPayOdemeAktifMi;
+      this.paymentRule3DSecureActive = paymentRule.Odeme3DSecureAktifMi;
+      this.paymentRule3DSecureMandatory = paymentRule.Odeme3DSecureZorunluMu;
+      this.openMoneyPaymentActive = paymentRule.AcikParaliOdemeAktifMi;
+      this.prePaymentActive = paymentRule.OnOdemeAktifMi;
+      this.parakodPaymentActive = paymentRule.ParakodOdemeAktifMi;
+      this.bkmPaymentActive = paymentRule.BkmOdemeAktifMi;
+      this.paypalPaymentActive = paymentRule.PaypalOdemeAktifMi;
+      this.paymentRulePaypalUpperLimit = paymentRule.PaypalUstLimit;
+      this.hopiActive = paymentRule.HopiAktifMi;
+      this.masterpassActive = paymentRule.MasterpassAktifMi;
+      this.fastPayPaymentActive = paymentRule.FastPayOdemeAktifMi;
+      this.garantiPayPaymentActive = paymentRule.GarantiPayOdemeAktifMi;
     }
   }
 

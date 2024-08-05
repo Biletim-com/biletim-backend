@@ -1,5 +1,5 @@
 import { OmitType } from '@nestjs/swagger/dist/type-helpers/omit-type.helper';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { ScheduleListDto } from './bus-schedule-list.dto';
 import { RouteDetail } from '../services/biletall/types/biletall-route.type';
 
@@ -9,17 +9,17 @@ export class BusRouteDto extends OmitType(ScheduleListDto, [
   'passengerCount',
   'ip',
 ]) {
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  routeNumber!: number;
+  routeNumber: string;
 
   @IsString()
   @IsNotEmpty()
-  tripTrackingNumber?: string;
+  tripTrackingNumber: string;
 
   @IsString()
   @IsNotEmpty()
-  infoTechnologyName!: string;
+  infoTechnologyName: string;
 }
 
 export class RouteDetailResponseDto {

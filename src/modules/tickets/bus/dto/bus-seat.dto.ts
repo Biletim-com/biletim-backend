@@ -1,14 +1,14 @@
 import { BusSeatGender } from '@app/common/enums/bus-seat-gender.enum';
-import { IsEnum, IsInt, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class BusSeatDto {
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  seatNumber!: number;
+  seatNumber: string;
 
   // male - 2
   // female - 1
   @IsEnum(BusSeatGender)
   @IsNotEmpty()
-  gender!: BusSeatGender;
+  gender: BusSeatGender;
 }
