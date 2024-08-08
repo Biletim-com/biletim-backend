@@ -1,6 +1,6 @@
 import { SoapEnvelope } from '@app/modules/tickets/bus/services/biletall/types/biletall-soap-envelope.type';
 
-export type PlaneAirPoint = {
+export type PlaneAirport = {
   UlkeKod: string;
   UlkeAd: string;
   UlkeAdEn: string;
@@ -14,12 +14,12 @@ export type PlaneAirPoint = {
   HavaAlanBolgeEn: string;
 };
 
-type PlaneAirPointDataSet = {
+type PlaneAirportDataSet = {
   HavaNoktalar: Array<{
     HavaNokta: Array<{
-      [K in keyof PlaneAirPoint]: [string];
+      [K in keyof PlaneAirport]: [string];
     }>;
   }>;
 };
 
-export type PlaneAirPointResponse = SoapEnvelope<PlaneAirPointDataSet>;
+export type PlaneAirportResponse = SoapEnvelope<PlaneAirportDataSet>;

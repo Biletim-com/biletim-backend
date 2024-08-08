@@ -1,7 +1,7 @@
 import { BiletAllService } from '../../../bus/services/biletall/biletall.service';
 import { BiletallPlaneParser } from './biletall-plane.parser';
-import { PlaneAirPointResponse } from './types/biletall-plane-air-points.type';
-import { PlaneAirPointDto } from '../../dto/plane-air-points.dto';
+import { PlaneAirportResponse } from './types/biletall-plane-airport.type';
+import { PlaneAirportDto } from '../../dto/plane-airport.dto';
 import { Injectable } from '@nestjs/common';
 import {
   DomesticFlightScheduleDto,
@@ -17,12 +17,12 @@ export class BiletallPlaneService {
     private readonly biletallPlaneParser: BiletallPlaneParser,
   ) {}
 
-  async airPointSearch(): Promise<PlaneAirPointDto[]> {
-    const airPointsXML = '<HavaNoktaGetirKomut/>';
-    const res = await this.biletallService.run<PlaneAirPointResponse>(
-      airPointsXML,
+  async airportSearch(): Promise<PlaneAirportDto[]> {
+    const airportXML = '<HavaNoktaGetirKomut/>';
+    const res = await this.biletallService.run<PlaneAirportResponse>(
+      airportXML,
     );
-    return this.biletallPlaneParser.parseAirPoints(res);
+    return this.biletallPlaneParser.parseAirport(res);
   }
 
   async domesticFlightScheduleSearch(

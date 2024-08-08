@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import {
-  PlaneAirPoint,
-  PlaneAirPointResponse,
-} from './types/biletall-plane-air-points.type';
+  PlaneAirport,
+  PlaneAirportResponse,
+} from './types/biletall-plane-airport.type';
 import { BiletAllParser } from '../../../bus/services/biletall/biletall.parser';
-import { PlaneAirPointDto } from '../../dto/plane-air-points.dto';
+import { PlaneAirportDto } from '../../dto/plane-airport.dto';
 import {
   DomesticFlightResponse,
   FlightOption,
@@ -26,19 +26,17 @@ import {
 export class BiletallPlaneParser {
   constructor(private readonly biletAllParser: BiletAllParser) {}
 
-  public parseAirPoints = (
-    response: PlaneAirPointResponse,
-  ): PlaneAirPointDto[] => {
+  public parseAirport = (response: PlaneAirportResponse): PlaneAirportDto[] => {
     const extractedResult = this.biletAllParser.extractResult(response);
     const havaNoktalar = extractedResult['HavaNoktalar'][0];
     const havaNoktaList = havaNoktalar['HavaNokta'];
 
     return havaNoktaList.map((entry) => {
-      const airPointParsed: PlaneAirPoint = Object.assign({});
+      const airportParsed: PlaneAirport = Object.assign({});
       for (const [key, [value]] of Object.entries(entry)) {
-        airPointParsed[key] = value;
+        airportParsed[key] = value;
       }
-      return new PlaneAirPointDto(airPointParsed);
+      return new PlaneAirportDto(airportParsed);
     });
   };
 
