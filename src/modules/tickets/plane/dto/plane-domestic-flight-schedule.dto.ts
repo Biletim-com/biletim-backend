@@ -11,7 +11,6 @@ import {
   IsString,
   Length,
   Min,
-  ValidateIf,
 } from 'class-validator';
 import * as dayjs from 'dayjs';
 
@@ -40,12 +39,12 @@ export class PlaneDomesticFlightScheduleRequestDto {
   @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
   returnDate?: DateISODate;
 
-  @ValidateIf((o) => o.returnDate)
-  @Transform(({ obj }) => {
-    console.log({ obj });
-    return obj.returnDate && PlaneTravelType.ROUNDTRIP;
-  })
-  travelType = PlaneTravelType.ONEWAY;
+  @Expose()
+  @Transform(({ obj }) =>
+    obj.returnDate ? PlaneTravelType.ROUNDTRIP : PlaneTravelType.ONEWAY,
+  )
+  @IsEnum(PlaneTravelType)
+  travelType: PlaneTravelType;
 
   @IsEnum(PlaneTicketOperationType)
   operationType: PlaneTicketOperationType;
@@ -68,9 +67,4 @@ export class PlaneDomesticFlightScheduleRequestDto {
   @IsNotEmpty()
   @IsString()
   ip: string;
-
-  constructor(partial: Partial<PlaneDomesticFlightScheduleRequestDto>) {
-    // Object.assign(this, partial);
-    console.log({ partial });
-  }
 }
