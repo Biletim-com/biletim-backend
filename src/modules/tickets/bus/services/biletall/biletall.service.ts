@@ -52,7 +52,7 @@ export class BiletAllService {
     private biletAllParser: BiletAllParser,
   ) {}
 
-  private async run<T>(bodyXml: string): Promise<T> {
+  public async run<T>(bodyXml: string): Promise<T> {
     const soapEnvelope = `
     <?xml version="1.0" encoding="utf-8"?>
       <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://tempuri.org/">

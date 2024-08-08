@@ -22,11 +22,11 @@ export class ServiceInformationRequestDto extends BoardingPointRequestDto {
 export class ServiceInformationDto {
   place: string;
   time: string;
-  visibleOnInternet: string;
+  visibleOnInternet: boolean;
 
   constructor(serviceInformation: ServiceInformation) {
     this.place = serviceInformation.Yer;
     this.time = serviceInformation.Saat;
-    this.visibleOnInternet = serviceInformation.Internette_Gozuksunmu;
+    this.visibleOnInternet = serviceInformation.Internette_Gozuksunmu === '1';
   }
 }
