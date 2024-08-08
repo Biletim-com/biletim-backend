@@ -77,10 +77,10 @@ type DomesticFlightDataSet = {
   GidisSegmentler: Array<{
     [K in keyof FlightSegment]: [string];
   }>;
-  DonusSecenekler: Array<{
+  DonusSecenekler?: Array<{
     [K in keyof FlightOption]: [string];
   }>;
-  DonusSegmentler: Array<{
+  DonusSegmentler?: Array<{
     [K in keyof FlightSegment]: [string];
   }>;
   SegmentSiniflar: Array<{

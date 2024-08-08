@@ -1,7 +1,10 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { BiletallPlaneService } from './services/biletall/biletall-plane.service';
 import { PlaneAirPointDto } from './dto/plane-air-points.dto';
-import { PlaneDomesticFlightScheduleRequestDto } from './dto/plane-domestic-flight-schedule.dto';
+import {
+  DomesticFlightScheduleDto,
+  PlaneDomesticFlightScheduleRequestDto,
+} from './dto/plane-domestic-flight-schedule.dto';
 
 @Controller('plane')
 export class PlaneController {
@@ -15,9 +18,7 @@ export class PlaneController {
   @Post('domestic-flight-schedule')
   async domesticFlightScheduleSearch(
     @Body() requestDto: PlaneDomesticFlightScheduleRequestDto,
-  ): Promise<any> {
-    console.log({ requestDto: requestDto.travelType });
-    console.log({ requestDto });
-    return requestDto;
+  ): Promise<DomesticFlightScheduleDto> {
+    return this.biletallPlaneService.domesticFlightScheduleSearch(requestDto);
   }
 }

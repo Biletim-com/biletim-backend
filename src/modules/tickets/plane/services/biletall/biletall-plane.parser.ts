@@ -5,7 +5,22 @@ import {
 } from './types/biletall-plane-air-points.type';
 import { BiletAllParser } from '../../../bus/services/biletall/biletall.parser';
 import { PlaneAirPointDto } from '../../dto/plane-air-points.dto';
-import { DomesticFlightResponse } from './types/biletall-plane-domistic-flight-schedule.type';
+import {
+  DomesticFlightResponse,
+  FlightOption,
+  FlightSegment,
+  OptionFare,
+  OptionFareDetail,
+  SegmentClass,
+} from './types/biletall-plane-domistic-flight-schedule.type';
+import {
+  DomesticFlightScheduleDto,
+  FlightOptionDto,
+  FlightSegmentDto,
+  OptionFareDetailDto,
+  OptionFareDto,
+  SegmentClassDto,
+} from '../../dto/plane-domestic-flight-schedule.dto';
 
 @Injectable()
 export class BiletallPlaneParser {
@@ -15,7 +30,6 @@ export class BiletallPlaneParser {
     response: PlaneAirPointResponse,
   ): PlaneAirPointDto[] => {
     const extractedResult = this.biletAllParser.extractResult(response);
-    console.log(extractedResult);
     const havaNoktalar = extractedResult['HavaNoktalar'][0];
     const havaNoktaList = havaNoktalar['HavaNokta'];
 
@@ -28,78 +42,101 @@ export class BiletallPlaneParser {
     });
   };
 
-  // public parseDomesticFlightResponse = (
-  //   response: DomesticFlightResponse,
-  // ): {
-  //   flightOptions: FlightOptionDto[];
-  //   flightSegments: FlightSegmentDto[];
-  //   segmentClasses: SegmentClassDto[];
-  //   optionFares: OptionFareDto[];
-  //   optionFareDetails: OptionFareDetailDto[];
-  // } => {
-  //   const extractedResult = this.biletAllParser.extractResult(response);
+  public parseDomesticFlightResponse = (
+    response: DomesticFlightResponse,
+  ): DomesticFlightScheduleDto => {
+    const extractedResult = this.biletAllParser.extractResult(response);
+    const newDataSet = extractedResult['NewDataSet'][0];
 
-  //   // Parsing flight options
-  //   const gidisSecenekler = extractedResult['GidisSecenekler'][0];
-  //   const gidisSecenekList = gidisSecenekler['Secenek'];
-  //   const flightOptions = gidisSecenekList.map((entry) => {
-  //     const flightOptionParsed: FlightOption = Object.assign({});
-  //     for (const [key, [value]] of Object.entries(entry)) {
-  //       flightOptionParsed[key] = value;
-  //     }
-  //     return new FlightOptionDto(flightOptionParsed);
-  //   });
+    const gidisSecenekler = newDataSet['Secenekler'] ?? [];
 
-  //   // Parsing flight segments
-  //   const gidisSegmentler = extractedResult['GidisSegmentler'][0];
-  //   const gidisSegmentList = gidisSegmentler['Segment'];
-  //   const flightSegments = gidisSegmentList.map((entry) => {
-  //     const flightSegmentParsed: FlightSegment = Object.assign({});
-  //     for (const [key, [value]] of Object.entries(entry)) {
-  //       flightSegmentParsed[key] = value;
-  //     }
-  //     return new FlightSegmentDto(flightSegmentParsed);
-  //   });
+    const flightOptions = gidisSecenekler.map((entry: any) => {
+      const flightOptionParsed: Partial<FlightOption> = {};
+      Object.entries(entry).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          flightOptionParsed[key as keyof FlightOption] = value[0];
+        }
+      });
+      return new FlightOptionDto(flightOptionParsed as FlightOption);
+    });
 
-  //   // Parsing segment classes
-  //   const segmentSiniflar = extractedResult['SegmentSiniflar'][0];
-  //   const segmentSinifList = segmentSiniflar['Sinif'];
-  //   const segmentClasses = segmentSinifList.map((entry) => {
-  //     const segmentClassParsed: SegmentClass = Object.assign({});
-  //     for (const [key, [value]] of Object.entries(entry)) {
-  //       segmentClassParsed[key] = value;
-  //     }
-  //     return new SegmentClassDto(segmentClassParsed);
-  //   });
+    const gidisSegmentler = newDataSet['Segmentler'] ?? [];
+    const flightSegments = gidisSegmentler.map((entry: any) => {
+      const flightSegmentParsed: Partial<FlightSegment> = {};
+      Object.entries(entry).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          flightSegmentParsed[key as keyof FlightSegment] = value[0];
+        }
+      });
+      return new FlightSegmentDto(flightSegmentParsed as FlightSegment);
+    });
 
-  //   // Parsing option fares
-  //   const secenekUcretler = extractedResult['SecenekUcretler'][0];
-  //   const secenekUcretList = secenekUcretler['Ucret'];
-  //   const optionFares = secenekUcretList.map((entry) => {
-  //     const optionFareParsed: OptionFare = Object.assign({});
-  //     for (const [key, [value]] of Object.entries(entry)) {
-  //       optionFareParsed[key] = value;
-  //     }
-  //     return new OptionFareDto(optionFareParsed);
-  //   });
+    const segmentSiniflar = newDataSet['SegmentSiniflar'] ?? [];
+    const segmentClasses = segmentSiniflar.map((entry: any) => {
+      const segmentClassParsed: Partial<SegmentClass> = {};
+      Object.entries(entry).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          segmentClassParsed[key as keyof SegmentClass] = value[0];
+        }
+      });
+      return new SegmentClassDto(segmentClassParsed as SegmentClass);
+    });
 
-  //   // Parsing option fare details
-  //   const secenekUcretDetaylar = extractedResult['SecenekUcretDetaylar'][0];
-  //   const secenekUcretDetayList = secenekUcretDetaylar['Detay'];
-  //   const optionFareDetails = secenekUcretDetayList.map((entry) => {
-  //     const optionFareDetailParsed: OptionFareDetail = Object.assign({});
-  //     for (const [key, [value]] of Object.entries(entry)) {
-  //       optionFareDetailParsed[key] = value;
-  //     }
-  //     return new OptionFareDetailDto(optionFareDetailParsed);
-  //   });
+    const secenekUcretler = newDataSet['SecenekUcretler'] ?? [];
+    const optionFares = secenekUcretler.map((entry: any) => {
+      const optionFareParsed: Partial<OptionFare> = {};
+      Object.entries(entry).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          optionFareParsed[key as keyof OptionFare] = value[0];
+        }
+      });
+      return new OptionFareDto(optionFareParsed as OptionFare);
+    });
 
-  //   return {
-  //     flightOptions,
-  //     flightSegments,
-  //     segmentClasses,
-  //     optionFares,
-  //     optionFareDetails,
-  //   };
-  // };
+    const secenekUcretDetaylar = newDataSet['SecenekUcretDetaylar'] ?? [];
+    const optionFareDetails = secenekUcretDetaylar.map((entry: any) => {
+      const optionFareDetailParsed: Partial<OptionFareDetail> = {};
+      Object.entries(entry).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          optionFareDetailParsed[key as keyof OptionFareDetail] = value[0];
+        }
+      });
+      return new OptionFareDetailDto(
+        optionFareDetailParsed as OptionFareDetail,
+      );
+    });
+
+    const donusSecenekler = newDataSet['DonusSecenekler'] ?? [];
+
+    const returnFlightOptions = donusSecenekler.map((entry: any) => {
+      const flightOptionParsed: Partial<FlightOption> = {};
+      Object.entries(entry).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          flightOptionParsed[key as keyof FlightOption] = value[0];
+        }
+      });
+      return new FlightOptionDto(flightOptionParsed as FlightOption);
+    });
+
+    const donusSegmentler = newDataSet['DonusSegmentler'] ?? [];
+    const returnFlightSegments = donusSegmentler.map((entry: any) => {
+      const flightSegmentParsed: Partial<FlightSegment> = {};
+      Object.entries(entry).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          flightSegmentParsed[key as keyof FlightSegment] = value[0];
+        }
+      });
+      return new FlightSegmentDto(flightSegmentParsed as FlightSegment);
+    });
+
+    return new DomesticFlightScheduleDto(
+      flightOptions,
+      flightSegments,
+      segmentClasses,
+      optionFares,
+      optionFareDetails,
+      returnFlightOptions,
+      returnFlightSegments,
+    );
+  };
 }
