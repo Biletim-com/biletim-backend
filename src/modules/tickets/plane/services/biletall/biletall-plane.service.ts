@@ -9,6 +9,11 @@ import {
 } from '../../dto/plane-domestic-flight-schedule.dto';
 import * as xml2js from 'xml2js';
 import { DomesticFlightResponse } from './types/biletall-plane-domistic-flight-schedule.type';
+import {
+  AbroadFlightScheduleDto,
+  PlaneAbroadFlightScheduleRequestDto,
+} from '../../dto/plane-abroad-flight-schedule.dto';
+import { AbroadFlightResponse } from './types/biletall-plane-abroad-flight-schedule.type';
 
 @Injectable()
 export class BiletallPlaneService {
@@ -35,7 +40,9 @@ export class BiletallPlaneService {
         KalkisAdi: requestDto.departureAirport,
         VarisAdi: requestDto.arrivalAirport,
         Tarih: requestDto.departureDate,
-        DonusTarih: requestDto.returnDate,
+        ...(requestDto.returnDate && {
+          DonusTarih: requestDto.returnDate,
+        }),
         SeyahatTipi: requestDto.travelType,
         IslemTipi: requestDto.operationType,
         YetiskinSayi: requestDto.adultCount,
@@ -44,15 +51,41 @@ export class BiletallPlaneService {
         Ip: requestDto.ip,
       },
     };
-    const filteredRequestDocument = {
-      Sefer: Object.fromEntries(
-        Object.entries(requestDocument.Sefer).filter(
-          ([key, value]) => value !== undefined,
-        ),
-      ),
-    };
-    const xml = builder.buildObject(filteredRequestDocument);
+    const xml = builder.buildObject(requestDocument);
     const res = await this.biletallService.run<DomesticFlightResponse>(xml);
     return this.biletallPlaneParser.parseDomesticFlightResponse(res);
+  }
+
+  async abroadFlightScheduleSearch(
+    requestDto: PlaneAbroadFlightScheduleRequestDto,
+  ): Promise<AbroadFlightScheduleDto> {
+    const builder = new xml2js.Builder({ headless: true });
+    const requestDocument = {
+      Sefer: {
+        FirmaNo: 1100,
+        KalkisAdi: requestDto.departureAirport,
+        VarisAdi: requestDto.arrivalAirport,
+        Tarih: requestDto.departureDate,
+        ...(requestDto.splitSearch === true && {
+          SplitSearch: 1,
+        }),
+        ...(requestDto.returnDate && { DonusTarih: requestDto.returnDate }),
+        ...(requestDto.splitSearchRoundTripGroup === true && {
+          SplitSearchGidisDonusGrupla: 1,
+        }),
+        ...(requestDto.classType && {
+          Sinif: requestDto.classType,
+        }),
+        SeyahatTipi: requestDto.travelType,
+        IslemTipi: requestDto.operationType,
+        YetiskinSayi: requestDto.adultCount,
+        CocukSayi: requestDto.childCount,
+        BebekSayi: requestDto.babyCount,
+        Ip: requestDto.ip,
+      },
+    };
+    const xml = builder.buildObject(requestDocument);
+    const res = await this.biletallService.run<AbroadFlightResponse>(xml);
+    return this.biletallPlaneParser.parseAbroadFlightResponse(res);
   }
 }

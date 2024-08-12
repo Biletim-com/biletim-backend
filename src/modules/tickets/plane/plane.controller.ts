@@ -5,6 +5,10 @@ import {
   DomesticFlightScheduleDto,
   PlaneDomesticFlightScheduleRequestDto,
 } from './dto/plane-domestic-flight-schedule.dto';
+import {
+  AbroadFlightScheduleDto,
+  PlaneAbroadFlightScheduleRequestDto,
+} from './dto/plane-abroad-flight-schedule.dto';
 
 @Controller('plane')
 export class PlaneController {
@@ -20,5 +24,13 @@ export class PlaneController {
     @Body() requestDto: PlaneDomesticFlightScheduleRequestDto,
   ): Promise<DomesticFlightScheduleDto> {
     return this.biletallPlaneService.domesticFlightScheduleSearch(requestDto);
+  }
+
+  @Post('abroad-flight-schedule')
+  async abroadFlightScheduleSearch(
+    @Body() requestDto: PlaneAbroadFlightScheduleRequestDto,
+  ): Promise<AbroadFlightScheduleDto> {
+    console.log(requestDto);
+    return this.biletallPlaneService.abroadFlightScheduleSearch(requestDto);
   }
 }

@@ -22,10 +22,6 @@ import {
 } from '../services/biletall/types/biletall-plane-domistic-flight-schedule.type';
 
 export class PlaneDomesticFlightScheduleRequestDto {
-  @IsString()
-  @IsOptional()
-  companyNo: string;
-
   @IsNotEmpty()
   @IsString()
   @Length(3, 3)
@@ -44,7 +40,7 @@ export class PlaneDomesticFlightScheduleRequestDto {
   @IsOptional()
   @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
   @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
-  returnDate?: DateISODate;
+  returnDate: DateISODate;
 
   @Expose()
   @Transform(({ obj }) =>
@@ -53,6 +49,7 @@ export class PlaneDomesticFlightScheduleRequestDto {
   @IsEnum(PlaneTravelType)
   travelType: PlaneTravelType;
 
+  @IsNotEmpty()
   @IsEnum(PlaneTicketOperationType)
   operationType: PlaneTicketOperationType;
 
@@ -77,15 +74,15 @@ export class PlaneDomesticFlightScheduleRequestDto {
 }
 
 export class FlightOptionDto {
-  id?: string;
-  priceP?: string;
-  priceE?: string;
-  priceB?: string;
-  luggageP?: string;
-  luggageE?: string;
-  luggageB?: string;
-  time?: string;
-  companyNo?: string;
+  id: string;
+  priceP: string;
+  priceE: string;
+  priceB: string;
+  luggageP: string;
+  luggageE: string;
+  luggageB: string;
+  time: string;
+  companyNo: string;
 
   constructor(option: FlightOption) {
     this.id = option.ID;
@@ -101,31 +98,31 @@ export class FlightOptionDto {
 }
 
 export class FlightSegmentDto {
-  id?: string;
-  optionId?: string;
-  company?: string;
-  companyName?: string;
-  flightNo?: string;
-  flightCode?: string;
-  departure?: string;
-  arrival?: string;
-  departureCity?: string;
-  arrivalCity?: string;
-  departureAirport?: string;
-  arrivalAirport?: string;
-  departureDate?: string;
-  arrivalDate?: string;
-  duration?: string;
-  aircraftType?: string;
-  classP?: string;
-  classE?: string;
-  classB?: string;
-  seatP?: string;
-  seatE?: string;
-  seatB?: string;
-  luggageP?: string;
-  luggageE?: string;
-  luggageB?: string;
+  id: string;
+  optionId: string;
+  company: string;
+  companyName: string;
+  flightNo: string;
+  flightCode: string;
+  departure: string;
+  arrival: string;
+  departureCity: string;
+  arrivalCity: string;
+  departureAirport: string;
+  arrivalAirport: string;
+  departureDate: string;
+  arrivalDate: string;
+  duration: string;
+  aircraftType: string;
+  classP: string;
+  classE: string;
+  classB: string;
+  seatP: string;
+  seatE: string;
+  seatB: string;
+  luggageP: string;
+  luggageE: string;
+  luggageB: string;
 
   constructor(segment: FlightSegment) {
     this.id = segment.ID;
@@ -157,12 +154,12 @@ export class FlightSegmentDto {
 }
 
 export class SegmentClassDto {
-  segmentId?: string;
-  optionFeeId?: string;
-  classCode?: string;
-  seatCount?: string;
-  fee?: string;
-  missingSeat?: string;
+  segmentId: string;
+  optionFeeId: string;
+  classCode: string;
+  seatCount: string;
+  fee: string;
+  missingSeat: string;
 
   constructor(segmentClass: SegmentClass) {
     this.segmentId = segmentClass.SegmentID2;
@@ -175,17 +172,17 @@ export class SegmentClassDto {
 }
 
 export class OptionFareDto {
-  id?: string;
-  optionId2?: string;
-  className?: string;
-  classType?: string;
-  seatCount?: string;
-  luggage?: string;
-  singlePassengerFee?: string;
-  singlePassengerServiceFee?: string;
-  totalFee?: string;
-  totalServiceFee?: string;
-  description?: string;
+  id: string;
+  optionId2: string;
+  className: string;
+  classType: string;
+  seatCount: string;
+  luggage: string;
+  singlePassengerFee: string;
+  singlePassengerServiceFee: string;
+  totalFee: string;
+  totalServiceFee: string;
+  description: string;
 
   constructor(optionFare: OptionFare) {
     this.id = optionFare.ID;
@@ -203,10 +200,10 @@ export class OptionFareDto {
 }
 
 export class OptionFareDetailDto {
-  id?: string;
-  optionFeeId?: string;
-  type?: string;
-  description?: string;
+  id: string;
+  optionFeeId: string;
+  type: string;
+  description: string;
 
   constructor(optionFareDetail: OptionFareDetail) {
     this.id = optionFareDetail.ID;
@@ -223,7 +220,7 @@ export class DomesticFlightScheduleDto {
     public segmentClass: SegmentClassDto[],
     public optionFare: OptionFareDto[],
     public optionFareDetail: OptionFareDetailDto[],
-    public returnFlightOptions?: FlightOptionDto[],
-    public returnFlightSegments?: FlightSegmentDto[],
+    public returnFlightOptions: FlightOptionDto[],
+    public returnFlightSegments: FlightSegmentDto[],
   ) {}
 }
