@@ -100,16 +100,16 @@ export class FlightOptionDto {
 export class FlightSegmentDto {
   id: string;
   optionId: string;
-  company: string;
-  companyName: string;
+  airlineCode: string;
+  airline: string;
   flightNo: string;
   flightCode: string;
-  departure: string;
-  arrival: string;
-  departureCity: string;
-  arrivalCity: string;
   departureAirport: string;
   arrivalAirport: string;
+  departureCity: string;
+  arrivalCity: string;
+  departureAirportName: string;
+  arrivalAirportName: string;
   departureDate: string;
   arrivalDate: string;
   duration: string;
@@ -127,16 +127,16 @@ export class FlightSegmentDto {
   constructor(segment: FlightSegment) {
     this.id = segment.ID;
     this.optionId = segment.SecenekID;
-    this.company = segment.Firma;
-    this.companyName = segment.FirmaAd;
+    this.airlineCode = segment.Firma;
+    this.airline = segment.FirmaAd;
     this.flightNo = segment.SeferNo;
     this.flightCode = segment.SeferKod;
-    this.departure = segment.Kalkis;
-    this.arrival = segment.Varis;
+    this.departureAirport = segment.Kalkis;
+    this.arrivalAirport = segment.Varis;
     this.departureCity = segment.KalkisSehir;
     this.arrivalCity = segment.VarisSehir;
-    this.departureAirport = segment.KalkisHavaAlan;
-    this.arrivalAirport = segment.VarisHavaAlan;
+    this.departureAirportName = segment.KalkisHavaAlan;
+    this.arrivalAirportName = segment.VarisHavaAlan;
     this.departureDate = segment.KalkisTarih;
     this.arrivalDate = segment.VarisTarih;
     this.duration = segment.Sure;

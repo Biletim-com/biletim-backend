@@ -9,6 +9,10 @@ import {
   AbroadFlightScheduleDto,
   PlaneAbroadFlightScheduleRequestDto,
 } from './dto/plane-abroad-flight-schedule.dto';
+import {
+  PlanePullPriceFlightDto,
+  PullPriceFlightRequestDto,
+} from './dto/plane-pull-price-flight.dto';
 
 @Controller('plane')
 export class PlaneController {
@@ -30,7 +34,13 @@ export class PlaneController {
   async abroadFlightScheduleSearch(
     @Body() requestDto: PlaneAbroadFlightScheduleRequestDto,
   ): Promise<AbroadFlightScheduleDto> {
-    console.log(requestDto);
     return this.biletallPlaneService.abroadFlightScheduleSearch(requestDto);
+  }
+
+  @Post('pull-price')
+  async pullPriceOfFlight(
+    @Body() requestDto: PullPriceFlightRequestDto,
+  ): Promise<PlanePullPriceFlightDto> {
+    return this.biletallPlaneService.pullPriceOfFlight(requestDto);
   }
 }

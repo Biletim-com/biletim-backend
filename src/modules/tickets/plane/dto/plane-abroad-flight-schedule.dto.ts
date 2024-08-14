@@ -26,13 +26,13 @@ export class AbroadFlightOptionDto {
   nPrice: string;
   adultCount: string;
   childCount: string;
-  infantCount: string;
+  babyCount: string;
   adultVPrice: string;
   childVPrice: string;
-  infantVPrice: string;
+  babyVPrice: string;
   adultNPrice: string;
   childNPrice: string;
-  infantNPrice: string;
+  babyNPrice: string;
   serviceFee: string;
   optionDate: string;
   isReservable: string;
@@ -45,13 +45,13 @@ export class AbroadFlightOptionDto {
     this.nPrice = option.NFiyat;
     this.adultCount = option.YetiskinSayi;
     this.childCount = option.CocukSayi;
-    this.infantCount = option.BebekSayi;
+    this.babyCount = option.BebekSayi;
     this.adultVPrice = option.YetiskinVFiyat;
     this.childVPrice = option.CocukVFiyat;
-    this.infantVPrice = option.BebekVFiyat;
+    this.babyVPrice = option.BebekVFiyat;
     this.adultNPrice = option.YetiskinNFiyat;
     this.childNPrice = option.CocukNFiyat;
-    this.infantNPrice = option.BebekNFiyat;
+    this.babyNPrice = option.BebekNFiyat;
     this.serviceFee = option.ServisUcreti;
     this.optionDate = option.OpsiyonTarihi;
     this.isReservable = option.RezervasyonYapilabilirMi;
@@ -69,21 +69,21 @@ export class AbroadFlightSegmentDto {
   flightCode: string;
   airline: string;
   airlineCode: string;
-  departureCode: string;
+  departureAirport: string;
   departureCountryId: string;
   departureCountry: string;
   departureCity: string;
-  departureAirport: string;
-  arrivalCode: string;
+  departureAirportName: string;
+  arrivalAirport: string;
   arrivalCountryId: string;
   arrivalCountry: string;
   arrivalCity: string;
-  arrivalAirport: string;
+  arrivalAirportName: string;
   flightDuration: string;
   departureDate: string;
   arrivalDate: string;
   time: string;
-  class: string;
+  classType: string;
   remainingSeatCount: string;
 
   constructor(segment: AbroadFlightSegment) {
@@ -95,21 +95,21 @@ export class AbroadFlightSegmentDto {
     this.flightCode = segment.SeferKod;
     this.airline = segment.HavaYolu;
     this.airlineCode = segment.HavaYoluKod;
-    this.departureCode = segment.KalkisKod;
+    this.departureAirport = segment.KalkisKod;
     this.departureCountryId = segment.KalkisUlkeID;
     this.departureCountry = segment.KalkisUlke;
     this.departureCity = segment.KalkisSehir;
-    this.departureAirport = segment.KalkisHavaAlani;
-    this.arrivalCode = segment.VarisKod;
+    this.departureAirportName = segment.KalkisHavaAlani;
+    this.arrivalAirport = segment.VarisKod;
     this.arrivalCountryId = segment.VarisUlkeID;
     this.arrivalCountry = segment.VarisUlke;
     this.arrivalCity = segment.VarisSehir;
-    this.arrivalAirport = segment.VarisHavaAlani;
+    this.arrivalAirportName = segment.VarisHavaAlani;
     this.flightDuration = segment.UcusSuresi;
     this.departureDate = segment.KalkisTarih;
     this.arrivalDate = segment.VarisTarih;
     this.time = segment.Vakit;
-    this.class = segment.Sinif;
+    this.classType = segment.Sinif;
     this.remainingSeatCount = segment.KalanKoltukSayi;
   }
 }

@@ -14,6 +14,11 @@ import {
   PlaneAbroadFlightScheduleRequestDto,
 } from '../../dto/plane-abroad-flight-schedule.dto';
 import { AbroadFlightResponse } from './types/biletall-plane-abroad-flight-schedule.type';
+import {
+  PlanePullPriceFlightDto,
+  PullPriceFlightRequestDto,
+} from '../../dto/plane-pull-price-flight.dto';
+import { PlanePullPriceResponse } from './types/biletall-plane-pull-price-flight.type';
 
 @Injectable()
 export class BiletallPlaneService {
@@ -87,5 +92,41 @@ export class BiletallPlaneService {
     const xml = builder.buildObject(requestDocument);
     const res = await this.biletallService.run<AbroadFlightResponse>(xml);
     return this.biletallPlaneParser.parseAbroadFlightResponse(res);
+  }
+
+  async pullPriceOfFlight(
+    requestDto: PullPriceFlightRequestDto,
+  ): Promise<PlanePullPriceFlightDto> {
+    const builder = new xml2js.Builder({ headless: true });
+    const requestDocument = {
+      UcusFiyat: {
+        FirmaNo: requestDto.companyNo,
+        ...requestDto.segments.reduce((acc, segment, index) => {
+          acc[`Segment${index + 1}`] = {
+            Kalkis: segment.departureAirport,
+            Varis: segment.arrivalAirport,
+            KalkisTarih: segment.departureDate,
+            VarisTarih: segment.arrivalDate,
+            UcusNo: segment.flightNo,
+            FirmaKod: segment.airlineCode,
+            Sinif: segment.travelClass,
+            DonusMu: segment.isReturnSegment ? 1 : 0,
+            ...(segment.flightCode && { SeferKod: segment.flightCode }),
+          };
+          return acc;
+        }, {}),
+        YetiskinSayi: requestDto.adultCount ?? 0,
+        CocukSayi: requestDto.childCount ?? 0,
+        BebekSayi: requestDto.babyCount ?? 0,
+        OgrenciSayi: requestDto.studentCount ?? 0,
+        YasliSayi: requestDto.seniorCount ?? 0,
+        AskerSayi: requestDto.militaryCount ?? 0,
+        GencSayi: requestDto.youthCount ?? 0,
+      },
+    };
+
+    const xml = builder.buildObject(requestDocument);
+    const res = await this.biletallService.run<PlanePullPriceResponse>(xml);
+    return this.biletallPlaneParser.parsePullPriceOfFlightResponse(res);
   }
 }
