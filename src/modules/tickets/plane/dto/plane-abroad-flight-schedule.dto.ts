@@ -116,8 +116,15 @@ export class AbroadFlightSegmentDto {
 
 export class AbroadFlightScheduleDto {
   constructor(
-    public flightOptions: AbroadFlightOptionDto[],
-    public flightSegments: AbroadFlightSegmentDto[],
-    public returnFlightSegments?: AbroadFlightSegmentDto[],
+    public groupedFlight: Array<{
+      flightId: string;
+      segments: AbroadFlightSegmentDto[];
+      flightOption: AbroadFlightOptionDto | undefined;
+    }>,
+    public groupedReturnFlight: Array<{
+      flightId: string;
+      segments: AbroadFlightSegmentDto[];
+      flightOption: AbroadFlightOptionDto | undefined;
+    }> = [],
   ) {}
 }

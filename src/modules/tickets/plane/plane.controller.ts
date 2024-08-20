@@ -13,6 +13,7 @@ import {
   PlanePullPriceFlightDto,
   PullPriceFlightRequestDto,
 } from './dto/plane-pull-price-flight.dto';
+import { CompanyPassengerAgeRuleDto } from './dto/plane-company-passanger-age-rule.dto';
 
 @Controller('plane')
 export class PlaneController {
@@ -42,5 +43,10 @@ export class PlaneController {
     @Body() requestDto: PullPriceFlightRequestDto,
   ): Promise<PlanePullPriceFlightDto> {
     return this.biletallPlaneService.pullPriceOfFlight(requestDto);
+  }
+
+  @Get('company-passanger-age-rules')
+  async companyPassangerAgeRules(): Promise<CompanyPassengerAgeRuleDto[]> {
+    return this.biletallPlaneService.companyPassangerAgeRules();
   }
 }

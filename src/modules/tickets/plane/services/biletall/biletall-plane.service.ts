@@ -19,6 +19,8 @@ import {
   PullPriceFlightRequestDto,
 } from '../../dto/plane-pull-price-flight.dto';
 import { PlanePullPriceResponse } from './types/biletall-plane-pull-price-flight.type';
+import { CompanyPassengerAgeRulesResponse } from './types/plane-biletall-company-passanger-age-rules.type';
+import { CompanyPassengerAgeRuleDto } from '../../dto/plane-company-passanger-age-rule.dto';
 
 @Injectable()
 export class BiletallPlaneService {
@@ -128,5 +130,12 @@ export class BiletallPlaneService {
     const xml = builder.buildObject(requestDocument);
     const res = await this.biletallService.run<PlanePullPriceResponse>(xml);
     return this.biletallPlaneParser.parsePullPriceOfFlightResponse(res);
+  }
+
+  async companyPassangerAgeRules(): Promise<CompanyPassengerAgeRuleDto[]> {
+    const xml = '<TasiyiciFirmaYolcuYasKurallar/>';
+    const res =
+      await this.biletallService.run<CompanyPassengerAgeRulesResponse>(xml);
+    return this.biletallPlaneParser.parsePassangerAgeRule(res);
   }
 }

@@ -46,6 +46,11 @@ import {
   PlanePrices,
   PlanePullPriceResponse,
 } from './types/biletall-plane-pull-price-flight.type';
+import {
+  CompanyPassengerAgeRule,
+  CompanyPassengerAgeRulesResponse,
+} from './types/plane-biletall-company-passanger-age-rules.type';
+import { CompanyPassengerAgeRuleDto } from '../../dto/plane-company-passanger-age-rule.dto';
 
 @Injectable()
 export class BiletallPlaneParser {
@@ -144,58 +149,91 @@ export class BiletallPlaneParser {
       returnFlightSegments,
     );
   };
+
   public parseAbroadFlightResponse = (
     response: AbroadFlightResponse,
   ): AbroadFlightScheduleDto => {
     const extractedResult = this.biletAllParser.extractResult(response);
     const newDataSet = extractedResult['NewDataSet'][0];
-
     const flightOptionsDataSet = newDataSet['Secenekler'] ?? [];
-    const flightOptions = flightOptionsDataSet.map((entry) => {
+    const flightOptionsMap = new Map<string, AbroadFlightOptionDto>();
+
+    flightOptionsDataSet.forEach((entry) => {
       const flightOptionParsed: AbroadFlightOption = Object.assign({});
+
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         flightOptionParsed[key] = value;
       }
-      return new AbroadFlightOptionDto(flightOptionParsed);
+      const flightOptionDto = new AbroadFlightOptionDto(flightOptionParsed);
+      flightOptionsMap.set(flightOptionDto.id, flightOptionDto);
     });
 
     const flightSegmentsDataSet = newDataSet['Segmentler'] ?? [];
-    const flightSegments = flightSegmentsDataSet.map((entry) => {
+
+    const groupedSegments: { [key: string]: AbroadFlightSegmentDto[] } = {};
+
+    flightSegmentsDataSet.forEach((entry: any) => {
       const flightSegmentParsed: AbroadFlightSegment = Object.assign({});
+
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         flightSegmentParsed[key] = value;
       }
-      const relatedOption = flightOptions.find(
-        (option) => option.id === flightSegmentParsed.SecenekID,
-      );
-      return {
-        ...new AbroadFlightSegmentDto(flightSegmentParsed),
-        flightOption: relatedOption,
-      };
+      const flightSegmentDto = new AbroadFlightSegmentDto(flightSegmentParsed);
+
+      if (!groupedSegments[flightSegmentDto.flightId]) {
+        groupedSegments[flightSegmentDto.flightId] = [];
+      }
+
+      groupedSegments[flightSegmentDto.flightId].push(flightSegmentDto);
     });
 
-    const returnFlightSegmentsDataSet = newDataSet['DonusSegmentler'] ?? [];
-    const returnFlightSegments = returnFlightSegmentsDataSet.map(
-      (entry: any) => {
-        const flightSegmentParsed: AbroadFlightSegment = Object.assign({});
-        for (const [key, [value]] of ObjectTyped.entries(entry)) {
-          flightSegmentParsed[key] = value;
-        }
-        const relatedOption = flightOptions.find(
-          (option) => option.id === flightSegmentParsed.SecenekID,
-        );
+    const groupedFlight = Object.entries(groupedSegments).map(
+      ([flightId, segments]) => {
+        const optionId = segments[0]?.optionId;
+        const flightOption = flightOptionsMap.get(optionId);
+
         return {
-          ...new AbroadFlightSegmentDto(flightSegmentParsed),
-          flightOption: relatedOption,
+          flightId: `${flightId}`,
+          segments,
+          flightOption,
         };
       },
     );
 
-    return new AbroadFlightScheduleDto(
-      flightOptions,
-      flightSegments,
-      returnFlightSegments,
+    const returnFlightSegmentsDataSet = newDataSet['DonusSegmentler'] ?? [];
+
+    const groupedReturnSegments: { [key: string]: AbroadFlightSegmentDto[] } =
+      {};
+    returnFlightSegmentsDataSet.forEach((entry: any) => {
+      const flightSegmentParsed: AbroadFlightSegment = Object.assign({});
+
+      for (const [key, [value]] of ObjectTyped.entries(entry)) {
+        flightSegmentParsed[key] = value;
+      }
+
+      const flightSegmentDto = new AbroadFlightSegmentDto(flightSegmentParsed);
+
+      if (!groupedReturnSegments[flightSegmentDto.flightId]) {
+        groupedReturnSegments[flightSegmentDto.flightId] = [];
+      }
+
+      groupedReturnSegments[flightSegmentDto.flightId].push(flightSegmentDto);
+    });
+
+    const groupedReturnFlight = Object.entries(groupedReturnSegments).map(
+      ([flightId, segments]) => {
+        const optionId = segments[0]?.optionId;
+        const flightOption = flightOptionsMap.get(optionId);
+
+        return {
+          flightId: `${flightId}`,
+          segments,
+          flightOption,
+        };
+      },
     );
+
+    return new AbroadFlightScheduleDto(groupedFlight, groupedReturnFlight);
   };
 
   public parsePullPriceOfFlightResponse = (
@@ -251,5 +289,22 @@ export class BiletallPlaneParser {
       baggageInfo,
       additionalServiceRules,
     );
+  };
+
+  public parsePassangerAgeRule = (
+    response: CompanyPassengerAgeRulesResponse,
+  ): CompanyPassengerAgeRuleDto[] => {
+    const extractedResult = this.biletAllParser.extractResult(response);
+    const PassangerAgeRules =
+      extractedResult['TasiyiciFirmaYolcuYasKurallar'][0];
+    const PassangerAgeRule = PassangerAgeRules['TasiyiciFirmaYolcuYasKural'];
+
+    return PassangerAgeRule.map((entry) => {
+      const PassangerAgeRuleParsed: CompanyPassengerAgeRule = Object.assign({});
+      for (const [key, [value]] of Object.entries(entry)) {
+        PassangerAgeRuleParsed[key] = value;
+      }
+      return new CompanyPassengerAgeRuleDto(PassangerAgeRuleParsed);
+    });
   };
 }
