@@ -42,7 +42,7 @@ export class FlightSegmentDto {
   flightNo: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   airlineCode: string;
 
   @IsString()

@@ -1,10 +1,8 @@
 import {
   IsString,
-  IsNumber,
   IsOptional,
   Matches,
   ValidateNested,
-  IsBoolean,
   IsArray,
   IsNotEmpty,
   IsEnum,
@@ -20,17 +18,7 @@ import { DateISODate } from '@app/common/types';
 import * as dayjs from 'dayjs';
 import { FlightTicketReservationResult } from '../services/biletall/types/biletall-plane-ticket-reservation.type';
 
-class FlightReservationSegmentDto extends FlightSegmentDto {
-  @IsString()
-  @IsNotEmpty()
-  airlineCode: string;
-
-  @IsBoolean()
-  @IsNotEmpty()
-  isReturnSegment: boolean;
-}
-
-class PlanePassengerInfoDto {
+export class PlanePassengerInfoDto {
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => turkishToEnglish(value))
@@ -113,8 +101,8 @@ export class FlightReservationRequestDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => FlightReservationSegmentDto)
-  segments: FlightReservationSegmentDto[];
+  @Type(() => FlightSegmentDto)
+  segments: FlightSegmentDto[];
 
   @IsArray()
   @ValidateNested({ each: true })

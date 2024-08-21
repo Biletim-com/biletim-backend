@@ -18,6 +18,10 @@ import {
   FlightReservationRequestDto,
   FlightTicketReservationDto,
 } from './dto/plane-ticket-reservation.dto';
+import {
+  FlightTicketPurchaseDto,
+  FlightTicketPurchaseRequestDto,
+} from './dto/plane-ticket-purchase.dto';
 
 @Controller('plane')
 export class PlaneController {
@@ -59,5 +63,12 @@ export class PlaneController {
     @Body() requestDto: FlightReservationRequestDto,
   ): Promise<FlightTicketReservationDto> {
     return this.biletallPlaneService.planeTicketReservation(requestDto);
+  }
+
+  @Post('ticket-purchase')
+  async planeTicketPurchase(
+    @Body() requestDto: FlightTicketPurchaseRequestDto,
+  ): Promise<FlightTicketPurchaseDto> {
+    return this.biletallPlaneService.planeTicketPurchase(requestDto);
   }
 }

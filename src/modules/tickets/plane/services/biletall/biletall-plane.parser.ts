@@ -56,6 +56,11 @@ import {
   PlaneTicketReservationResponse,
 } from './types/biletall-plane-ticket-reservation.type';
 import { FlightTicketReservationDto } from '../../dto/plane-ticket-reservation.dto';
+import { FlightTicketPurchaseDto } from '../../dto/plane-ticket-purchase.dto';
+import {
+  FlightTicketPurchaseResult,
+  PlaneTicketPurchaseResponse,
+} from './types/biletall-plane-ticket-purchase.type';
 
 @Injectable()
 export class BiletallPlaneParser {
@@ -324,7 +329,7 @@ export class BiletallPlaneParser {
     }
     const entry = ticketResult[0];
 
-    const airportParsed: FlightTicketReservationResult = {
+    const reservationParsed: FlightTicketReservationResult = {
       Sonuc: entry.Sonuc ? entry.Sonuc[0] : null,
       PNR: entry.PNR ? entry.PNR[0] : null,
       RezervasyonOpsiyon: entry.RezervasyonOpsiyon
@@ -332,6 +337,26 @@ export class BiletallPlaneParser {
         : null,
     };
 
-    return new FlightTicketReservationDto(airportParsed);
+    return new FlightTicketReservationDto(reservationParsed);
+  };
+
+  public parseFlightTicketPurchase = (
+    response: PlaneTicketPurchaseResponse,
+  ): FlightTicketPurchaseDto => {
+    const extractedResult = this.biletAllParser.extractResult(response);
+    const ticketResult = extractedResult['IslemSonuc'];
+
+    if (!Array.isArray(ticketResult) || ticketResult.length === 0) {
+      throw new Error('No ticket results found.');
+    }
+    const entry = ticketResult[0];
+
+    const purchaseParsed: FlightTicketPurchaseResult = {
+      Sonuc: entry.Sonuc || [],
+      PNR: entry.PNR || [],
+      EBilet: entry.EBilet || {},
+    };
+
+    return new FlightTicketPurchaseDto(purchaseParsed);
   };
 }
