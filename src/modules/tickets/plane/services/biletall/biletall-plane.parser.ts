@@ -47,10 +47,10 @@ import {
   PlanePullPriceResponse,
 } from './types/biletall-plane-pull-price-flight.type';
 import {
-  CompanyPassengerAgeRule,
-  CompanyPassengerAgeRulesResponse,
+  PlanePassengerAgeRule,
+  PlanePassengerAgeRulesResponse,
 } from './types/plane-biletall-company-passanger-age-rules.type';
-import { CompanyPassengerAgeRuleDto } from '../../dto/plane-company-passanger-age-rule.dto';
+import { PlanePassengerAgeRuleDto } from '../../dto/plane-company-passanger-age-rule.dto';
 
 @Injectable()
 export class BiletallPlaneParser {
@@ -292,19 +292,19 @@ export class BiletallPlaneParser {
   };
 
   public parsePassangerAgeRule = (
-    response: CompanyPassengerAgeRulesResponse,
-  ): CompanyPassengerAgeRuleDto[] => {
+    response: PlanePassengerAgeRulesResponse,
+  ): PlanePassengerAgeRuleDto[] => {
     const extractedResult = this.biletAllParser.extractResult(response);
     const PassangerAgeRules =
       extractedResult['TasiyiciFirmaYolcuYasKurallar'][0];
     const PassangerAgeRule = PassangerAgeRules['TasiyiciFirmaYolcuYasKural'];
 
     return PassangerAgeRule.map((entry) => {
-      const PassangerAgeRuleParsed: CompanyPassengerAgeRule = Object.assign({});
+      const PassangerAgeRuleParsed: PlanePassengerAgeRule = Object.assign({});
       for (const [key, [value]] of Object.entries(entry)) {
         PassangerAgeRuleParsed[key] = value;
       }
-      return new CompanyPassengerAgeRuleDto(PassangerAgeRuleParsed);
+      return new PlanePassengerAgeRuleDto(PassangerAgeRuleParsed);
     });
   };
 }

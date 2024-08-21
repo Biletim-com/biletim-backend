@@ -1,6 +1,6 @@
-import { CompanyPassengerAgeRule } from '../services/biletall/types/plane-biletall-company-passanger-age-rules.type';
+import { PlanePassengerAgeRule } from '../services/biletall/types/plane-biletall-company-passanger-age-rules.type';
 
-export class CompanyPassengerAgeRuleDto {
+export class PlanePassengerAgeRuleDto {
   carrierCompanyNo: string[];
   carrierCompany: string[];
   passengerType: string[];
@@ -8,7 +8,7 @@ export class CompanyPassengerAgeRuleDto {
   minAge: string[];
   maxAge: string[];
 
-  constructor(ageRule: CompanyPassengerAgeRule) {
+  constructor(ageRule: PlanePassengerAgeRule) {
     (this.carrierCompanyNo = ageRule.TasiyiciFirmaNo),
       (this.carrierCompany = ageRule.TasiyiciFirma),
       (this.passengerType = ageRule.YolcuTip),

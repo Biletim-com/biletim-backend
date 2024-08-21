@@ -1,6 +1,6 @@
 import { SoapEnvelope } from '@app/modules/tickets/bus/services/biletall/types/biletall-soap-envelope.type';
 
-export type CompanyPassengerAgeRule = {
+export type PlanePassengerAgeRule = {
   TasiyiciFirmaNo: string[];
   TasiyiciFirma: string[];
   YolcuTip: string[];
@@ -9,13 +9,13 @@ export type CompanyPassengerAgeRule = {
   MaxYas: string[];
 };
 
-export type CompanyPassengerAgeRulesDataSet = {
+export type PlanePassengerAgeRulesDataSet = {
   TasiyiciFirmaYolcuYasKurallar: Array<{
     TasiyiciFirmaYolcuYasKural: Array<{
-      [K in keyof CompanyPassengerAgeRule]: [string];
+      [K in keyof PlanePassengerAgeRule]: [string];
     }>;
   }>;
 };
 
-export type CompanyPassengerAgeRulesResponse =
-  SoapEnvelope<CompanyPassengerAgeRulesDataSet>;
+export type PlanePassengerAgeRulesResponse =
+  SoapEnvelope<PlanePassengerAgeRulesDataSet>;
