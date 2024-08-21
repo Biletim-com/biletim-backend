@@ -5,6 +5,6 @@ export enum PassengerType {
   SENIOR = 4,
   STUDENT = 5,
   DISABLED = 6,
-  SolDIER = 7,
+  SOLDIER = 7,
   YOUTH = 8,
 }
