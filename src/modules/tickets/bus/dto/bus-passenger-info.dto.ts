@@ -11,7 +11,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 
-const turkishToEnglish = (text: string): string => {
+export const turkishToEnglish = (text: string): string => {
   const turkishMap: { [key: string]: string } = {
     Ç: 'C',
     Ğ: 'G',

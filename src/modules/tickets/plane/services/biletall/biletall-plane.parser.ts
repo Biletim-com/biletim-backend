@@ -15,8 +15,8 @@ import {
 } from './types/biletall-plane-domistic-flight-schedule.type';
 import {
   DomesticFlightScheduleDto,
+  DomesticFlightSegmentDto,
   FlightOptionDto,
-  FlightSegmentDto,
   OptionFareDetailDto,
   OptionFareDto,
   SegmentClassDto,
@@ -50,7 +50,12 @@ import {
   PlanePassengerAgeRule,
   PlanePassengerAgeRulesResponse,
 } from './types/plane-biletall-company-passanger-age-rules.type';
-import { PlanePassengerAgeRuleDto } from '../../dto/plane-company-passanger-age-rule.dto';
+import { PlanePassengerAgeRuleDto } from '../../dto/plane-company-passenger-age-rule.dto';
+import {
+  FlightTicketReservationResult,
+  PlaneTicketReservationResponse,
+} from './types/biletall-plane-ticket-reservation.type';
+import { FlightTicketReservationDto } from '../../dto/plane-ticket-reservation.dto';
 
 @Injectable()
 export class BiletallPlaneParser {
@@ -91,7 +96,7 @@ export class BiletallPlaneParser {
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         flightSegmentParsed[key] = value;
       }
-      return new FlightSegmentDto(flightSegmentParsed);
+      return new DomesticFlightSegmentDto(flightSegmentParsed);
     });
 
     const segmentClassesDataSet = newDataSet['SegmentSiniflar'] ?? [];
@@ -136,7 +141,7 @@ export class BiletallPlaneParser {
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         flightSegmentParsed[key] = value;
       }
-      return new FlightSegmentDto(flightSegmentParsed);
+      return new DomesticFlightSegmentDto(flightSegmentParsed);
     });
 
     return new DomesticFlightScheduleDto(
@@ -291,20 +296,42 @@ export class BiletallPlaneParser {
     );
   };
 
-  public parsePassangerAgeRule = (
+  public parsePassengerAgeRule = (
     response: PlanePassengerAgeRulesResponse,
   ): PlanePassengerAgeRuleDto[] => {
     const extractedResult = this.biletAllParser.extractResult(response);
-    const PassangerAgeRules =
+    const PassengerAgeRules =
       extractedResult['TasiyiciFirmaYolcuYasKurallar'][0];
-    const PassangerAgeRule = PassangerAgeRules['TasiyiciFirmaYolcuYasKural'];
+    const PassengerAgeRule = PassengerAgeRules['TasiyiciFirmaYolcuYasKural'];
 
-    return PassangerAgeRule.map((entry) => {
-      const PassangerAgeRuleParsed: PlanePassengerAgeRule = Object.assign({});
+    return PassengerAgeRule.map((entry) => {
+      const PassengerAgeRuleParsed: PlanePassengerAgeRule = Object.assign({});
       for (const [key, [value]] of Object.entries(entry)) {
-        PassangerAgeRuleParsed[key] = value;
+        PassengerAgeRuleParsed[key] = value;
       }
-      return new PlanePassengerAgeRuleDto(PassangerAgeRuleParsed);
+      return new PlanePassengerAgeRuleDto(PassengerAgeRuleParsed);
     });
+  };
+
+  public parseFlightTicketReservation = (
+    response: PlaneTicketReservationResponse,
+  ): FlightTicketReservationDto => {
+    const extractedResult = this.biletAllParser.extractResult(response);
+    const ticketResult = extractedResult['IslemSonuc'];
+
+    if (!Array.isArray(ticketResult) || ticketResult.length === 0) {
+      throw new Error('No ticket results found.');
+    }
+    const entry = ticketResult[0];
+
+    const airportParsed: FlightTicketReservationResult = {
+      Sonuc: entry.Sonuc ? entry.Sonuc[0] : null,
+      PNR: entry.PNR ? entry.PNR[0] : null,
+      RezervasyonOpsiyon: entry.RezervasyonOpsiyon
+        ? entry.RezervasyonOpsiyon[0]
+        : null,
+    };
+
+    return new FlightTicketReservationDto(airportParsed);
   };
 }

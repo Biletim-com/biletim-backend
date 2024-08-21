@@ -20,7 +20,12 @@ import {
 } from '../../dto/plane-pull-price-flight.dto';
 import { PlanePullPriceResponse } from './types/biletall-plane-pull-price-flight.type';
 import { PlanePassengerAgeRulesResponse } from './types/plane-biletall-company-passanger-age-rules.type';
-import { PlanePassengerAgeRuleDto } from '../../dto/plane-company-passanger-age-rule.dto';
+import { PlanePassengerAgeRuleDto } from '../../dto/plane-company-passenger-age-rule.dto';
+import {
+  FlightReservationRequestDto,
+  FlightTicketReservationDto,
+} from '../../dto/plane-ticket-reservation.dto';
+import { PlaneTicketReservationResponse } from './types/biletall-plane-ticket-reservation.type';
 
 @Injectable()
 export class BiletallPlaneService {
@@ -132,11 +137,62 @@ export class BiletallPlaneService {
     return this.biletallPlaneParser.parsePullPriceOfFlightResponse(res);
   }
 
-  async planePassangerAgeRules(): Promise<PlanePassengerAgeRuleDto[]> {
+  async planePassengerAgeRules(): Promise<PlanePassengerAgeRuleDto[]> {
     const xml = '<TasiyiciFirmaYolcuYasKurallar/>';
     const res = await this.biletallService.run<PlanePassengerAgeRulesResponse>(
       xml,
     );
-    return this.biletallPlaneParser.parsePassangerAgeRule(res);
+    return this.biletallPlaneParser.parsePassengerAgeRule(res);
+  }
+
+  async planeTicketReservation(
+    requestDto: FlightReservationRequestDto,
+  ): Promise<FlightTicketReservationDto> {
+    const builder = new xml2js.Builder({ headless: true });
+    const requestDocument = {
+      IslemUcak_2: {
+        IslemTip: '1' || '0',
+        FirmaNo: requestDto.companyNo,
+        TelefonNo: requestDto.phoneNumber,
+        CepTelefonNo: requestDto.mobilePhoneNumber,
+        Email: requestDto.email,
+        HatirlaticiNot: '',
+        ...requestDto.segments.reduce((acc, segment, index) => {
+          acc[`Segment${index + 1}`] = {
+            Kalkis: segment.departureAirport,
+            Varis: segment.arrivalAirport,
+            KalkisTarih: segment.departureDate,
+            VarisTarih: segment.arrivalDate,
+            UcusNo: segment.flightNo,
+            FirmaKod: segment.airlineCode,
+            Sinif: segment.travelClass,
+            DonusMu: segment.isReturnSegment ? 1 : 0,
+            ...(segment.flightCode && { SeferKod: segment.flightCode }),
+          };
+          return acc;
+        }, {}),
+        ...requestDto.passengers.reduce((acc, passenger, index) => {
+          acc[`Yolcu${index + 1}`] = {
+            Ad: passenger.firstName,
+            Soyad: passenger.lastName,
+            Cinsiyet: passenger.gender,
+            YolcuTip: passenger.passengerType,
+            TCKimlikNo: passenger.turkishIdNumber,
+            DogumTarih: passenger.birthday,
+            MilNo: passenger.passportNumber || '',
+            NetFiyat: passenger.netPrice || 0,
+            Vergi: passenger.tax || 0,
+            ServisUcret: passenger.serviceFee || 0,
+          };
+          return acc;
+        }, {}),
+      },
+    };
+
+    const xml = builder.buildObject(requestDocument);
+    const res = await this.biletallService.run<PlaneTicketReservationResponse>(
+      xml,
+    );
+    return this.biletallPlaneParser.parseFlightTicketReservation(res);
   }
 }

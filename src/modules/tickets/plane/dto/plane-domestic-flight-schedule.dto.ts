@@ -97,7 +97,7 @@ export class FlightOptionDto {
   }
 }
 
-export class FlightSegmentDto {
+export class DomesticFlightSegmentDto {
   id: string;
   optionId: string;
   airlineCode: string;
@@ -216,11 +216,11 @@ export class OptionFareDetailDto {
 export class DomesticFlightScheduleDto {
   constructor(
     public flightOption: FlightOptionDto[],
-    public flightSegment: FlightSegmentDto[],
+    public flightSegment: DomesticFlightSegmentDto[],
     public segmentClass: SegmentClassDto[],
     public optionFare: OptionFareDto[],
     public optionFareDetail: OptionFareDetailDto[],
     public returnFlightOptions: FlightOptionDto[],
-    public returnFlightSegments: FlightSegmentDto[],
+    public returnFlightSegments: DomesticFlightSegmentDto[],
   ) {}
 }
