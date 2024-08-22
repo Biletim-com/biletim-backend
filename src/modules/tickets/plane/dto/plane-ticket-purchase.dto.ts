@@ -10,7 +10,6 @@ import {
   Matches,
   ValidateNested,
 } from 'class-validator';
-import { PlaneTicketOperationType } from '@app/common/enums/plane-ticket-operation-type.enum';
 import { PlanePassengerInfoDto } from './plane-ticket-reservation.dto';
 import { PlaneInvoiceType } from '@app/common/enums/plane-invoice-type.enum';
 import { FlightTicketPurchaseResult } from '../services/biletall/types/biletall-plane-ticket-purchase.type';
@@ -54,6 +53,10 @@ export class InvoiceDto {
 }
 
 export class WebPassengerFlightPurchaseDto {
+  @IsNotEmpty()
+  @IsString()
+  ip: string;
+
   @IsString()
   @IsOptional()
   creditCardNumber?: string;
@@ -89,10 +92,6 @@ export class WebPassengerFlightPurchaseDto {
 }
 
 export class FlightTicketPurchaseRequestDto {
-  @IsNotEmpty()
-  @IsEnum(PlaneTicketOperationType)
-  operationType: PlaneTicketOperationType;
-
   @IsNotEmpty()
   @IsString()
   companyNo: string;

@@ -31,6 +31,8 @@ import {
   FlightTicketPurchaseRequestDto,
 } from '../../dto/plane-ticket-purchase.dto';
 import { PlaneTicketPurchaseResponse } from './types/biletall-plane-ticket-purchase.type';
+import { PlaneTicketOperationType } from '@app/common/enums/plane-ticket-operation-type.enum';
+import { FlightConvertReservationToSaleRequestDto } from '../../dto/plane-convert-reservation-to-sale.dto';
 
 @Injectable()
 export class BiletallPlaneService {
@@ -156,7 +158,7 @@ export class BiletallPlaneService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       IslemUcak_2: {
-        IslemTip: '1' || '0',
+        IslemTip: PlaneTicketOperationType.RESERVATION,
         FirmaNo: requestDto.companyNo,
         TelefonNo: requestDto.phoneNumber,
         CepTelefonNo: requestDto.mobilePhoneNumber,
@@ -184,6 +186,12 @@ export class BiletallPlaneService {
             YolcuTip: passenger.passengerType,
             TCKimlikNo: passenger.turkishIdNumber,
             DogumTarih: passenger.birthday,
+            ...(passenger.passportNumber && {
+              PasaportNo: passenger.passportNumber,
+            }),
+            ...(passenger.passportExpiryDate && {
+              PasaportGecerlilikTarihi: passenger.passportExpiryDate,
+            }),
             MilNo: passenger.passportNumber || '',
             NetFiyat: passenger.netPrice || 0,
             Vergi: passenger.tax || 0,
@@ -207,7 +215,7 @@ export class BiletallPlaneService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       IslemUcak_2: {
-        IslemTip: requestDto.operationType,
+        IslemTip: PlaneTicketOperationType.SALE,
         FirmaNo: requestDto.companyNo,
         TelefonNo: requestDto.phoneNumber,
         CepTelefonNo: requestDto.mobilePhoneNumber,
@@ -235,6 +243,12 @@ export class BiletallPlaneService {
             YolcuTip: passenger.passengerType,
             TCKimlikNo: passenger.turkishIdNumber,
             DogumTarih: passenger.birthday,
+            ...(passenger.passportNumber && {
+              PasaportNo: passenger.passportNumber,
+            }),
+            ...(passenger.passportExpiryDate && {
+              PasaportGecerlilikTarihi: passenger.passportExpiryDate,
+            }),
             MilNo: passenger.passportNumber || '',
             NetFiyat: passenger.netPrice || 0,
             Vergi: passenger.tax || 0,
@@ -261,6 +275,7 @@ export class BiletallPlaneService {
           },
         }),
         WebYolcu: {
+          Ip: requestDto.webPassenger.ip,
           KartNo: requestDto.webPassenger.creditCardNumber,
           KartSahibi: requestDto.webPassenger.creditCardHolderName,
           SonKullanmaTarihi: requestDto.webPassenger.creditCardExpiryDate,
@@ -285,6 +300,88 @@ export class BiletallPlaneService {
     const res = await this.biletallService.run<PlaneTicketPurchaseResponse>(
       xml,
     );
+
+    return this.biletallPlaneParser.parseFlightTicketPurchase(res);
+  }
+
+  async planeConvertReservationToSale(
+    requestDto: FlightConvertReservationToSaleRequestDto,
+  ): Promise<any> {
+    const builder = new xml2js.Builder({ headless: true });
+    const requestDocument = {
+      IslemUcak_2: {
+        IslemTip: PlaneTicketOperationType.SALE,
+        FirmaNo: requestDto.companyNo,
+        CepTelefonNo: requestDto.mobilePhoneNumber,
+        Email: requestDto.email,
+        HatirlaticiNot: '',
+        ...requestDto.segments.reduce((acc, segment, index) => {
+          acc[`Segment${index + 1}`] = {
+            Kalkis: segment.departureAirport,
+            Varis: segment.arrivalAirport,
+            KalkisTarih: segment.departureDate,
+            VarisTarih: segment.arrivalDate,
+            UcusNo: segment.flightNo,
+            FirmaKod: segment.airlineCode,
+            Sinif: segment.travelClass,
+            DonusMu: segment.isReturnSegment ? 1 : 0,
+            ...(segment.flightCode && { SeferKod: segment.flightCode }),
+          };
+          return acc;
+        }, {}),
+        ...requestDto.passengers.reduce((acc, passenger, index) => {
+          acc[`Yolcu${index + 1}`] = {
+            Ad: passenger.firstName,
+            Soyad: passenger.lastName,
+            Cinsiyet: passenger.gender,
+            YolcuTip: passenger.passengerType,
+            ...(passenger.turkishIdNumber && {
+              TCKimlikNo: passenger.turkishIdNumber,
+            }),
+            ...(passenger.passportNumber && {
+              PasaportNo: passenger.passportNumber,
+            }),
+            ...(passenger.passportExpiryDate && {
+              PasaportGecerlilikTarihi: passenger.passportExpiryDate,
+            }),
+            MilNo: passenger.passportNumber || '',
+            NetFiyat: passenger.netPrice || 0,
+            Vergi: passenger.tax || 0,
+            ServisUcret: passenger.serviceFee || 0,
+          };
+          return acc;
+        }, {}),
+        ...(requestDto.invoice && {
+          Fatura: {
+            FaturaTip: requestDto.invoice.invoiceType === 0 ? '0' : '1',
+
+            ...(requestDto.invoice.invoiceType === 0 && {
+              KisiAd: requestDto.invoice.individualFirstName,
+              KisiSoyad: requestDto.invoice.individualLastName,
+              KisiTCKimlikNo: requestDto.invoice.individualTurkishIdNumber,
+              KisiAdres: requestDto.invoice.individualAddress,
+            }),
+            ...(requestDto.invoice.invoiceType === 1 && {
+              FirmaAd: requestDto.invoice.companyName,
+              FirmaVergiNo: requestDto.invoice.companyTaxNumber,
+              FirmaVergiDairesi: requestDto.invoice.companyTaxOffice,
+              FirmaAdres: requestDto.invoice.companyAddress,
+            }),
+          },
+        }),
+        WebYolcu: {
+          Ip: requestDto.webPassenger.ip,
+          KartNo: requestDto.webPassenger.creditCardNumber,
+          KartSahibi: requestDto.webPassenger.creditCardHolderName,
+          SonKullanmaTarihi: requestDto.webPassenger.creditCardExpiryDate,
+          CCV2: requestDto.webPassenger.creditCardCCV2,
+          RezervasyonPNR: requestDto.webPassenger.reservationPnrCode,
+        },
+      },
+    };
+
+    const xml = builder.buildObject(requestDocument);
+    const res = await this.biletallService.run<any>(xml);
 
     return this.biletallPlaneParser.parseFlightTicketPurchase(res);
   }

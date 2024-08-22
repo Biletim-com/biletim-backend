@@ -1,24 +1,21 @@
 import {
-  IsString,
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
   IsOptional,
+  IsString,
+  Length,
   Matches,
   ValidateNested,
-  IsArray,
-  IsNotEmpty,
-  IsEnum,
-  Length,
-  IsDateString,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
 import { FlightSegmentDto } from './plane-pull-price-flight.dto';
-import { turkishToEnglish } from '../../bus/dto/bus-passenger-info.dto';
-import { DateISODate } from '@app/common/types';
-import * as dayjs from 'dayjs';
-import { FlightTicketReservationResult } from '../services/biletall/types/biletall-plane-ticket-reservation.type';
-import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { PassengerType } from '@app/common/enums/passanger-type.enum';
+import { turkishToEnglish } from '../../bus/dto/bus-passenger-info.dto';
+import { Transform, Type } from 'class-transformer';
+import { Gender } from '@app/common/enums/bus-seat-gender.enum';
+import { InvoiceDto } from './plane-ticket-purchase.dto';
 
-export class PlanePassengerInfoDto {
+export class PlanePassengerInfoConvertReservationDto {
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => turkishToEnglish(value))
@@ -36,11 +33,6 @@ export class PlanePassengerInfoDto {
   @IsEnum(PassengerType)
   @IsNotEmpty()
   passengerType: PassengerType;
-
-  @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
-  @IsNotEmpty()
-  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
-  birthday?: DateISODate;
 
   @IsOptional()
   @IsString()
@@ -68,18 +60,37 @@ export class PlanePassengerInfoDto {
   @IsString()
   serviceFee: string;
 }
+export class WebPassengerFlightConvertReservationToSaleDto {
+  @IsNotEmpty()
+  @IsString()
+  ip: string;
 
-export class FlightReservationRequestDto {
+  @IsString()
+  @IsOptional()
+  creditCardNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  creditCardHolderName?: string;
+
+  @IsString({ message: 'Credit card expiration date (month.year) format' })
+  @Matches(/^(0?[1-9]|1[0-2])\.(\d{4})$/)
+  creditCardExpiryDate?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(3, 3, { message: 'creditCardCCV2 must be 3 digits' })
+  creditCardCCV2: string;
+
+  @IsString()
+  @IsOptional()
+  reservationPnrCode?: string;
+}
+
+export class FlightConvertReservationToSaleRequestDto {
   @IsNotEmpty()
   @IsString()
   companyNo: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @Length(10, 10, {
-    message: 'phone Number must be 10 characters length',
-  })
-  phoneNumber: string;
 
   @IsString()
   @IsNotEmpty()
@@ -102,17 +113,14 @@ export class FlightReservationRequestDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => PlanePassengerInfoDto)
-  passengers: PlanePassengerInfoDto[];
-}
+  @Type(() => PlanePassengerInfoConvertReservationDto)
+  passengers: PlanePassengerInfoConvertReservationDto[];
 
-export class FlightTicketReservationDto {
-  result: string[];
-  PNR: string[];
-  ReservationValidityTime: string[];
-  constructor(ticketReservation: FlightTicketReservationResult) {
-    (this.result = ticketReservation.Sonuc),
-      (this.PNR = ticketReservation.PNR),
-      (this.ReservationValidityTime = ticketReservation.RezervasyonOpsiyon);
-  }
+  @ValidateNested({ each: true })
+  @Type(() => InvoiceDto)
+  invoice: InvoiceDto;
+
+  @ValidateNested({ each: true })
+  @Type(() => WebPassengerFlightConvertReservationToSaleDto)
+  webPassenger: WebPassengerFlightConvertReservationToSaleDto;
 }

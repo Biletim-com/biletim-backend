@@ -22,6 +22,7 @@ import {
   FlightTicketPurchaseDto,
   FlightTicketPurchaseRequestDto,
 } from './dto/plane-ticket-purchase.dto';
+import { FlightConvertReservationToSaleRequestDto } from './dto/plane-convert-reservation-to-sale.dto';
 
 @Controller('plane')
 export class PlaneController {
@@ -70,5 +71,12 @@ export class PlaneController {
     @Body() requestDto: FlightTicketPurchaseRequestDto,
   ): Promise<FlightTicketPurchaseDto> {
     return this.biletallPlaneService.planeTicketPurchase(requestDto);
+  }
+
+  @Post('convert-reservation-to-sale')
+  async planeConvertReservationToSale(
+    @Body() requestDto: FlightConvertReservationToSaleRequestDto,
+  ): Promise<any> {
+    return this.biletallPlaneService.planeConvertReservationToSale(requestDto);
   }
 }
