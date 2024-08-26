@@ -155,7 +155,7 @@ export class DomesticFlightSegmentDto {
 
 export class SegmentClassDto {
   segmentId: string;
-  optionFeeId: string;
+  optionFareId: string;
   classCode: string;
   seatCount: string;
   fee: string;
@@ -163,7 +163,7 @@ export class SegmentClassDto {
 
   constructor(segmentClass: SegmentClass) {
     this.segmentId = segmentClass.SegmentID2;
-    this.optionFeeId = segmentClass.SecenekUcretID;
+    this.optionFareId = segmentClass.SecenekUcretID;
     this.classCode = segmentClass.SinifKod;
     this.seatCount = segmentClass.KoltukSayi;
     this.fee = segmentClass.Ucret;
@@ -201,13 +201,13 @@ export class OptionFareDto {
 
 export class OptionFareDetailDto {
   id: string;
-  optionFeeId: string;
+  optionFareId: string;
   type: string;
   description: string;
 
   constructor(optionFareDetail: OptionFareDetail) {
     this.id = optionFareDetail.ID;
-    this.optionFeeId = optionFareDetail.SecenekUcretID;
+    this.optionFareId = optionFareDetail.SecenekUcretID;
     this.type = optionFareDetail.Tip;
     this.description = optionFareDetail.Aciklama;
   }
@@ -215,11 +215,13 @@ export class OptionFareDetailDto {
 
 export class DomesticFlightScheduleDto {
   constructor(
-    public flightOption: FlightOptionDto[],
-    public flightSegment: DomesticFlightSegmentDto[],
-    public segmentClass: SegmentClassDto[],
-    public optionFare: OptionFareDto[],
-    public optionFareDetail: OptionFareDetailDto[],
+    public finalResponseWithFares: Array<{
+      flightOption: FlightOptionDto;
+      segments: DomesticFlightSegmentDto[];
+      optionFare?: OptionFareDto;
+      optionFareDetail?: OptionFareDetailDto[];
+      segmentClass?: SegmentClassDto;
+    }>,
     public returnFlightOptions: FlightOptionDto[],
     public returnFlightSegments: DomesticFlightSegmentDto[],
   ) {}
