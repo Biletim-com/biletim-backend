@@ -10,43 +10,51 @@ import {
   Res,
   Get,
 } from '@nestjs/common';
-import { HotelService } from './hotel.service';
-import {
-  BookingFinishDto,
-  OrderBookingFormDto,
-  PartnerDto,
-  PrebookDto,
-  QueryDto,
-  AutocompleteDto,
-  HotelDetailsDto,
-  SearchReservationByHotelDto,
-  searchReservationByRegionIdDto,
-  OrderTotalInformationDto,
-  SearchReservationsHotelsDto,
-  CreditCardDataTokenizationDto,
-  WebhookDto,
-} from './dto/hotel.dto';
+import { RatehawkHotelService } from './services/ratehawk/hotel-ratehawk.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  AutocompleteRequestDto,
+  AutocompleteResponseDto,
+} from './dto/hotel-autocomplete-search.dto';
+import {
+  QueryDto,
+  searchReservationByRegionIdRequestDto,
+} from './dto/hotel-search-reservation-by-region-id.dto';
+import { SearchReservationsHotelsRequestDto } from './dto/hotel-search-reservations-hotels.dto';
+import { SearchReservationByHotelRequestDto } from './dto/hotel-search-reservation-hotel.dto';
+import { HotelDetailsPageRequestDto } from './dto/hotel-details-page.dto';
+import { PrebookRequestDto } from './dto/hotel-prebook.dto';
+import { OrderBookingFormRequestDto } from './dto/hotel-order-booking-form.dto';
+import { CreditCardDataTokenizationRequestDto } from './dto/hotel-credit-card-data-tokenization.dto';
+import { BookingFinishRequestDto } from './dto/hotel-booking-finish.dto';
+import { OrderBookingFinishStatusRequestDto } from './dto/hotel-order-booking-finish-status.dto';
+import { WebhookRequestDto } from './dto/hotel-webhook.dto';
+import { OrderTotalInformationRequestDto } from './dto/hotel-order-total-information.dto';
+import { HotelOrderCancelRequestDto } from './dto/hotel-order-cancel.dto';
 
 @ApiTags('Hotel')
 @Controller('hotel')
 export class HotelController {
-  constructor(private readonly hotelService: HotelService) {}
+  constructor(private readonly ratehawkHotelService: RatehawkHotelService) {}
 
   @ApiOperation({ summary: 'Search Autocomplete' })
   @Post('/search/autocomplete')
-  async search(@Body() autocompleteDto: AutocompleteDto): Promise<any> {
-    const { query, language } = autocompleteDto;
-    return this.hotelService.search(query, language);
+  async search(
+    @Body() autocompleteRequestDto: AutocompleteRequestDto,
+  ): Promise<AutocompleteResponseDto> {
+    const { query, language } = autocompleteRequestDto;
+    const result = await this.ratehawkHotelService.search(query, language);
+    return new AutocompleteResponseDto(result);
   }
 
   @ApiOperation({ summary: 'Search Reservation By Region Id' })
   @Post('/search/reservation-by-region')
   async searchReservationByRegionId(
-    @Body() searchHotelsDto: searchReservationByRegionIdDto,
+    @Body()
+    searchHotelsDto: searchReservationByRegionIdRequestDto,
     @Query() queryDto: QueryDto,
   ): Promise<any> {
-    return this.hotelService.searchReservationByRegionId(
+    return this.ratehawkHotelService.searchReservationByRegionId(
       searchHotelsDto,
       queryDto,
     );
@@ -57,9 +65,9 @@ export class HotelController {
   })
   @Post('/search/reservation-hotels-pages')
   async searchReservationsHotels(
-    @Body() searchReservationsHotelsDto: SearchReservationsHotelsDto,
+    @Body() searchReservationsHotelsDto: SearchReservationsHotelsRequestDto,
   ): Promise<any> {
-    return this.hotelService.searchReservationsHotels(
+    return this.ratehawkHotelService.searchReservationsHotels(
       searchReservationsHotelsDto,
     );
   }
@@ -69,26 +77,28 @@ export class HotelController {
   })
   @Post('/search/reservation-hotel-page')
   async searchReservationByHotelId(
-    @Body() searchReservationByHotelDto: SearchReservationByHotelDto,
+    @Body() searchReservationByHotelDto: SearchReservationByHotelRequestDto,
   ): Promise<any> {
-    return this.hotelService.searchReservationByHotelId(
+    return this.ratehawkHotelService.searchReservationByHotelId(
       searchReservationByHotelDto,
     );
   }
 
   @ApiOperation({ summary: 'Search Details Page of Hotel By Hotel Id' })
   @Post('/search/hotel-details')
-  async hotelDetails(@Body() hotelDetailsDto: HotelDetailsDto): Promise<any> {
+  async hotelDetails(
+    @Body() hotelDetailsDto: HotelDetailsPageRequestDto,
+  ): Promise<any> {
     const { id, language } = hotelDetailsDto;
-    return this.hotelService.hotelDetails(id, language);
+    return this.ratehawkHotelService.hotelDetails(id, language);
   }
 
   @ApiOperation({
     summary: 'Availability Query of The Selected Hotel Room (Prebook)',
   })
   @Post('/order/prebook')
-  async prebook(@Body() prebookDto: PrebookDto): Promise<any> {
-    return this.hotelService.prebook(prebookDto);
+  async prebook(@Body() prebookDto: PrebookRequestDto): Promise<any> {
+    return this.ratehawkHotelService.prebook(prebookDto);
   }
 
   @ApiOperation({
@@ -98,7 +108,7 @@ export class HotelController {
   @Post('/order/booking-form')
   async orderBookingForm(
     @Query('currency_code') currency_code: string,
-    @Body() orderBookingFormDto: OrderBookingFormDto,
+    @Body() orderBookingFormDto: OrderBookingFormRequestDto,
     @Req() req: any,
   ): Promise<any> {
     if (currency_code !== currency_code.toUpperCase() || !currency_code) {
@@ -114,7 +124,7 @@ export class HotelController {
       );
     }
     try {
-      const orderBookingForm = await this.hotelService.orderBookingForm(
+      const orderBookingForm = await this.ratehawkHotelService.orderBookingForm(
         currency_code,
         orderBookingFormDto,
         req.ip,
@@ -133,9 +143,9 @@ export class HotelController {
   })
   @Post('/order/credit-card-tokenization')
   async creditCardDataTokenization(
-    @Body() creditCardDataTokenizationDto: CreditCardDataTokenizationDto,
+    @Body() creditCardDataTokenizationDto: CreditCardDataTokenizationRequestDto,
   ): Promise<any> {
-    return this.hotelService.creditCardDataTokenization(
+    return this.ratehawkHotelService.creditCardDataTokenization(
       creditCardDataTokenizationDto,
     );
   }
@@ -145,12 +155,11 @@ export class HotelController {
   })
   @Post('/order/booking-finish')
   async orderBookingFinish(
-    @Body() bookingFinishDto: BookingFinishDto,
+    @Body() bookingFinishDto: BookingFinishRequestDto,
   ): Promise<any> {
     try {
-      const orderBookingFinish = await this.hotelService.orderBookingFinish(
-        bookingFinishDto,
-      );
+      const orderBookingFinish =
+        await this.ratehawkHotelService.orderBookingFinish(bookingFinishDto);
       return orderBookingFinish;
     } catch (error) {
       throw new HttpException(
@@ -164,13 +173,16 @@ export class HotelController {
     summary: 'Order Booking Finish Status',
   })
   @Post('/order/booking-finish-status')
-  async orderBookingFinishStatus(@Body() partnerDto: PartnerDto): Promise<any> {
-    return this.hotelService.orderBookingFinishStatus(partnerDto);
+  async orderBookingFinishStatus(
+    @Body()
+    requestDto: OrderBookingFinishStatusRequestDto,
+  ): Promise<any> {
+    return this.ratehawkHotelService.orderBookingFinishStatus(requestDto);
   }
 
   @Post('/order/webhook')
-  async handleWebhook(@Body() webhookDto: WebhookDto): Promise<any> {
-    return this.hotelService.handleWebhook(webhookDto);
+  async handleWebhook(@Body() webhookDto: WebhookRequestDto): Promise<any> {
+    return this.ratehawkHotelService.handleWebhook(webhookDto);
   }
 
   @ApiOperation({
@@ -178,18 +190,20 @@ export class HotelController {
   })
   @Post('/order/info')
   async orderInfo(
-    @Body() orderTotalInformationDto: OrderTotalInformationDto,
+    @Body() orderTotalInformationDto: OrderTotalInformationRequestDto,
   ): Promise<any> {
-    return this.hotelService.orderInfo(orderTotalInformationDto);
+    return this.ratehawkHotelService.orderInfo(orderTotalInformationDto);
   }
 
   @ApiOperation({
     summary: 'Order Cancellation',
   })
   @Post('/order/cancel')
-  async orderCancellation(@Body() partner_order_id: PartnerDto): Promise<any> {
+  async orderCancellation(
+    @Body() partner_order_id: HotelOrderCancelRequestDto,
+  ): Promise<any> {
     try {
-      const orderCancel = await this.hotelService.orderCancellation(
+      const orderCancel = await this.ratehawkHotelService.orderCancellation(
         partner_order_id,
       );
       return orderCancel;
@@ -217,7 +231,7 @@ export class HotelController {
     }
 
     try {
-      const invoice = await this.hotelService.downloadInfoInvoice(
+      const invoice = await this.ratehawkHotelService.downloadInfoInvoice(
         partner_order_id,
       );
 

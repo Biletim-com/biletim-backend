@@ -27,7 +27,6 @@ import {
 import { BusPurchaseDto } from '../../dto/bus-purchase.dto';
 import { BusRouteDetailDto, BusRouteRequestDto } from '../../dto/bus-route.dto';
 import { BusStopPointDto } from '../../dto/bus-stop-point.dto';
-
 // types
 import { BiletAllCompanyResponse } from './types/biletall-company.type';
 import { BusStopPointResponse } from './types/biletall-bus-stop-points.type';
@@ -44,6 +43,9 @@ import {
   BusSeatAvailabilityDto,
   BusSeatAvailabilityRequestDto,
 } from '../../dto/bus-seat-availability.dto';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as util from 'util';
 
 @Injectable()
 export class BiletAllService {
@@ -52,7 +54,33 @@ export class BiletAllService {
     private biletAllParser: BiletAllParser,
   ) {}
 
-  private async run<T>(bodyXml: string): Promise<T> {
+  public async saveResponseToFile(responseData: string) {
+    try {
+      if (!responseData) {
+        throw new Error('response data undefined.');
+      }
+
+      const fileName = `response_1234.xml`;
+      const folderPath = path.join(
+        process.cwd(),
+        'test',
+        'fixtures',
+        'biletall',
+      );
+      const filePath = path.join(folderPath, fileName);
+      const writeFile = util.promisify(fs.writeFile);
+      if (!fs.existsSync(filePath)) {
+        await writeFile(filePath, responseData, 'utf-8');
+      } else {
+        throw new Error(`File already exists: ${filePath}`);
+      }
+
+      console.log(`File wrote succesfully: ${filePath}`);
+    } catch (error) {
+      console.error('An error occurred while writing the file:', error.message);
+    }
+  }
+  public async run<T>(bodyXml: string): Promise<T> {
     const soapEnvelope = `
     <?xml version="1.0" encoding="utf-8"?>
       <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://tempuri.org/">
@@ -82,17 +110,17 @@ export class BiletAllService {
         soapEnvelope.trim(),
         config,
       );
+      if (!response || !response.data) {
+        throw new Error('Response is undefined.');
+      }
+      console.log(response.data);
+      // await this.saveResponseToFile(response.data);
       return xml2js.parseStringPromise(response.data) as T;
-      // const resp =
-      //   '<NewDataSet><Table> <Saat>2018-12-10T02:30:00+03:00</Saat></Table> <Table><Yer /><Saat>2018-12-10T02:30:00+03:00</Saat> <Internette_Gozuksunmu>0</Internette_Gozuksunmu></Table><Table><Yer> BELSİN GİRİŞ </Yer> <Saat>2018-12-10T02:30:00+03:00</Saat> <Internette_Gozuksunmu>1</Internette_Gozuksunmu></Table> <Table><Yer> FUZULİ</Yer> <Saat>2018-12-10T02:30:00+03:00</Saat> <Internette_Gozuksunmu>1</Internette_Gozuksunmu></Table> <Table><Yer> HIMMETD SHEL</Yer> <Saat>2018-12-10T02:30:00+03:00</Saat> <Internette_Gozuksunmu>1</Internette_Gozuksunmu></Table> <Table><Yer> TOYOTA</Yer> <Saat>2018-12-10T02:30:00+03:00</Saat> <Internette_Gozuksunmu>1</Internette_Gozuksunmu></Table> <Table><Yer>AĞAÇ İŞLERİ</Yer> <Saat>2018-12-10T02:40:00+03:00</Saat> <Internette_Gozuksunmu>1</Internette_Gozuksunmu></Table> </NewDataSet>';
-      // const testResp = `<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><XmlIsletResponse xmlns="http://tempuri.org/"><XmlIsletResult>${resp}</XmlIsletResult></XmlIsletResponse></soap:Body></soap:Envelope>`;
-      // return xml2js.parseStringPromise(testResp) as T;
     } catch (error) {
       console.error('Error running XML request:', error);
       throw new Error('Failed to process XML request');
     }
   }
-
   async company(requestDto: BusCompanyRequestDto): Promise<BusCompanyDto[]> {
     const companiesXml = `<Firmalar><FirmaNo>${requestDto.companyNo}</FirmaNo></Firmalar>`;
     const res = await this.run<BiletAllCompanyResponse>(companiesXml);

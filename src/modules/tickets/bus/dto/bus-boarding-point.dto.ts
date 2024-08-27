@@ -28,13 +28,16 @@ export class BoardingPointRequestDto {
 }
 
 export class BoardingPointDto {
-  place: string[];
-  time: string[];
-  visibleOnInternet: string[];
+  place?: string;
+  time: string;
+  visibleOnInternet?: boolean;
 
   constructor(boardingPoint: BoardingPoint) {
     this.place = boardingPoint.Yer;
     this.time = boardingPoint.Saat;
-    this.visibleOnInternet = boardingPoint.Internette_Gozuksunmu;
+    this.visibleOnInternet =
+      typeof boardingPoint.Internette_Gozuksunmu === 'string'
+        ? boardingPoint.Internette_Gozuksunmu === '1'
+        : undefined;
   }
 }
