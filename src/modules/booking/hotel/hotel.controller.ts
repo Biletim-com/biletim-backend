@@ -12,7 +12,10 @@ import {
 } from '@nestjs/common';
 import { RatehawkHotelService } from './services/ratehawk/hotel-ratehawk.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AutocompleteRequestDto } from './dto/hotel-autocomplete-search.dto';
+import {
+  AutocompleteRequestDto,
+  AutocompleteResponseDto,
+} from './dto/hotel-autocomplete-search.dto';
 import {
   QueryDto,
   searchReservationByRegionIdRequestDto,
@@ -38,9 +41,10 @@ export class HotelController {
   @Post('/search/autocomplete')
   async search(
     @Body() autocompleteRequestDto: AutocompleteRequestDto,
-  ): Promise<any> {
+  ): Promise<AutocompleteResponseDto> {
     const { query, language } = autocompleteRequestDto;
-    return this.ratehawkHotelService.search(query, language);
+    const result = await this.ratehawkHotelService.search(query, language);
+    return new AutocompleteResponseDto(result);
   }
 
   @ApiOperation({ summary: 'Search Reservation By Region Id' })
@@ -63,7 +67,6 @@ export class HotelController {
   async searchReservationsHotels(
     @Body() searchReservationsHotelsDto: SearchReservationsHotelsRequestDto,
   ): Promise<any> {
-    console.log(searchReservationsHotelsDto, 'controller');
     return this.ratehawkHotelService.searchReservationsHotels(
       searchReservationsHotelsDto,
     );

@@ -147,7 +147,6 @@ export class RatehawkHotelService {
           HttpStatus.NOT_FOUND,
         );
       }
-      console.log(response);
       return response.data;
     } catch (error: any) {
       console.error('Axios Error:', error.response?.data || error.message);

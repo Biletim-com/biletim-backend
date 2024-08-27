@@ -50,3 +50,25 @@ export class AutocompleteRequestDto {
   ])
   language?: string;
 }
+
+export class AutocompleteHotel {
+  id: string;
+  name: string;
+  regionId: number;
+}
+
+export class AutocompleteRegion {
+  id: number;
+  name: string;
+  type: string;
+  countryCode: string;
+}
+
+export class AutocompleteResponseDto {
+  constructor(
+    public result: Array<{
+      hotels: AutocompleteHotel[];
+      regions: AutocompleteRegion[];
+    }>,
+  ) {}
+}
