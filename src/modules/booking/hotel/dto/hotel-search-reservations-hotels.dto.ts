@@ -1,0 +1,132 @@
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+  Max,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { GuestDto } from './hotel-search-reservation-by-region-id.dto';
+import { DateISODate } from '@app/common/types';
+
+export class SearchReservationsHotelsRequestDto {
+  @ApiProperty({
+    description: 'Check-in date (Required)',
+    example: '2024-07-14',
+  })
+  @IsNotEmpty()
+  checkin: DateISODate;
+
+  @ApiProperty({
+    description: 'Check-out date (Required)',
+    example: '2024-07-16',
+  })
+  @IsNotEmpty()
+  checkout: DateISODate;
+
+  @ApiProperty({
+    description: "Guest's (or multiple guests') citizenship. (Optional)",
+    example: 'us',
+  })
+  @IsOptional()
+  @IsString()
+  @Length(2, 2)
+  residency?: string;
+
+  @ApiProperty({
+    description: 'Language. (Optional)',
+    example: 'en',
+    enum: [
+      'ar',
+      'bg',
+      'cs',
+      'de',
+      'el',
+      'en',
+      'es',
+      'fr',
+      'he',
+      'hu',
+      'it',
+      'nl',
+      'pl',
+      'pt',
+      'ro',
+      'ru',
+      'sr',
+      'sq',
+      'tr',
+      'zh_CN',
+      'pt_PT',
+    ],
+  })
+  @IsString()
+  @IsOptional()
+  @IsEnum([
+    'ar',
+    'bg',
+    'cs',
+    'de',
+    'el',
+    'en',
+    'es',
+    'fr',
+    'he',
+    'hu',
+    'it',
+    'nl',
+    'pl',
+    'pt',
+    'ro',
+    'ru',
+    'sr',
+    'sq',
+    'tr',
+    'zh_CN',
+    'pt_PT',
+  ])
+  language?: string;
+
+  @ApiProperty({
+    description: 'List of guests. (Required)',
+    type: [GuestDto],
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GuestDto)
+  guests!: GuestDto[];
+
+  @ApiProperty({
+    description: 'List of hotels ids. (Required). Maximum 300 items.',
+    example: ['test_hotel'],
+  })
+  @IsArray()
+  @IsNotEmpty()
+  @ArrayMaxSize(300)
+  @IsString({ each: true })
+  ids!: string[];
+
+  @ApiProperty({
+    description: "Currency of the rooms' price in the response. (Optional)",
+    example: 'TRY',
+  })
+  @IsOptional()
+  @IsString()
+  currency?: string;
+
+  @ApiProperty({
+    description:
+      'The maximum amount of time (in seconds) within which searched for rates will be returned. (Optional) Max value: 100.',
+    example: 30,
+  })
+  @IsOptional()
+  @IsInt()
+  @Max(100)
+  timeout?: number;
+}

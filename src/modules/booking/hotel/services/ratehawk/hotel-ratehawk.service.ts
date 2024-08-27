@@ -6,18 +6,19 @@ import * as crypto from 'crypto';
 import { HotelApiConfigService } from '@app/configs/hotel-api';
 
 import {
-  BookingFinishDto,
-  CreditCardDataTokenizationDto,
-  OrderBookingFormDto,
-  OrderTotalInformationDto,
-  PartnerDto,
-  PrebookDto,
   QueryDto,
-  SearchReservationByHotelDto,
-  SearchReservationsHotelsDto,
-  WebhookDto,
-  searchReservationByRegionIdDto,
-} from './dto/hotel.dto';
+  searchReservationByRegionIdRequestDto,
+} from '../../dto/hotel-search-reservation-by-region-id.dto';
+import { SearchReservationsHotelsRequestDto } from '../../dto/hotel-search-reservations-hotels.dto';
+import { SearchReservationByHotelRequestDto } from '../../dto/hotel-search-reservation-hotel.dto';
+import { PrebookRequestDto } from '../../dto/hotel-prebook.dto';
+import { CreditCardDataTokenizationRequestDto } from '../../dto/hotel-credit-card-data-tokenization.dto';
+import { BookingFinishRequestDto } from '../../dto/hotel-booking-finish.dto';
+import { OrderBookingFormRequestDto } from '../../dto/hotel-order-booking-form.dto';
+import { OrderBookingFinishStatusRequestDto } from '../../dto/hotel-order-booking-finish-status.dto';
+import { WebhookRequestDto } from '../../dto/hotel-webhook.dto';
+import { OrderTotalInformationRequestDto } from '../../dto/hotel-order-total-information.dto';
+import { HotelOrderCancelRequestDto } from '../../dto/hotel-order-cancel.dto';
 
 // import {
 //   createReadStream,
@@ -32,7 +33,7 @@ import {
 //  const { ZstdCodec } = require('zstd-codec');
 
 @Injectable()
-export class HotelService {
+export class RatehawkHotelService {
   private readonly baseUrl: string;
   constructor(private readonly hotelApiConfigService: HotelApiConfigService) {
     this.baseUrl = this.hotelApiConfigService.hotelApiBaseUrl;
@@ -71,7 +72,7 @@ export class HotelService {
   }
 
   async searchReservationByRegionId(
-    searchDto: searchReservationByRegionIdDto,
+    searchDto: searchReservationByRegionIdRequestDto,
     queryDto: QueryDto,
   ): Promise<any> {
     const [checkin] = searchDto.checkin.toISOString().split('T');
@@ -132,22 +133,24 @@ export class HotelService {
   }
 
   async searchReservationsHotels(
-    resultDto: SearchReservationsHotelsDto,
+    resultDto: SearchReservationsHotelsRequestDto,
   ): Promise<any> {
     const url = `${this.baseUrl}/search/serp/hotels/`;
-
+    console.log(resultDto);
     const headers = this.getBasicAuthHeader;
 
     try {
       const response = await axios.post(url, resultDto, { headers });
-      if (response.data.data.hotels.length === 0) {
+      if (response.data.data?.hotels?.length === 0) {
         throw new HttpException(
           'There are no rooms available in this date range',
           HttpStatus.NOT_FOUND,
         );
       }
+      console.log(response);
       return response.data;
     } catch (error: any) {
+      console.error('Axios Error:', error.response?.data || error.message);
       throw new HttpException(
         `search reservations by hotel ids error -> ${error?.message}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -156,7 +159,7 @@ export class HotelService {
   }
 
   async searchReservationByHotelId(
-    body: SearchReservationByHotelDto,
+    body: SearchReservationByHotelRequestDto,
   ): Promise<any> {
     const url = `${this.baseUrl}/search/hp/`;
 
@@ -200,7 +203,7 @@ export class HotelService {
     }
   }
 
-  async prebook(body: PrebookDto): Promise<any> {
+  async prebook(body: PrebookRequestDto): Promise<any> {
     const url = `${this.baseUrl}/hotel/prebook`;
     const headers = this.getBasicAuthHeader;
 
@@ -217,7 +220,7 @@ export class HotelService {
 
   async orderBookingForm(
     currency_code: string,
-    dto: OrderBookingFormDto,
+    dto: OrderBookingFormRequestDto,
     ip: any,
   ): Promise<any> {
     const partner_order_id: string = uuidv4();
@@ -248,7 +251,7 @@ export class HotelService {
   }
 
   async creditCardDataTokenization(
-    dto: CreditCardDataTokenizationDto,
+    dto: CreditCardDataTokenizationRequestDto,
   ): Promise<any> {
     ({ pay_uuid: dto.pay_uuid, init_uuid: dto.init_uuid } = {
       pay_uuid: uuidv4(),
@@ -273,7 +276,7 @@ export class HotelService {
     }
   }
 
-  async orderBookingFinish(dto: BookingFinishDto): Promise<any> {
+  async orderBookingFinish(dto: BookingFinishRequestDto): Promise<any> {
     const url = `${this.baseUrl}/hotel/order/booking/finish/`;
     const headers = this.getBasicAuthHeader;
 
@@ -299,7 +302,9 @@ export class HotelService {
     }
   }
 
-  async orderBookingFinishStatus(dto: PartnerDto): Promise<any> {
+  async orderBookingFinishStatus(
+    dto: OrderBookingFinishStatusRequestDto,
+  ): Promise<any> {
     const url = `${this.baseUrl}/hotel/order/booking/finish/status/`;
     const headers = this.getBasicAuthHeader;
 
@@ -314,7 +319,7 @@ export class HotelService {
     }
   }
 
-  async handleWebhook(body: WebhookDto): Promise<any> {
+  async handleWebhook(body: WebhookRequestDto): Promise<any> {
     try {
       const apiKey = this.hotelApiConfigService.hotelApiPassword;
       const { signature, timestamp, token } = body.signature;
@@ -351,7 +356,7 @@ export class HotelService {
     }
   }
 
-  async orderInfo(dto: OrderTotalInformationDto): Promise<any> {
+  async orderInfo(dto: OrderTotalInformationRequestDto): Promise<any> {
     const url = `${this.baseUrl}/hotel/order/info/`;
     const headers = this.getBasicAuthHeader;
 
@@ -366,7 +371,9 @@ export class HotelService {
     }
   }
 
-  async orderCancellation(partner_order_id: PartnerDto): Promise<any> {
+  async orderCancellation(
+    partner_order_id: HotelOrderCancelRequestDto,
+  ): Promise<any> {
     const url = `${this.baseUrl}/hotel/order/cancel/`;
     const headers = this.getBasicAuthHeader;
 
