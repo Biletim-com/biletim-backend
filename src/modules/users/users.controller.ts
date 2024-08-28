@@ -51,7 +51,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @HttpCode(200)
   @Get('/find-one/:id')
-  async findOne(@Param('id') id: UUIDv4): Promise<User> {
+  async findOne(@Param('id') id: UUIDv4): Promise<Omit<User, 'password'>> {
     return await this.usersService.findOne(id);
   }
 
@@ -60,7 +60,9 @@ export class UsersController {
   @RequireAdmin()
   @HttpCode(201)
   @Post('/create')
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<Omit<User, 'password'>> {
     return await this.usersService.create(createUserDto);
   }
 

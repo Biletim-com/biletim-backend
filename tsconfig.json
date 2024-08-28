@@ -6,30 +6,22 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/auth": ["src/auth"],
-      "@app/auth/*": ["src/auth/*"],
-      "@app/common": ["src/common"],
-      "@app/common/*": ["src/common/*"],
-      "@app/jobs": ["src/jons"],
-      "@app/jobs/*": ["src/jobs/*"],
-      "@app/configs": ["src/configs"],
-      "@app/configs/*": ["src/configs/*"],
-      "@app/providers": ["src/providers"],
-      "@app/providers/*": ["src/providers/*"],
-      "@app/modules": ["src/modules"],
-      "@app/modules/*": ["src/modules/*"]
-    }
-  }
+      "@app/*": ["src/*"]
+    },
+    "typeRoots": ["./node_modules/@types"],
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "global.d.ts", "ormconfig.ts"],
+  "exclude": ["node_modules", "dist"]
 }

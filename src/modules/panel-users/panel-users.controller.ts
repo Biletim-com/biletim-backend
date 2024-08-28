@@ -55,7 +55,7 @@ export class PanelUsersController {
   @RequireAdmin()
   @HttpCode(200)
   @Get('/find-one/:id')
-  async findOne(@Param('id') id: UUIDv4): Promise<PanelUser> {
+  async findOne(@Param('id') id: UUIDv4): Promise<Omit<PanelUser, 'password'>> {
     return await this.panelUsersService.findOne(id);
   }
 

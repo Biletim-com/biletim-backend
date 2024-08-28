@@ -12,19 +12,19 @@ export class AppConfigService {
   constructor(private configService: ConfigService) {}
 
   get env(): string {
-    return this.configService.get<TAppConfiguration>(
+    return this.configService.getOrThrow<TAppConfiguration>(
       this.configurationNamespace,
     ).env;
   }
 
   get port(): number {
-    return this.configService.get<TAppConfiguration>(
+    return this.configService.getOrThrow<TAppConfiguration>(
       this.configurationNamespace,
     ).port;
   }
 
   get corsWhitelist(): string {
-    return this.configService.get<TAppConfiguration>(
+    return this.configService.getOrThrow<TAppConfiguration>(
       this.configurationNamespace,
     ).corsWhitelist;
   }

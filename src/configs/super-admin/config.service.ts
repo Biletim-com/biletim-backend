@@ -12,19 +12,19 @@ export class SuperAdminConfigService {
   constructor(private configService: ConfigService) {}
 
   get superAdminEmail(): string {
-    return this.configService.get<TSuperAdminConfiguration>(
+    return this.configService.getOrThrow<TSuperAdminConfiguration>(
       this.configurationNamespace,
     ).superAdminEmail;
   }
 
   get superAdminPassword(): string {
-    return this.configService.get<TSuperAdminConfiguration>(
+    return this.configService.getOrThrow<TSuperAdminConfiguration>(
       this.configurationNamespace,
     ).superAdminPassword;
   }
 
   get superAdminKey(): string {
-    return this.configService.get<TSuperAdminConfiguration>(
+    return this.configService.getOrThrow<TSuperAdminConfiguration>(
       this.configurationNamespace,
     ).superAdminKey;
   }

@@ -1,13 +1,22 @@
+/// <reference path="./global.d.ts" />
+
 import { NestFactory } from '@nestjs/core';
+import { Module } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { AppModule } from './src/app.module';
-import { PostgreSQLProviderService } from './src/providers/database/postgresql/provider.service';
+import { ConfigModule } from '@app/configs/config.module';
+import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
+import { PostgreSQLProviderService } from '@app/providers/database/postgresql/provider.service';
+
+@Module({
+  imports: [ConfigModule, PostgreSQLProviderModule],
+})
+class PostgreSQLDataSourceModule {}
 
 export default (async () => {
-  const app = await NestFactory.create(AppModule);
+  const postgreSQLApp = await NestFactory.create(PostgreSQLDataSourceModule);
 
-  const postgresDataSource = app
+  const postgresDataSource = postgreSQLApp
     .get(PostgreSQLProviderService)
     .createTypeOrmOptions();
 

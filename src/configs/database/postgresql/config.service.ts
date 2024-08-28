@@ -12,39 +12,39 @@ export class PostgreSQLConfigService {
   constructor(private configService: ConfigService) {}
 
   get host(): string {
-    return this.configService.get<TPostgreSQLConfiguration>(
+    return this.configService.getOrThrow<TPostgreSQLConfiguration>(
       this.configurationNamespace,
     ).host;
   }
 
   get database(): string {
-    return this.configService.get<TPostgreSQLConfiguration>(
+    return this.configService.getOrThrow<TPostgreSQLConfiguration>(
       this.configurationNamespace,
     ).name;
   }
 
   get user(): string {
-    return this.configService.get<TPostgreSQLConfiguration>(
+    return this.configService.getOrThrow<TPostgreSQLConfiguration>(
       this.configurationNamespace,
     ).user;
   }
 
   get password(): string {
-    return this.configService.get<TPostgreSQLConfiguration>(
+    return this.configService.getOrThrow<TPostgreSQLConfiguration>(
       this.configurationNamespace,
     ).password;
   }
 
   get port(): number {
     return Number(
-      this.configService.get<TPostgreSQLConfiguration>(
+      this.configService.getOrThrow<TPostgreSQLConfiguration>(
         this.configurationNamespace,
       ).port,
     );
   }
 
   get logging(): boolean {
-    return this.configService.get<TPostgreSQLConfiguration>(
+    return this.configService.getOrThrow<TPostgreSQLConfiguration>(
       this.configurationNamespace,
     ).logging;
   }

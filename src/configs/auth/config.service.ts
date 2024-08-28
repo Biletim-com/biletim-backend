@@ -12,19 +12,19 @@ export class AuthConfigService {
   constructor(private configService: ConfigService) {}
 
   get jwtSecret(): string {
-    return this.configService.get<TAuthConfiguration>(
+    return this.configService.getOrThrow<TAuthConfiguration>(
       this.configurationNamespace,
     ).jwtSecret;
   }
 
   get bcryptSaltRounds(): number {
-    return this.configService.get<TAuthConfiguration>(
+    return this.configService.getOrThrow<TAuthConfiguration>(
       this.configurationNamespace,
     ).bcryptSaltRounds;
   }
 
   get resetPasswordUrl(): string {
-    return this.configService.get<TAuthConfiguration>(
+    return this.configService.getOrThrow<TAuthConfiguration>(
       this.configurationNamespace,
     ).resetPasswordUrl;
   }

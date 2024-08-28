@@ -12,7 +12,7 @@ erDiagram
     %% multiple tickets might be handled in the same transaction
     %% a ticket might have both puschase and return transactions
 
-    Transactions |{--|{ Tickets : "Belongs"
+    Transactions ||--|{ Tickets : "Belongs"
     Transactions ||--o| Wallets : "PaidWith"
     Transactions ||--o| BankCards : "PaidWith"
     Transactions ||--|| Invoice : "Has"
