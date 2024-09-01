@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsOptional,
@@ -5,6 +6,7 @@ import {
   Matches,
   IsCreditCard,
   Length,
+  IsBoolean,
 } from 'class-validator';
 
 export class BusWebPassengerDto {
@@ -39,9 +41,12 @@ export class BusWebPassengerDto {
   @Length(3, 3, { message: 'creditCardCCV2 must be 3 digits' })
   creditCardCCV2: string;
 
-  @IsNotEmpty()
-  @IsString()
-  prepaymentUsage: string;
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => (value === true ? 1 : undefined), {
+    toPlainOnly: true,
+  })
+  prepaymentUsage?: boolean;
 
   @IsNotEmpty()
   @IsString()

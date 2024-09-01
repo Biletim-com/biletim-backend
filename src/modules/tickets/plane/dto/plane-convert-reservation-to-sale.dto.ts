@@ -28,10 +28,42 @@ export class PlanePassengerInfoConvertReservationDto {
 
   @IsEnum(Gender)
   @IsNotEmpty()
+  @Transform(({ value }) => {
+    const genderStr = value.toString().toLowerCase().trim();
+
+    if (genderStr === 'male') return Gender.MALE;
+    if (genderStr === 'female') return Gender.FEMALE;
+
+    return undefined;
+  })
   gender: Gender;
 
   @IsEnum(PassengerType)
   @IsNotEmpty()
+  @Transform(({ value }) => {
+    const passengerTypeStr = value.toString().toLowerCase().trim();
+
+    switch (passengerTypeStr) {
+      case 'adult':
+        return PassengerType.ADULT;
+      case 'child':
+        return PassengerType.CHILD;
+      case 'baby':
+        return PassengerType.BABY;
+      case 'senior':
+        return PassengerType.SENIOR;
+      case 'student':
+        return PassengerType.STUDENT;
+      case 'disabled':
+        return PassengerType.DISABLED;
+      case 'soldier':
+        return PassengerType.SOLDIER;
+      case 'youth':
+        return PassengerType.YOUTH;
+      default:
+        return undefined;
+    }
+  })
   passengerType: PassengerType;
 
   @IsOptional()

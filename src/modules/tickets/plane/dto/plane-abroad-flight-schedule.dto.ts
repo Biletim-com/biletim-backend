@@ -5,6 +5,7 @@ import {
   AbroadFlightOption,
   AbroadFlightSegment,
 } from '../services/biletall/types/biletall-plane-abroad-flight-schedule.type';
+import { Transform } from 'class-transformer';
 
 export class PlaneAbroadFlightScheduleRequestDto extends PlaneDomesticFlightScheduleRequestDto {
   @IsOptional()
@@ -17,6 +18,13 @@ export class PlaneAbroadFlightScheduleRequestDto extends PlaneDomesticFlightSche
 
   @IsOptional()
   @IsEnum(FlightClassType)
+  @Transform(({ value }) => {
+    const classTypeStr = value.toString().toLowerCase().trim();
+    if (classTypeStr === 'economy') return FlightClassType.ECONOMY;
+    if (classTypeStr === 'business') return FlightClassType.BUSINESS;
+
+    return undefined;
+  })
   classType?: FlightClassType;
 }
 

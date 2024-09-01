@@ -1,5 +1,5 @@
 import { OmitType } from '@nestjs/swagger/dist/type-helpers/omit-type.helper';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { BusSearchRequestDto } from './bus-search.dto';
 import {
   IsArray,
@@ -19,6 +19,14 @@ class BusSeatDto {
   // female - 1
   @IsEnum(Gender)
   @IsNotEmpty()
+  @Transform(({ value }) => {
+    const genderStr = value.toString().toLowerCase().trim();
+
+    if (genderStr === 'male') return Gender.MALE;
+    if (genderStr === 'female') return Gender.FEMALE;
+
+    return undefined;
+  })
   gender: Gender;
 }
 
