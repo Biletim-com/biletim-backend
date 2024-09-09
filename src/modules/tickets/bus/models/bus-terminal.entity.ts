@@ -13,14 +13,14 @@ export class BusTerminal extends AbstractEntity<BusTerminal> {
   @Column({ name: 'country_code' })
   countryCode: string;
 
-  @Column({ nullable: true })
-  region?: string | null;
+  @Column({ type: 'varchar', nullable: true })
+  region?: Nullable<string>;
 
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  description?: string | null;
+  @Column({ type: 'varchar', nullable: true })
+  description?: Nullable<string>;
 
   @Column({ name: 'is_center', default: false })
   isCenter: boolean;

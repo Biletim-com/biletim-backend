@@ -16,11 +16,11 @@ export class PanelUser extends AbstractEntity<PanelUser> {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
-  phone?: string | null;
+  @Column({ type: 'varchar', nullable: true })
+  phone?: Nullable<string>;
 
-  @Column({ nullable: true })
-  address?: string | null;
+  @Column({ type: 'varchar', nullable: true })
+  address?: Nullable<string>;
 
   @Column({ name: 'is_deleted', default: false })
   isDeleted: boolean;

@@ -114,7 +114,6 @@ export class BiletAllService {
       if (!response || !response.data) {
         throw new Error('Response is undefined.');
       }
-      console.log(response.data);
       // await this.saveResponseToFile(response.data);
       return xml2js.parseStringPromise(response.data) as T;
     } catch (error) {
