@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import {
   ConfigModule as NestJsConfigModule,
   ConfigService,
@@ -36,6 +36,7 @@ import superAdminConfiguration, {
   SuperAdminEnvVarsValidation,
 } from './super-admin';
 
+@Global()
 @Module({
   imports: [
     NestJsConfigModule.forRoot({
