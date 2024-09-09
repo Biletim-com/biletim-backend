@@ -52,7 +52,7 @@ export class RatehawkHotelService {
     };
   }
 
-  async search(query: string, language: string): Promise<any> {
+  async search(query: string, language?: string): Promise<any> {
     const url = `${this.baseUrl}/search/multicomplete/`;
     const headers = this.getBasicAuthHeader;
     const body = {
@@ -73,7 +73,7 @@ export class RatehawkHotelService {
 
   async searchReservationByRegionId(
     searchDto: searchReservationByRegionIdRequestDto,
-    queryDto: QueryDto,
+    { minPrice, maxPrice, sortOrder }: QueryDto,
   ): Promise<any> {
     const [checkin] = searchDto.checkin.toISOString().split('T');
     const [checkout] = searchDto.checkout.toISOString().split('T');
@@ -105,17 +105,17 @@ export class RatehawkHotelService {
         })),
       }));
 
-      if (queryDto.minPrice !== undefined) {
-        hotels = hotels.filter((hotel) => hotel.minRate >= queryDto.minPrice);
+      if (minPrice) {
+        hotels = hotels.filter((hotel) => hotel.minRate >= minPrice);
       }
 
-      if (queryDto.maxPrice !== undefined) {
-        hotels = hotels.filter((hotel) => hotel.minRate <= queryDto.maxPrice);
+      if (maxPrice) {
+        hotels = hotels.filter((hotel) => hotel.minRate <= maxPrice);
       }
 
-      if (queryDto.sortOrder) {
+      if (sortOrder) {
         hotels.sort((a, b) => {
-          if (queryDto.sortOrder === 'asc') {
+          if (sortOrder === 'asc') {
             return a.minRate - b.minRate;
           } else {
             return b.minRate - a.minRate;

@@ -18,11 +18,11 @@ export class User extends AbstractEntity<User> {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
-  phone?: string | null;
+  @Column({ type: 'varchar', nullable: true })
+  phone?: Nullable<string>;
 
-  @Column({ nullable: true })
-  address?: string | null;
+  @Column({ type: 'varchar', nullable: true })
+  address?: Nullable<string>;
 
   @Column({ name: 'is_deleted', default: false })
   isDeleted: boolean;
@@ -31,7 +31,7 @@ export class User extends AbstractEntity<User> {
   isVerified: boolean;
 
   @Column({ name: 'forgot_password_code', type: 'uuid', nullable: true })
-  forgotPasswordCode?: string | null;
+  forgotPasswordCode?: Nullable<string>;
 
   @Column({ name: 'is_used', default: false })
   isUsed: boolean;

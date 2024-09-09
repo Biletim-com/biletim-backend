@@ -69,15 +69,16 @@ export class UsersService {
     }
   }
 
-  async findOne(id: UUIDv4): Promise<User> {
+  async findOne(id: UUIDv4): Promise<Omit<User, 'password'>> {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID '${id}' not found`);
     }
-    delete user.password;
-    return user;
+    // TODO: do it in a DTO
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
     try {
       const { password, name, familyName } = createUserDto;
 
@@ -101,8 +102,9 @@ export class UsersService {
           isVerified: true,
         }),
       );
-      delete user.password;
-      return user;
+      // TODO: do it in a DTO
+      const { password: _, ...userWithoutPassword } = user;
+      return userWithoutPassword;
     } catch (err: any) {
       throw new HttpException(
         `user create error ->  ${err?.message}`,

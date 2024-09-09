@@ -38,13 +38,15 @@ export class StopPointsCronJobService implements OnModuleInit {
       return this.splitIntoChunks(response);
     } catch (error) {
       this.logger.error('Error fetching data from BiletAll', error);
+      throw error;
     }
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   private async saveBusTerminalsToDb() {
-    const busStopPointsChunks = await this.fetchBusStopPointsDataFromBiletAll();
     try {
+      const busStopPointsChunks =
+        await this.fetchBusStopPointsDataFromBiletAll();
       this.logger.log('Saving Bus Terminals to DB');
       busStopPointsChunks.forEach((busStopPointsChunk) => {
         const entities = busStopPointsChunk.map((busStopPoint) => {

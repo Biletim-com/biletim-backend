@@ -69,13 +69,14 @@ export class PanelUsersService {
     }
   }
 
-  async findOne(id: UUIDv4): Promise<PanelUser> {
+  async findOne(id: UUIDv4): Promise<Omit<PanelUser, 'password'>> {
     const user = await this.panelUsersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID '${id}' not found`);
     }
-    delete user.password;
-    return user;
+    // TODO: do it in a DTO
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
   async createSuperAdmin(key: string): Promise<any> {
@@ -94,7 +95,7 @@ export class PanelUsersService {
     }
 
     try {
-      const user = await this.panelUsersRepository.save(
+      await this.panelUsersRepository.save(
         new PanelUser({
           name: 'SUPER',
           familyName: 'ADMIN',
@@ -103,10 +104,6 @@ export class PanelUsersService {
           isSuperAdmin: true,
         }),
       );
-
-      // TODO: this should done in a controller with a DTO
-      delete user.password;
-
       return { message: 'Super admin created', statusCode: '201' };
     } catch (err: any) {
       throw new HttpException(
@@ -172,11 +169,13 @@ export class PanelUsersService {
           password: await this.passwordService.hashPassword(password),
         }),
       );
-      delete user.password;
       const { accessToken, refreshToken } =
-        await this.authService.generateTokens(user);
+        this.authService.generateTokens(user);
+
+      // TODO: do it in a DTO
+      const { password: _, ...userWithoutPassword } = user;
       return {
-        ...user,
+        ...userWithoutPassword,
         tokens: { accessToken, refreshToken },
       };
     } catch (err: any) {
