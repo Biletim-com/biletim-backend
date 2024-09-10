@@ -16,8 +16,6 @@ import { TicketsModule } from '@app/modules/tickets/tickets.module';
 import { PanelUsersModule } from '@app/modules/panel-users/panel-users.module';
 import { HotelModule } from '@app/modules/booking/hotel/hotel.module';
 import { BookingModule } from '@app/modules/booking/booking.module';
-import { PlaneModule } from './modules/tickets/plane/plane.module';
-import { BusModule } from './modules/tickets/bus/bus.module';
 
 // Providers
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
@@ -30,22 +28,19 @@ import { JobsModule } from '@app/jobs/jobs.module';
 
 @Module({
   imports: [
+    HttpModule,
     LoggerModule,
     ConfigModule,
     PostgreSQLProviderModule,
     JobsModule,
     AuthModule,
     UsersModule,
-    TicketsModule,
     PanelUsersModule,
     AppleModule,
     HotelModule,
-    HttpModule,
+    TicketsModule,
     BookingModule,
-    PlaneModule,
-    BusModule,
   ],
-  controllers: [],
   providers: [
     {
       provide: APP_INTERCEPTOR,

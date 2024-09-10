@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 
 import { BiletAllService } from '@app/modules/tickets/bus/services/biletall/biletall.service';
-import { BusTerminalsRepository } from '@app/modules/tickets/bus/repositories/bus-terminals.repository';
+import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus-terminal.repository';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { BiletAllParser } from '@app/modules/tickets/bus/services/biletall/biletall.parser';
 
-import { StopPointsCronJobService } from './job.service';
+import { BusTerminalsCronJobService } from './job.service';
 
 @Module({
   providers: [
-    StopPointsCronJobService,
+    BusTerminalsCronJobService,
     BiletAllService,
-    BusTerminalsRepository,
+    BusTerminalRepository,
     BiletAllApiConfigService,
     BiletAllParser,
   ],
 })
-export class StopPointsCronJobModule {}
+export class BusTerminalsCronJobModule {}

@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
-import { StopPointsCronJobModule } from './stop-points/job.module';
-import { AirportPointsCronJobModule } from './airport-points/job.module';
+import { BusTerminalsCronJobModule } from './bus-terminals/job.module';
+import { AirportsCronJobModule } from './airports/job.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    StopPointsCronJobModule,
-    AirportPointsCronJobModule,
+    BusTerminalsCronJobModule,
+    AirportsCronJobModule,
   ],
 })
 export class JobsModule {}

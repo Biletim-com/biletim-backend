@@ -6,19 +6,19 @@ import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/pro
 import { BiletAllService } from './services/biletall/biletall.service';
 import { BiletAllParser } from './services/biletall/biletall.parser';
 import { BusController } from './bus.controller';
-import { BusTerminal } from './models/bus-terminal.entity';
-import { BusTerminalsRepository } from './repositories/bus-terminals.repository';
+import { BusTerminal } from './entities/bus-terminal.entity';
+import { BusTerminalRepository } from './repositories/bus-terminal.repository';
 import { BusService } from './services/bus.service';
 
 @Module({
   imports: [PostgreSQLProviderModule.forFeature([BusTerminal])],
   controllers: [BusController],
   providers: [
+    BusService,
     BiletAllApiConfigService,
     BiletAllService,
     BiletAllParser,
-    BusTerminalsRepository,
-    BusService,
+    BusTerminalRepository,
   ],
   exports: [BiletAllService],
 })

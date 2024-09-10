@@ -9,7 +9,7 @@ export class User extends AbstractEntity<User> {
   @Column()
   name: string;
 
-  @Column({ name: 'family_name' })
+  @Column()
   familyName: string;
 
   @Column({ unique: true })
@@ -24,16 +24,16 @@ export class User extends AbstractEntity<User> {
   @Column({ type: 'varchar', nullable: true })
   address?: Nullable<string>;
 
-  @Column({ name: 'is_deleted', default: false })
+  @Column({ default: false })
   isDeleted: boolean;
 
-  @Column({ name: 'is_verified', default: false })
+  @Column({ default: false })
   isVerified: boolean;
 
-  @Column({ name: 'forgot_password_code', type: 'uuid', nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   forgotPasswordCode?: Nullable<string>;
 
-  @Column({ name: 'is_used', default: false })
+  @Column({ default: false })
   isUsed: boolean;
 
   @OneToOne(() => Verification, (verification) => verification.user, {

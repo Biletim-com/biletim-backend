@@ -10,15 +10,14 @@ export abstract class AbstractEntity<T> {
   @PrimaryGeneratedColumn('uuid')
   id: UUIDv4;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp', nullable: false })
+  @CreateDateColumn({ type: 'timestamp', nullable: false })
   createdAt: Date;
 
   @UpdateDateColumn({
-    name: 'updated_at',
     type: 'timestamp',
     nullable: false,
   })
-  udpatedAt: Date;
+  updatedAt: Date;
 
   constructor(entity: Partial<T>) {
     Object.assign(this, entity);

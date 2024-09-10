@@ -28,7 +28,7 @@ import {
 import { BusPurchaseDto } from './dto/bus-purchase.dto';
 import { BusRouteRequestDto, BusRouteDetailDto } from './dto/bus-route.dto';
 import { BusTerminalSearchQueryDto } from './dto/bus-terminal-search-query.dto';
-import { BusTerminal } from './models/bus-terminal.entity';
+import { BusTerminal } from './entities/bus-terminal.entity';
 
 @Controller('bus')
 export class BusController {
