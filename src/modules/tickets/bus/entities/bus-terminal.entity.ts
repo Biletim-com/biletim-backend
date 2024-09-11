@@ -4,13 +4,13 @@ import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity'
 
 @Entity('bus_terminals')
 export class BusTerminal extends AbstractEntity<BusTerminal> {
-  @Column({ name: 'external_id', unique: true })
+  @Column({ unique: true })
   externalId: number;
 
-  @Column({ name: 'city_id' })
+  @Column()
   cityId: number;
 
-  @Column({ name: 'country_code' })
+  @Column()
   countryCode: string;
 
   @Column({ type: 'varchar', nullable: true })
@@ -22,13 +22,13 @@ export class BusTerminal extends AbstractEntity<BusTerminal> {
   @Column({ type: 'varchar', nullable: true })
   description?: Nullable<string>;
 
-  @Column({ name: 'is_center', default: false })
+  @Column({ default: false })
   isCenter: boolean;
 
-  @Column({ name: 'affiliated_center_id' })
+  @Column()
   affiliatedCenterId: number;
 
   @Index()
-  @Column({ name: 'appear_in_search', default: true })
+  @Column({ default: true })
   appearInSearch: boolean;
 }
