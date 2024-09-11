@@ -55,32 +55,6 @@ export class BiletAllService {
     private biletAllParser: BiletAllParser,
   ) {}
 
-  public async saveResponseToFile(responseData: string) {
-    try {
-      if (!responseData) {
-        throw new Error('response data undefined.');
-      }
-
-      const fileName = `response_1234.xml`;
-      const folderPath = path.join(
-        process.cwd(),
-        'test',
-        'fixtures',
-        'biletall',
-      );
-      const filePath = path.join(folderPath, fileName);
-      const writeFile = util.promisify(fs.writeFile);
-      if (!fs.existsSync(filePath)) {
-        await writeFile(filePath, responseData, 'utf-8');
-      } else {
-        throw new Error(`File already exists: ${filePath}`);
-      }
-
-      console.log(`File wrote succesfully: ${filePath}`);
-    } catch (error) {
-      console.error('An error occurred while writing the file:', error.message);
-    }
-  }
   public async run<T>(bodyXml: string): Promise<T> {
     const soapEnvelope = `
     <?xml version="1.0" encoding="utf-8"?>
