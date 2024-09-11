@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { FlightSegmentDto } from './plane-pull-price-flight.dto';
 import {
   IsArray,
@@ -17,6 +17,13 @@ import { FlightTicketPurchaseResult } from '../services/biletall/types/biletall-
 export class InvoiceDto {
   @IsEnum(PlaneInvoiceType)
   @IsNotEmpty()
+  @Transform(({ value }) => {
+    const invoiceTypeStr = value.toString().toLowerCase().trim();
+    if (invoiceTypeStr === 'people') return PlaneInvoiceType.PEOPLE;
+    if (invoiceTypeStr === 'company') return PlaneInvoiceType.COMPANY;
+
+    return undefined;
+  })
   invoiceType?: PlaneInvoiceType;
 
   @IsOptional()

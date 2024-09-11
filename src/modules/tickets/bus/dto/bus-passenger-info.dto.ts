@@ -58,6 +58,14 @@ export class BusPassengerInfoDto {
 
   @IsEnum(Gender)
   @IsNotEmpty()
+  @Transform(({ value }) => {
+    const genderStr = value.toString().toLowerCase().trim();
+
+    if (genderStr === 'male') return Gender.MALE;
+    if (genderStr === 'female') return Gender.FEMALE;
+
+    return undefined;
+  })
   gender: Gender;
 
   @IsBoolean()

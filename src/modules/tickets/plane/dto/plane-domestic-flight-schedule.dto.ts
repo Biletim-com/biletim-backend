@@ -51,6 +51,14 @@ export class PlaneDomesticFlightScheduleRequestDto {
 
   @IsNotEmpty()
   @IsEnum(PlaneTicketOperationType)
+  @Transform(({ value }) => {
+    const operationTypeStr = value.toString().toLowerCase().trim();
+    if (operationTypeStr === 'sale') return PlaneTicketOperationType.SALE;
+    if (operationTypeStr === 'reservation')
+      return PlaneTicketOperationType.RESERVATION;
+
+    return undefined;
+  })
   operationType: PlaneTicketOperationType;
 
   @IsNotEmpty()
