@@ -33,6 +33,7 @@ import {
 import { PlaneTicketPurchaseResponse } from './types/biletall-plane-ticket-purchase.type';
 import { PlaneTicketOperationType } from '@app/common/enums/plane-ticket-operation-type.enum';
 import { FlightConvertReservationToSaleRequestDto } from '../../dto/plane-convert-reservation-to-sale.dto';
+import { PnrSearchRequestDto } from '../../dto/plane-pnr-search.dto';
 
 @Injectable()
 export class BiletallPlaneService {
@@ -384,5 +385,22 @@ export class BiletallPlaneService {
     const res = await this.biletallService.run<any>(xml);
 
     return this.biletallPlaneParser.parseFlightTicketPurchase(res);
+  }
+
+  async pnrSearch(requestDto: PnrSearchRequestDto): Promise<any> {
+    const builder = new xml2js.Builder({ headless: true });
+
+    const requestDocument = {
+      PnrIslem: {
+        PnrNo: requestDto.pnrNumber,
+        PnrIslemTip: 0,
+        PnrAramaParametre: requestDto.pnrSearcParameter,
+      },
+    };
+
+    const xml = builder.buildObject(requestDocument);
+    const res = await this.biletallService.run<any>(xml);
+    console.log({ res });
+    return res;
   }
 }
