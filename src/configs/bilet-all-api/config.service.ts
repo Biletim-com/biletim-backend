@@ -13,19 +13,19 @@ export class BiletAllApiConfigService {
   constructor(private configService: ConfigService) {}
 
   get biletAllApiBaseUrl(): string {
-    return this.configService.get<TBiletAllApiConfiguration>(
+    return this.configService.getOrThrow<TBiletAllApiConfiguration>(
       this.configurationNamespace,
     ).biletAllApiBaseUrl;
   }
 
   get biletAllApiUsername(): string {
-    return this.configService.get<TBiletAllApiConfiguration>(
+    return this.configService.getOrThrow<TBiletAllApiConfiguration>(
       this.configurationNamespace,
     ).biletAllApiUsername;
   }
 
   get biletAllApiPassword(): string {
-    return this.configService.get<TBiletAllApiConfiguration>(
+    return this.configService.getOrThrow<TBiletAllApiConfiguration>(
       this.configurationNamespace,
     ).biletAllApiPassword;
   }

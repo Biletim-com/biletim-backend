@@ -12,19 +12,19 @@ export class HotelApiConfigService {
   constructor(private configService: ConfigService) {}
 
   get hotelApiBaseUrl(): string {
-    return this.configService.get<THotelApiConfiguration>(
+    return this.configService.getOrThrow<THotelApiConfiguration>(
       this.configurationNamespace,
     ).hotelApiBaseUrl;
   }
 
   get hotelApiUsername(): string {
-    return this.configService.get<THotelApiConfiguration>(
+    return this.configService.getOrThrow<THotelApiConfiguration>(
       this.configurationNamespace,
     ).hotelApiUsername;
   }
 
   get hotelApiPassword(): string {
-    return this.configService.get<THotelApiConfiguration>(
+    return this.configService.getOrThrow<THotelApiConfiguration>(
       this.configurationNamespace,
     ).hotelApiPassword;
   }

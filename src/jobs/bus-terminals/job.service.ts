@@ -1,20 +1,21 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
-import { BusTerminal } from '@app/modules/tickets/bus/models/bus-terminal.entity';
-import { BusTerminalsRepository } from '@app/modules/tickets/bus/repositories/bus-terminals.repository';
+import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
+import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus-terminal.repository';
 import { BiletAllService } from '@app/modules/tickets/bus/services/biletall/biletall.service';
 
 // dto
 import { BusStopPointDto } from '@app/modules/tickets/bus/dto/bus-stop-point.dto';
 
 @Injectable()
-export class StopPointsCronJobService implements OnModuleInit {
+export class BusTerminalsCronJobService implements OnModuleInit {
   private readonly chunkSize = 500;
-  private readonly logger = new Logger(StopPointsCronJobService.name);
+  private readonly logger = new Logger(BusTerminalsCronJobService.name);
+
   constructor(
     private readonly biletAllBusService: BiletAllService,
-    private readonly busTerminalsRepository: BusTerminalsRepository,
+    private readonly busTerminalRepository: BusTerminalRepository,
   ) {}
 
   onModuleInit() {
@@ -38,13 +39,15 @@ export class StopPointsCronJobService implements OnModuleInit {
       return this.splitIntoChunks(response);
     } catch (error) {
       this.logger.error('Error fetching data from BiletAll', error);
+      throw error;
     }
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   private async saveBusTerminalsToDb() {
-    const busStopPointsChunks = await this.fetchBusStopPointsDataFromBiletAll();
     try {
+      const busStopPointsChunks =
+        await this.fetchBusStopPointsDataFromBiletAll();
       this.logger.log('Saving Bus Terminals to DB');
       busStopPointsChunks.forEach((busStopPointsChunk) => {
         const entities = busStopPointsChunk.map((busStopPoint) => {
@@ -73,7 +76,7 @@ export class StopPointsCronJobService implements OnModuleInit {
           });
         });
 
-        this.busTerminalsRepository.upsert(entities, {
+        this.busTerminalRepository.upsert(entities, {
           conflictPaths: ['externalId'],
           skipUpdateIfNoValuesChanged: true,
         });

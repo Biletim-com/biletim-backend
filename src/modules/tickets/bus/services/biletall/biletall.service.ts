@@ -1,9 +1,11 @@
 // src/biletall/biletall.service.ts
-
-import { Injectable } from '@nestjs/common';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as util from 'util';
 import * as xml2js from 'xml2js';
 import axios from 'axios';
 import * as dayjs from 'dayjs';
+import { Injectable } from '@nestjs/common';
 
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 
@@ -27,6 +29,7 @@ import {
 import { BusPurchaseDto } from '../../dto/bus-purchase.dto';
 import { BusRouteDetailDto, BusRouteRequestDto } from '../../dto/bus-route.dto';
 import { BusStopPointDto } from '../../dto/bus-stop-point.dto';
+
 // types
 import { BiletAllCompanyResponse } from './types/biletall-company.type';
 import { BusStopPointResponse } from './types/biletall-bus-stop-points.type';
@@ -36,6 +39,7 @@ import { BusSeatAvailabilityResponse } from './types/biletall-bus-seat-availabil
 import { RouteDetailResponse } from './types/biletall-route.type';
 import { ServiceInformationResponse } from './types/biletall-service-information.type';
 import { BoardingPointResponse } from './types/biletall-boarding-point.type';
+import { BiletallPaymentRules } from '@app/common/types';
 
 // enums
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
@@ -84,7 +88,7 @@ export class BiletAllService {
       if (!response || !response.data) {
         throw new Error('Response is undefined.');
       }
-      console.log(response.data);
+      // await this.saveResponseToFile(response.data);
       return xml2js.parseStringPromise(response.data) as T;
     } catch (error) {
       console.error('Error running XML request:', error);
@@ -200,8 +204,8 @@ export class BiletAllService {
         KalkisNoktaID: requestDto.departurePointID,
         YerelSaat: requestDto.localTime,
         HatNo: requestDto.routeNumber,
-        Tarih: new Date(requestDto.date).toISOString(),
-        Saat: new Date(requestDto.time).toISOString(),
+        Tarih: requestDto.date,
+        Saat: requestDto.time,
       },
     };
     const xml = builder.buildObject(requestDocument);
@@ -244,7 +248,7 @@ export class BiletAllService {
       tripTrackingNumber: busSearchDto.tripTrackingNumber,
       ip: busSearchDto.ip,
     });
-    const rules = [];
+    const rules: BiletallPaymentRules[] = [];
     if (paymentRules.prePaymentActive) {
       rules.push('VIRTUAL_POS');
     } else {

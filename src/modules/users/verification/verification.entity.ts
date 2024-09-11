@@ -6,13 +6,13 @@ import { User } from '../user.entity';
 
 @Entity('verifications')
 export class Verification extends AbstractEntity<Verification> {
-  @Column({ name: 'verification_code' })
+  @Column()
   verificationCode: number;
 
-  @Column({ name: 'is_used', default: false })
+  @Column({ default: false })
   isUsed: boolean;
 
-  @Column({ name: 'is_expired', default: false })
+  @Column({ default: false })
   isExpired: boolean;
 
   @OneToOne(() => User, (user) => user.verification)

@@ -1,8 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { DataSourceOptions } from 'typeorm';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 import { PostgreSQLConfigService } from '@app/configs/database/postgresql';
-import { DataSourceOptions } from 'typeorm';
+
+// entities
+import { User } from '@app/modules/users/user.entity';
+import { PanelUser } from '@app/modules/panel-users/panel-user.entity';
+import { Verification } from '@app/modules/users/verification/verification.entity';
+import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
+import { Airport } from '@app/modules/tickets/plane/entities/airport.entity';
 
 @Injectable()
 export class PostgreSQLProviderService implements TypeOrmOptionsFactory {
@@ -21,7 +29,8 @@ export class PostgreSQLProviderService implements TypeOrmOptionsFactory {
       logging: this.postgreSQLConfigService.logging,
       migrations: [`${__dirname}/../../../database/migrations/*{.ts,.js}`],
       migrationsRun: true,
-      entities: [`${__dirname}/../../../modules/**/*.entity{.ts,.js}`],
+      entities: [User, PanelUser, Verification, BusTerminal, Airport],
+      namingStrategy: new SnakeNamingStrategy(),
     };
   }
 }

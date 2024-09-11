@@ -9,7 +9,8 @@ COPY package.json ./
 COPY tsconfig.json ./
 COPY pnpm-lock.yaml ./
 COPY nest-cli.json ./
-COPY ormconfig.ts ./ormconfig.ts
+COPY global.d.ts ./
+COPY ormconfig.ts ./
 
 RUN npm install -g pnpm
 RUN pnpm install
@@ -26,7 +27,8 @@ ENV TZ="Asia/Istanbul"
 COPY --from=development /app/dist ./dist
 COPY package.json ./
 COPY pnpm-lock.yaml ./
-COPY ormconfig.ts ./ormconfig.ts
+COPY global.d.ts ./
+COPY ormconfig.ts ./
 COPY docker-entrypoint.sh ./
 
 RUN npm install -g pnpm

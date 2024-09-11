@@ -67,10 +67,12 @@ export class AuthService {
       if (!isPasswordValid) {
         throw new HttpException('invalid password  ', HttpStatus.UNAUTHORIZED);
       }
-      delete user.password;
       const { accessToken, refreshToken } = this.generateTokens(user);
+
+      // TODO: this should be done is DTO
+      const { password: _, ...userWithoutPassword } = user;
       return {
-        ...user,
+        ...userWithoutPassword,
         tokens: { accessToken, refreshToken },
       };
     } catch (err: any) {
@@ -83,27 +85,27 @@ export class AuthService {
   }
 
   async panelLogin(LoginUserRequestDto: LoginUserRequest): Promise<any> {
-    const { email, password } = LoginUserRequestDto;
+    const { email, password: loginPassword } = LoginUserRequestDto;
     try {
       const user = await this.panelUsersService.findPanelUserByEmail(email);
       if (!user) {
         throw new HttpException('user not found', HttpStatus.NOT_FOUND);
       }
       const isPasswordValid = await this.passwordService.validatePassword(
-        password,
+        loginPassword,
         user.password,
       );
       if (!isPasswordValid) {
         throw new HttpException('Unauthorized access', HttpStatus.UNAUTHORIZED);
       }
-      delete user.password;
       const { accessToken, refreshToken } = this.generateTokens(user);
-      const responseObj = {
-        ...user,
+
+      // TODO: this should be done is DTO
+      const { password: _, ...userWithoutPassword } = user;
+      return {
+        ...userWithoutPassword,
         tokens: { accessToken, refreshToken },
       };
-
-      return Promise.resolve(responseObj);
     } catch (err: any) {
       Logger.error(err);
       throw new HttpException(
@@ -122,7 +124,9 @@ export class AuthService {
       throw new Error(err?.message);
     }
   }
-  generateTokens(user: User | PanelUser) {
+
+  // TODO: handling this in DTOs should take us removing this
+  generateTokens(user: Omit<User, 'password'> | Omit<PanelUser, 'password'>) {
     const accessTokenPayload = {
       sub: user.id,
       email: user.email,
@@ -191,11 +195,12 @@ export class AuthService {
         }),
       );
 
-      delete user.password;
-
       const { accessToken, refreshToken } = this.generateTokens(user);
+
+      // TODO: this should be done is DTO
+      const { password: _, ...userWithoutPassword } = user;
       const responseObj = {
-        ...user,
+        ...userWithoutPassword,
         tokens: { accessToken, refreshToken },
       };
 
@@ -333,7 +338,7 @@ export class AuthService {
   }
 
   async sendEmail(type: EmailType, options: any) {
-    let html: string;
+    let html: string | undefined = undefined;
     const { receiver, subject, htmlHeader, htmlBody, htmlButton, htmlLink } =
       options;
 

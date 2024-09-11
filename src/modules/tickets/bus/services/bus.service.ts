@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { BusTerminalsRepository } from '../repositories/bus-terminals.repository';
-import { BusTerminal } from '../models/bus-terminal.entity';
+import { BusTerminalRepository } from '../repositories/bus-terminal.repository';
+import { BusTerminal } from '../entities/bus-terminal.entity';
 
 @Injectable()
 export class BusService {
-  constructor(
-    private readonly busTerminalsRepostiory: BusTerminalsRepository,
-  ) {}
+  constructor(private readonly busTerminalRepostiory: BusTerminalRepository) {}
 
   public async getBusTerminalsByName(
     searchTerm: string,
@@ -17,7 +15,7 @@ export class BusService {
       .map((term) => `${term}:*`)
       .join(' & ');
 
-    return this.busTerminalsRepostiory
+    return this.busTerminalRepostiory
       .createQueryBuilder('bus_terminals')
       .where("bus_terminals.name_text @@ to_tsquery('simple', :name)")
       .andWhere('bus_terminals.appear_in_search = true')
