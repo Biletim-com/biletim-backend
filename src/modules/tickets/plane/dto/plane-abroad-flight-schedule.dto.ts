@@ -6,16 +6,33 @@ import {
   AbroadFlightSegment,
 } from '../services/biletall/types/biletall-plane-abroad-flight-schedule.type';
 import { Transform } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PlaneAbroadFlightScheduleRequestDto extends PlaneDomesticFlightScheduleRequestDto {
+  @ApiProperty({
+    description: 'Indicates whether to split the search results.',
+    example: false,
+    required: false,
+  })
   @IsOptional()
   @IsBoolean()
   splitSearch?: boolean;
 
+  @ApiProperty({
+    description:
+      'Indicates whether to split the search results for round trips.',
+    example: false,
+    required: false,
+  })
   @IsBoolean()
   @IsOptional()
   splitSearchRoundTripGroup?: boolean;
 
+  @ApiProperty({
+    description: `The class type of the flight. If no class type is specified, all class types will be included in the search results.`,
+    example: 'ECONOMY',
+    required: false,
+  })
   @IsOptional()
   @IsEnum(FlightClassType)
   @Transform(({ value }) => {

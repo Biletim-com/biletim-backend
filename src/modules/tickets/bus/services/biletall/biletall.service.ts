@@ -1,7 +1,4 @@
 // src/biletall/biletall.service.ts
-import * as path from 'path';
-import * as fs from 'fs';
-import * as util from 'util';
 import * as xml2js from 'xml2js';
 import axios from 'axios';
 import * as dayjs from 'dayjs';
@@ -283,7 +280,7 @@ export class BiletAllService {
     const passengerCount = passengers.length.toString();
 
     await this.transactionRules({
-      companyNo,
+      companyNo: companyNo ?? '0',
       departurePointId,
       arrivalPointId,
       date,

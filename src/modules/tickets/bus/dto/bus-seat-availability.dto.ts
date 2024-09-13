@@ -9,14 +9,26 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
+import { ApiProperty } from '@nestjs/swagger';
 
 class BusSeatDto {
+  @ApiProperty({
+    description: 'Seat number',
+    example: '13',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   seatNumber: string;
 
   // male - 2
   // female - 1
+  @ApiProperty({
+    description: 'Passenger gender',
+    example: 'male',
+    required: true,
+    enum: Gender,
+  })
   @IsEnum(Gender)
   @IsNotEmpty()
   @Transform(({ value }) => {
@@ -35,6 +47,11 @@ export class BusSeatAvailabilityRequestDto extends OmitType(
   BusSearchRequestDto,
   ['passengerCount'],
 ) {
+  @ApiProperty({
+    description: 'List of seat information',
+    type: [BusSeatDto],
+    required: true,
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => BusSeatDto)

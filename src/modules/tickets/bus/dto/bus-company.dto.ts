@@ -1,7 +1,13 @@
 import { IsOptional, IsString } from 'class-validator';
 import { BiletAllCompany } from '../services/biletall/types/biletall-company.type';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class BusCompanyRequestDto {
+  @ApiProperty({
+    description: 'Company number (Optional)',
+    example: '0',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   companyNo?: string;

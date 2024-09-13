@@ -20,23 +20,44 @@ import {
   OptionFareDetail,
   SegmentClass,
 } from '../services/biletall/types/biletall-plane-domistic-flight-schedule.type';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PlaneDomesticFlightScheduleRequestDto {
+  @ApiProperty({
+    description: 'Three-letter code of the departure airport',
+    example: 'ESB',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   @Length(3, 3)
   departureAirport: string;
 
+  @ApiProperty({
+    description: 'Three-letter code of the arrival airport',
+    example: 'KCM',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   @Length(3, 3)
   arrivalAirport: string;
 
+  @ApiProperty({
+    description: 'Departure date in yyyy-MM-dd format',
+    example: '2024-09-15',
+    required: true,
+  })
   @IsNotEmpty()
   @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
   @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
   departureDate: DateISODate;
 
+  @ApiProperty({
+    description: 'Return date in yyyy-MM-dd format',
+    example: '2024-09-20',
+    required: false,
+  })
   @IsOptional()
   @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
   @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
@@ -49,6 +70,12 @@ export class PlaneDomesticFlightScheduleRequestDto {
   @IsEnum(PlaneTravelType)
   travelType: PlaneTravelType;
 
+  @ApiProperty({
+    description: 'Operation type, either SALE or RESERVATION',
+    enum: PlaneTicketOperationType,
+    example: 'SALE',
+    required: true,
+  })
   @IsNotEmpty()
   @IsEnum(PlaneTicketOperationType)
   @Transform(({ value }) => {
@@ -61,21 +88,41 @@ export class PlaneDomesticFlightScheduleRequestDto {
   })
   operationType: PlaneTicketOperationType;
 
+  @ApiProperty({
+    description: 'Number of adults',
+    example: 1,
+    required: true,
+  })
   @IsNotEmpty()
   @IsInt()
   @Min(0)
   adultCount: number;
 
+  @ApiProperty({
+    description: 'Number of children',
+    example: 0,
+    required: false,
+  })
   @IsOptional()
   @IsInt()
   @Min(0)
   childCount = 0;
 
+  @ApiProperty({
+    description: 'Number of babies',
+    example: 0,
+    required: false,
+  })
   @IsOptional()
   @IsInt()
   @Min(0)
   babyCount = 0;
 
+  @ApiProperty({
+    description: 'IP address of the requester',
+    example: '127.0.0.1',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   ip: string;
