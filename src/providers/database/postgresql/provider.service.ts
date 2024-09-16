@@ -5,13 +5,6 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 import { PostgreSQLConfigService } from '@app/configs/database/postgresql';
 
-// entities
-import { User } from '@app/modules/users/user.entity';
-import { PanelUser } from '@app/modules/panel-users/panel-user.entity';
-import { Verification } from '@app/modules/users/verification/verification.entity';
-import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
-import { Airport } from '@app/modules/tickets/plane/entities/airport.entity';
-
 @Injectable()
 export class PostgreSQLProviderService implements TypeOrmOptionsFactory {
   constructor(private postgreSQLConfigService: PostgreSQLConfigService) {}
@@ -28,8 +21,8 @@ export class PostgreSQLProviderService implements TypeOrmOptionsFactory {
       synchronize: false,
       logging: this.postgreSQLConfigService.logging,
       migrations: [`${__dirname}/../../../database/migrations/*{.ts,.js}`],
-      migrationsRun: true,
-      entities: [User, PanelUser, Verification, BusTerminal, Airport],
+      migrationsRun: false,
+      entities: [`${__dirname}/../../../modules/**/*.entity{.ts,.js}`],
       namingStrategy: new SnakeNamingStrategy(),
     };
   }

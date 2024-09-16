@@ -1,11 +1,11 @@
-version: '3.8'
 services:
   biletim-api:
     build:
       context: .
       dockerfile: Dockerfile
       target: development
-    command: yarn start:dev
+    command: >
+      sh -c "pnpm migration:run && pnpm start:dev"
     ports:
       - ${APP_PORT}:${APP_PORT}
     depends_on:
