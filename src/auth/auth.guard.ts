@@ -1,20 +1,25 @@
 import {
+  Injectable,
   CanActivate,
   ExecutionContext,
   HttpException,
   HttpStatus,
-  Injectable,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 import { AuthService } from './auth.service';
+import { Reflector } from '@nestjs/core';
+import { jwtDecode } from 'jwt-decode';
+
+import { PanelUsersService } from '@app/modules/panel-users/panel-users.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
+    private readonly panelUsersService: PanelUsersService,
     private readonly authService: AuthService,
     private readonly reflector: Reflector,
   ) {}
-  async canActivate(context: ExecutionContext): Promise<any> {
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.get<boolean>(
       'isPublic',
       context.getHandler(),
@@ -40,7 +45,68 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      request['user'] = await this.authService.authenticate(parts[1]);
+      const token = parts[1];
+      const decodedToken: any = jwtDecode(token);
+      const userAgent = request.headers['user-agent'];
+      console.log(`User-Agent: ${userAgent}`);
+
+      let newAccessToken: any;
+      let findedUserWithRefreshToken: any;
+      if (Date.now() >= decodedToken.exp * 1000) {
+        const refreshToken = request.headers['refresh-token'];
+
+        if (!refreshToken) {
+          throw new HttpException(
+            'Authorization: Token is expired and no refresh token available',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+
+        const decodedRefreshToken: any = jwtDecode(refreshToken);
+        const isRefreshTokenExpired =
+          Date.now() >= decodedRefreshToken.exp * 1000;
+
+        if (isRefreshTokenExpired) {
+          throw new HttpException(
+            'Authorization: Refresh token is expired',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+
+        findedUserWithRefreshToken =
+          await this.authService.findAndValidateUserByRefreshToken(
+            refreshToken,
+          );
+
+        if (!findedUserWithRefreshToken) {
+          throw new HttpException(
+            'Authorization: Refresh token is invalid or expired',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+
+        newAccessToken = this.authService.createAccessToken(
+          findedUserWithRefreshToken,
+        );
+        request.headers.authorization = `Bearer ${newAccessToken}`;
+      }
+      const user = findedUserWithRefreshToken
+        ? findedUserWithRefreshToken
+        : await this.authService.authenticate(token);
+
+      request['user'] = user;
+      const isAdmin = await this.panelUsersService.isPanelUser(user.sub);
+      const requireAdmin = this.reflector.get<boolean>(
+        'requireAdmin',
+        context.getHandler(),
+      );
+      if (requireAdmin && !isAdmin) {
+        throw new HttpException(
+          ' You do not have permission to access this resource',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
       return true;
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.UNAUTHORIZED);

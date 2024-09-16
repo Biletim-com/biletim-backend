@@ -1,25 +1,37 @@
-# Building layer
-FROM node:lts-alpine as development
+# Development
+FROM node:18-slim AS development
 
 WORKDIR /app
 
-COPY . . 
+COPY ./src ./src
+COPY ./test ./test
+COPY package.json ./
+COPY tsconfig.json ./
+COPY pnpm-lock.yaml ./
+COPY nest-cli.json ./
+COPY global.d.ts ./
+COPY ormconfig.ts ./
 
-RUN yarn install \
- && yarn cache clean
- 
-RUN yarn run build
+RUN npm install -g pnpm
+RUN pnpm install
+RUN pnpm run build
 
-RUN npx prisma generate
-
-FROM node:lts-alpine as production
+# Production
+FROM node:18-slim AS production
 
 WORKDIR /app
 
-COPY package*.json ./
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+ENV TZ="Asia/Istanbul"
 
-COPY --from=development /app/dist/ ./dist/
+COPY --from=development /app/dist ./dist
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+COPY global.d.ts ./
+COPY ormconfig.ts ./
+COPY docker-entrypoint.sh ./
 
-EXPOSE 8080/tcp
+RUN npm install -g pnpm
+RUN pnpm install --prod
 
-CMD [ "yarn", "start:migrate:prod" ]
+CMD ["/bin/bash", "/app/docker-entrypoint.sh"]

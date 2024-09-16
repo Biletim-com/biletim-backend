@@ -1,38 +1,30 @@
 import { ValidationPipe } from '@nestjs/common';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { PrismaClientExceptionFilter, PrismaService } from 'nestjs-prisma';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
-import multipart from '@fastify/multipart';
+import { Logger } from 'nestjs-pino';
+
 import { AppModule } from './app.module';
+import { AppConfigService } from './configs/app';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-  );
-  app.useGlobalPipes(new ValidationPipe());
-  const prismaService: PrismaService = app.get(PrismaService);
-  prismaService.enableShutdownHooks(app);
+  const app = await NestFactory.create(AppModule);
 
-  const { httpAdapter } = app.get(HttpAdapterHost);
+  const appConfigService = app.get<AppConfigService>(AppConfigService);
 
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
-  await app.register(multipart);
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+  app.useLogger(app.get<Logger>(Logger));
 
   const docOptions = new DocumentBuilder()
     .setTitle('Biletim API')
     .setDescription('API Documentation')
     .setVersion('v1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, docOptions);
   SwaggerModule.setup('api', app, document);
 
   app.enableCors();
 
-  await app.listen(process.env.APP_PORT || 8080, '0.0.0.0');
+  await app.listen(appConfigService.port, '0.0.0.0');
 }
 bootstrap();
