@@ -20,7 +20,5 @@ export default (async () => {
     .get(PostgreSQLProviderService)
     .createTypeOrmOptions();
 
-  console.log({ postgresDataSource });
-
   return new DataSource(postgresDataSource);
 })();
