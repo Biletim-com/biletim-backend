@@ -2,6 +2,7 @@ import {
   ArrayMinSize,
   IsArray,
   IsDateString,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsPositive,
@@ -35,18 +36,18 @@ export class BusPurchaseDto {
     example: '84',
     required: true,
   })
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
-  departurePointId: string;
+  departurePointId: number;
 
   @ApiProperty({
     description: 'Arrival point ID for the bus trip.',
     example: '738',
     required: true,
   })
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
-  arrivalPointId: string;
+  arrivalPointId: number;
 
   @ApiProperty({
     description: 'Date of the trip in the format yyyy-MM-dd.',
@@ -72,9 +73,9 @@ export class BusPurchaseDto {
     example: '1',
     required: true,
   })
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
-  routeNumber: string;
+  routeNumber: number;
 
   @ApiProperty({
     description: 'Tracking number for the trip.',

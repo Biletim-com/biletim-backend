@@ -129,10 +129,9 @@ export class PullPriceFlightRequestDto {
     example: 1,
     required: false,
   })
-  @IsOptional()
   @IsInt()
   @Min(0)
-  adultCount?: number;
+  adultCount: number;
 
   @ApiProperty({
     description: 'The number of childrens.',

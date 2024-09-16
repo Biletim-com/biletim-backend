@@ -281,11 +281,11 @@ export class BiletAllService {
 
     await this.transactionRules({
       companyNo: companyNo ?? '0',
-      departurePointId,
-      arrivalPointId,
+      departurePointId: String(departurePointId),
+      arrivalPointId: String(arrivalPointId),
       date,
       time,
-      routeNumber,
+      routeNumber: String(routeNumber),
       operationType: 0,
       passengerCount,
       tripTrackingNumber,

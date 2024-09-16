@@ -59,10 +59,10 @@ export class PlanePassengerInfoDto {
   gender: Gender;
 
   @ApiProperty({
-    description:
-      'The type of the passenger. Valid values include "adult", "child", "baby", "senior", "student", "disabled", "soldier", and "youth".',
+    description: 'The type of the passenger.',
 
-    example: 'ADULT',
+    example:
+      'Valid values include "ADULT", "CHILD", "BABY", "SENIOR", "STUDENT", "DISABLED", "SOLDIER", and "YOUTH".',
     required: true,
   })
   @IsEnum(PassengerType)
