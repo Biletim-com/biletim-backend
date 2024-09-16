@@ -1,8 +1,8 @@
+import { IsInEnumKeys } from '@app/common/decorators/is-in-enum-keys.decorator';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { Transform } from 'class-transformer';
 import {
   IsBoolean,
-  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -56,15 +56,9 @@ export class BusPassengerInfoDto {
     return `${this.firstName}${this.lastName}`;
   }
 
-  @IsEnum(Gender)
   @IsNotEmpty()
-  @Transform(({ value }) => {
-    const genderStr = value.toString().toLowerCase().trim();
-
-    if (genderStr === 'male') return Gender.MALE;
-    if (genderStr === 'female') return Gender.FEMALE;
-
-    return undefined;
+  @IsInEnumKeys(Gender, {
+    message: 'Gender must be a valid key (FEMALE or MALE)',
   })
   gender: Gender;
 

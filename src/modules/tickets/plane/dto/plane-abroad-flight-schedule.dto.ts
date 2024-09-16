@@ -1,11 +1,11 @@
 import { FlightClassType } from '@app/common/enums/plane-flight-class-type.enum';
-import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
+import { IsBoolean, IsOptional } from 'class-validator';
 import { PlaneDomesticFlightScheduleRequestDto } from './plane-domestic-flight-schedule.dto';
 import {
   AbroadFlightOption,
   AbroadFlightSegment,
 } from '../services/biletall/types/biletall-plane-abroad-flight-schedule.type';
-import { Transform } from 'class-transformer';
+import { IsInEnumKeys } from '@app/common/decorators/is-in-enum-keys.decorator';
 
 export class PlaneAbroadFlightScheduleRequestDto extends PlaneDomesticFlightScheduleRequestDto {
   @IsOptional()
@@ -17,14 +17,13 @@ export class PlaneAbroadFlightScheduleRequestDto extends PlaneDomesticFlightSche
   splitSearchRoundTripGroup?: boolean;
 
   @IsOptional()
-  @IsEnum(FlightClassType)
-  @Transform(({ value }) => {
-    const classTypeStr = value.toString().toLowerCase().trim();
-    if (classTypeStr === 'economy') return FlightClassType.ECONOMY;
-    if (classTypeStr === 'business') return FlightClassType.BUSINESS;
-
-    return undefined;
-  })
+  @IsInEnumKeys(
+    FlightClassType,
+    {
+      message: 'Flight class must be a valid enum key (ECONOMY, BUSINESS)',
+    },
+    true,
+  )
   classType?: FlightClassType;
 }
 

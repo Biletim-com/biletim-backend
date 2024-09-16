@@ -1,8 +1,7 @@
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { FlightSegmentDto } from './plane-pull-price-flight.dto';
 import {
   IsArray,
-  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -13,18 +12,14 @@ import {
 import { PlanePassengerInfoDto } from './plane-ticket-reservation.dto';
 import { PlaneInvoiceType } from '@app/common/enums/plane-invoice-type.enum';
 import { FlightTicketPurchaseResult } from '../services/biletall/types/biletall-plane-ticket-purchase.type';
+import { IsInEnumKeys } from '@app/common/decorators/is-in-enum-keys.decorator';
 
 export class InvoiceDto {
-  @IsEnum(PlaneInvoiceType)
-  @IsNotEmpty()
-  @Transform(({ value }) => {
-    const invoiceTypeStr = value.toString().toLowerCase().trim();
-    if (invoiceTypeStr === 'people') return PlaneInvoiceType.PEOPLE;
-    if (invoiceTypeStr === 'company') return PlaneInvoiceType.COMPANY;
-
-    return undefined;
+  @IsInEnumKeys(PlaneInvoiceType, {
+    message: 'Invoice type must be valid key (PEOPLE or COMPANY)',
   })
-  invoiceType?: PlaneInvoiceType;
+  @IsNotEmpty()
+  invoiceType: PlaneInvoiceType;
 
   @IsOptional()
   @IsString()
