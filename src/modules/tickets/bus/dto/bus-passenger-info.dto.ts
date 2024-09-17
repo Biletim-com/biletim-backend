@@ -1,5 +1,6 @@
 import { IsInEnumKeys } from '@app/common/decorators';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsBoolean,
@@ -33,15 +34,30 @@ export const turkishToEnglish = (text: string): string => {
 };
 
 export class BusPassengerInfoDto {
+  @ApiProperty({
+    description: 'Seat number assigned to the passenger.',
+    example: '2',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   seatNo: number;
 
+  @ApiProperty({
+    description: 'First name of the passenger.',
+    example: 'John',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => turkishToEnglish(value))
   firstName: string;
 
+  @ApiProperty({
+    description: 'Last name of the passenger.',
+    example: 'Doe',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => turkishToEnglish(value))
@@ -56,16 +72,34 @@ export class BusPassengerInfoDto {
     return `${this.firstName}${this.lastName}`;
   }
 
+  @ApiProperty({
+    description: 'Gender of the passenger: male or female.',
+    example: 'male',
+    enum: Gender,
+    required: true,
+  })
+  @IsEnum(Gender)
   @IsNotEmpty()
   @IsInEnumKeys(Gender, {
     message: 'Gender must be a valid key (FEMALE or MALE)',
   })
   gender: Gender;
 
+  @ApiProperty({
+    description: 'Indicates whether the passenger is a Turkish citizen.',
+    example: true,
+    required: false,
+  })
   @IsBoolean()
   @IsOptional()
   isTurkishCitizen?: boolean;
 
+  @ApiProperty({
+    description:
+      'TR ID Number of the passenger, mandatory for Turkish citizens.',
+    example: '12345678901',
+    required: false,
+  })
   @ValidateIf((o) => o.isTurkishCitizen === true)
   @IsNotEmpty({
     message: 'TR ID Number is mandatory for Turkish citizens',
@@ -76,26 +110,53 @@ export class BusPassengerInfoDto {
   })
   turkishIdNumber?: string;
 
+  @ApiProperty({
+    description:
+      'Passport country code, mandatory if the passenger is not a Turkish citizen.',
+    example: 'US',
+    required: false,
+  })
   @ValidateIf((o) => o.isTurkishCitizen === false)
   @IsOptional()
   @IsString()
   passportCountryCode?: string;
 
+  @ApiProperty({
+    description:
+      'Passport number, mandatory if the passenger is not a Turkish citizen.',
+    example: 'A12345678',
+    required: false,
+  })
   @ValidateIf((o) => o.isTurkishCitizen === false)
   @IsOptional()
   @IsString()
   passportNumber?: string;
 
+  @ApiProperty({
+    description: 'Boarding location of the passenger.',
+    example: 'Istanbul Terminal',
+    required: false,
+  })
   @IsString()
   @MaxLength(15)
   @IsOptional()
   boardingLocation?: string;
 
+  @ApiProperty({
+    description: 'Service location for departure.',
+    example: 'Service Point A',
+    required: false,
+  })
   @IsString()
   @MaxLength(15)
   @IsOptional()
   departureServiceLocation?: string;
 
+  @ApiProperty({
+    description: 'Service location for arrival.',
+    example: 'Service Point B',
+    required: false,
+  })
   @IsString()
   @MaxLength(15)
   @IsOptional()

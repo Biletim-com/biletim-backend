@@ -22,11 +22,14 @@ import {
   FlightTicketPurchaseRequestDto,
 } from './dto/plane-ticket-purchase.dto';
 import { FlightConvertReservationToSaleRequestDto } from './dto/plane-convert-reservation-to-sale.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Plane')
 @Controller('plane')
 export class PlaneController {
   constructor(private readonly biletallPlaneService: BiletallPlaneService) {}
 
+  @ApiOperation({ summary: 'Search Domestic Flight Schedule' })
   @Post('domestic-flight-schedule')
   async domesticFlightScheduleSearch(
     @Body() requestDto: PlaneDomesticFlightScheduleRequestDto,
@@ -34,6 +37,7 @@ export class PlaneController {
     return this.biletallPlaneService.domesticFlightScheduleSearch(requestDto);
   }
 
+  @ApiOperation({ summary: 'Search Abroad Flight Schedule' })
   @Post('abroad-flight-schedule')
   async abroadFlightScheduleSearch(
     @Body() requestDto: PlaneAbroadFlightScheduleRequestDto,
@@ -41,6 +45,7 @@ export class PlaneController {
     return this.biletallPlaneService.abroadFlightScheduleSearch(requestDto);
   }
 
+  @ApiOperation({ summary: 'Pull Price Of Flight' })
   @Post('pull-price')
   async pullPriceOfFlight(
     @Body() requestDto: PullPriceFlightRequestDto,
@@ -48,11 +53,13 @@ export class PlaneController {
     return this.biletallPlaneService.pullPriceOfFlight(requestDto);
   }
 
+  @ApiOperation({ summary: 'Get Plane Passenger Age Rules' })
   @Get('passenger-age-rules')
   async planePassengerAgeRules(): Promise<PlanePassengerAgeRuleDto[]> {
     return this.biletallPlaneService.planePassengerAgeRules();
   }
 
+  @ApiOperation({ summary: 'Reservation Flight Ticket' })
   @Post('ticket-reservation')
   async planeTicketReservation(
     @Body() requestDto: FlightReservationRequestDto,
@@ -60,6 +67,7 @@ export class PlaneController {
     return this.biletallPlaneService.planeTicketReservation(requestDto);
   }
 
+  @ApiOperation({ summary: 'Purchase Flight Ticket' })
   @Post('ticket-purchase')
   async planeTicketPurchase(
     @Body() requestDto: FlightTicketPurchaseRequestDto,
@@ -67,6 +75,7 @@ export class PlaneController {
     return this.biletallPlaneService.planeTicketPurchase(requestDto);
   }
 
+  @ApiOperation({ summary: 'Convert Reservation To Sale' })
   @Post('convert-reservation-to-sale')
   async planeConvertReservationToSale(
     @Body() requestDto: FlightConvertReservationToSaleRequestDto,

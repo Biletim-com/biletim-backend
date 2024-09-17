@@ -19,11 +19,21 @@ import { PassengerType } from '@app/common/enums/passanger-type.enum';
 import { IsInEnumKeys } from '@app/common/decorators';
 
 export class PlanePassengerInfoDto {
+  @ApiProperty({
+    description: 'The first name of the passenger.',
+    example: 'John',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => turkishToEnglish(value))
   firstName: string;
 
+  @ApiProperty({
+    description: 'The last name of the passenger.',
+    example: 'Doe',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => turkishToEnglish(value))
@@ -35,6 +45,14 @@ export class PlanePassengerInfoDto {
   @IsNotEmpty()
   gender: Gender;
 
+  @ApiProperty({
+    description: 'The type of the passenger.',
+
+    example:
+      'Valid values include "ADULT", "CHILD", "BABY", "SENIOR", "STUDENT", "DISABLED", "SOLDIER", and "YOUTH".',
+    required: true,
+  })
+  @IsEnum(PassengerType)
   @IsNotEmpty()
   @IsInEnumKeys(PassengerType, {
     message:
@@ -42,43 +60,90 @@ export class PlanePassengerInfoDto {
   })
   passengerType: PassengerType;
 
+  @ApiProperty({
+    description: 'The birth date of the passenger in yyyy-MM-dd format.',
+    example: '2000-01-01',
+    required: true,
+  })
   @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
   @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
   birthday?: DateISODate;
 
+  @ApiProperty({
+    description: 'The passport number of the passenger.',
+    example: 'A12345678',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   passportNumber?: string;
 
+  @ApiProperty({
+    description: 'The expiry date of the passport in yyyy-MM-dd format.',
+    example: '2025-12-31',
+    required: false,
+  })
   @IsOptional()
   @Matches(/^\d{4}-\d{2}-\d{2}$/)
   passportExpiryDate?: string;
 
+  @ApiProperty({
+    description:
+      'The Turkish ID number of the passenger. Must be 11 characters length.',
+    example: '12345678901',
+    required: false,
+  })
   @IsString()
   @Length(11, 11, {
     message: 'TR ID Number must be 11 characters length',
   })
   turkishIdNumber?: string;
 
+  @ApiProperty({
+    description: 'The net price of the ticket for the passenger.',
+    example: '100.00',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   netPrice: string;
 
+  @ApiProperty({
+    description: 'The tax amount applicable to the passenger’s ticket.',
+    example: '10.00',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   tax: string;
 
+  @ApiProperty({
+    description: 'The service fee for the passenger’s ticket.',
+    example: '5.00',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   serviceFee: string;
 }
 
 export class FlightReservationRequestDto {
+  @ApiProperty({
+    description: 'The company number associated with the reservation.',
+    example: '1100',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   companyNo: string;
 
+  @ApiProperty({
+    description:
+      'The phone number of the person making the reservation. Must be 10 characters length.',
+    example: '1234567890',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   @Length(10, 10, {
@@ -86,6 +151,12 @@ export class FlightReservationRequestDto {
   })
   phoneNumber: string;
 
+  @ApiProperty({
+    description:
+      'The mobile phone number of the person making the reservation. Must be 10 characters length.',
+    example: '0987654321',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   @Length(10, 10, {
@@ -93,18 +164,31 @@ export class FlightReservationRequestDto {
   })
   mobilePhoneNumber: string;
 
+  @ApiProperty({
+    description: 'The email address of the person making the reservation.',
+    example: 'emre.yilmaz@westerops.com',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   @Matches(
     /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/,
   )
-  email?: string;
+  email: string;
 
+  @ApiProperty({
+    description: 'The list of flight segments for the reservation.',
+    type: [FlightSegmentDto],
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => FlightSegmentDto)
   segments: FlightSegmentDto[];
 
+  @ApiProperty({
+    description: 'The list of passengers for the reservation.',
+    type: [PlanePassengerInfoDto],
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PlanePassengerInfoDto)

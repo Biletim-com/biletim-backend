@@ -15,6 +15,7 @@ import { DateISODate } from '@app/common/types';
 
 // dto
 import { BusFeaturesDto } from './bus-search.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
 // request to be sent to get the available dates
 export class BusScheduleRequestDto {
@@ -22,14 +23,29 @@ export class BusScheduleRequestDto {
   @IsOptional()
   companyNo?: string;
 
+  @ApiProperty({
+    description: 'The departure point ID, which is a required field.',
+    example: '84',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
-  departurePointId: number;
+  departurePointId: string;
 
+  @ApiProperty({
+    description: 'The arrival point ID, which is a required field.',
+    example: '738',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
-  arrivalPointId: number;
+  arrivalPointId: string;
 
+  @ApiProperty({
+    description: 'The travel date in the format "yyyy-MM-dd".',
+    example: '2024-10-15',
+    required: true,
+  })
   @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
   @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
@@ -43,11 +59,22 @@ export class BusScheduleRequestDto {
   @IsOptional()
   operationType?: number;
 
+  @ApiProperty({
+    description:
+      'The number of passengers, must be at least 1 character long if provided.',
+    example: '1',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   @MinLength(1)
   passengerCount?: string;
 
+  @ApiProperty({
+    description: 'The IP address of the user making the request.',
+    example: '127.0.0.1',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   ip: string;

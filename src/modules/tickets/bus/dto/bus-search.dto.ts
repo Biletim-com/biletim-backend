@@ -13,11 +13,27 @@ import {
 } from '../services/biletall/types/biletall-bus-search.type';
 import { BusFeature } from '../services/biletall/types/biletall-bus-feature.type';
 import { DateTime } from '@app/common/types/datetime.type';
+import { ApiProperty } from '@nestjs/swagger';
 
 // plate, driver...
 export class BusSearchRequestDto extends OmitType(BusScheduleRequestDto, [
   'includeIntermediatePoints',
+  'companyNo',
 ]) {
+  @ApiProperty({
+    description: 'Company number',
+    example: '0',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  companyNo: string;
+
+  @ApiProperty({
+    description: 'The travel date and time in the format yyyy-MM-ddTHH:mm:ss.',
+    example: '2024-09-15T12:30:00',
+    required: true,
+  })
   @IsDateString(
     {},
     { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
@@ -25,13 +41,23 @@ export class BusSearchRequestDto extends OmitType(BusScheduleRequestDto, [
   @IsNotEmpty()
   time: DateTime;
 
+  @ApiProperty({
+    description: 'The route number for the bus, required field.',
+    example: '3',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
-  routeNumber: number;
+  routeNumber: string;
 
+  @ApiProperty({
+    description: 'The trip tracking number.',
+    example: '2221',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
-  tripTrackingNumber?: string;
+  tripTrackingNumber: string;
 
   constructor(partial: Partial<BusSearchDto>) {
     super(partial);

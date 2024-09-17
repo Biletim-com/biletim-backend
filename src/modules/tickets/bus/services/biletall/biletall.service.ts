@@ -280,12 +280,12 @@ export class BiletAllService {
     const passengerCount = passengers.length.toString();
 
     await this.transactionRules({
-      companyNo,
-      departurePointId,
-      arrivalPointId,
+      companyNo: companyNo ?? '0',
+      departurePointId: String(departurePointId),
+      arrivalPointId: String(arrivalPointId),
       date,
       time,
-      routeNumber,
+      routeNumber: String(routeNumber),
       operationType: 0,
       passengerCount,
       tripTrackingNumber,

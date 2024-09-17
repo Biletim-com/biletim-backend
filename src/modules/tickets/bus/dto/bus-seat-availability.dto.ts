@@ -2,11 +2,17 @@ import { OmitType } from '@nestjs/swagger/dist/type-helpers/omit-type.helper';
 import { BusSearchRequestDto } from './bus-search.dto';
 import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
+import { ApiProperty } from '@nestjs/swagger';
 
 import { Type } from 'class-transformer';
 import { IsInEnumKeys } from '@app/common/decorators';
 
 class BusSeatDto {
+  @ApiProperty({
+    description: 'Seat number',
+    example: '13',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   seatNumber: string;
@@ -25,6 +31,11 @@ export class BusSeatAvailabilityRequestDto extends OmitType(
   BusSearchRequestDto,
   ['passengerCount'],
 ) {
+  @ApiProperty({
+    description: 'List of seat information',
+    type: [BusSeatDto],
+    required: true,
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => BusSeatDto)
