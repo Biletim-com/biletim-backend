@@ -12,7 +12,7 @@ import {
 import { PlanePassengerInfoDto } from './plane-ticket-reservation.dto';
 import { PlaneInvoiceType } from '@app/common/enums/plane-invoice-type.enum';
 import { FlightTicketPurchaseResult } from '../services/biletall/types/biletall-plane-ticket-purchase.type';
-import { IsInEnumKeys } from '@app/common/decorators/is-in-enum-keys.decorator';
+import { IsInEnumKeys } from '@app/common/decorators';
 
 export class InvoiceDto {
   @IsInEnumKeys(PlaneInvoiceType, {

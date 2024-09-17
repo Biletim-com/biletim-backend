@@ -1,4 +1,4 @@
-import { IsInEnumKeys } from '@app/common/decorators/is-in-enum-keys.decorator';
+import { IsInEnumKeys } from '@app/common/decorators';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { Transform } from 'class-transformer';
 import {

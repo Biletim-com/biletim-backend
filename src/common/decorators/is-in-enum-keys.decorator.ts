@@ -26,9 +26,7 @@ export class IsInEnumKeysConstraint implements ValidatorConstraintInterface {
     const enumKeys = Object.keys(this.enumType).filter((key) =>
       isNaN(Number(key)),
     );
-    const matchedKey = enumKeys.find(
-      (key) => key.toLowerCase() === value.toLowerCase(),
-    );
+    const matchedKey = enumKeys.find((key) => key === value);
 
     if (matchedKey) {
       (args.object as any)[args.property] = this.enumType[matchedKey];

@@ -13,7 +13,7 @@ import { turkishToEnglish } from '../../bus/dto/bus-passenger-info.dto';
 import { Transform, Type } from 'class-transformer';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { InvoiceDto } from './plane-ticket-purchase.dto';
-import { IsInEnumKeys } from '@app/common/decorators/is-in-enum-keys.decorator';
+import { IsInEnumKeys } from '@app/common/decorators';
 
 export class PlanePassengerInfoConvertReservationDto {
   @IsString()

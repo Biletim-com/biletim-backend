@@ -2,8 +2,9 @@ import { OmitType } from '@nestjs/swagger/dist/type-helpers/omit-type.helper';
 import { BusSearchRequestDto } from './bus-search.dto';
 import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
-import { IsInEnumKeys } from '@app/common/decorators/is-in-enum-keys.decorator';
+
 import { Type } from 'class-transformer';
+import { IsInEnumKeys } from '@app/common/decorators';
 
 class BusSeatDto {
   @IsString()

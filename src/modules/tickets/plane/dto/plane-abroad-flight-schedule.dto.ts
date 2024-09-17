@@ -5,7 +5,7 @@ import {
   AbroadFlightOption,
   AbroadFlightSegment,
 } from '../services/biletall/types/biletall-plane-abroad-flight-schedule.type';
-import { IsInEnumKeys } from '@app/common/decorators/is-in-enum-keys.decorator';
+import { IsInEnumKeys } from '@app/common/decorators';
 
 export class PlaneAbroadFlightScheduleRequestDto extends PlaneDomesticFlightScheduleRequestDto {
   @IsOptional()

@@ -16,7 +16,7 @@ import * as dayjs from 'dayjs';
 import { FlightTicketReservationResult } from '../services/biletall/types/biletall-plane-ticket-reservation.type';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { PassengerType } from '@app/common/enums/passanger-type.enum';
-import { IsInEnumKeys } from '@app/common/decorators/is-in-enum-keys.decorator';
+import { IsInEnumKeys } from '@app/common/decorators';
 
 export class PlanePassengerInfoDto {
   @IsString()

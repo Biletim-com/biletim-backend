@@ -20,7 +20,7 @@ import {
   OptionFareDetail,
   SegmentClass,
 } from '../services/biletall/types/biletall-plane-domistic-flight-schedule.type';
-import { IsInEnumKeys } from '@app/common/decorators/is-in-enum-keys.decorator';
+import { IsInEnumKeys } from '@app/common/decorators';
 
 export class PlaneDomesticFlightScheduleRequestDto {
   @IsNotEmpty()
