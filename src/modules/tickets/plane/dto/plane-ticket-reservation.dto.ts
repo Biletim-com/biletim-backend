@@ -17,6 +17,7 @@ import { FlightTicketReservationResult } from '../services/biletall/types/bileta
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { PassengerType } from '@app/common/enums/passanger-type.enum';
 import { IsInEnumKeys } from '@app/common/decorators';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PlanePassengerInfoDto {
   @ApiProperty({
@@ -39,6 +40,11 @@ export class PlanePassengerInfoDto {
   @Transform(({ value }) => turkishToEnglish(value))
   lastName: string;
 
+  @ApiProperty({
+    description: 'Gender of the passenger: MALE or FEMALE.',
+    example: 'MALE',
+    required: true,
+  })
   @IsInEnumKeys(Gender, {
     message: 'Gender must be a valid key (FEMALE or MALE)',
   })
@@ -47,12 +53,10 @@ export class PlanePassengerInfoDto {
 
   @ApiProperty({
     description: 'The type of the passenger.',
-
     example:
       'Valid values include "ADULT", "CHILD", "BABY", "SENIOR", "STUDENT", "DISABLED", "SOLDIER", and "YOUTH".',
     required: true,
   })
-  @IsEnum(PassengerType)
   @IsNotEmpty()
   @IsInEnumKeys(PassengerType, {
     message:

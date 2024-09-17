@@ -6,6 +6,7 @@ import {
   AbroadFlightSegment,
 } from '../services/biletall/types/biletall-plane-abroad-flight-schedule.type';
 import { IsInEnumKeys } from '@app/common/decorators';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PlaneAbroadFlightScheduleRequestDto extends PlaneDomesticFlightScheduleRequestDto {
   @ApiProperty({

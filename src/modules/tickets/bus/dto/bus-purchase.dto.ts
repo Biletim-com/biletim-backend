@@ -12,13 +12,12 @@ import {
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import * as dayjs from 'dayjs';
-
+import { ApiProperty } from '@nestjs/swagger';
 import { BusPassengerInfoDto } from './bus-passenger-info.dto';
 import { BusWebPassengerDto } from './bus-web-passenger.dto';
 
 // types
 import { DateISODate, DateTime } from '@app/common/types';
-import { ApiProperty } from '@nestjs/swagger';
 
 // purchase
 export class BusPurchaseDto {
@@ -33,7 +32,7 @@ export class BusPurchaseDto {
 
   @ApiProperty({
     description: 'Departure point ID for the bus trip.',
-    example: '84',
+    example: 84,
     required: true,
   })
   @IsInt()
@@ -42,7 +41,7 @@ export class BusPurchaseDto {
 
   @ApiProperty({
     description: 'Arrival point ID for the bus trip.',
-    example: '738',
+    example: 738,
     required: true,
   })
   @IsInt()
@@ -70,7 +69,7 @@ export class BusPurchaseDto {
 
   @ApiProperty({
     description: 'Route number for the bus trip.',
-    example: '1',
+    example: 1,
     required: true,
   })
   @IsInt()

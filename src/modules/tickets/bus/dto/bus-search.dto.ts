@@ -3,7 +3,7 @@
 import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 import { BusScheduleRequestDto } from './bus-schedule-list.dto';
 import { OmitType } from '@nestjs/swagger/dist/type-helpers/omit-type.helper';
-
+import { ApiProperty } from '@nestjs/swagger';
 // types
 import {
   BusTrip,
@@ -13,7 +13,6 @@ import {
 } from '../services/biletall/types/biletall-bus-search.type';
 import { BusFeature } from '../services/biletall/types/biletall-bus-feature.type';
 import { DateTime } from '@app/common/types/datetime.type';
-import { ApiProperty } from '@nestjs/swagger';
 
 // plate, driver...
 export class BusSearchRequestDto extends OmitType(BusScheduleRequestDto, [

@@ -14,6 +14,7 @@ import { Transform, Type } from 'class-transformer';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { InvoiceDto } from './plane-ticket-purchase.dto';
 import { IsInEnumKeys } from '@app/common/decorators';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PlanePassengerInfoConvertReservationDto {
   @ApiProperty({
@@ -36,12 +37,24 @@ export class PlanePassengerInfoConvertReservationDto {
   @Transform(({ value }) => turkishToEnglish(value))
   lastName: string;
 
+  @ApiProperty({
+    description: 'Gender of the passenger: MALE or FEMALE.',
+    example: 'MALE',
+    required: true,
+  })
   @IsInEnumKeys(Gender, {
     message: 'Gender must be a valid key (FEMALE or MALE)',
   })
   @IsNotEmpty()
   gender: Gender;
 
+  @ApiProperty({
+    description: 'The type of the passenger.',
+
+    example:
+      'Valid values include "ADULT", "CHILD", "BABY", "SENIOR", "STUDENT", "DISABLED", "SOLDIER", and "YOUTH".',
+    required: true,
+  })
   @IsInEnumKeys(PassengerType, {
     message:
       'Passenger type must be valid key (ADULT , CHILD , BABY , SENIOR , STUDENT , DISABLED , SOLDIER, YOUTH  )',
