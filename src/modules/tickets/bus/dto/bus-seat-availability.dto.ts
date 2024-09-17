@@ -17,8 +17,11 @@ class BusSeatDto {
   @IsNotEmpty()
   seatNumber: string;
 
-  // male - 2
-  // female - 1
+  @ApiProperty({
+    description: 'Gender of the passenger: MALE or FEMALE.',
+    example: 'MALE',
+    required: true,
+  })
   @IsInEnumKeys(Gender, {
     message: 'Gender must be a valid key (FEMALE or MALE)',
   })

@@ -73,12 +73,10 @@ export class BusPassengerInfoDto {
   }
 
   @ApiProperty({
-    description: 'Gender of the passenger: male or female.',
-    example: 'male',
-    enum: Gender,
+    description: 'Gender of the passenger: MALE or FEMALE.',
+    example: 'MALE',
     required: true,
   })
-  @IsEnum(Gender)
   @IsNotEmpty()
   @IsInEnumKeys(Gender, {
     message: 'Gender must be a valid key (FEMALE or MALE)',

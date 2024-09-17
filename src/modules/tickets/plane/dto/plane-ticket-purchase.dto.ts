@@ -13,8 +13,14 @@ import { PlanePassengerInfoDto } from './plane-ticket-reservation.dto';
 import { PlaneInvoiceType } from '@app/common/enums/plane-invoice-type.enum';
 import { FlightTicketPurchaseResult } from '../services/biletall/types/biletall-plane-ticket-purchase.type';
 import { IsInEnumKeys } from '@app/common/decorators';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class InvoiceDto {
+  @ApiProperty({
+    description: 'Invoice type (PEOPLE or COMPANY)',
+    example: 'PEOPLE',
+    required: true,
+  })
   @IsInEnumKeys(PlaneInvoiceType, {
     message: 'Invoice type must be valid key (PEOPLE or COMPANY)',
   })

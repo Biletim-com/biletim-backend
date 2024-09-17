@@ -8,14 +8,13 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import * as dayjs from 'dayjs';
-
+import { ApiProperty } from '@nestjs/swagger';
 // types
 import { BusSchedule } from '../services/biletall/types/biletall-trip-search.type';
 import { DateISODate } from '@app/common/types';
 
 // dto
 import { BusFeaturesDto } from './bus-search.dto';
-import { ApiProperty } from '@nestjs/swagger';
 
 // request to be sent to get the available dates
 export class BusScheduleRequestDto {

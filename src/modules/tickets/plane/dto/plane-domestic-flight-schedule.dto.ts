@@ -21,6 +21,7 @@ import {
   SegmentClass,
 } from '../services/biletall/types/biletall-plane-domistic-flight-schedule.type';
 import { IsInEnumKeys } from '@app/common/decorators';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PlaneDomesticFlightScheduleRequestDto {
   @ApiProperty({
@@ -72,7 +73,6 @@ export class PlaneDomesticFlightScheduleRequestDto {
 
   @ApiProperty({
     description: 'Operation type, either SALE or RESERVATION',
-    enum: PlaneTicketOperationType,
     example: 'SALE',
     required: true,
   })
