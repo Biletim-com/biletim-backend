@@ -5,7 +5,6 @@ import {
   ValidateNested,
   IsArray,
   IsNotEmpty,
-  IsEnum,
   Length,
   IsDateString,
 } from 'class-validator';
@@ -17,7 +16,7 @@ import * as dayjs from 'dayjs';
 import { FlightTicketReservationResult } from '../services/biletall/types/biletall-plane-ticket-reservation.type';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { PassengerType } from '@app/common/enums/passanger-type.enum';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsInEnumKeys } from '@app/common/decorators';
 
 export class PlanePassengerInfoDto {
   @ApiProperty({
@@ -40,22 +39,10 @@ export class PlanePassengerInfoDto {
   @Transform(({ value }) => turkishToEnglish(value))
   lastName: string;
 
-  @ApiProperty({
-    description:
-      'The gender of the passenger. Valid values are "male" or "female".',
-    example: 'MALE',
-    required: true,
+  @IsInEnumKeys(Gender, {
+    message: 'Gender must be a valid key (FEMALE or MALE)',
   })
-  @IsEnum(Gender)
   @IsNotEmpty()
-  @Transform(({ value }) => {
-    const genderStr = value.toString().toLowerCase().trim();
-
-    if (genderStr === 'male') return Gender.MALE;
-    if (genderStr === 'female') return Gender.FEMALE;
-
-    return undefined;
-  })
   gender: Gender;
 
   @ApiProperty({
@@ -67,29 +54,9 @@ export class PlanePassengerInfoDto {
   })
   @IsEnum(PassengerType)
   @IsNotEmpty()
-  @Transform(({ value }) => {
-    const passengerTypeStr = value.toString().toLowerCase().trim();
-
-    switch (passengerTypeStr) {
-      case 'adult':
-        return PassengerType.ADULT;
-      case 'child':
-        return PassengerType.CHILD;
-      case 'baby':
-        return PassengerType.BABY;
-      case 'senior':
-        return PassengerType.SENIOR;
-      case 'student':
-        return PassengerType.STUDENT;
-      case 'disabled':
-        return PassengerType.DISABLED;
-      case 'soldier':
-        return PassengerType.SOLDIER;
-      case 'youth':
-        return PassengerType.YOUTH;
-      default:
-        return undefined;
-    }
+  @IsInEnumKeys(PassengerType, {
+    message:
+      'Passenger type must be valid key (ADULT , CHILD , BABY , SENIOR , STUDENT , DISABLED , SOLDIER, YOUTH  )',
   })
   passengerType: PassengerType;
 

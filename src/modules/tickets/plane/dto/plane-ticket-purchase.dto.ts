@@ -1,8 +1,7 @@
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { FlightSegmentDto } from './plane-pull-price-flight.dto';
 import {
   IsArray,
-  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -13,24 +12,14 @@ import {
 import { PlanePassengerInfoDto } from './plane-ticket-reservation.dto';
 import { PlaneInvoiceType } from '@app/common/enums/plane-invoice-type.enum';
 import { FlightTicketPurchaseResult } from '../services/biletall/types/biletall-plane-ticket-purchase.type';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsInEnumKeys } from '@app/common/decorators';
 
 export class InvoiceDto {
-  @ApiProperty({
-    description: 'The type of invoice, either "people" or "company".',
-    example: 'people',
-    required: true,
+  @IsInEnumKeys(PlaneInvoiceType, {
+    message: 'Invoice type must be valid key (PEOPLE or COMPANY)',
   })
-  @IsEnum(PlaneInvoiceType)
   @IsNotEmpty()
-  @Transform(({ value }) => {
-    const invoiceTypeStr = value.toString().toLowerCase().trim();
-    if (invoiceTypeStr === 'people') return PlaneInvoiceType.PEOPLE;
-    if (invoiceTypeStr === 'company') return PlaneInvoiceType.COMPANY;
-
-    return undefined;
-  })
-  invoiceType?: PlaneInvoiceType;
+  invoiceType: PlaneInvoiceType;
 
   @ApiProperty({
     description:

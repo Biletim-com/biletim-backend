@@ -1,9 +1,9 @@
+import { IsInEnumKeys } from '@app/common/decorators';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsBoolean,
-  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -80,13 +80,8 @@ export class BusPassengerInfoDto {
   })
   @IsEnum(Gender)
   @IsNotEmpty()
-  @Transform(({ value }) => {
-    const genderStr = value.toString().toLowerCase().trim();
-
-    if (genderStr === 'male') return Gender.MALE;
-    if (genderStr === 'female') return Gender.FEMALE;
-
-    return undefined;
+  @IsInEnumKeys(Gender, {
+    message: 'Gender must be a valid key (FEMALE or MALE)',
   })
   gender: Gender;
 

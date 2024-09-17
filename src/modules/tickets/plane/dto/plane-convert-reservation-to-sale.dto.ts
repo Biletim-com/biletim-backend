@@ -1,6 +1,5 @@
 import {
   IsArray,
-  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -14,7 +13,7 @@ import { turkishToEnglish } from '../../bus/dto/bus-passenger-info.dto';
 import { Transform, Type } from 'class-transformer';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { InvoiceDto } from './plane-ticket-purchase.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsInEnumKeys } from '@app/common/decorators';
 
 export class PlanePassengerInfoConvertReservationDto {
   @ApiProperty({
@@ -37,57 +36,17 @@ export class PlanePassengerInfoConvertReservationDto {
   @Transform(({ value }) => turkishToEnglish(value))
   lastName: string;
 
-  @ApiProperty({
-    description:
-      'The gender of the passenger. Valid values are "MALE" or "FEMALE".',
-    example: 'MALE',
-    required: true,
+  @IsInEnumKeys(Gender, {
+    message: 'Gender must be a valid key (FEMALE or MALE)',
   })
-  @IsEnum(Gender)
   @IsNotEmpty()
-  @Transform(({ value }) => {
-    const genderStr = value.toString().toLowerCase().trim();
-
-    if (genderStr === 'male') return Gender.MALE;
-    if (genderStr === 'female') return Gender.FEMALE;
-
-    return undefined;
-  })
   gender: Gender;
 
-  @ApiProperty({
-    description:
-      'The type of the passenger. Valid values include "adult", "child", "baby", "senior", "student", "disabled", "soldier", and "youth".',
-
-    example: 'ADULT',
-    required: true,
+  @IsInEnumKeys(PassengerType, {
+    message:
+      'Passenger type must be valid key (ADULT , CHILD , BABY , SENIOR , STUDENT , DISABLED , SOLDIER, YOUTH  )',
   })
-  @IsEnum(PassengerType)
   @IsNotEmpty()
-  @Transform(({ value }) => {
-    const passengerTypeStr = value.toString().toLowerCase().trim();
-
-    switch (passengerTypeStr) {
-      case 'adult':
-        return PassengerType.ADULT;
-      case 'child':
-        return PassengerType.CHILD;
-      case 'baby':
-        return PassengerType.BABY;
-      case 'senior':
-        return PassengerType.SENIOR;
-      case 'student':
-        return PassengerType.STUDENT;
-      case 'disabled':
-        return PassengerType.DISABLED;
-      case 'soldier':
-        return PassengerType.SOLDIER;
-      case 'youth':
-        return PassengerType.YOUTH;
-      default:
-        return undefined;
-    }
-  })
   passengerType: PassengerType;
 
   @ApiProperty({

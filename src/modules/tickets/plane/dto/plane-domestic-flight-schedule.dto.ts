@@ -20,7 +20,7 @@ import {
   OptionFareDetail,
   SegmentClass,
 } from '../services/biletall/types/biletall-plane-domistic-flight-schedule.type';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsInEnumKeys } from '@app/common/decorators';
 
 export class PlaneDomesticFlightScheduleRequestDto {
   @ApiProperty({
@@ -77,14 +77,8 @@ export class PlaneDomesticFlightScheduleRequestDto {
     required: true,
   })
   @IsNotEmpty()
-  @IsEnum(PlaneTicketOperationType)
-  @Transform(({ value }) => {
-    const operationTypeStr = value.toString().toLowerCase().trim();
-    if (operationTypeStr === 'sale') return PlaneTicketOperationType.SALE;
-    if (operationTypeStr === 'reservation')
-      return PlaneTicketOperationType.RESERVATION;
-
-    return undefined;
+  @IsInEnumKeys(PlaneTicketOperationType, {
+    message: 'Operation type must be valid key (SALE or RESERVATION) ',
   })
   operationType: PlaneTicketOperationType;
 

@@ -1,15 +1,11 @@
 import { OmitType } from '@nestjs/swagger/dist/type-helpers/omit-type.helper';
-import { Transform, Type } from 'class-transformer';
 import { BusSearchRequestDto } from './bus-search.dto';
-import {
-  IsArray,
-  IsEnum,
-  IsNotEmpty,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { ApiProperty } from '@nestjs/swagger';
+
+import { Type } from 'class-transformer';
+import { IsInEnumKeys } from '@app/common/decorators';
 
 class BusSeatDto {
   @ApiProperty({
@@ -23,22 +19,10 @@ class BusSeatDto {
 
   // male - 2
   // female - 1
-  @ApiProperty({
-    description: 'Passenger gender',
-    example: 'male',
-    required: true,
-    enum: Gender,
+  @IsInEnumKeys(Gender, {
+    message: 'Gender must be a valid key (FEMALE or MALE)',
   })
-  @IsEnum(Gender)
   @IsNotEmpty()
-  @Transform(({ value }) => {
-    const genderStr = value.toString().toLowerCase().trim();
-
-    if (genderStr === 'male') return Gender.MALE;
-    if (genderStr === 'female') return Gender.FEMALE;
-
-    return undefined;
-  })
   gender: Gender;
 }
 
