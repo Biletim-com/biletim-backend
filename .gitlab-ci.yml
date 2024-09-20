@@ -8,28 +8,26 @@ stages:
   - push
   - deploy
 
-
 sonarqube-check:
   stage: sonarqube
-  image: 
+  image:
     name: sonarsource/sonar-scanner-cli:latest
-    entrypoint: [""]
+    entrypoint: ['']
   variables:
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
-    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+    SONAR_USER_HOME: '${CI_PROJECT_DIR}/.sonar' # Defines the location of the analysis task cache
+    GIT_DEPTH: '0' # Tells git to fetch all the branches of the project, required by the analysis task
   cache:
-    key: "${CI_JOB_NAME}"
+    key: '${CI_JOB_NAME}'
     paths:
       - .sonar/cache
-  script: 
+  script:
     - sonar-scanner
   allow_failure: true
   tags:
     - shared
-    - shell  
+    - shell
   only:
-    - dev # or the name of your main branch
-
+    - main
 
 build_docker_image:
   stage: build
@@ -39,7 +37,7 @@ build_docker_image:
     - shared
     - shell
   only:
-    - dev
+    - main
 
 push_image_repository:
   stage: push
@@ -50,13 +48,13 @@ push_image_repository:
     - shared
     - shell
   only:
-    - dev
+    - main
 
 deploy:
   stage: deploy
   image:
     name: harbor.westerops.com/k8s/kube:vals2
-    entrypoint: [""]
+    entrypoint: ['']
   script:
     # - vals eval -f ./helm/environment/test.values.yaml > ./helm/environment/test_changed.values.yaml
     # - sed -ie "s/IMAGE_TAG/$CI_PIPELINE_IID/g" ./helm/environment/test_changed.values.yaml
@@ -69,4 +67,4 @@ deploy:
   tags:
     - kube20
   only:
-    - dev
+    - main

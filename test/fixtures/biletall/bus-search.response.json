@@ -1,0 +1,1598 @@
+{
+  "soap:Envelope": {
+    "$": {
+      "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/",
+      "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+      "xmlns:xsd": "http://www.w3.org/2001/XMLSchema"
+    },
+    "soap:Body": [
+      {
+        "XmlIsletResponse": [
+          {
+            "$": {
+              "xmlns": "http://tempuri.org/"
+            },
+            "XmlIsletResult": [
+              {
+                "Otobus": [
+                  {
+                    "$": {
+                      "xmlns": ""
+                    },
+                    "xs:schema": [
+                      {
+                        "$": {
+                          "id": "Otobus",
+                          "xmlns": "",
+                          "xmlns:xs": "http://www.w3.org/2001/XMLSchema",
+                          "xmlns:msdata": "urn:schemas-microsoft-com:xml-msdata"
+                        },
+                        "xs:element": [
+                          {
+                            "$": {
+                              "name": "Otobus",
+                              "msdata:IsDataSet": "true",
+                              "msdata:UseCurrentLocale": "true"
+                            },
+                            "xs:complexType": [
+                              {
+                                "xs:choice": [
+                                  {
+                                    "$": {
+                                      "minOccurs": "0",
+                                      "maxOccurs": "unbounded"
+                                    },
+                                    "xs:element": [
+                                      {
+                                        "$": {
+                                          "name": "Sefer"
+                                        },
+                                        "xs:complexType": [
+                                          {
+                                            "xs:sequence": [
+                                              {
+                                                "xs:element": [
+                                                  {
+                                                    "$": {
+                                                      "name": "YerelTarihSaat",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "InternetTarihSaat",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "KalkisAdi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "VarisAdi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "HatNo",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "FiyatDegistirebilir",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletFiyati1",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletFiyati2",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletFiyati3",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletFiyatiInternet",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletFiyatiSinifFarki",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletTekKoltukFarki",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletFiyatiMisafir",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "MisafirBiletSatar",
+                                                      "type": "xs:boolean",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OzurluIndirmliBiletSatar",
+                                                      "type": "xs:boolean",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "KontenjanliBiletSatar",
+                                                      "type": "xs:boolean",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "RezervasyonAktifMi",
+                                                      "type": "xs:boolean",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "SatisAktifMi",
+                                                      "type": "xs:boolean",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "MaximumRezerveTarihiSaati",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusTip",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusKoltukYerlesimTipi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusTipSinif",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusTipIkinciKatSira",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusTelefonu",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusPlaka",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusKaptanAdi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusHostesAdi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Okalkti",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusSeferMesaji",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusSubeMesaji",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "PeronNo",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "KalkisTerminalAdi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "KalkisTerminalAdiSaatleri",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "GeceAciklamasi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "MaximumBosBayanYaniSayisi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "SubeBiletPort",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "YolcuUyePuanToplam",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "YolcuUyePuanCarpan",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "DolulukOraniIndirimiYapildi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OTipOzellik",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "YonuTersKoltuklar",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "SubeSatistaTcKimlikNoYazmakZorunlu",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "SeyahatSuresi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "SeferTipiAciklamasi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OTipAciklamasi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "FirmaEnUygunFiyatAktifMi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusMesaj",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Tesisler",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Odeme3DSecureAktifMi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Odeme3DSecureZorunluMu",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "PaypalUstLimit",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "MaximumBosBayYaniSayisi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "SatilabilirKoltukSayi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "RezervasyonNedenYapilamaz",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "FirmaMaxToplamBiletFiyati",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "PasaportNoIleIslemYapilirMi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "FarkliCinsiyetteKoltuklarSecilebilirMi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusKoltukBoslukSemasi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OtobusHesKoduZorunluMu",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "CiftKoltukTekYolcuyaSatilabilirMi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "TekliKoltuklarDoluysaCiftliKoltuktanSatisYapilabilirMi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "YaklasikSeyahatSuresi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "SeyahatSuresiGosterimTipi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "FarkliFiyattaKoltuklarSecilebilirMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletIptalAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "AcikParaKullanimAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "SefereKadarIptalEdilebilmeSuresiDakika",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "KalkisNoktaID",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "KalkisNokta",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "VarisNoktaID",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "VarisNokta",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "$": {
+                                          "name": "Koltuk"
+                                        },
+                                        "xs:complexType": [
+                                          {
+                                            "xs:sequence": [
+                                              {
+                                                "xs:element": [
+                                                  {
+                                                    "$": {
+                                                      "name": "KoltukStr",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "KoltukNo",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Durum",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "DurumYan",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "KoltukFiyatiInternet",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "$": {
+                                          "name": "AcikBilet"
+                                        },
+                                        "xs:complexType": [
+                                          {
+                                            "xs:sequence": [
+                                              {
+                                                "xs:element": [
+                                                  {
+                                                    "$": {
+                                                      "name": "Adet",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Islem_Tarihi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Bilet_Fiyati",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Adi_Soyadi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "PNR",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "$": {
+                                          "name": "SeyahatTipleri"
+                                        },
+                                        "xs:complexType": [
+                                          {
+                                            "xs:sequence": [
+                                              {
+                                                "xs:element": [
+                                                  {
+                                                    "$": {
+                                                      "name": "SeyahatTipi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "SeyahatAdi",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletFiyati",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletFiyatSinifFarki",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BiletTekKoltukFarki",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "$": {
+                                          "name": "OTipOzellik"
+                                        },
+                                        "xs:complexType": [
+                                          {
+                                            "xs:sequence": [
+                                              {
+                                                "xs:element": [
+                                                  {
+                                                    "$": {
+                                                      "name": "O_Tip_Ozellik",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "O_Tip_Ozellik_Aciklama",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "O_Tip_Ozellik_Detay",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "O_Tip_Ozellik_Icon",
+                                                      "type": "xs:string",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "$": {
+                                          "name": "OdemeKurallari"
+                                        },
+                                        "xs:complexType": [
+                                          {
+                                            "xs:sequence": [
+                                              {
+                                                "xs:element": [
+                                                  {
+                                                    "$": {
+                                                      "name": "Odeme3DSecureAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "Odeme3DSecureZorunluMu",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "AcikParaliOdemeAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "OnOdemeAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "ParakodOdemeAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "BkmOdemeAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "PaypalOdemeAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "PaypalUstLimit",
+                                                      "type": "xs:decimal",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "HopiAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "MasterpassAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "FastPayOdemeAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  },
+                                                  {
+                                                    "$": {
+                                                      "name": "GarantiPayOdemeAktifMi",
+                                                      "type": "xs:int",
+                                                      "minOccurs": "0"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "Sefer": [
+                      {
+                        "YerelTarihSaat": ["2024-08-05T10:30:00+03:00"],
+                        "InternetTarihSaat": ["2024-08-05T10:30:00+03:00"],
+                        "KalkisAdi": ["ANKARA"],
+                        "VarisAdi": ["KAYSERİ"],
+                        "HatNo": ["3"],
+                        "FiyatDegistirebilir": ["False"],
+                        "BiletFiyati1": ["40.00"],
+                        "BiletFiyati2": ["0.00"],
+                        "BiletFiyati3": ["0.00"],
+                        "BiletFiyatiInternet": ["40.00"],
+                        "BiletFiyatiSinifFarki": ["0.00"],
+                        "BiletTekKoltukFarki": ["0.00"],
+                        "BiletFiyatiMisafir": ["0.01"],
+                        "MisafirBiletSatar": ["false"],
+                        "OzurluIndirmliBiletSatar": ["false"],
+                        "KontenjanliBiletSatar": ["true"],
+                        "RezervasyonAktifMi": ["true"],
+                        "SatisAktifMi": ["true"],
+                        "MaximumRezerveTarihiSaati": ["1.08.2024 10:30:00"],
+                        "OtobusTip": ["TR15"],
+                        "OtobusTipSinif": ["0"],
+                        "OtobusTipIkinciKatSira": ["0"],
+                        "OtobusPlaka": [""],
+                        "OtobusKaptanAdi": [""],
+                        "OtobusHostesAdi": [""],
+                        "Okalkti": ["0"],
+                        "OtobusSeferMesaji": [""],
+                        "OtobusSubeMesaji": [""],
+                        "PeronNo": [""],
+                        "KalkisTerminalAdi": [""],
+                        "GeceAciklamasi": ["Pazartesi"],
+                        "MaximumBosBayanYaniSayisi": ["3"],
+                        "SubeBiletPort": ["1"],
+                        "YolcuUyePuanToplam": ["0"],
+                        "YolcuUyePuanCarpan": ["1,0000"],
+                        "DolulukOraniIndirimiYapildi": ["False"],
+                        "OTipOzellik": [
+                          "00000000000000000000000000000000000000000000000000"
+                        ],
+                        "YonuTersKoltuklar": [""],
+                        "SubeSatistaTcKimlikNoYazmakZorunlu": ["1"],
+                        "SeyahatSuresi": ["1.01.1900 05:00:00"],
+                        "SeferTipiAciklamasi": ["MOLALI"],
+                        "OTipAciklamasi": ["Travego 15 SHD"],
+                        "FirmaEnUygunFiyatAktifMi": ["0"],
+                        "OtobusMesaj": [
+                          "%3cfont+style%3d%27font-family%3aVerdana%3bfont-size%3a11px%3bfont-weight%3a700%3btext-decoration%3aunderline%2cfalse%3bcolor%3a%23333%3bmargin%3a1px%3b%27%3e%3cb%3e%c4%b0%c5%9fleminiz%2c+Kredi+Kart%c4%b1+Hesap+Ekstrenizde%3cbr%3e%5bB%c4%b0LETAL+%c4%b0%c3%87+VE+DI%c5%9e+T%c4%b0C%5d+olarak+g%c3%b6r%c3%bcnecektir.%3c%2fb%3e%3c%2ffont%3e"
+                        ],
+                        "Tesisler": [""],
+                        "Odeme3DSecureAktifMi": ["1"],
+                        "Odeme3DSecureZorunluMu": ["1"],
+                        "PaypalUstLimit": ["500"],
+                        "MaximumBosBayYaniSayisi": ["5"],
+                        "SatilabilirKoltukSayi": ["48"],
+                        "RezervasyonNedenYapilamaz": [""],
+                        "FirmaMaxToplamBiletFiyati": ["10000.0000"],
+                        "PasaportNoIleIslemYapilirMi": ["1"],
+                        "FarkliCinsiyetteKoltuklarSecilebilirMi": ["1"],
+                        "OtobusKoltukBoslukSemasi": [""],
+                        "OtobusHesKoduZorunluMu": ["0"],
+                        "CiftKoltukTekYolcuyaSatilabilirMi": ["1"],
+                        "TekliKoltuklarDoluysaCiftliKoltuktanSatisYapilabilirMi": [
+                          "1"
+                        ],
+                        "YaklasikSeyahatSuresi": [""],
+                        "SeyahatSuresiGosterimTipi": ["1"],
+                        "FarkliFiyattaKoltuklarSecilebilirMi": ["1"],
+                        "BiletIptalAktifMi": ["1"],
+                        "AcikParaKullanimAktifMi": ["1"],
+                        "SefereKadarIptalEdilebilmeSuresiDakika": ["60"],
+                        "KalkisNoktaID": ["84"],
+                        "KalkisNokta": ["Ankara (Aşti)"],
+                        "VarisNoktaID": ["738"],
+                        "VarisNokta": ["Kayseri"]
+                      }
+                    ],
+                    "Koltuk": [
+                      {
+                        "KoltukStr": ["01"],
+                        "KoltukNo": ["1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["02"],
+                        "KoltukNo": ["2"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["03"],
+                        "KoltukNo": ["3"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["04"],
+                        "KoltukNo": ["4"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["05"],
+                        "KoltukNo": ["5"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["06"],
+                        "KoltukNo": ["6"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["07"],
+                        "KoltukNo": ["7"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["08"],
+                        "KoltukNo": ["8"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["09"],
+                        "KoltukNo": ["9"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["10"],
+                        "KoltukNo": ["10"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["11"],
+                        "KoltukNo": ["11"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["12"],
+                        "KoltukNo": ["12"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["13"],
+                        "KoltukNo": ["13"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["14"],
+                        "KoltukNo": ["14"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["15"],
+                        "KoltukNo": ["15"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["16"],
+                        "KoltukNo": ["16"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["17"],
+                        "KoltukNo": ["17"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["18"],
+                        "KoltukNo": ["18"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["19"],
+                        "KoltukNo": ["19"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["20"],
+                        "KoltukNo": ["20"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["21"],
+                        "KoltukNo": ["21"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["22"],
+                        "KoltukNo": ["22"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["KA"],
+                        "KoltukNo": ["-3"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["PI"],
+                        "KoltukNo": ["-3"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["25"],
+                        "KoltukNo": ["25"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["26"],
+                        "KoltukNo": ["26"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["23"],
+                        "KoltukNo": ["23"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["24"],
+                        "KoltukNo": ["24"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["29"],
+                        "KoltukNo": ["29"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["30"],
+                        "KoltukNo": ["30"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["27"],
+                        "KoltukNo": ["27"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["28"],
+                        "KoltukNo": ["28"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["31"],
+                        "KoltukNo": ["31"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["32"],
+                        "KoltukNo": ["32"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["33"],
+                        "KoltukNo": ["33"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["34"],
+                        "KoltukNo": ["34"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["35"],
+                        "KoltukNo": ["35"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["36"],
+                        "KoltukNo": ["36"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["37"],
+                        "KoltukNo": ["37"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["38"],
+                        "KoltukNo": ["38"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["39"],
+                        "KoltukNo": ["39"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["40"],
+                        "KoltukNo": ["40"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["41"],
+                        "KoltukNo": ["41"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["42"],
+                        "KoltukNo": ["42"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["43"],
+                        "KoltukNo": ["43"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["44"],
+                        "KoltukNo": ["44"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["KO"],
+                        "KoltukNo": ["-1"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["0"]
+                      },
+                      {
+                        "KoltukStr": ["45"],
+                        "KoltukNo": ["45"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      },
+                      {
+                        "KoltukStr": ["46"],
+                        "KoltukNo": ["46"],
+                        "Durum": ["0"],
+                        "DurumYan": ["0"],
+                        "KoltukFiyatiInternet": ["40"]
+                      }
+                    ],
+                    "SeyahatTipleri": [
+                      {
+                        "SeyahatTipi": ["0"],
+                        "SeyahatAdi": ["Normal"],
+                        "BiletFiyati": ["40"],
+                        "BiletFiyatSinifFarki": ["0"],
+                        "BiletTekKoltukFarki": ["0"]
+                      },
+                      {
+                        "SeyahatTipi": ["1"],
+                        "SeyahatAdi": ["Özürlü"],
+                        "BiletFiyati": ["0"],
+                        "BiletFiyatSinifFarki": ["0"],
+                        "BiletTekKoltukFarki": ["0"]
+                      },
+                      {
+                        "SeyahatTipi": ["2"],
+                        "SeyahatAdi": ["Çocuk"],
+                        "BiletFiyati": ["0"],
+                        "BiletFiyatSinifFarki": ["0"],
+                        "BiletTekKoltukFarki": ["0"]
+                      },
+                      {
+                        "SeyahatTipi": ["3"],
+                        "SeyahatAdi": ["Öğrenci"],
+                        "BiletFiyati": ["0"],
+                        "BiletFiyatSinifFarki": ["0"],
+                        "BiletTekKoltukFarki": ["0"]
+                      }
+                    ],
+                    "OTipOzellik": [
+                      {
+                        "O_Tip_Ozellik": ["0"],
+                        "O_Tip_Ozellik_Aciklama": ["İnternet"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Sağladığımız internet bağlantısını bilgisayarınızda kullanabilirsiniz."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Internet.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["1"],
+                        "O_Tip_Ozellik_Aciklama": ["Rahat Koltuk"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Bu araçta geniş ve rahat koltuk bulunmaktadır."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Rahat_Koltuk.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["2"],
+                        "O_Tip_Ozellik_Aciklama": [
+                          "Koltuk Ekranı (Uydu Yayını)"
+                        ],
+                        "O_Tip_Ozellik_Detay": [
+                          "Koltuk ekranları üzerinden birçok interaktif medya ve uydu yayını izlenebilmektedir."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Koltuk_Ekrani.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["3"],
+                        "O_Tip_Ozellik_Aciklama": ["WC"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Araçta Tuvalet Bulunmaktadır."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["WC.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["4"],
+                        "O_Tip_Ozellik_Aciklama": ["TV (Genel)"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Araçta uygun saatlerde Genel TV ve Video yayını yapılmaktadır."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["TV_Genel.Gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["5"],
+                        "O_Tip_Ozellik_Aciklama": ["Digiturk"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Digiturk yayını bulunmaktadır."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Digiturk.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["6"],
+                        "O_Tip_Ozellik_Aciklama": ["Kulaklık"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Seyahat sırasında Kulaklık verilebilmektedir."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Kulaklik.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["7"],
+                        "O_Tip_Ozellik_Aciklama": ["Müzik Yayını (Genel)"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Araçta uygun saatlerde Genel Radyo ve Müzik yayını yapılmaktadır."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Muzik_Genel.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["8"],
+                        "O_Tip_Ozellik_Aciklama": ["Müzik Yayını (Koltuk)"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Koltuk üzerindeki kulaklık çıkışlarından çok kanallı müzik yayını yapılmaktadır."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Muzik_Koltuk.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["9"],
+                        "O_Tip_Ozellik_Aciklama": ["Cep Telefonu (Serbest)"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Seyahat sırasında cep telefonunuzu kullanabilirsiniz."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Cep.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["10"],
+                        "O_Tip_Ozellik_Aciklama": ["220 Volt Priz"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Seyahat Sırasında 220 volt ile çalışan cihazlarınızı kullanabileceğiniz priz bulunmaktadır."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["priz.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["11"],
+                        "O_Tip_Ozellik_Aciklama": ["Koltuk Ekranı (MIT)"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Koltuk ekranları üzerinden Multimedya,Internet ve Tv yayını kullanılabilemektedir."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Koltuk_MIT.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["12"],
+                        "O_Tip_Ozellik_Aciklama": ["Namaz Vakitlerinde Durur"],
+                        "O_Tip_Ozellik_Detay": ["Namaz Vakitlerinde Durur"],
+                        "O_Tip_Ozellik_Icon": ["Cami.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["13"],
+                        "O_Tip_Ozellik_Aciklama": ["Ligtv"],
+                        "O_Tip_Ozellik_Detay": ["Ligtv yayını bulunmaktadır."],
+                        "O_Tip_Ozellik_Icon": ["ligtv.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["14"],
+                        "O_Tip_Ozellik_Aciklama": ["Koltuk Ekranı (10 inç)"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Bu araçta 10 inç Koltuk Ekranı bulunmaktadır. "
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Koltuk_Ekrani10.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["15"],
+                        "O_Tip_Ozellik_Aciklama": ["Okuma Lambası"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Bu araçta Koltuk Arkası Okuma Lambası bulunmaktadır. "
+                        ],
+                        "O_Tip_Ozellik_Icon": ["OkumaLambasi.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["16"],
+                        "O_Tip_Ozellik_Aciklama": ["Radyo (Kişisel)"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Bu araçta Kişisel Radyo bulunmaktadır. "
+                        ],
+                        "O_Tip_Ozellik_Icon": ["KisiselRadyo.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["17"],
+                        "O_Tip_Ozellik_Aciklama": ["Koltuk Ekranı (13 inç)"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Bu araçta 13 inç Koltuk Ekranı bulunmaktadır. "
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Koltuk_Ekrani13.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["18"],
+                        "O_Tip_Ozellik_Aciklama": ["USB Giriş"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Bu araçta müzik, video ve şarj için kullanabileceğiniz USB girişi bulunmaktadır."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["usb.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["19"],
+                        "O_Tip_Ozellik_Aciklama": ["Kahvaltı"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Bu araçta kahvaltı verilmektedir. "
+                        ],
+                        "O_Tip_Ozellik_Icon": ["Kahvalti.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["20"],
+                        "O_Tip_Ozellik_Aciklama": ["Sıcak Yemek"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Bu araçta sıcak yemek verilmektedir."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["sicakyemek.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["21"],
+                        "O_Tip_Ozellik_Aciklama": ["Masajlı Koltuk"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Bu araçta masajlı koltuk bulunmaktadır."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["masajlikoltuk.gif"]
+                      },
+                      {
+                        "O_Tip_Ozellik": ["22"],
+                        "O_Tip_Ozellik_Aciklama": ["Antiviral Koruma"],
+                        "O_Tip_Ozellik_Detay": [
+                          "Bu araçta aktif filtre antiviral koruma bulunmaktadır."
+                        ],
+                        "O_Tip_Ozellik_Icon": ["antiviralkoruma.gif"]
+                      }
+                    ],
+                    "OdemeKurallari": [
+                      {
+                        "Odeme3DSecureAktifMi": ["1"],
+                        "Odeme3DSecureZorunluMu": ["1"],
+                        "AcikParaliOdemeAktifMi": ["1"],
+                        "OnOdemeAktifMi": ["1"],
+                        "ParakodOdemeAktifMi": ["0"],
+                        "BkmOdemeAktifMi": ["0"],
+                        "PaypalOdemeAktifMi": ["0"],
+                        "PaypalUstLimit": ["500"],
+                        "HopiAktifMi": ["0"],
+                        "MasterpassAktifMi": ["0"],
+                        "FastPayOdemeAktifMi": ["0"],
+                        "GarantiPayOdemeAktifMi": ["0"]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

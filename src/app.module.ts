@@ -1,37 +1,51 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from 'nestjs-prisma';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { TicketsModule } from './tickets/tickets.module';
-import { BiletAllService } from './tickets/biletall/biletall.service';
-import { TicketsService } from './tickets/tickets.service';
-import { CommandModule } from 'nestjs-command';
-import { CommandService } from './commands/command.service';
-import { SuperAdminCommand } from './commands/super-admin.command';
-import { BiletAllModule } from './tickets/biletall/biletall.module';
-import { PanelUsersModule } from './panel-users/panel-users.module';
+import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '@app/configs/config.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+
+// Common
+import { LoggerModule } from '@app/common/logger/logger.module';
+
+// Auth Module
+import { AuthModule } from '@app/auth/auth.module';
+import { AppleModule } from './apple/apple.module';
+
+// App Modules
+import { UsersModule } from '@app/modules/users/users.module';
+import { TicketsModule } from '@app/modules/tickets/tickets.module';
+import { PanelUsersModule } from '@app/modules/panel-users/panel-users.module';
+import { HotelModule } from '@app/modules/booking/hotel/hotel.module';
+import { BookingModule } from '@app/modules/booking/booking.module';
+
+// Providers
+import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
+
+// Interceptors
+import { ErrorInterceptor } from '@app/common/interceptors/error.interseptor';
+
+// Jobs
+import { JobsModule } from '@app/jobs/jobs.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    PrismaModule.forRoot({ isGlobal: true }),
+    HttpModule,
+    LoggerModule,
+    ConfigModule,
+    PostgreSQLProviderModule,
+    JobsModule,
     AuthModule,
     UsersModule,
-    TicketsModule,
-    CommandModule,
-    BiletAllModule,
     PanelUsersModule,
+    AppleModule,
+    HotelModule,
+    TicketsModule,
+    BookingModule,
   ],
-  controllers: [AppController],
   providers: [
-    SuperAdminCommand,
-    CommandService,
-    AppService,
-    BiletAllService,
-    TicketsService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ErrorInterceptor,
+    },
   ],
 })
 export class AppModule {}

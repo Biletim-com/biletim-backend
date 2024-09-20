@@ -8,9 +8,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginUserRequest } from './dto/loginUserRequest.dto';
+import { LoginUserRequest } from './dto/login-user-request.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { RegisterUserRequest } from './dto/registerUserRequest.dto';
+import { RegisterUserRequest } from './dto/register-user-request.dto';
 import { RegisterCompanyDto } from './dto/register-company.dto';
 import { AuthGuard } from './auth.guard';
 import { VerificationDto } from './dto/verification.dto';
@@ -83,17 +83,16 @@ export class AuthController {
     @Req() req: any,
   ): Promise<any> {
     return this.authService.changePassword(
-      req?.user?.id,
+      req?.user?.sub,
       changePasswordDto.oldPassword,
       changePasswordDto.newPassword,
     );
   }
 
-  @Post('register-company')
   @HttpCode(200)
-  async registerCompany(
-    @Body() registerCompanyDto: RegisterCompanyDto,
-  ): Promise<any> {
-    return this.authService.registerCompany(registerCompanyDto);
+  @Post('/login-google')
+  async loginWithGoogle(@Body() body) {
+    const userInfo = await this.authService.loginWithGoogle(body.token);
+    return userInfo;
   }
 }
