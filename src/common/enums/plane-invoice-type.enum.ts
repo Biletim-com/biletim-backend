@@ -1,4 +1,4 @@
 export enum PlaneInvoiceType {
-  PEOPLE = 0,
-  COMPANY = 1,
+  INDIVIDUAL = 'individual',
+  CORPORATE = 'corporate',
 }

@@ -3,7 +3,7 @@
 import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 
 // services
-import { BiletAllService } from './services/biletall/biletall.service';
+import { BiletAllService } from './services/biletall/biletall-bus.service';
 import { BusService } from './services/bus.service';
 
 // dto

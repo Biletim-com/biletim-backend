@@ -1,24 +1,18 @@
-import { BiletAllService } from '../../../bus/services/biletall/biletall.service';
-import { BiletallPlaneParser } from './biletall-plane.parser';
-import { PlaneAirportResponse } from './types/biletall-plane-airport.type';
-import { PlaneAirportDto } from '../../dto/plane-airport.dto';
 import { Injectable } from '@nestjs/common';
-import {
-  DomesticFlightScheduleDto,
-  PlaneDomesticFlightScheduleRequestDto,
-} from '../../dto/plane-domestic-flight-schedule.dto';
 import * as xml2js from 'xml2js';
-import { DomesticFlightResponse } from './types/biletall-plane-domistic-flight-schedule.type';
+
+import { BiletAllService } from '../../../bus/services/biletall/biletall-bus.service';
+import { BiletallPlaneParser } from './biletall-plane.parser';
+
+// dto
 import {
   AbroadFlightScheduleDto,
   PlaneAbroadFlightScheduleRequestDto,
 } from '../../dto/plane-abroad-flight-schedule.dto';
-import { AbroadFlightResponse } from './types/biletall-plane-abroad-flight-schedule.type';
 import {
   PlanePullPriceFlightDto,
   PullPriceFlightRequestDto,
 } from '../../dto/plane-pull-price-flight.dto';
-import { PlanePullPriceResponse } from './types/biletall-plane-pull-price-flight.type';
 import { PlanePassengerAgeRulesResponse } from './types/plane-biletall-company-passanger-age-rules.type';
 import { PlanePassengerAgeRuleDto } from '../../dto/plane-company-passenger-age-rule.dto';
 import {
@@ -30,9 +24,30 @@ import {
   FlightTicketPurchaseDto,
   FlightTicketPurchaseRequestDto,
 } from '../../dto/plane-ticket-purchase.dto';
-import { PlaneTicketPurchaseResponse } from './types/biletall-plane-ticket-purchase.type';
-import { PlaneTicketOperationType } from '@app/common/enums/plane-ticket-operation-type.enum';
 import { FlightConvertReservationToSaleRequestDto } from '../../dto/plane-convert-reservation-to-sale.dto';
+import {
+  DomesticFlightScheduleDto,
+  PlaneDomesticFlightScheduleRequestDto,
+} from '../../dto/plane-domestic-flight-schedule.dto';
+import { PlaneAirportDto } from '../../dto/plane-airport.dto';
+
+// enums
+import { PlaneInvoiceType } from '@app/common/enums';
+
+// types
+import { PlanePullPriceResponse } from './types/biletall-plane-pull-price-flight.type';
+import { DomesticFlightResponse } from './types/biletall-plane-domistic-flight-schedule.type';
+import { AbroadFlightResponse } from './types/biletall-plane-abroad-flight-schedule.type';
+import { PlaneTicketPurchaseResponse } from './types/biletall-plane-ticket-purchase.type';
+import { PlaneAirportResponse } from './types/biletall-plane-airport.type';
+
+// helpers
+import { BiletAllFlightClassType } from './helpers/plane-flight-class-type.helper';
+import { BiletAllPlaneInvoiceType } from './helpers/plane-invoice-type.helper';
+import { BiletAllPlanePassengerType } from './helpers/plane-passanger-type.helper';
+import { BiletAllPlaneTicketOperationType } from './helpers/plane-ticket-operation-type.helper';
+import { BiletAllPlaneTravelType } from './helpers/plane-travel-type.helper';
+import { BiletAllGender } from '@app/common/helpers';
 
 @Injectable()
 export class BiletallPlaneService {
@@ -62,8 +77,8 @@ export class BiletallPlaneService {
         ...(requestDto.returnDate && {
           DonusTarih: requestDto.returnDate,
         }),
-        SeyahatTipi: requestDto.travelType,
-        IslemTipi: requestDto.operationType,
+        SeyahatTipi: BiletAllPlaneTravelType[requestDto.travelType],
+        IslemTipi: BiletAllPlaneTicketOperationType[requestDto.operationType],
         YetiskinSayi: requestDto.adultCount,
         CocukSayi: requestDto.childCount,
         BebekSayi: requestDto.babyCount,
@@ -93,10 +108,10 @@ export class BiletallPlaneService {
           SplitSearchGidisDonusGrupla: 1,
         }),
         ...(requestDto.classType && {
-          Sinif: requestDto.classType,
+          Sinif: BiletAllFlightClassType[requestDto.classType],
         }),
-        SeyahatTipi: requestDto.travelType,
-        IslemTipi: requestDto.operationType,
+        SeyahatTipi: BiletAllPlaneTravelType[requestDto.travelType],
+        IslemTipi: BiletAllPlaneTicketOperationType[requestDto.operationType],
         YetiskinSayi: requestDto.adultCount,
         CocukSayi: requestDto.childCount,
         BebekSayi: requestDto.babyCount,
@@ -158,7 +173,7 @@ export class BiletallPlaneService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       IslemUcak_2: {
-        IslemTip: PlaneTicketOperationType.RESERVATION,
+        IslemTip: BiletAllPlaneTicketOperationType.reservation,
         FirmaNo: requestDto.companyNo,
         TelefonNo: requestDto.phoneNumber,
         CepTelefonNo: requestDto.mobilePhoneNumber,
@@ -182,8 +197,8 @@ export class BiletallPlaneService {
           acc[`Yolcu${index + 1}`] = {
             Ad: passenger.firstName,
             Soyad: passenger.lastName,
-            Cinsiyet: passenger.gender,
-            YolcuTip: passenger.passengerType,
+            Cinsiyet: BiletAllGender[passenger.gender],
+            YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
             TCKimlikNo: passenger.turkishIdNumber,
             DogumTarih: passenger.birthday,
             ...(passenger.passportNumber && {
@@ -215,7 +230,7 @@ export class BiletallPlaneService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       IslemUcak_2: {
-        IslemTip: PlaneTicketOperationType.SALE,
+        IslemTip: BiletAllPlaneTicketOperationType.purchase,
         FirmaNo: requestDto.companyNo,
         TelefonNo: requestDto.phoneNumber,
         CepTelefonNo: requestDto.mobilePhoneNumber,
@@ -239,8 +254,8 @@ export class BiletallPlaneService {
           acc[`Yolcu${index + 1}`] = {
             Ad: passenger.firstName,
             Soyad: passenger.lastName,
-            Cinsiyet: passenger.gender,
-            YolcuTip: passenger.passengerType,
+            Cinsiyet: BiletAllGender[passenger.gender],
+            YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
             TCKimlikNo: passenger.turkishIdNumber,
             DogumTarih: passenger.birthday,
             ...(passenger.passportNumber && {
@@ -258,15 +273,17 @@ export class BiletallPlaneService {
         }, {}),
         ...(requestDto.invoice && {
           Fatura: {
-            FaturaTip: requestDto.invoice.invoiceType === 0 ? '0' : '1',
+            FaturaTip: BiletAllPlaneInvoiceType[requestDto.invoice.invoiceType],
 
-            ...(requestDto.invoice.invoiceType === 0 && {
+            ...(requestDto.invoice.invoiceType ===
+              PlaneInvoiceType.INDIVIDUAL && {
               KisiAd: requestDto.invoice.individualFirstName,
               KisiSoyad: requestDto.invoice.individualLastName,
               KisiTCKimlikNo: requestDto.invoice.individualTurkishIdNumber,
               KisiAdres: requestDto.invoice.individualAddress,
             }),
-            ...(requestDto.invoice.invoiceType === 1 && {
+            ...(requestDto.invoice.invoiceType ===
+              PlaneInvoiceType.CORPORATE && {
               FirmaAd: requestDto.invoice.companyName,
               FirmaVergiNo: requestDto.invoice.companyTaxNumber,
               FirmaVergiDairesi: requestDto.invoice.companyTaxOffice,
@@ -310,7 +327,7 @@ export class BiletallPlaneService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       IslemUcak_2: {
-        IslemTip: PlaneTicketOperationType.SALE,
+        IslemTip: BiletAllPlaneTicketOperationType.purchase,
         FirmaNo: requestDto.companyNo,
         CepTelefonNo: requestDto.mobilePhoneNumber,
         Email: requestDto.email,
@@ -333,8 +350,8 @@ export class BiletallPlaneService {
           acc[`Yolcu${index + 1}`] = {
             Ad: passenger.firstName,
             Soyad: passenger.lastName,
-            Cinsiyet: passenger.gender,
-            YolcuTip: passenger.passengerType,
+            Cinsiyet: BiletAllGender[passenger.gender],
+            YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
             ...(passenger.turkishIdNumber && {
               TCKimlikNo: passenger.turkishIdNumber,
             }),
@@ -353,15 +370,17 @@ export class BiletallPlaneService {
         }, {}),
         ...(requestDto.invoice && {
           Fatura: {
-            FaturaTip: requestDto.invoice.invoiceType === 0 ? '0' : '1',
+            FaturaTip: BiletAllPlaneInvoiceType[requestDto.invoice.invoiceType],
 
-            ...(requestDto.invoice.invoiceType === 0 && {
+            ...(requestDto.invoice.invoiceType ===
+              PlaneInvoiceType.INDIVIDUAL && {
               KisiAd: requestDto.invoice.individualFirstName,
               KisiSoyad: requestDto.invoice.individualLastName,
               KisiTCKimlikNo: requestDto.invoice.individualTurkishIdNumber,
               KisiAdres: requestDto.invoice.individualAddress,
             }),
-            ...(requestDto.invoice.invoiceType === 1 && {
+            ...(requestDto.invoice.invoiceType ===
+              PlaneInvoiceType.CORPORATE && {
               FirmaAd: requestDto.invoice.companyName,
               FirmaVergiNo: requestDto.invoice.companyTaxNumber,
               FirmaVergiDairesi: requestDto.invoice.companyTaxOffice,

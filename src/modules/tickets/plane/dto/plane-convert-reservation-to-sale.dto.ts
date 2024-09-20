@@ -8,10 +8,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { FlightSegmentDto } from './plane-pull-price-flight.dto';
-import { PassengerType } from '@app/common/enums/passanger-type.enum';
+import { Gender, PassengerType } from '@app/common/enums';
 import { turkishToEnglish } from '../../bus/dto/bus-passenger-info.dto';
 import { Transform, Type } from 'class-transformer';
-import { Gender } from '@app/common/enums/bus-seat-gender.enum';
 import { InvoiceDto } from './plane-ticket-purchase.dto';
 import { IsInEnumKeys } from '@app/common/decorators';
 import { ApiProperty } from '@nestjs/swagger';

@@ -3,7 +3,7 @@ import {
   PlaneAirport,
   PlaneAirportResponse,
 } from './types/biletall-plane-airport.type';
-import { BiletAllParser } from '../../../bus/services/biletall/biletall.parser';
+import { BiletAllParser } from '../../../bus/services/biletall/biletall-bus.parser';
 import { PlaneAirportDto } from '../../dto/plane-airport.dto';
 import {
   DomesticFlightResponse,
@@ -220,7 +220,7 @@ export class BiletallPlaneParser {
       const flightOptionId = entry.flightOption.id;
 
       let relatedOptionFare;
-      for (const [key, value] of optionFaresBySecenekID2.entries()) {
+      for (const [_key, value] of optionFaresBySecenekID2.entries()) {
         if (value.optionFare.optionId2 === flightOptionId) {
           relatedOptionFare = value;
           break;

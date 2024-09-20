@@ -1,4 +1,4 @@
 export enum PlaneTravelType {
-  ONEWAY = 1,
-  ROUNDTRIP = 2,
+  ONEWAY = 'oneway',
+  ROUNDTRIP = 'roundtrip',
 }

@@ -14,8 +14,7 @@ import { turkishToEnglish } from '../../bus/dto/bus-passenger-info.dto';
 import { DateISODate } from '@app/common/types';
 import * as dayjs from 'dayjs';
 import { FlightTicketReservationResult } from '../services/biletall/types/biletall-plane-ticket-reservation.type';
-import { Gender } from '@app/common/enums/bus-seat-gender.enum';
-import { PassengerType } from '@app/common/enums/passanger-type.enum';
+import { Gender, PassengerType } from '@app/common/enums';
 import { IsInEnumKeys } from '@app/common/decorators';
 import { ApiProperty } from '@nestjs/swagger';
 

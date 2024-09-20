@@ -1,7 +1,7 @@
 import { OmitType } from '@nestjs/swagger/dist/type-helpers/omit-type.helper';
 import { BusSearchRequestDto } from './bus-search.dto';
 import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
-import { Gender } from '@app/common/enums/bus-seat-gender.enum';
+import { Gender } from '@app/common/enums';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Type } from 'class-transformer';

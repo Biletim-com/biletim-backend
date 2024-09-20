@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { FlightSegmentDto } from './plane-pull-price-flight.dto';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
   IsNotEmpty,
@@ -9,20 +9,23 @@ import {
   Matches,
   ValidateNested,
 } from 'class-validator';
-import { PlanePassengerInfoDto } from './plane-ticket-reservation.dto';
-import { PlaneInvoiceType } from '@app/common/enums/plane-invoice-type.enum';
-import { FlightTicketPurchaseResult } from '../services/biletall/types/biletall-plane-ticket-purchase.type';
+
+import { PlaneInvoiceType } from '@app/common/enums';
 import { IsInEnumKeys } from '@app/common/decorators';
-import { ApiProperty } from '@nestjs/swagger';
+
+// dtos
+import { FlightSegmentDto } from './plane-pull-price-flight.dto';
+import { PlanePassengerInfoDto } from './plane-ticket-reservation.dto';
+import { FlightTicketPurchaseResult } from '../services/biletall/types/biletall-plane-ticket-purchase.type';
 
 export class InvoiceDto {
   @ApiProperty({
-    description: 'Invoice type (PEOPLE or COMPANY)',
-    example: 'PEOPLE',
+    description: 'Invoice type (INDIVIDUAL or CORPORATE)',
+    example: 'INDIVIDUAL',
     required: true,
   })
   @IsInEnumKeys(PlaneInvoiceType, {
-    message: 'Invoice type must be valid key (PEOPLE or COMPANY)',
+    message: 'Invoice type must be valid key (INDIVIDUAL or CORPORATE)',
   })
   @IsNotEmpty()
   invoiceType: PlaneInvoiceType;

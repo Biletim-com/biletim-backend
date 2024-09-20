@@ -1,5 +1,5 @@
 import { IsInEnumKeys } from '@app/common/decorators';
-import { Gender } from '@app/common/enums/bus-seat-gender.enum';
+import { Gender } from '@app/common/enums';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {

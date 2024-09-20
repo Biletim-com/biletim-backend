@@ -1,5 +1,5 @@
 import { PlaneTravelType } from '@app/common/enums';
-import { PlaneTicketOperationType } from '@app/common/enums/plane-ticket-operation-type.enum';
+import { PlaneTicketOperationType } from '@app/common/enums';
 import { DateISODate } from '@app/common/types';
 import { Expose, Transform } from 'class-transformer';
 import {
@@ -72,13 +72,13 @@ export class PlaneDomesticFlightScheduleRequestDto {
   travelType: PlaneTravelType;
 
   @ApiProperty({
-    description: 'Operation type, either SALE or RESERVATION',
+    description: 'Operation type, either PURCHASE or RESERVATION',
     example: 'SALE',
     required: true,
   })
   @IsNotEmpty()
   @IsInEnumKeys(PlaneTicketOperationType, {
-    message: 'Operation type must be valid key (SALE or RESERVATION) ',
+    message: 'Operation type must be valid key (PURCHASE or RESERVATION) ',
   })
   operationType: PlaneTicketOperationType;
 

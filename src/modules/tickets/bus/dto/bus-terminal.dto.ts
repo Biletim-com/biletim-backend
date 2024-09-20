@@ -1,6 +1,6 @@
-import { BusStopPoint } from '../services/biletall/types/biletall-bus-stop-points.type';
+import { BusTerminal } from '../services/biletall/types/biletall-bus-stop-points.type';
 
-export class BusStopPointDto {
+export class BusTerminalDto {
   id: string;
   cityId: string;
   countryCode: string;
@@ -11,7 +11,7 @@ export class BusStopPointDto {
   affiliatedCenterId: string;
   appearInSearch: boolean;
 
-  constructor(busStopPoint: BusStopPoint) {
+  constructor(busStopPoint: BusTerminal) {
     this.id = busStopPoint.ID;
     this.cityId = busStopPoint.SeyahatSehirID;
     this.countryCode = busStopPoint.UlkeKodu;

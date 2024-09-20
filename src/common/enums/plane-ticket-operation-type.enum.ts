@@ -1,4 +1,4 @@
 export enum PlaneTicketOperationType {
-  SALE = 0,
-  RESERVATION = 1,
+  PURCHASE = 'purchase',
+  RESERVATION = 'reservation',
 }

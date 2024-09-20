@@ -13,7 +13,7 @@ import {
   BiletAllCompanyResponse,
 } from './types/biletall-company.type';
 import {
-  BusStopPoint,
+  BusTerminal,
   BusStopPointResponse,
 } from './types/biletall-bus-stop-points.type';
 import {
@@ -56,7 +56,7 @@ import {
   BusScheduleDto,
   BusScheduleAndBusFeaturesDto,
 } from '../../dto/bus-schedule-list.dto';
-import { BusStopPointDto } from '../../dto/bus-stop-point.dto';
+import { BusTerminalDto } from '../../dto/bus-terminal.dto';
 
 @Injectable()
 export class BiletAllParser {
@@ -101,19 +101,19 @@ export class BiletAllParser {
     });
   };
 
-  public parseStopPoints = (
+  public parseBusTerminals = (
     response: BusStopPointResponse,
-  ): BusStopPointDto[] => {
+  ): BusTerminalDto[] => {
     const extractedResult = this.extractResult(response);
     const karaNoktalar = extractedResult['KaraNoktalar'][0];
     const karaNoktaList = karaNoktalar['KaraNokta'];
 
     return karaNoktaList.map((entry) => {
-      const stopPointParsed: BusStopPoint = Object.assign({});
+      const stopPointParsed: BusTerminal = Object.assign({});
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         stopPointParsed[key] = value;
       }
-      return new BusStopPointDto(stopPointParsed);
+      return new BusTerminalDto(stopPointParsed);
     });
   };
 

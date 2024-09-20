@@ -7,7 +7,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { FindOptions, FindOptionsRelations, ILike } from 'typeorm';
+import { FindOptionsRelations, ILike } from 'typeorm';
 
 import { AuthService } from '@app/auth/auth.service';
 import { PasswordService } from '@app/auth/password/password.service';

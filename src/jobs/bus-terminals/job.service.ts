@@ -3,10 +3,10 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
 import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus-terminal.repository';
-import { BiletAllService } from '@app/modules/tickets/bus/services/biletall/biletall.service';
+import { BiletAllService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
 
 // dto
-import { BusStopPointDto } from '@app/modules/tickets/bus/dto/bus-stop-point.dto';
+import { BusTerminalDto } from '@app/modules/tickets/bus/dto/bus-terminal.dto';
 
 @Injectable()
 export class BusTerminalsCronJobService implements OnModuleInit {
@@ -22,8 +22,8 @@ export class BusTerminalsCronJobService implements OnModuleInit {
     this.saveBusTerminalsToDb();
   }
 
-  private splitIntoChunks = (array: BusStopPointDto[]): BusStopPointDto[][] => {
-    const chunks: BusStopPointDto[][] = [];
+  private splitIntoChunks = (array: BusTerminalDto[]): BusTerminalDto[][] => {
+    const chunks: BusTerminalDto[][] = [];
     for (let i = 0; i < array.length; i += this.chunkSize) {
       chunks.push(array.slice(i, i + this.chunkSize));
     }
@@ -31,11 +31,11 @@ export class BusTerminalsCronJobService implements OnModuleInit {
   };
 
   private async fetchBusStopPointsDataFromBiletAll(): Promise<
-    BusStopPointDto[][]
+    BusTerminalDto[][]
   > {
     try {
       this.logger.log('Fetching data from BiletAll');
-      const response = await this.biletAllBusService.stopPoints();
+      const response = await this.biletAllBusService.busTerminals();
       return this.splitIntoChunks(response);
     } catch (error) {
       this.logger.error('Error fetching data from BiletAll', error);

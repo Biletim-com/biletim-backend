@@ -1,6 +1,6 @@
 import { SoapEnvelope } from './biletall-soap-envelope.type';
 
-export type BusStopPoint = {
+export type BusTerminal = {
   ID: string;
   SeyahatSehirID: string;
   UlkeKodu: string;
@@ -15,7 +15,7 @@ export type BusStopPoint = {
 type BusStopPointDataSet = {
   KaraNoktalar: Array<{
     KaraNokta: Array<{
-      [K in keyof BusStopPoint]: [string];
+      [K in keyof BusTerminal]: [string];
     }>;
   }>;
 };

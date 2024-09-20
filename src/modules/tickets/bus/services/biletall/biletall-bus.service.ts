@@ -1,12 +1,11 @@
-// src/biletall/biletall.service.ts
+import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 import axios from 'axios';
 import * as dayjs from 'dayjs';
-import { Injectable } from '@nestjs/common';
 
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 
-import { BiletAllParser } from './biletall.parser';
+import { BiletAllParser } from './biletall-bus.parser';
 
 // dtos
 import { BusCompanyDto, BusCompanyRequestDto } from '../../dto/bus-company.dto';
@@ -25,7 +24,11 @@ import {
 } from '../../dto/bus-service-information.dto';
 import { BusPurchaseDto } from '../../dto/bus-purchase.dto';
 import { BusRouteDetailDto, BusRouteRequestDto } from '../../dto/bus-route.dto';
-import { BusStopPointDto } from '../../dto/bus-stop-point.dto';
+import { BusTerminalDto } from '../../dto/bus-terminal.dto';
+import {
+  BusSeatAvailabilityDto,
+  BusSeatAvailabilityRequestDto,
+} from '../../dto/bus-seat-availability.dto';
 
 // types
 import { BiletAllCompanyResponse } from './types/biletall-company.type';
@@ -38,12 +41,8 @@ import { ServiceInformationResponse } from './types/biletall-service-information
 import { BoardingPointResponse } from './types/biletall-boarding-point.type';
 import { BiletallPaymentRules } from '@app/common/types';
 
-// enums
-import { Gender } from '@app/common/enums/bus-seat-gender.enum';
-import {
-  BusSeatAvailabilityDto,
-  BusSeatAvailabilityRequestDto,
-} from '../../dto/bus-seat-availability.dto';
+// helpers
+import { BiletAllGender } from '@app/common/helpers';
 
 @Injectable()
 export class BiletAllService {
@@ -92,16 +91,17 @@ export class BiletAllService {
       throw new Error('Failed to process XML request');
     }
   }
+
   async company(requestDto: BusCompanyRequestDto): Promise<BusCompanyDto[]> {
     const companiesXml = `<Firmalar><FirmaNo>${requestDto.companyNo}</FirmaNo></Firmalar>`;
     const res = await this.run<BiletAllCompanyResponse>(companiesXml);
     return this.biletAllParser.parseCompany(res);
   }
 
-  async stopPoints(): Promise<BusStopPointDto[]> {
+  async busTerminals(): Promise<BusTerminalDto[]> {
     const stopPointsXml = `<KaraNoktaGetirKomut/>`;
     const res = await this.run<BusStopPointResponse>(stopPointsXml);
-    return this.biletAllParser.parseStopPoints(res);
+    return this.biletAllParser.parseBusTerminals(res);
   }
 
   async scheduleList(
@@ -306,7 +306,7 @@ export class BiletAllService {
           acc[`KoltukNo${index + 1}`] = passenger.seatNo;
           acc[`Adi${index + 1}`] = passenger.firstName;
           acc[`Soyadi${index + 1}`] = passenger.lastName;
-          acc[`Cinsiyet${index + 1}`] = Gender[passenger.gender];
+          acc[`Cinsiyet${index + 1}`] = BiletAllGender[passenger.gender];
           acc[`TcVatandasiMi${index + 1}`] = passenger.isTurkishCitizen ? 1 : 0;
           acc[`TcKimlikNo${index + 1}`] = passenger.turkishIdNumber;
           acc[`PasaportUlkeKod${index + 1}`] = passenger.passportCountryCode;
