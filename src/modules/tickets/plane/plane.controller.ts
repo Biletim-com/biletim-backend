@@ -23,7 +23,6 @@ import {
 } from './dto/plane-ticket-purchase.dto';
 import { FlightConvertReservationToSaleRequestDto } from './dto/plane-convert-reservation-to-sale.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PnrSearchRequestDto } from './dto/plane-pnr-search.dto';
 
 @ApiTags('Plane')
 @Controller('plane')
@@ -82,11 +81,5 @@ export class PlaneController {
     @Body() requestDto: FlightConvertReservationToSaleRequestDto,
   ): Promise<any> {
     return this.biletallPlaneService.planeConvertReservationToSale(requestDto);
-  }
-
-  @Post('pnr-search')
-  async pnrSearch(@Body() requestDto: PnrSearchRequestDto): Promise<any> {
-    console.log({ requestDto });
-    return this.biletallPlaneService.pnrSearch(requestDto);
   }
 }

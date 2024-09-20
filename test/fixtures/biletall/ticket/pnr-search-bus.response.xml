@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+        <XmlIsletResponse xmlns="http://tempuri.org/">
+            <XmlIsletResult>
+                <NewDataSet xmlns="">
+                    <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+                        <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+                            <xs:complexType>
+                                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                    <xs:element name="PNR">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="ID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="PNR" type="xs:string" minOccurs="0" />
+                                                <xs:element name="PnrTip" type="xs:string" minOccurs="0" />
+                                                <xs:element name="TakipNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Ad" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Soyad" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Tel" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Email" type="xs:string" minOccurs="0" />
+                                                <xs:element name="TCKimlikNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="HatirlaticiNot" type="xs:string" minOccurs="0" />
+                                                <xs:element name="SMSGonderimSayi" type="xs:string" minOccurs="0" />
+                                                <xs:element name="FaturalansinMi" type="xs:boolean" minOccurs="0" />
+                                                <xs:element name="OfflineMi" type="xs:boolean" minOccurs="0" />
+                                                <xs:element name="UyeID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="CM_EFaturaBireyselMi" type="xs:boolean" minOccurs="0" />
+                                                <xs:element name="AydinlatmaSozlesmeID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="AcikRizaSozlesmeID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="HizmetSozlesmeID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="UlkeTelefonKodu" type="xs:string" minOccurs="0" />
+                                                <xs:element name="ByBiletallApi" type="xs:boolean" minOccurs="0" />
+                                                <xs:element name="FirmaNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="ToplamIndirim" type="xs:string" minOccurs="0" />
+                                                <xs:element name="ServisUcretIndirim" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Yolcu">
+                                                    <xs:complexType>
+                                                        <xs:sequence>
+                                                            <xs:element name="PNR" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="ID" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="PNRID" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="Ad" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="Soyad" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="TCKimlikNo" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="Cinsiyet" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="Tip" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="Fiyat" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="ServisUcret" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="Vergi" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="EBiletNo" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="YakitHarc" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="AlanVergi" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="ThyCipVarMi" type="xs:boolean" minOccurs="0" />
+                                                            <xs:element name="TCVatandasiMi" type="xs:boolean" minOccurs="0" />
+                                                            <xs:element name="BiletIptalHizmetiUcret" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="KoltukNo" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="BinisYer" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="BinisServis" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="InisServis" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="IslemTipi" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="IslemTarihi" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="Acente" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="Kullanici" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="AcenteID" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="KullaniciID" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="CM_AcenteID" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="CM_KullaniciID" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="MerkezAcenteID" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="IslemDovizKur" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="DovizKurId" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="ReissueMu" type="xs:boolean" minOccurs="0" />
+                                                            <xs:element name="EkHizmetMi" type="xs:boolean" minOccurs="0" />
+                                                            <xs:element name="EkHizmetId" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="Durum1" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="Durum1Tarih" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="AktifDurum" type="xs:string" minOccurs="0" />
+                                                            <xs:element name="Segment">
+                                                                <xs:complexType>
+                                                                    <xs:sequence>
+                                                                        <xs:element name="ID" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="PNRID" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="Kalkis" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="Varis" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="SeferNo" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="HatNo" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="KalkisTarih" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="VarisTarih" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="TasiyiciFirma" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="AracTipi" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="Sinif" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="SeferSure" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="SeferTip" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="PeronNo" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="KalkisTerminal" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="BosTarih" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="BosSaat" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="SeferTakipNo" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="DonusMu" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="KalkisKod" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="VarisKod" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="KalkisNoktaID" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="VarisNoktaID" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="CiktilardaKaraAramaNoktalariGozuksunMu" type="xs:boolean" minOccurs="0" />
+                                                                        <xs:element name="SeyahatSuresiGosterimTipi" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="SinifTip" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="FirmaAd" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="FirmaKod" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="FirmaID" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="FirmaNo" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="BiletIptalAktifMi" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="BiletAcigaAlAktifMi" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="SeyahatTipi" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="SeferSureDk" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="YaklasikSeyahatSuresi" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="KalkisKaraNoktaID" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="KalkisKaraNokta" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="VarisKaraNoktaID" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="VarisKaraNokta" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="SefereKadarIptalEdilebilmeSuresiDakika" type="xs:string" minOccurs="0" />
+                                                                        <xs:element name="AcikBilet" minOccurs="0">
+                                                                        </xs:element>
+                                                                    </xs:sequence>
+                                                                </xs:complexType>
+                                                            </xs:element>
+                                                        </xs:sequence>
+                                                    </xs:complexType>
+                                                </xs:element>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="Tahsilat">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="Tarih" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Acente" type="xs:string" minOccurs="0" />
+                                                <xs:element name="IslemTip" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Tip" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Tutar" type="xs:string" minOccurs="0" />
+                                                <xs:element name="HarcananTutar" type="xs:string" minOccurs="0" />
+                                                <xs:element name="AcikTutar" type="xs:string" minOccurs="0" />
+                                                <xs:element name="KazanilanPuan" type="xs:string" minOccurs="0" />
+                                                <xs:element name="HarcananPuan" type="xs:string" minOccurs="0" />
+                                                <xs:element name="NetPuan" type="xs:string" minOccurs="0" />
+                                                <xs:element name="TakipNo" type="xs:string" minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="Uyelik">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="MilparaKartNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartCins" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartSeriNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartSahipTCKN" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartSahipAd" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartSahipSoyad" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartGecerlilikTarihi" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartFaturaAdresID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartFaturaAdresAd" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartFaturaAdresSoyad" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartFaturaAdresNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartFaturaAdresIlce" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartFaturaAdresIl" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartFaturaAdresPostaKodu" type="xs:string" minOccurs="0" />
+                                                <xs:element name="MilparaKartFaturaAdresEposta" type="xs:string" minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="Tahsilat">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="Tarih" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Acente" type="xs:string" minOccurs="0" />
+                                                <xs:element name="IslemTip" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Tip" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Tutar" type="xs:string" minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="PNRIslemDetay">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="PNR" type="xs:string" minOccurs="0" />
+                                                <xs:element name="IslemTipi" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Tarih" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Firma" type="xs:string" minOccurs="0" />
+                                                <xs:element name="KalkisVaris" type="xs:string" minOccurs="0" />
+                                                <xs:element name="KoltukNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="AdSoyad" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Tutar" type="xs:string" minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="Fatura">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="ID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="PNRID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="FaturaTip" type="xs:string" minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="Komisyon">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="Acente" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Tutar" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Oran" type="xs:string" minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="KoltukNolar">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="KoltukNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="PNRSegmentID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="PNRYolcuID" type="xs:string" minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="AcenteOnOdeme">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="TaksitSayi" type="xs:string" minOccurs="0" />
+                                                <xs:element name="VadeFark" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Tutar" type="xs:string" minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="PnrEkHizmetSegment">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="ID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="PNRID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Kalkis" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Varis" type="xs:string" minOccurs="0" />
+                                                <xs:element name="SeferNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="HatNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="KalkisTarih" type="xs:string" minOccurs="0" />
+                                                <xs:element name="VarisTarih" type="xs:string" minOccurs="0" />
+                                                <xs:element name="TasiyiciFirma" type="xs:string" minOccurs="0" />
+                                                <xs:element name="AracTipi" type="xs:string" minOccurs="0" />
+                                                <xs:element name="Sinif" type="xs:string" minOccurs="0" />
+                                                <xs:element name="SeferSure" type="xs:string" minOccurs="0" />
+                                                <xs:element name="SeferTip" type="xs:string" minOccurs="0" />
+                                                <xs:element name="PeronNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="KalkisTerminal" type="xs:string" minOccurs="0" />
+                                                <xs:element name="BosTarih" type="xs:string" minOccurs="0" />
+                                                <xs:element name="BosSaat" type="xs:string" minOccurs="0" />
+                                                <xs:element name="SeferTakipNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="DonusMu" type="xs:string" minOccurs="0" />
+                                                <xs:element name="KalkisKod" type="xs:string" minOccurs="0" />
+                                                <xs:element name="VarisKod" type="xs:string" minOccurs="0" />
+                                                <xs:element name="KalkisNoktaID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="VarisNoktaID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="CiktilardaKaraAramaNoktalariGozuksunMu" type="xs:string" minOccurs="0" />
+                                                <xs:element name="SeyahatSuresiGosterimTipi" type="xs:string" minOccurs="0" />
+                                                <xs:element name="SinifTip" type="xs:string" minOccurs="0" />
+                                                <xs:element name="FirmaAd" type="xs:string" minOccurs="0" />
+                                                <xs:element name="FirmaKod" type="xs:string" minOccurs="0" />
+                                                <xs:element name="FirmaID" type="xs:string" minOccurs="0" />
+                                                <xs:element name="FirmaNo" type="xs:string" minOccurs="0" />
+                                                <xs:element name="BiletIptalAktifMi" type="xs:string" minOccurs="0" />
+                                                <xs:element name="BiletAcigaAlAktifMi" type="xs:string" minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:choice>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:schema>
+                    <Bilet> <PNR> <ID>1111</ID> <PNR>1111</PNR> <PnrTip>K</PnrTip> <TakipNo>111111111111</TakipNo> <Ad>***</Ad> <Soyad>***</Soyad> <Tel>***</Tel> <Email>a@a.com</Email> <TCKimlikNo>111111111111</TCKimlikNo> <HatirlaticiNot /> <SMSGonderimSayi>1</SMSGonderimSayi> <FaturalansinMi>false</FaturalansinMi> <OfflineMi>false</OfflineMi> <UyeID>0</UyeID> <CM_EFaturaBireyselMi>false</CM_EFaturaBireyselMi> <AydinlatmaSozlesmeID>1</AydinlatmaSozlesmeID> <AcikRizaSozlesmeID>1</AcikRizaSozlesmeID> <HizmetSozlesmeID>1</HizmetSozlesmeID> <UlkeTelefonKodu>90</UlkeTelefonKodu> <ByBiletallApi>false</ByBiletallApi> <FirmaNo>37</FirmaNo> <ToplamIndirim>0.0000</ToplamIndirim> <ServisUcretIndirim>0</ServisUcretIndirim> </PNR> <Yolcu> <PNR>111111111111</PNR> <ID>1111111111111</ID> <PNRID>1111111111</PNRID> <Ad>****</Ad> <Soyad>****</Soyad> <TCKimlikNo>111111111</TCKimlikNo> <Cinsiyet>2</Cinsiyet> <Tip>1</Tip> <Fiyat>40.0000</Fiyat> <ServisUcret>0.0000</ServisUcret> <Vergi>0.0000</Vergi> <EBiletNo>111111111111</EBiletNo> <YakitHarc>0.0000</YakitHarc> <AlanVergi>0.0000</AlanVergi> <ThyCipVarMi>false</ThyCipVarMi> <TCVatandasiMi>true</TCVatandasiMi> <BiletIptalHizmetiUcret>0.0000</BiletIptalHizmetiUcret> <KoltukNo>6</KoltukNo> <BinisYer /> <BinisServis /> <InisServis /> <IslemTipi>SATIS</IslemTipi> <IslemTarihi>2024-08-03T23:32:26.167+03:00</IslemTarihi> <Acente>****</Acente> <Kullanici>*****</Kullanici> <AcenteID>1</AcenteID> <KullaniciID>1</KullaniciID> <CM_AcenteID>0</CM_AcenteID> <CM_KullaniciID>0</CM_KullaniciID> <MerkezAcenteID>1</MerkezAcenteID> <IslemDovizKur>TRY</IslemDovizKur> <DovizKurId>0</DovizKurId> <ReissueMu>false</ReissueMu> <EkHizmetMi>false</EkHizmetMi> <EkHizmetId>0</EkHizmetId> <Durum1>SATIS</Durum1> <Durum1Tarih>2024-08-03T23:32:26.167+03:00</Durum1Tarih> <AktifDurum>1</AktifDurum> </Yolcu> <Segment> <ID>1111</ID> <PNRID>11111</PNRID> <Kalkis>ANKARA</Kalkis> <Varis>KAYSERİ</Varis> <SeferNo>20470</SeferNo> <HatNo>1</HatNo> <KalkisTarih>2024-08-06T10:30:00+03:00</KalkisTarih> <VarisTarih>2024-08-06T15:30:00+03:00</VarisTarih> <TasiyiciFirma>37</TasiyiciFirma> <AracTipi>2+2 </AracTipi> <Sinif>N</Sinif> <SeferSure>1900-01-01T05:00:00+03:00</SeferSure> <SeferTip>MOLALI</SeferTip> <PeronNo /> <KalkisTerminal /> <BosTarih>2024-08-06T00:00:00+03:00</BosTarih> <BosSaat>1900-01-01T10:30:00+03:00</BosSaat> <SeferTakipNo>11111</SeferTakipNo> <DonusMu>0</DonusMu> <KalkisKod xml:space="preserve"></KalkisKod> <VarisKod xml:space="preserve"></VarisKod> <KalkisNoktaID>13963</KalkisNoktaID> <VarisNoktaID>14016</VarisNoktaID> <CiktilardaKaraAramaNoktalariGozuksunMu>true</CiktilardaKaraAramaNoktalariGozuksunMu> <SeyahatSuresiGosterimTipi>1</SeyahatSuresiGosterimTipi> <SinifTip /> <FirmaAd>İnci Turizm</FirmaAd> <FirmaKod>37</FirmaKod> <FirmaID>37</FirmaID> <FirmaNo>37</FirmaNo> <BiletIptalAktifMi>0</BiletIptalAktifMi> <BiletAcigaAlAktifMi>0</BiletAcigaAlAktifMi> <SeyahatTipi>1</SeyahatTipi> <SeferSureDk>300</SeferSureDk> <YaklasikSeyahatSuresi>5-6</YaklasikSeyahatSuresi> <KalkisKaraNoktaID>84</KalkisKaraNoktaID> <KalkisKaraNokta>Ankara (Aşti)</KalkisKaraNokta> <VarisKaraNoktaID>738</VarisKaraNoktaID> <VarisKaraNokta>Kayseri</VarisKaraNokta> <SefereKadarIptalEdilebilmeSuresiDakika>-1</SefereKadarIptalEdilebilmeSuresiDakika> </Segment> <AcikBilet> <Tahsilat>40.0000</Tahsilat> <HarcananTutar>40.0000</HarcananTutar> <AcikTutar>0.0000</AcikTutar> <KazanilanPuan>0.0000</KazanilanPuan> <HarcananPuan>0.0000</HarcananPuan> <NetPuan>0.0000</NetPuan> <TakipNo>1111111111111</TakipNo> </AcikBilet> <Uyelik> <MilparaKartNo>0</MilparaKartNo> <Ad /> <Soyad /> <Email /> <CepTel /> <TcKimlikNo /> <Cinsiyet /> </Uyelik> <Tahsilat> <Tarih>2024-08-03T23:32:25.51+03:00</Tarih> <Acente>****</Acente> <IslemTip>TAHSILAT</IslemTip> <Tip>ONODEME</Tip> <Tutar>40.0000</Tutar> </Tahsilat> <PNRIslemDetay> <PNR>1111111111</PNR> <IslemTipi>SATIS</IslemTipi> <Tarih>2024-08-03T23:32:26.167+03:00</Tarih> <Firma>İnci Turizm</Firma> <KalkisVaris>ANKARA - KAYSERİ</KalkisVaris> <KoltukNo>6</KoltukNo> <AdSoyad>****</AdSoyad> <Tutar>40.0000</Tutar> </PNRIslemDetay> <Fatura> <ID>0</ID> <PNRID>1111111</PNRID> <FaturaTip>0</FaturaTip> </Fatura> <Komisyon> <Acente>****</Acente> <Tutar>1.4000</Tutar> <Oran>0.035</Oran> </Komisyon> <KoltukNolar> <KoltukNo>6</KoltukNo> <PNRSegmentID>111111</PNRSegmentID> <PNRYolcuID>111111</PNRYolcuID> </KoltukNolar> <AcenteOnOdeme> <TaksitSayi>0</TaksitSayi> <VadeFark>0.0000</VadeFark> <Tutar>-40.0000</Tutar> </AcenteOnOdeme> <PnrEkHizmetSegment> <ID>111111</ID> <PNRID>111111</PNRID> <Kalkis>ANKARA</Kalkis> <Varis>KAYSERİ</Varis> <SeferNo>1111</SeferNo> <HatNo>1</HatNo> <KalkisTarih>2024-08-06T10:30:00+03:00</KalkisTarih> <VarisTarih>2024-08-06T15:30:00+03:00</VarisTarih> <TasiyiciFirma>37</TasiyiciFirma> <AracTipi>2+2 </AracTipi> <Sinif>N</Sinif> <SeferSure>1900-01-01T05:00:00+03:00</SeferSure> <SeferTip>MOLALI</SeferTip> <PeronNo /> <KalkisTerminal /> <BosTarih>2024-08-06T00:00:00+03:00</BosTarih> <BosSaat>1900-01-01T10:30:00+03:00</BosSaat> <SeferTakipNo>11111111</SeferTakipNo> <DonusMu>0</DonusMu> <KalkisKod xml:space="preserve"></KalkisKod> <VarisKod xml:space="preserve"></VarisKod> <KalkisNoktaID>13963</KalkisNoktaID> <VarisNoktaID>14016</VarisNoktaID> <CiktilardaKaraAramaNoktalariGozuksunMu>true</CiktilardaKaraAramaNoktalariGozuksunMu> <SeyahatSuresiGosterimTipi>1</SeyahatSuresiGosterimTipi> <SinifTip /> <FirmaAd>İnci Turizm</FirmaAd> <FirmaKod>37</FirmaKod> <FirmaID>37</FirmaID> <FirmaNo>37</FirmaNo> <BiletIptalAktifMi>1</BiletIptalAktifMi> <BiletAcigaAlAktifMi>1</BiletAcigaAlAktifMi> </PnrEkHizmetSegment> </Bilet>
+                </NewDataSet>
+            </XmlIsletResult>
+        </XmlIsletResponse>
+    </soap:Body>
+</soap:Envelope>
+
+

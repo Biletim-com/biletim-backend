@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <IslemSonucResponse xmlns="http://tempuri.org/">
+      <IslemSonucResult>
+        <xs:schema id="IslemSonucResult" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+          <xs:element name="IslemSonuc" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Sonuc" type="xs:boolean" minOccurs="1" />
+                <xs:element name="PNR" type="xs:string" minOccurs="1" />
+                <xs:element name="Mesaj" type="xs:string" minOccurs="0" />
+                <xs:element name="SeferInternetTarihSaat" type="xs:dateTime" minOccurs="1" />
+                <xs:element name="Ebilet1" type="xs:string" minOccurs="1" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:schema>
+        <IslemSonuc>
+          <Sonuc>true</Sonuc>
+          <PNR>GC03037</PNR>
+          <Mesaj></Mesaj>
+          <SeferInternetTarihSaat>2018-12-10T02:30:00</SeferInternetTarihSaat>
+          <Ebilet1>037011459532</Ebilet1>
+        </IslemSonuc>
+      </IslemSonucResult>
+    </IslemSonucResponse>
+  </soap:Body>
+</soap:Envelope>
