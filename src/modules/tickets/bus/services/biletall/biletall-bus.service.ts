@@ -164,7 +164,7 @@ export class BiletAllService {
         Koltuklar: {
           Koltuk: requestDto.seats.map((seat) => ({
             KoltukNo: seat.seatNumber,
-            Cinsiyet: seat.gender,
+            Cinsiyet: BiletAllGender[seat.gender],
           })),
         },
       },
