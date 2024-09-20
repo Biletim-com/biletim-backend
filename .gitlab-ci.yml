@@ -27,7 +27,7 @@ sonarqube-check:
     - shared
     - shell
   only:
-    - main
+    - dev
 
 build_docker_image:
   stage: build
@@ -37,7 +37,7 @@ build_docker_image:
     - shared
     - shell
   only:
-    - main
+    - dev
 
 push_image_repository:
   stage: push
@@ -48,7 +48,7 @@ push_image_repository:
     - shared
     - shell
   only:
-    - main
+    - dev
 
 deploy:
   stage: deploy
@@ -67,4 +67,4 @@ deploy:
   tags:
     - kube20
   only:
-    - main
+    - dev
