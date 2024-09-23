@@ -21,7 +21,7 @@ import {
 import { EmailType } from '@app/common/enums/email-type.enum';
 import { PanelUsersService } from '@app/modules/panel-users/panel-users.service';
 import { UsersService } from '@app/modules/users/users.service';
-import { UUIDv4 } from '@app/common/types';
+import { UUID } from '@app/common/types';
 
 import { AUTH_STRATEGY_TOKEN, AuthStrategy } from './auth.strategy';
 import { LoginUserRequest } from './dto/login-user-request.dto';
@@ -424,11 +424,7 @@ export class AuthService {
     );
   }
 
-  async changePassword(
-    userId: UUIDv4,
-    oldPassword: string,
-    newPassword: string,
-  ) {
+  async changePassword(userId: UUID, oldPassword: string, newPassword: string) {
     try {
       const user = await this.usersService.findAppUserById(userId);
 

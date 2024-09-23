@@ -17,7 +17,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@app/auth/auth.guard';
 import { ChangePasswordDto } from '@app/auth/dto/change-password.dto';
 import { RequireAdmin, CurrentUser } from '@app/common/decorators';
-import { UUIDv4 } from '@app/common/types';
+import { UUID } from '@app/common/types';
 
 import { PanelUser } from './panel-user.entity';
 import { PanelUsersService } from './panel-users.service';
@@ -55,7 +55,7 @@ export class PanelUsersController {
   @RequireAdmin()
   @HttpCode(200)
   @Get('/find-one/:id')
-  async findOne(@Param('id') id: UUIDv4): Promise<Omit<PanelUser, 'password'>> {
+  async findOne(@Param('id') id: UUID): Promise<Omit<PanelUser, 'password'>> {
     return await this.panelUsersService.findOne(id);
   }
 
@@ -72,7 +72,7 @@ export class PanelUsersController {
   @Delete('/super-admin/:id')
   @HttpCode(201)
   async deleteAdmin(
-    @Param('id') id: UUIDv4,
+    @Param('id') id: UUID,
     @CurrentUser() user: any,
   ): Promise<any> {
     return this.panelUsersService.deleteAdmin(id, user);
@@ -95,7 +95,7 @@ export class PanelUsersController {
   @HttpCode(200)
   @Put('/:id')
   async updateUser(
-    @Param('id') id: UUIDv4,
+    @Param('id') id: UUID,
     @Body() createUserDto: CreatePanelUserDto,
   ): Promise<any> {
     return await this.panelUsersService.updateUser(id, createUserDto);
@@ -106,7 +106,7 @@ export class PanelUsersController {
   @RequireAdmin()
   @HttpCode(200)
   @Delete('/:id')
-  async delete(@Param('id') id: UUIDv4) {
+  async delete(@Param('id') id: UUID) {
     return this.panelUsersService.delete(id);
   }
 

@@ -12,7 +12,7 @@ import { ILike } from 'typeorm';
 import { AuthService } from '@app/auth/auth.service';
 import { PasswordService } from '@app/auth/password/password.service';
 import { SuperAdminConfigService } from '@app/configs/super-admin/config.service';
-import { UUIDv4 } from '@app/common/types';
+import { UUID } from '@app/common/types';
 
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
 import { PanelUsersRepository } from './panel-users.repository';
@@ -69,7 +69,7 @@ export class PanelUsersService {
     }
   }
 
-  async findOne(id: UUIDv4): Promise<Omit<PanelUser, 'password'>> {
+  async findOne(id: UUID): Promise<Omit<PanelUser, 'password'>> {
     const user = await this.panelUsersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID '${id}' not found`);
@@ -113,7 +113,7 @@ export class PanelUsersService {
     }
   }
 
-  async deleteAdmin(id: UUIDv4, req: any): Promise<any> {
+  async deleteAdmin(id: UUID, req: any): Promise<any> {
     try {
       const ReqUser = await this.findPanelUserByEmail(req.email);
       if (!ReqUser)
@@ -186,7 +186,7 @@ export class PanelUsersService {
     }
   }
 
-  async updateUser(userId: UUIDv4, data: CreatePanelUserDto): Promise<any> {
+  async updateUser(userId: UUID, data: CreatePanelUserDto): Promise<any> {
     try {
       const { email } = data;
       const user = await this.findPanelUserById(userId);
@@ -224,7 +224,7 @@ export class PanelUsersService {
     }
   }
 
-  async delete(userId: UUIDv4): Promise<any> {
+  async delete(userId: UUID): Promise<any> {
     try {
       const user = await this.panelUsersRepository.findOneBy({
         id: userId,
@@ -245,7 +245,7 @@ export class PanelUsersService {
   }
 
   async panelChangePassword(
-    userId: UUIDv4,
+    userId: UUID,
     oldPassword: string,
     newPassword: string,
   ) {
@@ -293,7 +293,7 @@ export class PanelUsersService {
   async findPanelUserByEmail(email: string) {
     return this.panelUsersRepository.findOneBy({ email });
   }
-  async findPanelUserById(id: UUIDv4) {
+  async findPanelUserById(id: UUID) {
     const panelUser = await this.panelUsersRepository.findOneBy({
       id,
     });
@@ -304,7 +304,7 @@ export class PanelUsersService {
     return panelUser;
   }
 
-  async isPanelUser(userId: UUIDv4): Promise<boolean> {
+  async isPanelUser(userId: UUID): Promise<boolean> {
     const panelUser = await this.panelUsersRepository.findOneBy({
       id: userId,
     });

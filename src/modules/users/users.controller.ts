@@ -16,7 +16,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@app/auth/auth.guard';
 import { CurrentUser } from '@app/common/decorators/current-user.decorator';
 import { RequireAdmin } from '@app/common/decorators/roles.decorator';
-import { UUIDv4 } from '@app/common/types';
+import { UUID } from '@app/common/types';
 
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -51,7 +51,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @HttpCode(200)
   @Get('/find-one/:id')
-  async findOne(@Param('id') id: UUIDv4): Promise<Omit<User, 'password'>> {
+  async findOne(@Param('id') id: UUID): Promise<Omit<User, 'password'>> {
     return await this.usersService.findOne(id);
   }
 
@@ -71,7 +71,7 @@ export class UsersController {
   @HttpCode(200)
   @Put('/:id')
   async updateUser(
-    @Param('id') id: UUIDv4,
+    @Param('id') id: UUID,
     @Body() createUserDto: CreateUserDto,
     @Req() req: any,
   ): Promise<any> {
@@ -87,7 +87,7 @@ export class UsersController {
   @HttpCode(200)
   @RequireAdmin()
   @Delete('/:id')
-  async delete(@Param('id') id: UUIDv4) {
+  async delete(@Param('id') id: UUID) {
     return this.usersService.delete(id);
   }
 }

@@ -11,12 +11,13 @@ import { FindOptionsRelations, ILike } from 'typeorm';
 
 import { AuthService } from '@app/auth/auth.service';
 import { PasswordService } from '@app/auth/password/password.service';
-import { UUIDv4 } from '@app/common/types';
+import { UUID } from '@app/common/types';
 
 import { PanelUsersService } from '../panel-users/panel-users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { User } from './user.entity';
+import { Passenger } from '../passengers/passenger.entity';
 
 @Injectable()
 export class UsersService {
@@ -57,7 +58,7 @@ export class UsersService {
       });
 
       const users = totalUsers.map((user) => {
-        const { password, ...rest } = user;
+        const { password: _, ...rest } = user;
         return rest;
       });
       return users;
@@ -69,7 +70,7 @@ export class UsersService {
     }
   }
 
-  async findOne(id: UUIDv4): Promise<Omit<User, 'password'>> {
+  async findOne(id: UUID): Promise<Omit<User, 'password'>> {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID '${id}' not found`);
@@ -100,6 +101,13 @@ export class UsersService {
           email: email,
           password: hashedPassword,
           isVerified: true,
+          passengers: [
+            new Passenger({
+              name,
+              familyName,
+              email,
+            }),
+          ],
         }),
       );
       // TODO: do it in a DTO
@@ -115,7 +123,7 @@ export class UsersService {
 
   async updateUser(
     reqId: any,
-    userId: UUIDv4,
+    userId: UUID,
     data: CreateUserDto,
   ): Promise<any> {
     try {
@@ -164,7 +172,7 @@ export class UsersService {
     }
   }
 
-  async delete(userId: UUIDv4) {
+  async delete(userId: UUID) {
     try {
       const user = await this.usersRepository.findOneBy({
         id: userId,
@@ -190,7 +198,7 @@ export class UsersService {
     });
   }
 
-  async findAppUserById(id: UUIDv4, findOptions?: FindOptionsRelations<User>) {
+  async findAppUserById(id: UUID, findOptions?: FindOptionsRelations<User>) {
     const appUser = await this.usersRepository.findOne({
       where: { id },
       relations: findOptions,

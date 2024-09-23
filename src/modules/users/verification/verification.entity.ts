@@ -15,7 +15,7 @@ export class Verification extends AbstractEntity<Verification> {
   @Column({ default: false })
   isExpired: boolean;
 
-  @OneToOne(() => User, (user) => user.verification)
+  @OneToOne(() => User, (user) => user.verification, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 }

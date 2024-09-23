@@ -4,7 +4,7 @@ import { ConfigModule } from '@app/configs/config.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
 // Common
-import { LoggerModule } from '@app/common/logger/logger.module';
+import { LoggerModule } from '@app/providers/logger/logger.module';
 
 // Auth Module
 import { AuthModule } from '@app/auth/auth.module';
@@ -16,6 +16,7 @@ import { TicketsModule } from '@app/modules/tickets/tickets.module';
 import { PanelUsersModule } from '@app/modules/panel-users/panel-users.module';
 import { HotelModule } from '@app/modules/booking/hotel/hotel.module';
 import { BookingModule } from '@app/modules/booking/booking.module';
+import { PassengersModule } from '@app/modules/passengers/passengers.module';
 
 // Providers
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
@@ -40,6 +41,7 @@ import { JobsModule } from '@app/jobs/jobs.module';
     HotelModule,
     TicketsModule,
     BookingModule,
+    PassengersModule,
   ],
   providers: [
     {

@@ -4,11 +4,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { UUIDv4 } from '@app/common/types';
+import { UUID } from '@app/common/types';
 
 export abstract class AbstractEntity<T> {
   @PrimaryGeneratedColumn('uuid')
-  id: UUIDv4;
+  id: UUID;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
