@@ -39,29 +39,29 @@ export class PnrBusDto {
   serviceFeeDiscount: string;
 
   constructor(pnr: PnrBus) {
-    this.id = pnr.ID[0];
-    this.pnr = pnr.PNR[0];
-    this.pnrType = pnr.PnrTip[0];
-    this.trackingNumber = pnr.TakipNo[0];
-    this.name = pnr.Ad[0];
-    this.surname = pnr.Soyad[0];
-    this.phone = pnr.Tel[0];
-    this.email = pnr.Email[0];
-    this.identificationNumber = pnr.TCKimlikNo[0];
-    this.reminderNote = pnr.HatirlaticiNot[0];
-    this.smsSentCount = pnr.SMSGonderimSayi[0];
-    this.isInvoiced = pnr.FaturalansinMi[0];
-    this.isOffline = pnr.OfflineMi[0];
-    this.memberId = pnr.UyeID[0];
-    this.isIndividualInvoice = pnr.CM_EFaturaBireyselMi[0];
-    this.dataPrivacyAgreementId = pnr.AydinlatmaSozlesmeID[0];
-    this.explicitConsentAgreementId = pnr.AcikRizaSozlesmeID[0];
-    this.serviceAgreementId = pnr.HizmetSozlesmeID[0];
-    this.countryPhoneCode = pnr.UlkeTelefonKodu[0];
-    this.isByBiletallApi = pnr.ByBiletallApi[0];
-    this.companyNumber = pnr.FirmaNo[0];
-    this.totalDiscount = pnr.ToplamIndirim[0];
-    this.serviceFeeDiscount = pnr.ServisUcretIndirim[0];
+    this.id = pnr.ID;
+    this.pnr = pnr.PNR;
+    this.pnrType = pnr.PnrTip;
+    this.trackingNumber = pnr.TakipNo;
+    this.name = pnr.Ad;
+    this.surname = pnr.Soyad;
+    this.phone = pnr.Tel;
+    this.email = pnr.Email;
+    this.identificationNumber = pnr.TCKimlikNo;
+    this.reminderNote = pnr.HatirlaticiNot;
+    this.smsSentCount = pnr.SMSGonderimSayi;
+    this.isInvoiced = pnr.FaturalansinMi;
+    this.isOffline = pnr.OfflineMi;
+    this.memberId = pnr.UyeID;
+    this.isIndividualInvoice = pnr.CM_EFaturaBireyselMi;
+    this.dataPrivacyAgreementId = pnr.AydinlatmaSozlesmeID;
+    this.explicitConsentAgreementId = pnr.AcikRizaSozlesmeID;
+    this.serviceAgreementId = pnr.HizmetSozlesmeID;
+    this.countryPhoneCode = pnr.UlkeTelefonKodu;
+    this.isByBiletallApi = pnr.ByBiletallApi;
+    this.companyNumber = pnr.FirmaNo;
+    this.totalDiscount = pnr.ToplamIndirim;
+    this.serviceFeeDiscount = pnr.ServisUcretIndirim;
   }
 }
 
@@ -106,44 +106,44 @@ export class PassengerBusDto {
   activeStatus: string;
 
   constructor(passenger: PassengerBus) {
-    this.pnr = passenger.PNR[0];
-    this.id = passenger.ID[0];
-    this.pnrId = passenger.PNRID[0];
-    this.name = passenger.Ad[0];
-    this.surname = passenger.Soyad[0];
-    this.identificationNumber = passenger.TCKimlikNo[0];
-    this.gender = passenger.Cinsiyet[0];
-    this.type = passenger.Tip[0];
-    this.price = passenger.Fiyat[0];
-    this.serviceFee = passenger.ServisUcret[0];
-    this.tax = passenger.Vergi[0];
-    this.eTicketNumber = passenger.EBiletNo[0];
-    this.fuelCharge = passenger.YakitHarc[0];
-    this.airportTax = passenger.AlanVergi[0];
-    this.isThyCip = passenger.ThyCipVarMi[0];
-    this.isCitizen = passenger.TCVatandasiMi[0];
-    this.ticketCancellationFee = passenger.BiletIptalHizmetiUcret[0];
-    this.seatNumber = passenger.KoltukNo[0];
-    this.boardingLocation = passenger.BinisYer[0];
-    this.boardingService = passenger.BinisServis[0];
-    this.arrivalService = passenger.InisServis[0];
-    this.transactionType = passenger.IslemTipi[0];
-    this.transactionDate = passenger.IslemTarihi[0];
-    this.agency = passenger.Acente[0];
-    this.user = passenger.Kullanici[0];
-    this.agencyId = passenger.AcenteID[0];
-    this.userId = passenger.KullaniciID[0];
-    this.cmAgencyId = passenger.CM_AcenteID[0];
-    this.cmUserId = passenger.CM_KullaniciID[0];
-    this.centralAgencyId = passenger.MerkezAcenteID[0];
-    this.transactionCurrencyRate = passenger.IslemDovizKur[0];
-    this.currencyRateId = passenger.DovizKurId[0];
-    this.isReissue = passenger.ReissueMu[0];
-    this.isExtraService = passenger.EkHizmetMi[0];
-    this.extraServiceId = passenger.EkHizmetId[0];
-    this.status1 = passenger.Durum1[0];
-    this.status1Date = passenger.Durum1Tarih[0];
-    this.activeStatus = passenger.AktifDurum[0];
+    this.pnr = passenger.PNR;
+    this.id = passenger.ID;
+    this.pnrId = passenger.PNRID;
+    this.name = passenger.Ad;
+    this.surname = passenger.Soyad;
+    this.identificationNumber = passenger.TCKimlikNo;
+    this.gender = passenger.Cinsiyet;
+    this.type = passenger.Tip;
+    this.price = passenger.Fiyat;
+    this.serviceFee = passenger.ServisUcret;
+    this.tax = passenger.Vergi;
+    this.eTicketNumber = passenger.EBiletNo;
+    this.fuelCharge = passenger.YakitHarc;
+    this.airportTax = passenger.AlanVergi;
+    this.isThyCip = passenger.ThyCipVarMi;
+    this.isCitizen = passenger.TCVatandasiMi;
+    this.ticketCancellationFee = passenger.BiletIptalHizmetiUcret;
+    this.seatNumber = passenger.KoltukNo;
+    this.boardingLocation = passenger.BinisYer;
+    this.boardingService = passenger.BinisServis;
+    this.arrivalService = passenger.InisServis;
+    this.transactionType = passenger.IslemTipi;
+    this.transactionDate = passenger.IslemTarihi;
+    this.agency = passenger.Acente;
+    this.user = passenger.Kullanici;
+    this.agencyId = passenger.AcenteID;
+    this.userId = passenger.KullaniciID;
+    this.cmAgencyId = passenger.CM_AcenteID;
+    this.cmUserId = passenger.CM_KullaniciID;
+    this.centralAgencyId = passenger.MerkezAcenteID;
+    this.transactionCurrencyRate = passenger.IslemDovizKur;
+    this.currencyRateId = passenger.DovizKurId;
+    this.isReissue = passenger.ReissueMu;
+    this.isExtraService = passenger.EkHizmetMi;
+    this.extraServiceId = passenger.EkHizmetId;
+    this.status1 = passenger.Durum1;
+    this.status1Date = passenger.Durum1Tarih;
+    this.activeStatus = passenger.AktifDurum;
   }
 }
 
@@ -190,48 +190,47 @@ export class SegmentBusDto {
   cancellationTimeUntilDepartureMinutes: string;
 
   constructor(segment: SegmentBus) {
-    this.id = segment.ID[0];
-    this.pnrId = segment.PNRID[0];
-    this.departure = segment.Kalkis[0];
-    this.arrival = segment.Varis[0];
-    this.tripNumber = segment.SeferNo[0];
-    this.routeNumber = segment.HatNo[0];
-    this.departureDate = segment.KalkisTarih[0];
-    this.arrivalDate = segment.VarisTarih[0];
-    this.carrier = segment.TasiyiciFirma[0];
-    this.vehicleType = segment.AracTipi[0];
-    this.classType = segment.Sinif[0];
-    this.tripDuration = segment.SeferSure[0];
-    this.tripType = segment.SeferTip[0];
-    this.platformNumber = segment.PeronNo[0];
-    this.departureTerminal = segment.KalkisTerminal[0];
-    this.emptyDate = segment.BosTarih[0];
-    this.emptyHour = segment.BosSaat[0];
-    this.tripTrackingNumber = segment.SeferTakipNo[0];
-    this.isReturn = segment.DonusMu[0];
-    this.departureCode = segment.KalkisKod.KalkisKod[0];
-    this.arrivalCode = segment.VarisKod.VarisKod[0];
-    this.departurePointId = segment.KalkisNoktaID[0];
-    this.arrivalPointId = segment.VarisNoktaID[0];
-    this.showRoadSearchPoints =
-      segment.CiktilardaKaraAramaNoktalariGozuksunMu[0];
-    this.travelDurationDisplayType = segment.SeyahatSuresiGosterimTipi[0];
-    this.classCategory = segment.SinifTip[0];
-    this.companyName = segment.FirmaAd[0];
-    this.companyCode = segment.FirmaKod[0];
-    this.companyId = segment.FirmaID[0];
-    this.companyNumber = segment.FirmaNo[0];
-    this.isTicketCancellable = segment.BiletIptalAktifMi[0];
-    this.isTicketOpenable = segment.BiletAcigaAlAktifMi[0];
-    this.travelType = segment.SeyahatTipi[0];
-    this.tripDurationMinutes = segment.SeferSureDk[0];
-    this.approximateTravelDuration = segment.YaklasikSeyahatSuresi[0];
-    this.departureRoadPointId = segment.KalkisKaraNoktaID[0];
-    this.departureRoadPoint = segment.KalkisKaraNokta[0];
-    this.arrivalRoadPointId = segment.VarisKaraNoktaID[0];
-    this.arrivalRoadPoint = segment.VarisKaraNokta[0];
+    this.id = segment.ID;
+    this.pnrId = segment.PNRID;
+    this.departure = segment.Kalkis;
+    this.arrival = segment.Varis;
+    this.tripNumber = segment.SeferNo;
+    this.routeNumber = segment.HatNo;
+    this.departureDate = segment.KalkisTarih;
+    this.arrivalDate = segment.VarisTarih;
+    this.carrier = segment.TasiyiciFirma;
+    this.vehicleType = segment.AracTipi;
+    this.classType = segment.Sinif;
+    this.tripDuration = segment.SeferSure;
+    this.tripType = segment.SeferTip;
+    this.platformNumber = segment.PeronNo;
+    this.departureTerminal = segment.KalkisTerminal;
+    this.emptyDate = segment.BosTarih;
+    this.emptyHour = segment.BosSaat;
+    this.tripTrackingNumber = segment.SeferTakipNo;
+    this.isReturn = segment.DonusMu;
+    this.departureCode = segment.KalkisKod.KalkisKod;
+    this.arrivalCode = segment.VarisKod.VarisKod;
+    this.departurePointId = segment.KalkisNoktaID;
+    this.arrivalPointId = segment.VarisNoktaID;
+    this.showRoadSearchPoints = segment.CiktilardaKaraAramaNoktalariGozuksunMu;
+    this.travelDurationDisplayType = segment.SeyahatSuresiGosterimTipi;
+    this.classCategory = segment.SinifTip;
+    this.companyName = segment.FirmaAd;
+    this.companyCode = segment.FirmaKod;
+    this.companyId = segment.FirmaID;
+    this.companyNumber = segment.FirmaNo;
+    this.isTicketCancellable = segment.BiletIptalAktifMi;
+    this.isTicketOpenable = segment.BiletAcigaAlAktifMi;
+    this.travelType = segment.SeyahatTipi;
+    this.tripDurationMinutes = segment.SeferSureDk;
+    this.approximateTravelDuration = segment.YaklasikSeyahatSuresi;
+    this.departureRoadPointId = segment.KalkisKaraNoktaID;
+    this.departureRoadPoint = segment.KalkisKaraNokta;
+    this.arrivalRoadPointId = segment.VarisKaraNoktaID;
+    this.arrivalRoadPoint = segment.VarisKaraNokta;
     this.cancellationTimeUntilDepartureMinutes =
-      segment.SefereKadarIptalEdilebilmeSuresiDakika[0];
+      segment.SefereKadarIptalEdilebilmeSuresiDakika;
   }
 }
 
@@ -245,13 +244,13 @@ export class OpenTicketBusDto {
   trackingNumber: string;
 
   constructor(openTicket: OpenTicketBus) {
-    this.collection = openTicket.Tahsilat[0];
-    this.spentAmount = openTicket.HarcananTutar[0];
-    this.openAmount = openTicket.AcikTutar[0];
-    this.earnedPoints = openTicket.KazanilanPuan[0];
-    this.spentPoints = openTicket.HarcananPuan[0];
-    this.netPoints = openTicket.NetPuan[0];
-    this.trackingNumber = openTicket.TakipNo[0];
+    this.collection = openTicket.Tahsilat;
+    this.spentAmount = openTicket.HarcananTutar;
+    this.openAmount = openTicket.AcikTutar;
+    this.earnedPoints = openTicket.KazanilanPuan;
+    this.spentPoints = openTicket.HarcananPuan;
+    this.netPoints = openTicket.NetPuan;
+    this.trackingNumber = openTicket.TakipNo;
   }
 }
 
@@ -265,13 +264,13 @@ export class MembershipBusDto {
   gender: string;
 
   constructor(membership: MembershipBus) {
-    this.milparaCardNumber = membership.MilparaKartNo[0];
-    this.firstName = membership.Ad[0];
-    this.lastName = membership.Soyad[0];
-    this.email = membership.Email[0];
-    this.mobilePhone = membership.CepTel[0];
-    this.identityNumber = membership.TcKimlikNo[0];
-    this.gender = membership.Cinsiyet[0];
+    this.milparaCardNumber = membership.MilparaKartNo;
+    this.firstName = membership.Ad;
+    this.lastName = membership.Soyad;
+    this.email = membership.Email;
+    this.mobilePhone = membership.CepTel;
+    this.identityNumber = membership.TcKimlikNo;
+    this.gender = membership.Cinsiyet;
   }
 }
 
@@ -283,11 +282,11 @@ export class CollectionBusDto {
   amount: string;
 
   constructor(collection: CollectionBus) {
-    this.date = collection.Tarih[0];
-    this.agency = collection.Acente[0];
-    this.transactionType = collection.IslemTip[0];
-    this.type = collection.Tip[0];
-    this.amount = collection.Tutar[0];
+    this.date = collection.Tarih;
+    this.agency = collection.Acente;
+    this.transactionType = collection.IslemTip;
+    this.type = collection.Tip;
+    this.amount = collection.Tutar;
   }
 }
 
@@ -302,14 +301,14 @@ export class PnrTransactionDetailBusDto {
   amount: string;
 
   constructor(pnrTransactionDetail: PnrTransactionDetailBus) {
-    this.pnr = pnrTransactionDetail.PNR[0];
-    this.transactionType = pnrTransactionDetail.IslemTipi[0];
-    this.date = pnrTransactionDetail.Tarih[0];
-    this.company = pnrTransactionDetail.Firma[0];
-    this.departureArrival = pnrTransactionDetail.KalkisVaris[0];
-    this.seatNumber = pnrTransactionDetail.KoltukNo[0];
-    this.fullName = pnrTransactionDetail.AdSoyad[0];
-    this.amount = pnrTransactionDetail.Tutar[0];
+    this.pnr = pnrTransactionDetail.PNR;
+    this.transactionType = pnrTransactionDetail.IslemTipi;
+    this.date = pnrTransactionDetail.Tarih;
+    this.company = pnrTransactionDetail.Firma;
+    this.departureArrival = pnrTransactionDetail.KalkisVaris;
+    this.seatNumber = pnrTransactionDetail.KoltukNo;
+    this.fullName = pnrTransactionDetail.AdSoyad;
+    this.amount = pnrTransactionDetail.Tutar;
   }
 }
 
@@ -319,9 +318,9 @@ export class InvoiceBusDto {
   invoiceType: string;
 
   constructor(invoice: InvoiceBus) {
-    this.id = invoice.ID[0];
-    this.pnrId = invoice.PNRID[0];
-    this.invoiceType = invoice.FaturaTip[0];
+    this.id = invoice.ID;
+    this.pnrId = invoice.PNRID;
+    this.invoiceType = invoice.FaturaTip;
   }
 }
 
@@ -331,9 +330,9 @@ export class CommissionBusDto {
   rate: string;
 
   constructor(commission: CommissionBus) {
-    this.agency = commission.Acente[0];
-    this.amount = commission.Tutar[0];
-    this.rate = commission.Oran[0];
+    this.agency = commission.Acente;
+    this.amount = commission.Tutar;
+    this.rate = commission.Oran;
   }
 }
 export class SeatNumbersBusDto {
@@ -342,9 +341,9 @@ export class SeatNumbersBusDto {
   pnrPassengerId: string;
 
   constructor(seatNumbers: SeatNumbersBus) {
-    this.seatNumber = seatNumbers.KoltukNo[0];
-    this.pnrSegmentId = seatNumbers.PNRSegmentID[0];
-    this.pnrPassengerId = seatNumbers.PNRYolcuID[0];
+    this.seatNumber = seatNumbers.KoltukNo;
+    this.pnrSegmentId = seatNumbers.PNRSegmentID;
+    this.pnrPassengerId = seatNumbers.PNRYolcuID;
   }
 }
 
@@ -354,9 +353,9 @@ export class AgencyPrepaymentBusDto {
   amount: string;
 
   constructor(agencyPrepayment: AgencyPrepaymentBus) {
-    this.installmentCount = agencyPrepayment.TaksitSayi[0];
-    this.maturityDifference = agencyPrepayment.VadeFark[0];
-    this.amount = agencyPrepayment.Tutar[0];
+    this.installmentCount = agencyPrepayment.TaksitSayi;
+    this.maturityDifference = agencyPrepayment.VadeFark;
+    this.amount = agencyPrepayment.Tutar;
   }
 }
 
@@ -395,39 +394,39 @@ export class PnrExtraServiceSegmentBusDto {
   ticketOpenActive: string;
 
   constructor(extraSegment: PnrExtraServiceSegmentBus) {
-    this.id = extraSegment.ID[0];
-    this.pnrId = extraSegment.PNRID[0];
-    this.departure = extraSegment.Kalkis[0];
-    this.arrival = extraSegment.Varis[0];
-    this.flightNumber = extraSegment.SeferNo[0];
-    this.lineNumber = extraSegment.HatNo[0];
-    this.departureDate = extraSegment.KalkisTarih[0];
-    this.arrivalDate = extraSegment.VarisTarih[0];
-    this.carrierCompany = extraSegment.TasiyiciFirma[0];
-    this.vehicleType = extraSegment.AracTipi[0];
-    this.class = extraSegment.Sinif[0];
-    this.flightDuration = extraSegment.SeferSure[0];
-    this.flightType = extraSegment.SeferTip[0];
-    this.platformNumber = extraSegment.PeronNo[0];
-    this.departureTerminal = extraSegment.KalkisTerminal[0];
-    this.emptyDate = extraSegment.BosTarih[0];
-    this.emptyTime = extraSegment.BosSaat[0];
-    this.flightTrackingNumber = extraSegment.SeferTakipNo[0];
-    this.returnTrip = extraSegment.DonusMu[0];
-    this.departureCode = extraSegment.KalkisKod.KalkisKod[0];
-    this.arrivalCode = extraSegment.VarisKod.VarisKod[0];
-    this.departurePointId = extraSegment.KalkisNoktaID[0];
-    this.arrivalPointId = extraSegment.VarisNoktaID[0];
+    this.id = extraSegment.ID;
+    this.pnrId = extraSegment.PNRID;
+    this.departure = extraSegment.Kalkis;
+    this.arrival = extraSegment.Varis;
+    this.flightNumber = extraSegment.SeferNo;
+    this.lineNumber = extraSegment.HatNo;
+    this.departureDate = extraSegment.KalkisTarih;
+    this.arrivalDate = extraSegment.VarisTarih;
+    this.carrierCompany = extraSegment.TasiyiciFirma;
+    this.vehicleType = extraSegment.AracTipi;
+    this.class = extraSegment.Sinif;
+    this.flightDuration = extraSegment.SeferSure;
+    this.flightType = extraSegment.SeferTip;
+    this.platformNumber = extraSegment.PeronNo;
+    this.departureTerminal = extraSegment.KalkisTerminal;
+    this.emptyDate = extraSegment.BosTarih;
+    this.emptyTime = extraSegment.BosSaat;
+    this.flightTrackingNumber = extraSegment.SeferTakipNo;
+    this.returnTrip = extraSegment.DonusMu;
+    this.departureCode = extraSegment.KalkisKod.KalkisKod;
+    this.arrivalCode = extraSegment.VarisKod.VarisKod;
+    this.departurePointId = extraSegment.KalkisNoktaID;
+    this.arrivalPointId = extraSegment.VarisNoktaID;
     this.showLandSearchPoints =
-      extraSegment.CiktilardaKaraAramaNoktalariGozuksunMu[0];
-    this.travelTimeDisplayType = extraSegment.SeyahatSuresiGosterimTipi[0];
-    this.classType = extraSegment.SinifTip[0];
-    this.companyName = extraSegment.FirmaAd[0];
-    this.companyCode = extraSegment.FirmaKod[0];
-    this.companyId = extraSegment.FirmaID[0];
-    this.companyNumber = extraSegment.FirmaNo[0];
-    this.ticketCancellationActive = extraSegment.BiletIptalAktifMi[0];
-    this.ticketOpenActive = extraSegment.BiletAcigaAlAktifMi[0];
+      extraSegment.CiktilardaKaraAramaNoktalariGozuksunMu;
+    this.travelTimeDisplayType = extraSegment.SeyahatSuresiGosterimTipi;
+    this.classType = extraSegment.SinifTip;
+    this.companyName = extraSegment.FirmaAd;
+    this.companyCode = extraSegment.FirmaKod;
+    this.companyId = extraSegment.FirmaID;
+    this.companyNumber = extraSegment.FirmaNo;
+    this.ticketCancellationActive = extraSegment.BiletIptalAktifMi;
+    this.ticketOpenActive = extraSegment.BiletAcigaAlAktifMi;
   }
 }
 
