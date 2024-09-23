@@ -17,6 +17,7 @@ import { PanelUsersService } from '../panel-users/panel-users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { User } from './user.entity';
+import { Passenger } from '../passengers/passenger.entity';
 
 @Injectable()
 export class UsersService {
@@ -57,7 +58,7 @@ export class UsersService {
       });
 
       const users = totalUsers.map((user) => {
-        const { password, ...rest } = user;
+        const { password: _, ...rest } = user;
         return rest;
       });
       return users;
@@ -100,6 +101,13 @@ export class UsersService {
           email: email,
           password: hashedPassword,
           isVerified: true,
+          passengers: [
+            new Passenger({
+              name,
+              familyName,
+              email,
+            }),
+          ],
         }),
       );
       // TODO: do it in a DTO
