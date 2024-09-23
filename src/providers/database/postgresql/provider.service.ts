@@ -20,7 +20,7 @@ export class PostgreSQLProviderService implements TypeOrmOptionsFactory {
       autoLoadEntities: true,
       synchronize: false,
       logging: this.postgreSQLConfigService.logging,
-      migrations: [`${__dirname}/../../../database/migrations/*{.ts,.js}`],
+      migrations: [`${__dirname}/./migrations/*{.ts,.js}`],
       migrationsRun: true,
       entities: [`${__dirname}/../../../modules/**/*.entity{.ts,.js}`],
       namingStrategy: new SnakeNamingStrategy(),

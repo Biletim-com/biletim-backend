@@ -1,8 +1,9 @@
-import { Entity, Column, OneToOne } from 'typeorm';
+import { Entity, Column, OneToOne, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
 import { Verification } from './verification/verification.entity';
+import { Passenger } from '../passengers/passenger.entity';
 
 @Entity('users')
 export class User extends AbstractEntity<User> {
@@ -40,4 +41,7 @@ export class User extends AbstractEntity<User> {
     cascade: ['insert', 'update'],
   })
   verification: Verification;
+
+  @OneToMany(() => Passenger, (passenger) => passenger.user)
+  passengers: Passenger[];
 }
