@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BiletAllParser } from './bus/services/biletall/biletall.parser';
+
 import { PnrSearchResponse } from './type/tickets-pnr-search-union.type';
 import {
   InvoiceAbroadFlight,
@@ -86,6 +86,7 @@ import {
   SegmentBusDto,
 } from './dto/tickets-pnr-search-bus.dto';
 import { ObjectTyped } from '@app/common/utils/object-typed.util';
+import { BiletAllParser } from './bus/services/biletall/biletall-bus.parser';
 
 @Injectable()
 export class TicketsParser {

@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { BiletAllService } from './bus/services/biletall/biletall.service';
 import { PnrSearchRequestDto } from './dto/tickets-pnr-search.dto';
 import * as xml2js from 'xml2js';
 import { PnrSearchBusResponse } from './type/tickets-pnr-search-bus-response.type';
 import { PnrSearchDomesticFlightResponse } from './type/tickets-pnr-search-domestic-flight-response.type';
 import { PnrSearchAbroadFlightResponse } from './type/tickets-pnr-search-abroad-flight-response.type';
-import { BiletAllParser } from './bus/services/biletall/biletall.parser';
 import { TicketsParser } from './tickets.parser';
 import { PnrSearchDomesticFlightDto } from './dto/tickets-pnr-search-domestic-flight.dto';
 import { PnrSearchAbroadFlightDto } from './dto/tickets-pnr-search-abroad-flight.dto';
 import { PnrSearchBusDto } from './dto/tickets-pnr-search-bus.dto';
+import { BiletAllService } from './bus/services/biletall/biletall-bus.service';
+import { BiletAllParser } from './bus/services/biletall/biletall-bus.parser';
 
 @Injectable()
 export class TicketsService {
