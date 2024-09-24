@@ -3,9 +3,9 @@ import { TicketsService } from './tickets.service';
 import { TicketsController } from './tickets.controller';
 import { BusModule } from './bus/bus.module';
 import { PlaneModule } from './plane/plane.module';
-import { BiletAllService } from './bus/services/biletall/biletall.service';
-import { BiletAllParser } from './bus/services/biletall/biletall.parser';
 import { TicketsParser } from './tickets.parser';
+import { BiletAllService } from './bus/services/biletall/biletall-bus.service';
+import { BiletAllParser } from './bus/services/biletall/biletall-bus.parser';
 
 @Module({
   imports: [BusModule, PlaneModule],
