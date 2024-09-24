@@ -386,14 +386,14 @@ export class PaymentRulesAbroadFlightDto {
 
 export class PnrSearchAbroadFlightDto {
   constructor(
-    public pnr: PnrAbroadFlightDto[],
-    public passenger: PassengerAbroadFlightDto[],
-    public segment: SegmentAbroadFlightDto[],
-    public openTicket: OpenTicketAbroadFlightDto[],
-    public membership: MembershipAbroadFlightDto[],
-    public invoice: InvoiceAbroadFlightDto[],
-    public seatNumbers: SeatNumbersAbroadFlightDto[],
-    public pnrExtraServiceSegment: PnrExtraServiceSegmentAbroadFlightDto[],
-    public paymentRules: PaymentRulesAbroadFlightDto[],
+    public pnr: PnrAbroadFlightDto,
+    public passenger: PassengerAbroadFlightDto,
+    public segment: SegmentAbroadFlightDto,
+    public openTicket: OpenTicketAbroadFlightDto,
+    public membership: MembershipAbroadFlightDto,
+    public invoice: InvoiceAbroadFlightDto,
+    public seatNumbers: SeatNumbersAbroadFlightDto,
+    public pnrExtraServiceSegment: PnrExtraServiceSegmentAbroadFlightDto,
+    public paymentRules: PaymentRulesAbroadFlightDto,
   ) {}
 }

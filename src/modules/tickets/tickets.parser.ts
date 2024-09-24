@@ -85,6 +85,7 @@ import {
   SeatNumbersBusDto,
   SegmentBusDto,
 } from './dto/tickets-pnr-search-bus.dto';
+import { ObjectTyped } from '@app/common/utils/object-typed.util';
 
 @Injectable()
 export class TicketsParser {
@@ -95,116 +96,112 @@ export class TicketsParser {
   ): PnrSearchBusDto => {
     const ticket = extractedResult['Bilet'][0];
 
-    const pnrResult = ticket['PNR'];
-    const pnr = pnrResult.map((entry) => {
-      const pnrParsed: PnrBus = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        pnrParsed[key] = value;
-      }
-      return new PnrBusDto(pnrParsed);
-    });
+    const pnrResult = ticket['PNR'][0];
+    const pnrParsed: PnrBus = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(pnrResult)) {
+      pnrParsed[key] = value;
+    }
+    const pnr = new PnrBusDto(pnrParsed);
 
-    const passengerResult = ticket['Yolcu'];
-    const passenger = passengerResult.map((entry) => {
-      const passengerParsed: PassengerBus = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        passengerParsed[key] = value;
-      }
-      return new PassengerBusDto(passengerParsed);
-    });
+    const passengerResult = ticket['Yolcu'][0];
+    const passengerParsed: PassengerBus = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(passengerResult)) {
+      passengerParsed[key] = value;
+    }
+    const passenger = new PassengerBusDto(passengerParsed);
 
-    const segmentResult = ticket['Segment'];
-    const segment = segmentResult.map((entry) => {
-      const segmentParsed: SegmentBus = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
+    const segmentResult = ticket['Segment'][0];
+    const segmentParsed: SegmentBus = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(segmentResult)) {
+      if (key === 'KalkisKod') {
+        segmentParsed.KalkisKod = { KalkisKod: value };
+      } else if (key === 'VarisKod') {
+        segmentParsed.VarisKod = { VarisKod: value };
+      } else {
         segmentParsed[key] = value;
       }
-      return new SegmentBusDto(segmentParsed);
-    });
+    }
+    const segment = new SegmentBusDto(segmentParsed);
 
-    const openTicketResult = ticket['AcikBilet'];
-    const openTicket = openTicketResult.map((entry) => {
-      const openTicketParsed: OpenTicketBus = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        openTicketParsed[key] = value;
-      }
-      return new OpenTicketBusDto(openTicketParsed);
-    });
+    const openTicketResult = ticket['AcikBilet'][0];
+    const openTicketParsed: OpenTicketBus = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(openTicketResult)) {
+      openTicketParsed[key] = value;
+    }
+    const openTicket = new OpenTicketBusDto(openTicketParsed);
 
-    const membershipResult = ticket['Uyelik'];
-    const membership = membershipResult.map((entry) => {
-      const membershipParsed: MembershipBus = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        membershipParsed[key] = value;
-      }
-      return new MembershipBusDto(membershipParsed);
-    });
+    const membershipResult = ticket['Uyelik'][0];
+    const membershipParsed: MembershipBus = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(membershipResult)) {
+      membershipParsed[key] = value;
+    }
+    const membership = new MembershipBusDto(membershipParsed);
 
-    const collectionResult = ticket['Tahsilat'];
-    const collection = collectionResult.map((entry) => {
-      const collectionParsed: CollectionBus = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        collectionParsed[key] = value;
-      }
-      return new CollectionBusDto(collectionParsed);
-    });
+    const collectionResult = ticket['Tahsilat'][0];
+    const collectionParsed: CollectionBus = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(collectionResult)) {
+      collectionParsed[key] = value;
+    }
+    const collection = new CollectionBusDto(collectionParsed);
 
-    const PnrTransactionDetailResult = ticket['PNRIslemDetay'];
-    const pnrTransactionDetail = PnrTransactionDetailResult.map((entry) => {
-      const pnrTransactionDetailParsed: PnrTransactionDetailBus = Object.assign(
-        {},
-      );
-      for (const [key, value] of Object.entries(entry)) {
-        pnrTransactionDetailParsed[key] = value;
-      }
-      return new PnrTransactionDetailBusDto(pnrTransactionDetailParsed);
-    });
+    const PnrTransactionDetailResult = ticket['PNRIslemDetay'][0];
+    const pnrTransactionDetailParsed: PnrTransactionDetailBus = Object.assign(
+      {},
+    );
+    for (const [key, [value]] of ObjectTyped.entries(
+      PnrTransactionDetailResult,
+    )) {
+      pnrTransactionDetailParsed[key] = value;
+    }
+    const pnrTransactionDetail = new PnrTransactionDetailBusDto(
+      pnrTransactionDetailParsed,
+    );
 
-    const invoiceResult = ticket['Fatura'];
-    const invoice = invoiceResult.map((entry) => {
-      const invoiceParsed: InvoiceBus = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        invoiceParsed[key] = value;
-      }
-      return new InvoiceBusDto(invoiceParsed);
-    });
+    const invoiceResult = ticket['Fatura'][0];
+    const invoiceParsed: InvoiceBus = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(invoiceResult)) {
+      invoiceParsed[key] = value;
+    }
+    const invoice = new InvoiceBusDto(invoiceParsed);
 
-    const commissionResult = ticket['Komisyon'];
-    const commission = commissionResult.map((entry) => {
-      const commissionParsed: CommissionBus = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        commissionParsed[key] = value;
-      }
-      return new CommissionBusDto(commissionParsed);
-    });
+    const commissionResult = ticket['Komisyon'][0];
+    const commissionParsed: CommissionBus = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(commissionResult)) {
+      commissionParsed[key] = value;
+    }
+    const commission = new CommissionBusDto(commissionParsed);
 
-    const seatNumbersResult = ticket['KoltukNolar'];
-    const seatNumbers = seatNumbersResult.map((entry) => {
-      const seatNumbersParsed: SeatNumbersBus = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        seatNumbersParsed[key] = value;
-      }
-      return new SeatNumbersBusDto(seatNumbersParsed);
-    });
+    const seatNumbersResult = ticket['KoltukNolar'][0];
+    const seatNumbersParsed: SeatNumbersBus = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(seatNumbersResult)) {
+      seatNumbersParsed[key] = value;
+    }
+    const seatNumbers = new SeatNumbersBusDto(seatNumbersParsed);
 
-    const agencyPrepaymentResult = ticket['AcenteOnOdeme'];
-    const agencyPrepayment = agencyPrepaymentResult.map((entry) => {
-      const agencyPrepaymentParsed: AgencyPrepaymentBus = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        agencyPrepaymentParsed[key] = value;
-      }
-      return new AgencyPrepaymentBusDto(agencyPrepaymentParsed);
-    });
+    const agencyPrepaymentResult = ticket['AcenteOnOdeme'][0];
+    const agencyPrepaymentParsed: AgencyPrepaymentBus = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(agencyPrepaymentResult)) {
+      agencyPrepaymentParsed[key] = value;
+    }
+    const agencyPrepayment = new AgencyPrepaymentBusDto(agencyPrepaymentParsed);
 
-    const pnrExtraServiceSegmentResult = ticket['PnrEkHizmetSegment'];
-    const pnrExtraServiceSegment = pnrExtraServiceSegmentResult.map((entry) => {
-      const pnrExtraServiceSegmentParsed: PnrExtraServiceSegmentBus =
-        Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
+    const pnrExtraServiceSegmentResult = ticket['PnrEkHizmetSegment'][0];
+    const pnrExtraServiceSegmentParsed: PnrExtraServiceSegmentBus =
+      Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(
+      pnrExtraServiceSegmentResult,
+    )) {
+      if (key === 'KalkisKod') {
+        pnrExtraServiceSegmentParsed.KalkisKod = { KalkisKod: value };
+      } else if (key === 'VarisKod') {
+        pnrExtraServiceSegmentParsed.VarisKod = { VarisKod: value };
+      } else {
         pnrExtraServiceSegmentParsed[key] = value;
       }
-      return new PnrExtraServiceSegmentBusDto(pnrExtraServiceSegmentParsed);
-    });
+    }
+    const pnrExtraServiceSegment = new PnrExtraServiceSegmentBusDto(
+      pnrExtraServiceSegmentParsed,
+    );
 
     return new PnrSearchBusDto(
       pnr,
@@ -227,120 +224,110 @@ export class TicketsParser {
   ): PnrSearchDomesticFlightDto => {
     const ticket = extractedResult['Bilet'][0];
 
-    const pnrResult = ticket['PNR'];
-    const pnr = pnrResult.map((entry) => {
-      const pnrParsed: PnrDomesticFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        pnrParsed[key] = value;
-      }
-      return new PnrDomesticFlightDto(pnrParsed);
-    });
+    const pnrResult = ticket['PNR'][0];
 
-    const passengerResult = ticket['Yolcu'];
-    const passenger = passengerResult.map((entry) => {
-      const passengerParsed: PassengerDomesticFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        passengerParsed[key] = value;
-      }
-      return new PassengerDomesticFlightDto(passengerParsed);
-    });
+    const pnrParsed: PnrDomesticFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(pnrResult)) {
+      pnrParsed[key] = value;
+    }
+    const pnr = new PnrDomesticFlightDto(pnrParsed);
 
-    const segmentResult = ticket['Segment'];
-    const segment = segmentResult.map((entry) => {
-      const segmentParsed: SegmentDomesticFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        segmentParsed[key] = value;
-      }
-      return new SegmentDomesticFlightDto(segmentParsed);
-    });
+    const passengerResult = ticket['Yolcu'][0];
+    const passengerParsed: PassengerDomesticFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(passengerResult)) {
+      passengerParsed[key] = value;
+    }
+    const passenger = new PassengerDomesticFlightDto(passengerParsed);
 
-    const openTicketResult = ticket['AcikBilet'];
-    const openTicket = openTicketResult.map((entry) => {
-      const openTicketParsed: OpenTicketDomesticFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        openTicketParsed[key] = value;
-      }
-      return new OpenTicketDomesticFlightDto(openTicketParsed);
-    });
+    const segmentResult = ticket['Segment'][0];
+    const segmentParsed: SegmentDomesticFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(segmentResult)) {
+      segmentParsed[key] = value;
+    }
+    const segment = new SegmentDomesticFlightDto(segmentParsed);
 
-    const membershipResult = ticket['Uyelik'];
-    const membership = membershipResult.map((entry) => {
-      const membershipParsed: MembershipDomesticFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        membershipParsed[key] = value;
-      }
-      return new MembershipDomesticFlightDto(membershipParsed);
-    });
+    const openTicketResult = ticket['AcikBilet'][0];
+    const openTicketParsed: OpenTicketDomesticFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(openTicketResult)) {
+      openTicketParsed[key] = value;
+    }
+    const openTicket = new OpenTicketDomesticFlightDto(openTicketParsed);
 
-    const collectionResult = ticket['Tahsilat'];
-    const collection = collectionResult.map((entry) => {
-      const collectionParsed: CollectionDomesticFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        collectionParsed[key] = value;
-      }
-      return new CollectionDomesticFlightDto(collectionParsed);
-    });
+    const membershipResult = ticket['Uyelik'][0];
 
-    const PnrTransactionDetailResult = ticket['PNRIslemDetay'];
-    const pnrTransactionDetail = PnrTransactionDetailResult.map((entry) => {
-      const pnrTransactionDetailParsed: PnrTransactionDetailDomesticFlight =
-        Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        pnrTransactionDetailParsed[key] = value;
-      }
-      return new PnrTransactionDetailDomesticFlightDto(
-        pnrTransactionDetailParsed,
-      );
-    });
+    const membershipParsed: MembershipDomesticFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(membershipResult)) {
+      membershipParsed[key] = value;
+    }
+    const membership = new MembershipDomesticFlightDto(membershipParsed);
 
-    const invoiceResult = ticket['Fatura'];
-    const invoice = invoiceResult.map((entry) => {
-      const invoiceParsed: InvoiceDomesticFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        invoiceParsed[key] = value;
-      }
-      return new InvoiceDomesticFlightDto(invoiceParsed);
-    });
+    const collectionResult = ticket['Tahsilat'][0];
+    const collectionParsed: CollectionDomesticFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(collectionResult)) {
+      collectionParsed[key] = value;
+    }
+    const collection = new CollectionDomesticFlightDto(collectionParsed);
 
-    const commissionResult = ticket['Komisyon'];
-    const commission = commissionResult.map((entry) => {
-      const commissionParsed: CommissionDomesticFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        commissionParsed[key] = value;
-      }
-      return new CommissionDomesticFlightDto(commissionParsed);
-    });
+    const PnrTransactionDetailResult = ticket['PNRIslemDetay'][0];
+    const pnrTransactionDetailParsed: PnrTransactionDetailDomesticFlight =
+      Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(
+      PnrTransactionDetailResult,
+    )) {
+      pnrTransactionDetailParsed[key] = value;
+    }
+    const pnrTransactionDetail = new PnrTransactionDetailDomesticFlightDto(
+      pnrTransactionDetailParsed,
+    );
 
-    const seatNumbersResult = ticket['KoltukNolar'];
-    const seatNumbers = seatNumbersResult.map((entry) => {
-      const seatNumbersParsed: SeatNumbersDomesticFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        seatNumbersParsed[key] = value;
-      }
-      return new SeatNumbersDomesticFlightDto(seatNumbersParsed);
-    });
+    const invoiceResult = ticket['Fatura'][0];
+    const invoiceParsed: InvoiceDomesticFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(invoiceResult)) {
+      invoiceParsed[key] = value;
+    }
+    const invoice = new InvoiceDomesticFlightDto(invoiceParsed);
 
-    const agencyPrepaymentResult = ticket['AcenteOnOdeme'];
-    const agencyPrepayment = agencyPrepaymentResult.map((entry) => {
-      const agencyPrepaymentParsed: AgencyPrepaymentDomesticFlight =
-        Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        agencyPrepaymentParsed[key] = value;
-      }
-      return new AgencyPrepaymentDomesticFlightDto(agencyPrepaymentParsed);
-    });
+    const commissionResult = ticket['Komisyon'][0];
+    const commissionParsed: CommissionDomesticFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(commissionResult)) {
+      commissionParsed[key] = value;
+    }
+    const commission = new CommissionDomesticFlightDto(commissionParsed);
 
-    const pnrExtraServiceSegmentResult = ticket['PnrEkHizmetSegment'];
-    const pnrExtraServiceSegment = pnrExtraServiceSegmentResult.map((entry) => {
-      const pnrExtraServiceSegmentParsed: PnrExtraServiceSegmentDomesticFlight =
-        Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
+    const seatNumbersResult = ticket['KoltukNolar'][0];
+    const seatNumbersParsed: SeatNumbersDomesticFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(seatNumbersResult)) {
+      seatNumbersParsed[key] = value;
+    }
+    const seatNumbers = new SeatNumbersDomesticFlightDto(seatNumbersParsed);
+
+    const agencyPrepaymentResult = ticket['AcenteOnOdeme'][0];
+    const agencyPrepaymentParsed: AgencyPrepaymentDomesticFlight =
+      Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(agencyPrepaymentResult)) {
+      agencyPrepaymentParsed[key] = value;
+    }
+    const agencyPrepayment = new AgencyPrepaymentDomesticFlightDto(
+      agencyPrepaymentParsed,
+    );
+
+    const pnrExtraServiceSegmentResult = ticket['PnrEkHizmetSegment'][0];
+    const pnrExtraServiceSegmentParsed: PnrExtraServiceSegmentDomesticFlight =
+      Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(
+      pnrExtraServiceSegmentResult,
+    )) {
+      if (key === 'UcuslarinHavayolundakiSonDurumu') {
+        pnrExtraServiceSegmentParsed.UcuslarinHavayolundakiSonDurumu = {
+          UcuslardaIptalveyaDegisiklikVarMi: value,
+        };
+      } else {
         pnrExtraServiceSegmentParsed[key] = value;
       }
-      return new PnrExtraServiceSegmentDomesticFlightDto(
-        pnrExtraServiceSegmentParsed,
-      );
-    });
+    }
+    const pnrExtraServiceSegment = new PnrExtraServiceSegmentDomesticFlightDto(
+      pnrExtraServiceSegmentParsed,
+    );
 
     return new PnrSearchDomesticFlightDto(
       pnr,
@@ -363,89 +350,73 @@ export class TicketsParser {
   ): PnrSearchAbroadFlightDto => {
     const ticket = extractedResult['Bilet'][0];
 
-    const pnrResult = ticket['PNR'];
-    const pnr = pnrResult.map((entry) => {
-      const pnrParsed: PnrAbroadFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        pnrParsed[key] = value;
-      }
-      return new PnrAbroadFlightDto(pnrParsed);
-    });
+    const pnrResult = ticket['PNR'][0];
+    const pnrParsed: PnrAbroadFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(pnrResult)) {
+      pnrParsed[key] = value;
+    }
 
-    const passengerResult = ticket['Yolcu'];
-    const passenger = passengerResult.map((entry) => {
-      const passengerParsed: PassengerAbroadFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        passengerParsed[key] = value;
-      }
-      return new PassengerAbroadFlightDto(passengerParsed);
-    });
+    const pnr = new PnrAbroadFlightDto(pnrParsed);
 
-    const segmentResult = ticket['Segment'];
-    const segment = segmentResult.map((entry) => {
-      const segmentParsed: SegmentAbroadFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        segmentParsed[key] = value;
-      }
-      return new SegmentAbroadFlightDto(segmentParsed);
-    });
+    const passengerResult = ticket['Yolcu'][0];
 
-    const openTicketResult = ticket['AcikBilet'];
-    const openTicket = openTicketResult.map((entry) => {
-      const openTicketParsed: OpenTicketAbroadFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        openTicketParsed[key] = value;
-      }
-      return new OpenTicketAbroadFlightDto(openTicketParsed);
-    });
+    const passengerParsed: PassengerAbroadFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(passengerResult)) {
+      passengerParsed[key] = value;
+    }
+    const passenger = new PassengerAbroadFlightDto(passengerParsed);
 
-    const membershipResult = ticket['Uyelik'];
-    const membership = membershipResult.map((entry) => {
-      const membershipParsed: MembershipAbroadFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        membershipParsed[key] = value;
-      }
-      return new MembershipAbroadFlightDto(membershipParsed);
-    });
+    const segmentResult = ticket['Segment'][0];
+    const segmentParsed: SegmentAbroadFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(segmentResult)) {
+      segmentParsed[key] = value;
+    }
+    const segment = new SegmentAbroadFlightDto(segmentParsed);
 
-    const invoiceResult = ticket['Fatura'];
-    const invoice = invoiceResult.map((entry) => {
-      const invoiceParsed: InvoiceAbroadFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        invoiceParsed[key] = value;
-      }
-      return new InvoiceAbroadFlightDto(invoiceParsed);
-    });
+    const openTicketResult = ticket['AcikBilet'][0];
+    const openTicketParsed: OpenTicketAbroadFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(openTicketResult)) {
+      openTicketParsed[key] = value;
+    }
+    const openTicket = new OpenTicketAbroadFlightDto(openTicketParsed);
 
-    const seatNumbersResult = ticket['KoltukNolar'];
-    const seatNumbers = seatNumbersResult.map((entry) => {
-      const seatNumbersParsed: SeatNumbersAbroadFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        seatNumbersParsed[key] = value;
-      }
-      return new SeatNumbersAbroadFlightDto(seatNumbersParsed);
-    });
+    const membershipResult = ticket['Uyelik'][0];
+    const membershipParsed: MembershipAbroadFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(membershipResult)) {
+      membershipParsed[key] = value;
+    }
+    const membership = new MembershipAbroadFlightDto(membershipParsed);
 
-    const pnrExtraServiceSegmentResult = ticket['PnrEkHizmetSegment'];
-    const pnrExtraServiceSegment = pnrExtraServiceSegmentResult.map((entry) => {
-      const pnrExtraServiceSegmentParsed: PnrExtraServiceSegmentAbroadFlight =
-        Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        pnrExtraServiceSegmentParsed[key] = value;
-      }
-      return new PnrExtraServiceSegmentAbroadFlightDto(
-        pnrExtraServiceSegmentParsed,
-      );
-    });
+    const invoiceResult = ticket['Fatura'][0];
+    const invoiceParsed: InvoiceAbroadFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(invoiceResult)) {
+      invoiceParsed[key] = value;
+    }
+    const invoice = new InvoiceAbroadFlightDto(invoiceParsed);
 
-    const paymentRulesResult = ticket['OdemeKurallari'];
-    const paymentRules = paymentRulesResult.map((entry) => {
-      const paymentRulesParsed: PaymentRulesAbroadFlight = Object.assign({});
-      for (const [key, value] of Object.entries(entry)) {
-        paymentRulesParsed[key] = value;
-      }
-      return new PaymentRulesAbroadFlightDto(paymentRulesParsed);
-    });
+    const seatNumbersResult = ticket['KoltukNolar'][0];
+    const seatNumbersParsed: SeatNumbersAbroadFlight = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(seatNumbersResult)) {
+      seatNumbersParsed[key] = value;
+    }
+    const seatNumbers = new SeatNumbersAbroadFlightDto(seatNumbersParsed);
+
+    const pnrExtraServiceSegmentResult = ticket['PnrEkHizmetSegment'][0];
+    const pnrExtraServiceSegmentParsed: PnrExtraServiceSegmentAbroadFlight =
+      Object.assign({});
+    for (const [key, [value]] of Object.entries(pnrExtraServiceSegmentResult)) {
+      pnrExtraServiceSegmentParsed[key] = value;
+    }
+    const pnrExtraServiceSegment = new PnrExtraServiceSegmentAbroadFlightDto(
+      pnrExtraServiceSegmentParsed,
+    );
+
+    const paymentRulesResult = ticket['OdemeKurallari'][0];
+    const paymentRulesParsed: PaymentRulesAbroadFlight = Object.assign({});
+    for (const [key, [value]] of Object.entries(paymentRulesResult)) {
+      paymentRulesParsed[key] = value;
+    }
+    const paymentRules = new PaymentRulesAbroadFlightDto(paymentRulesParsed);
 
     return new PnrSearchAbroadFlightDto(
       pnr,

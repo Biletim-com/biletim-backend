@@ -432,17 +432,17 @@ export class PnrExtraServiceSegmentBusDto {
 
 export class PnrSearchBusDto {
   constructor(
-    public pnr: PnrBusDto[],
-    public passenger: PassengerBusDto[],
-    public segment: SegmentBusDto[],
-    public openTicket: OpenTicketBusDto[],
-    public membership: MembershipBusDto[],
-    public collection: CollectionBusDto[],
-    public pnrTransactionDetail: PnrTransactionDetailBusDto[],
-    public invoice: InvoiceBusDto[],
-    public commission: CommissionBusDto[],
-    public seatNumbers: SeatNumbersBusDto[],
-    public agencyPrepayment: AgencyPrepaymentBusDto[],
-    public pnrExtraServiceSegment: PnrExtraServiceSegmentBusDto[],
+    public pnr: PnrBusDto,
+    public passenger: PassengerBusDto,
+    public segment: SegmentBusDto,
+    public openTicket: OpenTicketBusDto,
+    public membership: MembershipBusDto,
+    public collection: CollectionBusDto,
+    public pnrTransactionDetail: PnrTransactionDetailBusDto,
+    public invoice: InvoiceBusDto,
+    public commission: CommissionBusDto,
+    public seatNumbers: SeatNumbersBusDto,
+    public agencyPrepayment: AgencyPrepaymentBusDto,
+    public pnrExtraServiceSegment: PnrExtraServiceSegmentBusDto,
   ) {}
 }

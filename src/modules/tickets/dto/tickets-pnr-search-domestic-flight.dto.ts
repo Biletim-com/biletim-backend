@@ -422,17 +422,17 @@ export class PnrExtraServiceSegmentDomesticFlightDto {
 
 export class PnrSearchDomesticFlightDto {
   constructor(
-    public pnr: PnrDomesticFlightDto[],
-    public passenger: PassengerDomesticFlightDto[],
-    public segment: SegmentDomesticFlightDto[],
-    public openTicket: OpenTicketDomesticFlightDto[],
-    public membership: MembershipDomesticFlightDto[],
-    public collection: CollectionDomesticFlightDto[],
-    public pnrTransactionDetail: PnrTransactionDetailDomesticFlightDto[],
-    public invoice: InvoiceDomesticFlightDto[],
-    public commission: CommissionDomesticFlightDto[],
-    public seatNumbers: SeatNumbersDomesticFlightDto[],
-    public agencyPrepayment: AgencyPrepaymentDomesticFlightDto[],
-    public pnrExtraServiceSegment: PnrExtraServiceSegmentDomesticFlightDto[],
+    public pnr: PnrDomesticFlightDto,
+    public passenger: PassengerDomesticFlightDto,
+    public segment: SegmentDomesticFlightDto,
+    public openTicket: OpenTicketDomesticFlightDto,
+    public membership: MembershipDomesticFlightDto,
+    public collection: CollectionDomesticFlightDto,
+    public pnrTransactionDetail: PnrTransactionDetailDomesticFlightDto,
+    public invoice: InvoiceDomesticFlightDto,
+    public commission: CommissionDomesticFlightDto,
+    public seatNumbers: SeatNumbersDomesticFlightDto,
+    public agencyPrepayment: AgencyPrepaymentDomesticFlightDto,
+    public pnrExtraServiceSegment: PnrExtraServiceSegmentDomesticFlightDto,
   ) {}
 }
