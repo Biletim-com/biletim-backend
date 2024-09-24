@@ -84,7 +84,6 @@ export class BiletAllService {
       if (!response || !response.data) {
         throw new Error('Response is undefined.');
       }
-      // await this.saveResponseToFile(response.data);
       return xml2js.parseStringPromise(response.data) as T;
     } catch (error) {
       console.error('Error running XML request:', error);

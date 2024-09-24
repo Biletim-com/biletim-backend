@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <XmlIsletResponse xmlns="http://tempuri.org/">
+      <XmlIsletResult>
+        <NewDataSet xmlns="">
+          <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+            <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+              <xs:complexType>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                  <xs:element name="Table">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="Yer" type="xs:string" minOccurs="0" />
+                        <xs:element name="Saat" type="xs:string" minOccurs="0" />
+                        <xs:element name="Internette_Gozuksunmu" type="xs:string" minOccurs="0" />
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:choice>
+              </xs:complexType>
+            </xs:element>
+          </xs:schema>
+          <Table>
+            <Saat>2018-12-10T02:30:00+03:00</Saat>
+          </Table>
+          <Table>
+            <Yer></Yer>
+            <Saat>2018-12-10T02:30:00+03:00</Saat>
+            <Internette_Gozuksunmu>0</Internette_Gozuksunmu>
+          </Table>
+          <Table>
+            <Yer> BELSİN GİRİŞ </Yer>
+            <Saat>2018-12-10T02:30:00+03:00</Saat>
+            <Internette_Gozuksunmu>1</Internette_Gozuksunmu>
+          </Table>
+          <Table>
+            <Yer> FUZULİ</Yer>
+            <Saat>2018-12-10T02:30:00+03:00</Saat>
+            <Internette_Gozuksunmu>1</Internette_Gozuksunmu>
+          </Table>
+          <Table>
+            <Yer> HIMMETD SHEL</Yer>
+            <Saat>2018-12-10T02:30:00+03:00</Saat>
+            <Internette_Gozuksunmu>1</Internette_Gozuksunmu>
+          </Table>
+          <Table>
+            <Yer> TOYOTA</Yer>
+            <Saat>2018-12-10T02:30:00+03:00</Saat>
+            <Internette_Gozuksunmu>1</Internette_Gozuksunmu>
+          </Table>
+          <Table>
+            <Yer>AĞAÇ İŞLERİ</Yer>
+            <Saat>2018-12-10T02:40:00+03:00</Saat>
+            <Internette_Gozuksunmu>1</Internette_Gozuksunmu>
+          </Table>
+        </NewDataSet>
+      </XmlIsletResult>
+    </XmlIsletResponse>
+  </soap:Body>
+</soap:Envelope>
