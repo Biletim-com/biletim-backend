@@ -1,16 +1,12 @@
 import {
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
   NotFoundException,
-  forwardRef,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { ILike } from 'typeorm';
 
-import { AuthService } from '@app/auth/auth.service';
-import { PasswordService } from '@app/auth/password/password.service';
+import { PasswordService } from '@app/auth/services/password.service';
 import { SuperAdminConfigService } from '@app/configs/super-admin/config.service';
 import { UUID } from '@app/common/types';
 
@@ -21,9 +17,6 @@ import { PanelUser } from './panel-user.entity';
 @Injectable()
 export class PanelUsersService {
   constructor(
-    @Inject(forwardRef(() => AuthService))
-    private authService: AuthService,
-    @Inject(forwardRef(() => PasswordService))
     private passwordService: PasswordService,
     private superAdminConfigService: SuperAdminConfigService,
     private panelUsersRepository: PanelUsersRepository,
@@ -56,7 +49,7 @@ export class PanelUsersService {
       });
 
       const users = totalUsers.map((user) => {
-        const { password, ...rest } = user;
+        const { password: _, ...rest } = user;
         return rest;
       });
 
@@ -100,7 +93,7 @@ export class PanelUsersService {
           name: 'SUPER',
           familyName: 'ADMIN',
           email: superAdminEmail,
-          password: bcrypt.hashSync(superAdminPassword, 10),
+          password: this.passwordService.hashPassword(superAdminPassword),
           isSuperAdmin: true,
         }),
       );
@@ -169,15 +162,10 @@ export class PanelUsersService {
           password: await this.passwordService.hashPassword(password),
         }),
       );
-      const { accessToken, refreshToken } =
-        this.authService.generateTokens(user);
 
       // TODO: do it in a DTO
       const { password: _, ...userWithoutPassword } = user;
-      return {
-        ...userWithoutPassword,
-        tokens: { accessToken, refreshToken },
-      };
+      return userWithoutPassword;
     } catch (err: any) {
       throw new HttpException(
         `Bad Request. Please check the payload -> ${err?.message} `,
@@ -193,9 +181,7 @@ export class PanelUsersService {
       if (!user) {
         throw new NotFoundException(`User with id ${userId} not found`);
       }
-      if (data.password) {
-        data.password = await bcrypt.hash(data.password, 10);
-      }
+
       if (user.isDeleted)
         throw new HttpException(
           'user not active, please contact your super admin',
@@ -257,7 +243,10 @@ export class PanelUsersService {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
 
-      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      const isPasswordValid = await this.passwordService.validatePassword(
+        oldPassword,
+        user.password,
+      );
 
       if (!isPasswordValid) {
         throw new HttpException(
@@ -273,9 +262,7 @@ export class PanelUsersService {
         );
       }
 
-      const saltRounds = 10;
-      const salt = await bcrypt.genSalt(saltRounds);
-      const newPasswordHash = await bcrypt.hash(newPassword, salt);
+      const newPasswordHash = this.passwordService.hashPassword(newPassword);
 
       await this.panelUsersRepository.update(
         { id: user.id },

@@ -12,27 +12,28 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { AuthGuard } from '@app/auth/auth.guard';
 import { ChangePasswordDto } from '@app/auth/dto/change-password.dto';
-import { RequireAdmin, CurrentUser } from '@app/common/decorators';
+import { CurrentUser } from '@app/common/decorators';
 import { UUID } from '@app/common/types';
+import { PanelUserJwtAuthGuard } from '@app/common/guards/panel-user-jwt-auth.guard';
 
 import { PanelUser } from './panel-user.entity';
+
+// dtos
 import { PanelUsersService } from './panel-users.service';
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
 import { GetPanelUsersQuery } from './dto/get-panel-users-query.dto';
 
-@ApiBearerAuth()
-@Controller('panel')
 @ApiTags('Panel-Users')
+@ApiCookieAuth()
+@Controller('panel')
 export class PanelUsersController {
   constructor(private readonly panelUsersService: PanelUsersService) {}
 
   @ApiOperation({ summary: 'Find All Panel Users' })
-  @UseGuards(AuthGuard)
-  @RequireAdmin()
+  @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Get('/all')
   async getUsers(
@@ -42,8 +43,7 @@ export class PanelUsersController {
   }
 
   @ApiOperation({ summary: 'Find Me Panel User' })
-  @UseGuards(AuthGuard)
-  @RequireAdmin()
+  @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Get('/me')
   getMe(@CurrentUser() user: any): Promise<any> {
@@ -51,8 +51,7 @@ export class PanelUsersController {
   }
 
   @ApiOperation({ summary: 'Find One Panel User' })
-  @UseGuards(AuthGuard)
-  @RequireAdmin()
+  @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Get('/find-one/:id')
   async findOne(@Param('id') id: UUID): Promise<Omit<PanelUser, 'password'>> {
@@ -67,8 +66,7 @@ export class PanelUsersController {
   }
 
   @ApiOperation({ summary: 'Delete SUPER ADMIN )' })
-  @UseGuards(AuthGuard)
-  @RequireAdmin()
+  @UseGuards(PanelUserJwtAuthGuard)
   @Delete('/super-admin/:id')
   @HttpCode(201)
   async deleteAdmin(
@@ -79,8 +77,7 @@ export class PanelUsersController {
   }
 
   @ApiOperation({ summary: 'Create panel admin (Only SUPER ADMIN can use)' })
-  @UseGuards(AuthGuard)
-  @RequireAdmin()
+  @UseGuards(PanelUserJwtAuthGuard)
   @Post('/create-admin')
   @HttpCode(201)
   async createPanelAdmin(
@@ -90,8 +87,7 @@ export class PanelUsersController {
   }
 
   @ApiOperation({ summary: 'Update Panel User' })
-  @UseGuards(AuthGuard)
-  @RequireAdmin()
+  @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Put('/:id')
   async updateUser(
@@ -102,8 +98,7 @@ export class PanelUsersController {
   }
 
   @ApiOperation({ summary: 'Delete Panel User' })
-  @UseGuards(AuthGuard)
-  @RequireAdmin()
+  @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Delete('/:id')
   async delete(@Param('id') id: UUID) {
@@ -113,8 +108,7 @@ export class PanelUsersController {
   @ApiOperation({
     summary: 'Panel Change Password ',
   })
-  @UseGuards(AuthGuard)
-  @RequireAdmin()
+  @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Patch('/change-password')
   async panelChangePassword(

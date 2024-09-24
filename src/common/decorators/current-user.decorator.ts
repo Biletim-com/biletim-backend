@@ -5,7 +5,7 @@ export interface TCurrentUser {
   id: UUID;
   sub: string;
   name: string;
-  family_name: string;
+  familyName: string;
   email: string;
 }
 

@@ -5,16 +5,18 @@ import {
   Get,
   Post,
   Delete,
-  Patch,
   Param,
+  Put,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { AuthGuard } from '@app/auth/auth.guard';
 import { CurrentUser, TCurrentUser } from '@app/common/decorators';
 
 import { Passenger } from './passenger.entity';
 import { PassengersService } from './passengers.service';
+
+// guards
+import { JwtAuthGuard } from '@app/common/guards';
 
 // dtos
 import { CreatePassengerDto } from './dtos/create-passenger.dto';
@@ -24,20 +26,21 @@ import { UpdatePassengerDto } from './dtos/update-passenger.dto';
 import { UUID } from '@app/common/types';
 
 @ApiTags('Passengers')
+@ApiCookieAuth()
 @Controller('passengers')
 export class PassengersController {
   constructor(private readonly passengersService: PassengersService) {}
 
   @ApiOperation({ summary: 'List passengers of users' })
-  @UseGuards(AuthGuard)
-  @Get('')
+  @UseGuards(JwtAuthGuard)
+  @Get()
   listPassengers(@CurrentUser() user: TCurrentUser): Promise<Passenger[]> {
     return this.passengersService.listPassengersByUserId(user.id);
   }
 
   @ApiOperation({ summary: 'Create user passenger' })
-  @UseGuards(AuthGuard)
-  @Post('')
+  @UseGuards(JwtAuthGuard)
+  @Post()
   addPassengerToUser(
     @CurrentUser() user: TCurrentUser,
     @Body() createPassengerDto: CreatePassengerDto,
@@ -49,8 +52,8 @@ export class PassengersController {
   }
 
   @ApiOperation({ summary: 'Update passengers of user' })
-  @UseGuards(AuthGuard)
-  @Patch(':passengerId')
+  @UseGuards(JwtAuthGuard)
+  @Put(':passengerId')
   updatePassenger(
     @CurrentUser() user: TCurrentUser,
     @Param('passengerId') passengerId: UUID,
@@ -64,7 +67,7 @@ export class PassengersController {
   }
 
   @ApiOperation({ summary: 'Delete passenger of user' })
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete(':passengerId')
   deletePassenger(
     @CurrentUser() user: TCurrentUser,

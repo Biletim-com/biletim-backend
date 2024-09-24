@@ -17,6 +17,12 @@ export class AuthConfigService {
     ).jwtSecret;
   }
 
+  get jwtExpiration(): number {
+    return this.configService.getOrThrow<TAuthConfiguration>(
+      this.configurationNamespace,
+    ).jwtExpiration;
+  }
+
   get bcryptSaltRounds(): number {
     return this.configService.getOrThrow<TAuthConfiguration>(
       this.configurationNamespace,

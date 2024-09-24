@@ -8,29 +8,32 @@ import {
   Post,
   Put,
   Query,
-  Req,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { AuthGuard } from '@app/auth/auth.guard';
 import { CurrentUser } from '@app/common/decorators/current-user.decorator';
-import { RequireAdmin } from '@app/common/decorators/roles.decorator';
 import { UUID } from '@app/common/types';
 
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { GetUsersQuery } from './dto/get-users-query.dto';
+import { JwtAuthGuard, PanelUserJwtAuthGuard } from '@app/common/guards';
+import { PanelUsersService } from '../panel-users/panel-users.service';
 
-@ApiBearerAuth()
-@Controller('users')
 @ApiTags('Users')
+@ApiCookieAuth()
+@Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly panelUsersService: PanelUsersService,
+  ) {}
 
   @ApiOperation({ summary: 'Find All App Users' })
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Get()
   async getUsers(
@@ -40,7 +43,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Find Me App User' })
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Get('/me')
   getMe(@CurrentUser() user: string) {
@@ -48,7 +51,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Find One App User' })
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Get('/find-one/:id')
   async findOne(@Param('id') id: UUID): Promise<Omit<User, 'password'>> {
@@ -56,8 +59,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Create App User' })
-  @UseGuards(AuthGuard)
-  @RequireAdmin()
+  @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(201)
   @Post('/create')
   async create(
@@ -67,25 +69,28 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Update App User' })
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Put('/:id')
   async updateUser(
+    @CurrentUser() user: User,
     @Param('id') id: UUID,
     @Body() createUserDto: CreateUserDto,
-    @Req() req: any,
   ): Promise<any> {
-    return await this.usersService.updateUser(
-      req?.user?.sub,
-      id,
-      createUserDto,
-    );
+    if (user.id !== id) {
+      const isPanelUser = await this.panelUsersService.isPanelUser(user.id);
+      if (!isPanelUser) {
+        throw new UnauthorizedException(
+          'You are not authorized to perform this action',
+        );
+      }
+    }
+    return await this.usersService.updateUser(id, createUserDto);
   }
 
   @ApiOperation({ summary: 'Delete App User' })
-  @UseGuards(AuthGuard)
+  @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
-  @RequireAdmin()
   @Delete('/:id')
   async delete(@Param('id') id: UUID) {
     return this.usersService.delete(id);

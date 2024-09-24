@@ -49,6 +49,7 @@ biletim_api:
     SUPER_ADMIN_PASSWORD: SuperAdmin.12345
     SUPER_ADMIN_KEY: biletimcom2024
     JWT_SECRET: PEMPassPhrase
+    JWT_EXPIRATION: 172800
     BCRYPT_SALT_ROUNDS: 12
     RESET_PASSWORD_URL: https://timetracker.westerops.com/reset-password
     BILETALL_WSDL_URI: http://94.55.20.137/WSTEST/Service.asmx
