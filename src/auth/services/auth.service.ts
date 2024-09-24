@@ -29,11 +29,13 @@ import { Verification } from '@app/modules/users/verification/verification.entit
 import { TokenService } from './token.service';
 import { CookieService } from './cookie.service';
 import { PanelUser } from '@app/modules/panel-users/panel-user.entity';
+import { OAuth2StrategyFactory } from './factories/oauth2-strategy.factory';
 
 @Injectable()
 export class AuthService {
   private logger = new Logger(AuthService.name);
   constructor(
+    private readonly oauth2StrategyFactory: OAuth2StrategyFactory,
     private usersService: UsersService,
     private tokenService: TokenService,
     private cookieService: CookieService,
@@ -364,45 +366,43 @@ export class AuthService {
     }
   }
 
-  async loginWithGoogle(token: string) {
-    const url = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`;
-    try {
-      const response = await axios.get(url);
-      const userInfo = response.data;
-      // İsteğin başarılı olup, olmadığının kontrolü
-      if (response.status !== 200 || !userInfo) {
-        throw new BadRequestException(
-          `Google API request failed. Status: ${response.status}`,
-        );
-      }
-      // Kullanıcıyı e-posta adresiyle bulma
-      const user = await this.usersService.findByEmail(userInfo.email);
+  // async loginWithOauth2(
+  //   token: string,
+  //   provider: OAuth2Provider,
+  //   code: string,
+  //   redirectUri: string,
+  // ) {
+  //   const strategy = this.oauth2StrategyFactory.getStrategy(provider);
+  //   const { email, id } = await strategy.getUserCredentials(code, redirectUri);
+  //   try {
+  //     // Kullanıcıyı e-posta adresiyle bulma
+  //     const user = await this.usersService.findByEmail(email);
 
-      // Eğer kullanıcı yoksa, kayıt ol ve oturum aç
-      if (!user) {
-        console.log('REGISTER');
-        const password: string = uuidv4();
+  //     // Eğer kullanıcı yoksa, kayıt ol ve oturum aç
+  //     if (!user) {
+  //       console.log('REGISTER');
+  //       const password: string = uuidv4();
 
-        const signUpResult = await this.signUpWithGoogle({
-          email: userInfo.email,
-          password: password,
-          name: userInfo.given_name ?? 'firstname',
-          familyName: userInfo.family_name ?? 'lastname',
-        });
+  //       const signUpResult = await this.signUpWithGoogle({
+  //         email: userInfo.email,
+  //         password: password,
+  //         name: userInfo.given_name ?? 'firstname',
+  //         familyName: userInfo.family_name ?? 'lastname',
+  //       });
 
-        return signUpResult;
-      } else {
-        console.log('LOGIN');
-        // Eğer kullanıcı varsa, sadece oturum aç
-        const signInResult = await this.signInWithGoogle(user.email, userInfo);
+  //       return signUpResult;
+  //     } else {
+  //       console.log('LOGIN');
+  //       // Eğer kullanıcı varsa, sadece oturum aç
+  //       const signInResult = await this.signInWithGoogle(user.email, userInfo);
 
-        return signInResult;
-      }
-    } catch (error) {
-      //HTTP hatası oluştuğunda veya başka bir hata durumunda buraya düşer
-      throw new BadRequestException(`ERR: Google API request failed`);
-    }
-  }
+  //       return signInResult;
+  //     }
+  //   } catch (error) {
+  //     //HTTP hatası oluştuğunda veya başka bir hata durumunda buraya düşer
+  //     throw new BadRequestException(`ERR: Google API request failed`);
+  //   }
+  // }
 
   async signUpWithGoogle(createUserDto: RegisterUserRequest): Promise<{
     accessToken: string;

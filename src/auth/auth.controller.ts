@@ -118,10 +118,10 @@ export class AuthController {
     );
   }
 
-  @HttpCode(200)
-  @Post('/login-google')
-  async loginWithGoogle(@Body() body) {
-    const userInfo = await this.authService.loginWithGoogle(body.token);
-    return userInfo;
-  }
+  // @HttpCode(200)
+  // @Post('/login-oauth')
+  // async loginWithOauth2(@Body() body) {
+  //   const userInfo = await this.authService.loginWithOauth2(body.token);
+  //   return userInfo;
+  // }
 }
