@@ -8,7 +8,7 @@ import {
   Length,
   ValidateNested,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { DateTime } from '@app/common/types';
@@ -90,6 +90,6 @@ export class CreatePassengerDto {
   })
   @ValidateNested()
   @IsOptional()
-  @Transform(() => CreatePassportDto)
+  @Type(() => CreatePassportDto)
   passport?: Nullable<CreatePassportDto>;
 }
