@@ -6,37 +6,63 @@ import {
   Post,
   Req,
   UseGuards,
+  Res,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginUserRequest } from './dto/login-user-request.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiCookieAuth } from '@nestjs/swagger';
+import type { Response } from 'express';
+
+import { CurrentUser } from '@app/common/decorators';
+import { User } from '@app/modules/users/user.entity';
+import { PanelUser } from '@app/modules/panel-users/panel-user.entity';
+
+// services
+import { AuthService } from './services/auth.service';
+
+// dtos
 import { RegisterUserRequest } from './dto/register-user-request.dto';
-import { AuthGuard } from './auth.guard';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { VerificationDto } from './dto/verification.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
+import { LoginUserRequest } from './dto/login-user-request.dto';
 
-@Controller('auth')
+// guards
+import { PanelUserLocalAuthGuard } from './guards/panel-user-local-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtAuthGuard } from '@app/common/guards/jwt-auth.guard';
+
 @ApiTags('Auth')
-@ApiBearerAuth()
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiOperation({ summary: ' Panel Login ' })
+  @ApiOperation({ summary: 'Panel User Login' })
   @Post('/panel-login')
   @HttpCode(200)
-  async panelLogin(@Body() loginUserDto: LoginUserRequest): Promise<any> {
-    return this.authService.panelLogin(loginUserDto);
+  @UseGuards(PanelUserLocalAuthGuard)
+  async panelLogin(
+    @Res({ passthrough: true }) response: Response,
+    @CurrentUser() user: PanelUser,
+    @Body() _: LoginUserRequest,
+  ): Promise<PanelUser> {
+    this.authService.login(user, response);
+    return user;
   }
 
-  @ApiOperation({ summary: ' App Login ' })
+  @ApiOperation({ summary: 'App Login' })
   @Post('/login')
   @HttpCode(200)
-  async login(@Body() loginUserDto: LoginUserRequest): Promise<any> {
-    return this.authService.login(loginUserDto);
+  @UseGuards(LocalAuthGuard)
+  async login(
+    @Res({ passthrough: true }) response: Response,
+    @CurrentUser() user: User,
+    @Body() _: LoginUserRequest,
+  ): Promise<User> {
+    this.authService.login(user, response);
+    return user;
   }
 
-  @ApiOperation({ summary: ' Register User' })
+  @ApiOperation({ summary: 'Register User' })
+  @ApiCookieAuth()
   @Post('/signup')
   @HttpCode(200)
   async register(
@@ -45,7 +71,8 @@ export class AuthController {
     return this.authService.register(registerUserRequest);
   }
 
-  @ApiOperation({ summary: ' Verify App User' })
+  @ApiOperation({ summary: 'Verify App User' })
+  @ApiCookieAuth()
   @HttpCode(200)
   @Post('/verify')
   async appVerification(
@@ -54,14 +81,16 @@ export class AuthController {
     return this.authService.appVerification(+verificationDto.verificationCode);
   }
 
-  @ApiOperation({ summary: ' Forgot Password' })
+  @ApiOperation({ summary: 'Forgot Password' })
+  @ApiCookieAuth()
   @HttpCode(200)
   @Post('/forgot-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
-  @ApiOperation({ summary: ' Reset Password' })
+  @ApiOperation({ summary: 'Reset Password' })
+  @ApiCookieAuth()
   @HttpCode(200)
   @Post('/reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
@@ -72,9 +101,10 @@ export class AuthController {
   }
 
   @ApiOperation({
-    summary: 'App Change Password ',
+    summary: 'App Change Password',
   })
-  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Patch('/change-password')
   async changePassword(

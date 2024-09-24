@@ -2,148 +2,53 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
   Logger,
   NotFoundException,
-  forwardRef,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
+import type { Response } from 'express';
 
 import {
   RESET_PASSWORD_EMAIL_TEMPLATE,
   SIGNUP_VERIFY_EMAIL_TEMPLATE,
 } from '@app/common/utils/emailTemplate';
 import { EmailType } from '@app/common/enums/email-type.enum';
-import { PanelUsersService } from '@app/modules/panel-users/panel-users.service';
 import { UsersService } from '@app/modules/users/users.service';
 import { UUID } from '@app/common/types';
 
-import { AUTH_STRATEGY_TOKEN, AuthStrategy } from './auth.strategy';
-import { LoginUserRequest } from './dto/login-user-request.dto';
-import { PasswordService } from './password/password.service';
-import { RegisterUserRequest } from './dto/register-user-request.dto';
+import { PasswordService } from './password.service';
+import { RegisterUserRequest } from '../dto/register-user-request.dto';
 import { UsersRepository } from '@app/modules/users/users.repository';
 import { User } from '@app/modules/users/user.entity';
 import { VerificationsRepository } from '@app/modules/users/verification/verification.repository';
 import { Verification } from '@app/modules/users/verification/verification.entity';
+import { TokenService } from './token.service';
+import { CookieService } from './cookie.service';
 import { PanelUser } from '@app/modules/panel-users/panel-user.entity';
 
 @Injectable()
 export class AuthService {
   private logger = new Logger(AuthService.name);
   constructor(
-    @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
+    private tokenService: TokenService,
+    private cookieService: CookieService,
     private usersRepository: UsersRepository,
     private verificationsRepository: VerificationsRepository,
-    private panelUsersService: PanelUsersService,
-    private jwtService: JwtService,
     private passwordService: PasswordService,
-    @Inject(AUTH_STRATEGY_TOKEN) private readonly authStrategy: AuthStrategy,
   ) {}
 
-  async login(LoginUserRequestDto: LoginUserRequest): Promise<any> {
-    const { email, password } = LoginUserRequestDto;
-    try {
-      const user = await this.usersService.findByEmail(email);
-      if (!user || user.isDeleted) {
-        throw new HttpException('user not found', HttpStatus.NOT_FOUND);
-      }
-      if (!user.isVerified) {
-        throw new HttpException(
-          'user not yet verified',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-      const isPasswordValid = await this.passwordService.validatePassword(
-        password,
-        user.password,
-      );
-      if (!isPasswordValid) {
-        throw new HttpException('invalid password  ', HttpStatus.UNAUTHORIZED);
-      }
-      const { accessToken, refreshToken } = this.generateTokens(user);
-
-      // TODO: this should be done is DTO
-      const { password: _, ...userWithoutPassword } = user;
-      return {
-        ...userWithoutPassword,
-        tokens: { accessToken, refreshToken },
-      };
-    } catch (err: any) {
-      Logger.error(err);
-      throw new HttpException(
-        ` Bad Request. Please check the payload -> ${err?.message}`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+  logout(response: Response): void {
+    this.cookieService.removeAuthCookie(response);
   }
 
-  async panelLogin(LoginUserRequestDto: LoginUserRequest): Promise<any> {
-    const { email, password: loginPassword } = LoginUserRequestDto;
-    try {
-      const user = await this.panelUsersService.findPanelUserByEmail(email);
-      if (!user) {
-        throw new HttpException('user not found', HttpStatus.NOT_FOUND);
-      }
-      const isPasswordValid = await this.passwordService.validatePassword(
-        loginPassword,
-        user.password,
-      );
-      if (!isPasswordValid) {
-        throw new HttpException('Unauthorized access', HttpStatus.UNAUTHORIZED);
-      }
-      const { accessToken, refreshToken } = this.generateTokens(user);
-
-      // TODO: this should be done is DTO
-      const { password: _, ...userWithoutPassword } = user;
-      return {
-        ...userWithoutPassword,
-        tokens: { accessToken, refreshToken },
-      };
-    } catch (err: any) {
-      Logger.error(err);
-      throw new HttpException(
-        ` Bad Request. Please check the payload -> ${err?.message}`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  async authenticate(access_token: string): Promise<any> {
-    try {
-      const user = await this.authStrategy.validate(access_token);
-      return Promise.resolve(user);
-    } catch (err: any) {
-      Logger.error(err?.message);
-      throw new Error(err?.message);
-    }
-  }
-
-  // TODO: handling this in DTOs should take us removing this
-  generateTokens(user: Omit<User, 'password'> | Omit<PanelUser, 'password'>) {
-    const accessTokenPayload = {
-      sub: user.id,
-      email: user.email,
-      name: user.name,
-      familyName: user.familyName,
-    };
-    const refreshTokenPayload = {
-      sub: user.id,
-      type: 'refresh',
-    };
-    const accessToken = this.jwtService.sign(accessTokenPayload, {
-      expiresIn: '2d',
-    });
-    const refreshToken = this.jwtService.sign(refreshTokenPayload, {
-      expiresIn: '7d',
-    });
-    return { accessToken, refreshToken };
+  login(user: User | PanelUser, response: Response): void {
+    const tokens = this.tokenService.generateTokens(user);
+    return this.cookieService.setAuthCookie(tokens, response);
   }
 
   async register(registerUserRequest: RegisterUserRequest): Promise<any> {
@@ -151,7 +56,6 @@ export class AuthService {
       const { password, name, familyName } = registerUserRequest;
       const email = registerUserRequest.email.toLowerCase();
       const existUser = await this.usersService.findByEmail(email);
-      console.log({ existUser });
       if (existUser) {
         if (!existUser.isVerified) {
           const { verificationCode } = await this.uniqueSixDigitNumber();
@@ -189,20 +93,14 @@ export class AuthService {
       const user = await this.usersRepository.save(
         new User({
           email: email,
-          password: await this.passwordService.hashPassword(password),
+          password: this.passwordService.hashPassword(password),
           familyName: familyName,
           name: name,
         }),
       );
 
-      const { accessToken, refreshToken } = this.generateTokens(user);
-
       // TODO: this should be done is DTO
       const { password: _, ...userWithoutPassword } = user;
-      const responseObj = {
-        ...userWithoutPassword,
-        tokens: { accessToken, refreshToken },
-      };
 
       const { verificationCode } = await this.uniqueSixDigitNumber();
       await this.verificationsRepository.save(
@@ -224,7 +122,7 @@ export class AuthService {
 
       await this.sendEmail(EmailType.SIGNUP, emailOptions);
 
-      return responseObj;
+      return userWithoutPassword;
     } catch (err: any) {
       Logger.error(err);
       throw new HttpException(
@@ -262,7 +160,7 @@ export class AuthService {
           }),
         }),
       );
-      return this.generateTokens(updatedUser);
+      return this.tokenService.generateTokens(updatedUser);
     } catch (err: any) {
       throw new HttpException(
         `company verification error ->  ${err?.message}`,
@@ -401,6 +299,7 @@ export class AuthService {
       );
     return userVerification.user.id;
   }
+
   async resetPasswordByEmail(email: string, newPassword: string) {
     const user = await this.usersService.findByEmail(email);
 
@@ -521,7 +420,8 @@ export class AuthService {
     }
     const user = await this.usersService.create(createUserDto);
 
-    return this.generateTokens(user);
+    // @ts-ignore
+    return this.tokenService.generateTokens(user);
   }
 
   async signInWithGoogle(email: string, userInfo: any) {
@@ -536,41 +436,7 @@ export class AuthService {
         'Invalid Google token: emails do not match',
       );
     }
-    return this.generateTokens(user);
-  }
-
-  async createAccessToken(user: any) {
-    const accessTokenPayload = {
-      sub: user.id,
-      email: user.email,
-      name: user.name,
-      familyName: user.familyName,
-    };
-    const accessToken: string = this.jwtService.sign(accessTokenPayload, {
-      expiresIn: '2d',
-    });
-    return accessToken;
-  }
-
-  async findAndValidateUserByRefreshToken(token: any): Promise<any> {
-    let user: any;
-    try {
-      const decoded = this.jwtService.verify(token);
-
-      if (decoded?.type != 'refresh') {
-        throw new Error('Invalid refresh token');
-      }
-      const userId = decoded.sub;
-      const isPanelUser = await this.panelUsersService.isPanelUser(userId);
-      if (isPanelUser) {
-        user = await this.panelUsersService.findPanelUserById(userId);
-      } else {
-        user = await this.usersService.findOne(userId);
-      }
-
-      return user;
-    } catch (error) {
-      throw new Error('Invalid refresh token');
-    }
+    // @ts-ignore
+    return this.tokenService.generateTokens(user);
   }
 }

@@ -1,7 +1,6 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import { AuthModule } from '@app/auth/auth.module';
-import { PasswordService } from '@app/auth/password/password.service';
+import { PasswordService } from '@app/auth/services/password.service';
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
 import { SuperAdminConfigService } from '@app/configs/super-admin';
 
@@ -15,10 +14,7 @@ import { UsersRepository } from '../users/users.repository';
 import { VerificationsRepository } from '../users/verification/verification.repository';
 
 @Module({
-  imports: [
-    forwardRef(() => AuthModule),
-    PostgreSQLProviderModule.forFeature([PanelUser]),
-  ],
+  imports: [PostgreSQLProviderModule.forFeature([PanelUser])],
   controllers: [PanelUsersController],
   providers: [
     PanelUsersService,
@@ -29,6 +25,6 @@ import { VerificationsRepository } from '../users/verification/verification.repo
     PanelUsersRepository,
     SuperAdminConfigService,
   ],
-  exports: [SuperAdminConfigService, PanelUsersService, PanelUsersRepository],
+  exports: [PanelUsersService, PanelUsersRepository],
 })
 export class PanelUsersModule {}

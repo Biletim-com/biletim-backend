@@ -1,19 +1,14 @@
 import {
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
   NotFoundException,
-  forwardRef,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { FindOptionsRelations, ILike } from 'typeorm';
 
-import { AuthService } from '@app/auth/auth.service';
-import { PasswordService } from '@app/auth/password/password.service';
 import { UUID } from '@app/common/types';
 
-import { PanelUsersService } from '../panel-users/panel-users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { User } from './user.entity';
@@ -21,15 +16,7 @@ import { Passenger } from '../passengers/passenger.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @Inject(forwardRef(() => AuthService))
-    private authService: AuthService,
-    @Inject(forwardRef(() => PasswordService))
-    private passwordService: PasswordService,
-    @Inject(forwardRef(() => PanelUsersService))
-    private panelUsersService: PanelUsersService,
-    private usersRepository: UsersRepository,
-  ) {}
+  constructor(private usersRepository: UsersRepository) {}
 
   async getUsers(
     fullName?: string,
@@ -79,6 +66,7 @@ export class UsersService {
     const { password: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
+
   async create(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
     try {
       const { password, name, familyName } = createUserDto;
@@ -121,19 +109,8 @@ export class UsersService {
     }
   }
 
-  async updateUser(
-    reqId: any,
-    userId: UUID,
-    data: CreateUserDto,
-  ): Promise<any> {
+  async updateUser(userId: UUID, data: CreateUserDto): Promise<any> {
     try {
-      const reqUser = await this.panelUsersService.isPanelUser(reqId);
-      if (!reqUser && reqId !== userId) {
-        throw new HttpException(
-          'You are not authorized to perform this action',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
       const { email } = data;
       const user = await this.findAppUserById(userId);
       if (!user) {
@@ -192,7 +169,7 @@ export class UsersService {
     }
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findOneBy({
       email,
     });

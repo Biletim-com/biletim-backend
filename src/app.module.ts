@@ -8,7 +8,6 @@ import { LoggerModule } from '@app/providers/logger/logger.module';
 
 // Auth Module
 import { AuthModule } from '@app/auth/auth.module';
-import { AppleModule } from './apple/apple.module';
 
 // App Modules
 import { UsersModule } from '@app/modules/users/users.module';
@@ -22,22 +21,21 @@ import { PassengersModule } from '@app/modules/passengers/passengers.module';
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
 
 // Interceptors
-import { ErrorInterceptor } from '@app/common/interceptors/error.interseptor';
+import { ErrorInterceptor } from '@app/common/interceptors';
 
 // Jobs
 import { JobsModule } from '@app/jobs/jobs.module';
 
 @Module({
   imports: [
+    AuthModule,
     HttpModule,
     LoggerModule,
     ConfigModule,
     PostgreSQLProviderModule,
     JobsModule,
-    AuthModule,
     UsersModule,
     PanelUsersModule,
-    AppleModule,
     HotelModule,
     TicketsModule,
     BookingModule,
