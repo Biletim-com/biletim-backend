@@ -4,36 +4,44 @@ import {
   HttpStatus,
   Injectable,
   Logger,
-  NotFoundException,
 } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
-import * as bcrypt from 'bcrypt';
-import axios from 'axios';
 import type { Response } from 'express';
+
+import { TokenService } from './token.service';
+import { CookieService } from './cookie.service';
+import { PasswordService } from './password.service';
+import { OAuth2StrategyFactory } from '../factories/oauth2-strategy.factory';
 
 import {
   RESET_PASSWORD_EMAIL_TEMPLATE,
   SIGNUP_VERIFY_EMAIL_TEMPLATE,
 } from '@app/common/utils/emailTemplate';
-import { EmailType } from '@app/common/enums/email-type.enum';
-import { UsersService } from '@app/modules/users/users.service';
-import { UUID } from '@app/common/types';
 
-import { PasswordService } from './password.service';
-import { RegisterUserRequest } from '../dto/register-user-request.dto';
-import { UsersRepository } from '@app/modules/users/users.repository';
 import { User } from '@app/modules/users/user.entity';
-import { VerificationsRepository } from '@app/modules/users/verification/verification.repository';
+import { UsersService } from '@app/modules/users/users.service';
+import { UsersRepository } from '@app/modules/users/users.repository';
+
 import { Verification } from '@app/modules/users/verification/verification.entity';
-import { TokenService } from './token.service';
-import { CookieService } from './cookie.service';
+import { VerificationsRepository } from '@app/modules/users/verification/verification.repository';
 import { PanelUser } from '@app/modules/panel-users/panel-user.entity';
+
+// enums
+import { EmailType } from '@app/common/enums/email-type.enum';
+
+// dtos
+import { LoginOAuth2Dto } from '../dto/login-oauth2.dto';
+import { RegisterUserRequest } from '../dto/register-user-request.dto';
+
+// types
+import { UUID } from '@app/common/types';
 
 @Injectable()
 export class AuthService {
   private logger = new Logger(AuthService.name);
   constructor(
+    private oauth2StrategyFactory: OAuth2StrategyFactory,
     private usersService: UsersService,
     private tokenService: TokenService,
     private cookieService: CookieService,
@@ -48,7 +56,7 @@ export class AuthService {
 
   login(user: User | PanelUser, response: Response): void {
     const tokens = this.tokenService.generateTokens(user);
-    return this.cookieService.setAuthCookie(tokens, response);
+    this.cookieService.setAuthCookie(tokens, response);
   }
 
   async register(registerUserRequest: RegisterUserRequest): Promise<any> {
@@ -307,10 +315,7 @@ export class AuthService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    const saltRounds = 10;
-    const salt = await bcrypt.genSalt(saltRounds);
-    const newPasswordHash = await bcrypt.hash(newPassword, salt);
-
+    const newPasswordHash = this.passwordService.hashPassword(newPassword);
     await this.usersRepository.update(
       {
         email: user.email,
@@ -331,7 +336,10 @@ export class AuthService {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
 
-      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      const isPasswordValid = await this.passwordService.validatePassword(
+        oldPassword,
+        user.password,
+      );
 
       if (!isPasswordValid) {
         throw new HttpException(
@@ -347,10 +355,7 @@ export class AuthService {
         );
       }
 
-      const saltRounds = 10;
-      const salt = await bcrypt.genSalt(saltRounds);
-      const newPasswordHash = await bcrypt.hash(newPassword, salt);
-
+      const newPasswordHash = this.passwordService.hashPassword(newPassword);
       await this.usersRepository.update(
         { id: user.id },
         { password: newPasswordHash },
@@ -364,79 +369,36 @@ export class AuthService {
     }
   }
 
-  async loginWithGoogle(token: string) {
-    const url = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`;
-    try {
-      const response = await axios.get(url);
-      const userInfo = response.data;
-      // İsteğin başarılı olup, olmadığının kontrolü
-      if (response.status !== 200 || !userInfo) {
-        throw new BadRequestException(
-          `Google API request failed. Status: ${response.status}`,
-        );
-      }
-      // Kullanıcıyı e-posta adresiyle bulma
-      const user = await this.usersService.findByEmail(userInfo.email);
+  async loginWithOAuth2(
+    requestDto: LoginOAuth2Dto,
+    response: Response,
+  ): Promise<User> {
+    const { provider, code, redirectUri } = requestDto;
 
-      // Eğer kullanıcı yoksa, kayıt ol ve oturum aç
-      if (!user) {
-        console.log('REGISTER');
-        const password: string = uuidv4();
-
-        const signUpResult = await this.signUpWithGoogle({
-          email: userInfo.email,
-          password: password,
-          name: userInfo.given_name ?? 'firstname',
-          familyName: userInfo.family_name ?? 'lastname',
-        });
-
-        return signUpResult;
-      } else {
-        console.log('LOGIN');
-        // Eğer kullanıcı varsa, sadece oturum aç
-        const signInResult = await this.signInWithGoogle(user.email, userInfo);
-
-        return signInResult;
-      }
-    } catch (error) {
-      //HTTP hatası oluştuğunda veya başka bir hata durumunda buraya düşer
-      throw new BadRequestException(`ERR: Google API request failed`);
-    }
-  }
-
-  async signUpWithGoogle(createUserDto: RegisterUserRequest): Promise<{
-    accessToken: string;
-    refreshToken: string;
-  }> {
-    createUserDto.email = createUserDto.email.toLowerCase();
-    const existingUser = await this.usersService.findByEmail(
-      createUserDto.email,
+    const strategy = this.oauth2StrategyFactory.getStrategy(provider);
+    const { email, name, familyName } = await strategy.getUserCredentials(
+      code,
+      redirectUri,
     );
-    if (existingUser) {
-      throw new HttpException(
-        'This email address already in use',
-        HttpStatus.CONFLICT,
+
+    if (!email) {
+      throw new BadRequestException(
+        'Email cannot be undefined for user lookup.',
       );
     }
-    const user = await this.usersService.create(createUserDto);
-
-    // @ts-ignore
-    return this.tokenService.generateTokens(user);
-  }
-
-  async signInWithGoogle(email: string, userInfo: any) {
-    const user = await this.usersService.findByEmail(email);
+    let user = (await this.usersService.findByEmail(email)) as User;
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      const password: string = uuidv4();
+      // @ts-ignore
+      user = await this.usersService.create({
+        email: email,
+        password: password,
+        name: name,
+        familyName: familyName,
+      });
     }
-
-    if (userInfo.email != email) {
-      throw new BadRequestException(
-        'Invalid Google token: emails do not match',
-      );
-    }
-    // @ts-ignore
-    return this.tokenService.generateTokens(user);
+    this.login(user, response);
+    return user;
   }
 }

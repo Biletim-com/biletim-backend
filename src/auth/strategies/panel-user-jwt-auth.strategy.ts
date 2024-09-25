@@ -10,7 +10,7 @@ import { AuthConfigService } from '@app/configs/auth';
 import { AccessTokenPayload } from '../types/token-payload.type';
 
 @Injectable()
-export class PanelUserJwtStrategy extends PassportStrategy(
+export class PanelUserJwtAuthStrategy extends PassportStrategy(
   Strategy,
   'panel-user-jwt-auth',
 ) {

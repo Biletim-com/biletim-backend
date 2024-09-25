@@ -24,6 +24,7 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { VerificationDto } from './dto/verification.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { LoginUserRequest } from './dto/login-user-request.dto';
+import { LoginOAuth2Dto } from './dto/login-oauth2.dto';
 
 // guards
 import { PanelUserLocalAuthGuard } from './guards/panel-user-local-auth.guard';
@@ -59,6 +60,18 @@ export class AuthController {
   ): Promise<User> {
     this.authService.login(user, response);
     return user;
+  }
+
+  @ApiOperation({
+    summary: 'Login with OAuth2 ',
+  })
+  @HttpCode(200)
+  @Post('/login-oauth')
+  async loginWithOAuth2(
+    @Res({ passthrough: true }) response: Response,
+    @Body() loginOAuth2Dto: LoginOAuth2Dto,
+  ): Promise<User> {
+    return this.authService.loginWithOAuth2(loginOAuth2Dto, response);
   }
 
   @ApiOperation({ summary: 'Register User' })
@@ -116,12 +129,5 @@ export class AuthController {
       changePasswordDto.oldPassword,
       changePasswordDto.newPassword,
     );
-  }
-
-  @HttpCode(200)
-  @Post('/login-google')
-  async loginWithGoogle(@Body() body) {
-    const userInfo = await this.authService.loginWithGoogle(body.token);
-    return userInfo;
   }
 }
