@@ -11,7 +11,7 @@ import { AuthConfigService } from '@app/configs/auth';
 import { AccessTokenPayload } from '../types/token-payload.type';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtAuthStrategy extends PassportStrategy(Strategy) {
   constructor(
     authConfigService: AuthConfigService,
     private readonly usersService: UsersService,

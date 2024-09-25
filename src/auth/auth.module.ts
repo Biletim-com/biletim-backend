@@ -11,15 +11,22 @@ import { AuthService } from './services/auth.service';
 import { PasswordService } from './services/password.service';
 import { TokenService } from './services/token.service';
 import { CookieService } from './services/cookie.service';
+import { RestClientService } from '@app/providers/rest-client/provider.service';
+import { OAuth2StrategyFactory } from './factories/oauth2-strategy.factory';
 
 // strategies
-import { JwtStrategy } from './strategies/jwt-auth.strategy';
+import { JwtAuthStrategy } from './strategies/jwt-auth.strategy';
 import { LocalStrategy } from './strategies/local-auth.strategy';
-import { PanelUserJwtStrategy } from './strategies/panel-user-jwt-auth.strategy';
+import { PanelUserJwtAuthStrategy } from './strategies/panel-user-jwt-auth.strategy';
 import { PanelUserLocalStrategy } from './strategies/panel-user-local-auth.strategy';
+import { GoogleOAuth2Strategy } from './strategies/google-auth2.strategy';
+import { FacebookOAuth2Strategy } from './strategies/facebook-auth2.strategy';
 
 import { TokenRefreshMiddleware } from './middlewares/token-refresh.middleware';
+
 import { AuthConfigService } from '@app/configs/auth';
+import { OAuthLoginWithFacebookConfigService } from '@app/configs/oauth-facebook';
+import { OAuthLoginWithGoogleConfigService } from '@app/configs/oauth-google';
 
 @Module({
   imports: [
@@ -42,10 +49,16 @@ import { AuthConfigService } from '@app/configs/auth';
     PasswordService,
     TokenService,
     CookieService,
-    JwtStrategy,
+    JwtAuthStrategy,
     LocalStrategy,
-    PanelUserJwtStrategy,
+    PanelUserJwtAuthStrategy,
     PanelUserLocalStrategy,
+    GoogleOAuth2Strategy,
+    FacebookOAuth2Strategy,
+    OAuth2StrategyFactory,
+    RestClientService,
+    OAuthLoginWithGoogleConfigService,
+    OAuthLoginWithFacebookConfigService,
   ],
   exports: [AuthService, PasswordService],
 })
