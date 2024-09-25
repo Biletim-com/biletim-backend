@@ -23,7 +23,7 @@ export class FacebookOAuth2Strategy extends OAuth2Strategy {
   protected extractUserCredentialsFromIdToken(idToken: string): {
     id: string;
     email?: string;
-    name?: string;
+    name: string;
     familyName: string;
   } {
     const decodedPayload = this.jwtService.decode(idToken);

@@ -4,8 +4,8 @@ export abstract class OAuth2Strategy {
   protected abstract extractUserCredentialsFromIdToken(idToken: string): {
     id: string;
     email?: string;
-    name?: string;
-    familyName?: string;
+    name: string;
+    familyName: string;
   };
 
   protected abstract verifyCode(
@@ -19,8 +19,8 @@ export abstract class OAuth2Strategy {
   ): Promise<{
     id: string;
     email?: string;
-    name?: string;
-    familyName?: string;
+    name: string;
+    familyName: string;
   }> {
     const { idToken } = await this.verifyCode(code, redirectUri);
     return this.extractUserCredentialsFromIdToken(idToken);

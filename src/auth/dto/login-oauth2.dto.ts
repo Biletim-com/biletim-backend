@@ -4,12 +4,6 @@ import { IsString } from 'class-validator';
 
 export class LoginOAuth2Dto {
   @ApiProperty({
-    description: 'The OAuth2 token received from the provider',
-  })
-  @IsString()
-  token: string;
-
-  @ApiProperty({
     description: 'The OAuth2 provider (e.g., google or facebook)',
     example: 'google',
   })

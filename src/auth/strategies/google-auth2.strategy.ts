@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import { RestClientService } from '@app/providers/rest-client/provider.service';
@@ -12,7 +11,6 @@ export class GoogleOAuth2Strategy extends OAuth2Strategy {
   protected TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly restClientService: RestClientService,
     private readonly oAuthLoginWithGoogleConfigService: OAuthLoginWithGoogleConfigService,
@@ -23,14 +21,14 @@ export class GoogleOAuth2Strategy extends OAuth2Strategy {
   protected extractUserCredentialsFromIdToken(idToken: string): {
     id: string;
     email?: string;
-    name?: string;
+    name: string;
     familyName: string;
   } {
     const decodedPayload = this.jwtService.decode(idToken);
     if (!decodedPayload || typeof decodedPayload === 'string')
       throw new BadRequestException('Invalid idToken');
 
-    const { sub, email, name, familyName } = decodedPayload;
+    const { sub, email, name, family_name } = decodedPayload;
 
     if (!sub || !name)
       throw new BadRequestException('Token does not contain expected fields');
@@ -39,7 +37,7 @@ export class GoogleOAuth2Strategy extends OAuth2Strategy {
       id: sub,
       email,
       name,
-      familyName,
+      familyName: family_name,
     };
   }
 
@@ -47,6 +45,7 @@ export class GoogleOAuth2Strategy extends OAuth2Strategy {
     code: string,
     redirectUri: string,
   ): Promise<{ accessToken: string; idToken: string }> {
+    console.log(this.oAuthLoginWithGoogleConfigService.clientId);
     try {
       const { access_token, id_token } = await this.restClientService.request<{
         access_token: string;

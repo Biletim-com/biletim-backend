@@ -30,7 +30,6 @@ import { TokenService } from './token.service';
 import { CookieService } from './cookie.service';
 import { PanelUser } from '@app/modules/panel-users/panel-user.entity';
 import { OAuth2StrategyFactory } from './factories/oauth2-strategy.factory';
-import { LoginOAuth2Dto } from './dto/login-oauth2.dto';
 
 @Injectable()
 export class AuthService {
@@ -367,72 +366,70 @@ export class AuthService {
     }
   }
 
-  async loginWithOAuth2(requestDto: LoginOAuth2Dto): Promise<{
+  // async loginWithOauth2(
+  //   token: string,
+  //   provider: OAuth2Provider,
+  //   code: string,
+  //   redirectUri: string,
+  // ) {
+  //   const strategy = this.oauth2StrategyFactory.getStrategy(provider);
+  //   const { email, id } = await strategy.getUserCredentials(code, redirectUri);
+  //   try {
+  //     // Kullanıcıyı e-posta adresiyle bulma
+  //     const user = await this.usersService.findByEmail(email);
+
+  //     // Eğer kullanıcı yoksa, kayıt ol ve oturum aç
+  //     if (!user) {
+  //       console.log('REGISTER');
+  //       const password: string = uuidv4();
+
+  //       const signUpResult = await this.signUpWithGoogle({
+  //         email: userInfo.email,
+  //         password: password,
+  //         name: userInfo.given_name ?? 'firstname',
+  //         familyName: userInfo.family_name ?? 'lastname',
+  //       });
+
+  //       return signUpResult;
+  //     } else {
+  //       console.log('LOGIN');
+  //       // Eğer kullanıcı varsa, sadece oturum aç
+  //       const signInResult = await this.signInWithGoogle(user.email, userInfo);
+
+  //       return signInResult;
+  //     }
+  //   } catch (error) {
+  //     //HTTP hatası oluştuğunda veya başka bir hata durumunda buraya düşer
+  //     throw new BadRequestException(`ERR: Google API request failed`);
+  //   }
+  // }
+
+  async signUpWithGoogle(createUserDto: RegisterUserRequest): Promise<{
     accessToken: string;
     refreshToken: string;
   }> {
-    const { token, provider, code, redirectUri } = requestDto;
-
-    const strategy = this.oauth2StrategyFactory.getStrategy(provider);
-    const { id, email, name, familyName } = await strategy.getUserCredentials(
-      code,
-      redirectUri,
+    createUserDto.email = createUserDto.email.toLowerCase();
+    const existingUser = await this.usersService.findByEmail(
+      createUserDto.email,
     );
-    try {
-      if (!email) {
-        throw new BadRequestException(
-          'Email cannot be undefined for user lookup.',
-        );
-      }
-      const user = await this.usersService.findByEmail(email);
-
-      if (!user) {
-        console.log('REGISTER');
-        const password: string = uuidv4();
-
-        const signUpResult = await this.signUpWithOauth2({
-          email: email ?? 'email',
-          password: password,
-          name: name ?? 'name',
-          familyName: familyName ?? 'familyName',
-        });
-
-        return signUpResult;
-      } else {
-        console.log('LOGIN');
-        if (email) {
-          const signInResult = await this.signInWithOauth2(email);
-          return signInResult;
-        } else {
-          console.error('Email is undefined. Cannot sign in.');
-          throw new BadRequestException(
-            'Email cannot be undefined for sign-in with Oauth2.',
-          );
-        }
-      }
-    } catch (error) {
-      throw new BadRequestException(`ERR: Oauth2 API request failed`);
+    if (existingUser) {
+      throw new HttpException(
+        'This email address already in use',
+        HttpStatus.CONFLICT,
+      );
     }
-  }
-
-  async signUpWithOauth2(createUserDto: RegisterUserRequest): Promise<{
-    accessToken: string;
-    refreshToken: string;
-  }> {
     const user = await this.usersService.create(createUserDto);
 
     // @ts-ignore
     return this.tokenService.generateTokens(user);
   }
 
-  async signInWithOauth2(email: string) {
+  async signInWithGoogle(email: string, userInfo: any) {
     const user = await this.usersService.findByEmail(email);
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const userWithoutPassword = Object.assign({}, user, {
-      password: undefined,
-    });
 
     if (userInfo.email != email) {
       throw new BadRequestException(
