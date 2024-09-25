@@ -118,10 +118,15 @@ export class AuthController {
     );
   }
 
-  // @HttpCode(200)
-  // @Post('/login-oauth')
-  // async loginWithOauth2(@Body() body) {
-  //   const userInfo = await this.authService.loginWithOauth2(body.token);
-  //   return userInfo;
-  // }
+  @ApiOperation({
+    summary: 'Login with OAuth2 ',
+  })
+  @HttpCode(200)
+  @Post('/login-oauth')
+  async loginWithOAuth2(@Body() loginOAuth2Dto: LoginOAuth2Dto): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  }> {
+    return this.authService.loginWithOAuth2(loginOAuth2Dto);
+  }
 }

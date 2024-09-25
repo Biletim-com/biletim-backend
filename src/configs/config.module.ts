@@ -36,6 +36,16 @@ import superAdminConfiguration, {
   SuperAdminEnvVarsValidation,
 } from './super-admin';
 
+import loginWithGoogleConfiguration, {
+  OAuthLoginWithGoogleConfigService,
+  OAuthLoginWithGoogleEnvVarsValidation,
+} from './oauth-google';
+
+import loginWithFacebookConfiguration, {
+  OAuthLoginWithFacebookConfigService,
+  OAuthLoginWithFacebookEnvVarsValidation,
+} from './oauth-facebook';
+
 @Global()
 @Module({
   imports: [
@@ -48,6 +58,8 @@ import superAdminConfiguration, {
         biletAllApiConfiguration,
         hotelApiConfiguration,
         superAdminConfiguration,
+        loginWithGoogleConfiguration,
+        loginWithFacebookConfiguration,
       ],
       validate: async (config) =>
         Promise.all([
@@ -57,6 +69,14 @@ import superAdminConfiguration, {
           ConfigValidator.validate(BiletAllApiEnvVarsValidation, config),
           ConfigValidator.validate(HotelApiEnvVarsValidation, config),
           ConfigValidator.validate(SuperAdminEnvVarsValidation, config),
+          ConfigValidator.validate(
+            OAuthLoginWithGoogleEnvVarsValidation,
+            config,
+          ),
+          ConfigValidator.validate(
+            OAuthLoginWithFacebookEnvVarsValidation,
+            config,
+          ),
         ]),
     }),
   ],
@@ -68,6 +88,8 @@ import superAdminConfiguration, {
     BiletAllApiConfigService,
     HotelApiConfigService,
     SuperAdminConfigService,
+    OAuthLoginWithGoogleConfigService,
+    OAuthLoginWithFacebookConfigService,
   ],
   exports: [
     ConfigService,
@@ -77,6 +99,8 @@ import superAdminConfiguration, {
     BiletAllApiConfigService,
     HotelApiConfigService,
     SuperAdminConfigService,
+    OAuthLoginWithGoogleConfigService,
+    OAuthLoginWithFacebookConfigService,
   ],
 })
 export class ConfigModule {}
