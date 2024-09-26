@@ -13,7 +13,6 @@ import { UUID } from '@app/common/types';
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
 import { PanelUsersRepository } from './panel-users.repository';
 import { PanelUser } from './panel-user.entity';
-import { PanelUserWithoutPasswordDto } from './dto/panel-user-without-password.dto';
 
 @Injectable()
 export class PanelUsersService {
@@ -27,7 +26,7 @@ export class PanelUsersService {
     fullName?: string,
     offset = 0,
     limit = 10,
-  ): Promise<PanelUserWithoutPasswordDto[]> {
+  ): Promise<PanelUser[]> {
     try {
       const nameParts = fullName ? fullName.trim().split(' ') : [];
       const firstName = nameParts.length > 0 ? nameParts[0] : '';
@@ -49,7 +48,7 @@ export class PanelUsersService {
         where: whereCondition,
       });
 
-      return totalUsers.map((user) => new PanelUserWithoutPasswordDto(user));
+      return totalUsers;
     } catch (err: any) {
       throw new HttpException(
         `user get error -> ${err?.message}`,
@@ -58,13 +57,13 @@ export class PanelUsersService {
     }
   }
 
-  async findOne(id: UUID): Promise<PanelUserWithoutPasswordDto> {
+  async findOne(id: UUID): Promise<PanelUser> {
     const user = await this.panelUsersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID '${id}' not found`);
     }
 
-    return new PanelUserWithoutPasswordDto(user);
+    return user;
   }
 
   async createSuperAdmin(key: string): Promise<any> {
@@ -128,9 +127,7 @@ export class PanelUsersService {
     }
   }
 
-  async createPanelAdmin(
-    data: CreatePanelUserDto,
-  ): Promise<PanelUserWithoutPasswordDto> {
+  async createPanelAdmin(data: CreatePanelUserDto): Promise<PanelUser> {
     try {
       const { name, familyName, email, password } = data;
 
@@ -160,7 +157,7 @@ export class PanelUsersService {
         }),
       );
 
-      return new PanelUserWithoutPasswordDto(user);
+      return user;
     } catch (err: any) {
       throw new HttpException(
         `Bad Request. Please check the payload -> ${err?.message} `,

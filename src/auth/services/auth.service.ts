@@ -33,11 +33,9 @@ import { EmailType } from '@app/common/enums/email-type.enum';
 // dtos
 import { LoginOAuth2Dto } from '../dto/login-oauth2.dto';
 import { RegisterUserRequest } from '../dto/register-user-request.dto';
-import { UserWithoutPasswordDto } from '../dto/user-without-password.dto';
 
 // types
 import { UUID } from '@app/common/types';
-import { Passenger } from '@app/modules/passengers/passenger.entity';
 
 @Injectable()
 export class AuthService {
@@ -61,9 +59,7 @@ export class AuthService {
     this.cookieService.setAuthCookie(tokens, response);
   }
 
-  async register(
-    registerUserRequest: RegisterUserRequest,
-  ): Promise<UserWithoutPasswordDto> {
+  async register(registerUserRequest: RegisterUserRequest): Promise<User> {
     try {
       const { password, name, familyName } = registerUserRequest;
       const email = registerUserRequest.email.toLowerCase();
@@ -131,7 +127,7 @@ export class AuthService {
 
       await this.sendEmail(EmailType.SIGNUP, emailOptions);
 
-      return new UserWithoutPasswordDto(user);
+      return user;
     } catch (err: any) {
       Logger.error(err);
       throw new HttpException(
@@ -373,7 +369,7 @@ export class AuthService {
   async loginWithOAuth2(
     requestDto: LoginOAuth2Dto,
     response: Response,
-  ): Promise<UserWithoutPasswordDto> {
+  ): Promise<User> {
     const { provider, code, redirectUri } = requestDto;
 
     const strategy = this.oauth2StrategyFactory.getStrategy(provider);
@@ -391,26 +387,15 @@ export class AuthService {
 
     if (!user) {
       const password: string = uuidv4();
-      user = await this.usersRepository.save(
-        new User({
-          name: name,
-          familyName: familyName,
-          email: email,
-          password: this.passwordService.hashPassword(password),
-          isVerified: true,
-          passengers: [
-            new Passenger({
-              name,
-              familyName,
-              email,
-            }),
-          ],
-        }),
-      );
+      user = await this.usersService.create({
+        email: email,
+        password: password,
+        name: name,
+        familyName: familyName,
+      });
     }
 
-    await this.login(user, response);
-
-    return new UserWithoutPasswordDto(user);
+    this.login(user, response);
+    return user;
   }
 }

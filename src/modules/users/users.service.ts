@@ -15,7 +15,6 @@ import { UUID } from '@app/common/types';
 
 //dtos
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserWithoutPasswordDto } from '@app/auth/dto/user-without-password.dto';
 
 //entities&repositories
 import { UsersRepository } from './users.repository';
@@ -29,11 +28,7 @@ export class UsersService {
     private passwordService: PasswordService,
   ) {}
 
-  async getUsers(
-    fullName?: string,
-    offset = 0,
-    limit = 10,
-  ): Promise<UserWithoutPasswordDto[]> {
+  async getUsers(fullName?: string, offset = 0, limit = 10): Promise<User[]> {
     try {
       const nameParts = fullName ? fullName.trim().split(' ') : [];
       const firstName = nameParts.length > 0 ? nameParts[0] : '';
@@ -54,7 +49,7 @@ export class UsersService {
         take: limit,
         where: whereCondition,
       });
-      return totalUsers.map((user) => new UserWithoutPasswordDto(user));
+      return totalUsers;
     } catch (err: any) {
       throw new HttpException(
         `user get error -> ${err?.message}`,
@@ -63,15 +58,15 @@ export class UsersService {
     }
   }
 
-  async findOne(id: UUID): Promise<UserWithoutPasswordDto> {
+  async findOne(id: UUID): Promise<User> {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID '${id}' not found`);
     }
-    return new UserWithoutPasswordDto(user);
+    return user;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<UserWithoutPasswordDto> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       const { password, name, familyName } = createUserDto;
 
@@ -100,7 +95,7 @@ export class UsersService {
           ],
         }),
       );
-      return new UserWithoutPasswordDto(user);
+      return user;
     } catch (err: any) {
       throw new HttpException(
         `user create error ->  ${err?.message}`,

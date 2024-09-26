@@ -43,7 +43,12 @@ export class UsersController {
   async getUsers(
     @Query() { fullName, offset, limit }: GetUsersQuery,
   ): Promise<UserWithoutPasswordDto[]> {
-    return this.usersService.getUsers(fullName?.trim(), offset, limit);
+    const users = await this.usersService.getUsers(
+      fullName?.trim(),
+      offset,
+      limit,
+    );
+    return users.map((user) => new UserWithoutPasswordDto(user));
   }
 
   @ApiOperation({ summary: 'Find Me App User' })
@@ -59,7 +64,8 @@ export class UsersController {
   @HttpCode(200)
   @Get('/find-one/:id')
   async findOne(@Param('id') id: UUID): Promise<UserWithoutPasswordDto> {
-    return await this.usersService.findOne(id);
+    const user = await this.usersService.findOne(id);
+    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Create App User' })
@@ -69,7 +75,8 @@ export class UsersController {
   async create(
     @Body() createUserDto: CreateUserDto,
   ): Promise<UserWithoutPasswordDto> {
-    return await this.usersService.create(createUserDto);
+    const user = await this.usersService.create(createUserDto);
+    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Update App User' })

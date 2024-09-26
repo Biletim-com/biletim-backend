@@ -73,7 +73,11 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
     @Body() loginOAuth2Dto: LoginOAuth2Dto,
   ): Promise<UserWithoutPasswordDto> {
-    return this.authService.loginWithOAuth2(loginOAuth2Dto, response);
+    const user = await this.authService.loginWithOAuth2(
+      loginOAuth2Dto,
+      response,
+    );
+    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Register User' })
@@ -83,7 +87,8 @@ export class AuthController {
   async register(
     @Body() registerUserRequest: RegisterUserRequest,
   ): Promise<UserWithoutPasswordDto> {
-    return this.authService.register(registerUserRequest);
+    const user = await this.authService.register(registerUserRequest);
+    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Verify App User' })

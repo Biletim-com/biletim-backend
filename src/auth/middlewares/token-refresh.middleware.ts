@@ -61,7 +61,6 @@ export class TokenRefreshMiddleware implements NestMiddleware {
         if (isPanelUser) {
           user = await this.panelUsersService.findPanelUserById(userId);
         } else {
-          // @ts-ignore
           user = await this.usersService.findOne(userId);
         }
 

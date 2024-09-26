@@ -38,7 +38,12 @@ export class PanelUsersController {
   async getUsers(
     @Query() { fullName, offset, limit }: GetPanelUsersQuery,
   ): Promise<PanelUserWithoutPasswordDto[]> {
-    return this.panelUsersService.getUsers(fullName?.trim(), offset, limit);
+    const users = await this.panelUsersService.getUsers(
+      fullName?.trim(),
+      offset,
+      limit,
+    );
+    return users.map((user) => new PanelUserWithoutPasswordDto(user));
   }
 
   @ApiOperation({ summary: 'Find Me Panel User' })
@@ -54,7 +59,8 @@ export class PanelUsersController {
   @HttpCode(200)
   @Get('/find-one/:id')
   async findOne(@Param('id') id: UUID): Promise<PanelUserWithoutPasswordDto> {
-    return await this.panelUsersService.findOne(id);
+    const user = await this.panelUsersService.findOne(id);
+    return new PanelUserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Create SUPER ADMIN For Panel' })
@@ -82,7 +88,10 @@ export class PanelUsersController {
   async createPanelAdmin(
     @Body() createPanelAdminDto: CreatePanelUserDto,
   ): Promise<PanelUserWithoutPasswordDto> {
-    return this.panelUsersService.createPanelAdmin(createPanelAdminDto);
+    const user = await this.panelUsersService.createPanelAdmin(
+      createPanelAdminDto,
+    );
+    return new PanelUserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Update Panel User' })
