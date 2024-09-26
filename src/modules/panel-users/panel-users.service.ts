@@ -13,6 +13,7 @@ import { UUID } from '@app/common/types';
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
 import { PanelUsersRepository } from './panel-users.repository';
 import { PanelUser } from './panel-user.entity';
+import { PanelUserWithoutPasswordDto } from './dto/panel-user-without-password.dto';
 
 @Injectable()
 export class PanelUsersService {
@@ -26,7 +27,7 @@ export class PanelUsersService {
     fullName?: string,
     offset = 0,
     limit = 10,
-  ): Promise<Omit<PanelUser, 'password'>[]> {
+  ): Promise<PanelUserWithoutPasswordDto[]> {
     try {
       const nameParts = fullName ? fullName.trim().split(' ') : [];
       const firstName = nameParts.length > 0 ? nameParts[0] : '';
@@ -48,12 +49,7 @@ export class PanelUsersService {
         where: whereCondition,
       });
 
-      const users = totalUsers.map((user) => {
-        const { password: _, ...rest } = user;
-        return rest;
-      });
-
-      return users;
+      return totalUsers.map((user) => new PanelUserWithoutPasswordDto(user));
     } catch (err: any) {
       throw new HttpException(
         `user get error -> ${err?.message}`,
@@ -62,14 +58,13 @@ export class PanelUsersService {
     }
   }
 
-  async findOne(id: UUID): Promise<Omit<PanelUser, 'password'>> {
+  async findOne(id: UUID): Promise<PanelUserWithoutPasswordDto> {
     const user = await this.panelUsersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID '${id}' not found`);
     }
-    // TODO: do it in a DTO
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+
+    return new PanelUserWithoutPasswordDto(user);
   }
 
   async createSuperAdmin(key: string): Promise<any> {
@@ -133,7 +128,9 @@ export class PanelUsersService {
     }
   }
 
-  async createPanelAdmin(data: CreatePanelUserDto): Promise<any> {
+  async createPanelAdmin(
+    data: CreatePanelUserDto,
+  ): Promise<PanelUserWithoutPasswordDto> {
     try {
       const { name, familyName, email, password } = data;
 
@@ -163,9 +160,7 @@ export class PanelUsersService {
         }),
       );
 
-      // TODO: do it in a DTO
-      const { password: _, ...userWithoutPassword } = user;
-      return userWithoutPassword;
+      return new PanelUserWithoutPasswordDto(user);
     } catch (err: any) {
       throw new HttpException(
         `Bad Request. Please check the payload -> ${err?.message} `,
