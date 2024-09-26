@@ -7,22 +7,28 @@ import {
 import * as bcrypt from 'bcrypt';
 import { FindOptionsRelations, ILike } from 'typeorm';
 
+//services
+import { PasswordService } from '@app/auth/services/password.service';
+
+//types
 import { UUID } from '@app/common/types';
 
+//dtos
 import { CreateUserDto } from './dto/create-user.dto';
+
+//entities&repositories
 import { UsersRepository } from './users.repository';
 import { User } from './user.entity';
 import { Passenger } from '../passengers/passenger.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(
+    private usersRepository: UsersRepository,
+    private passwordService: PasswordService,
+  ) {}
 
-  async getUsers(
-    fullName?: string,
-    offset = 0,
-    limit = 10,
-  ): Promise<Omit<User, 'password'>[]> {
+  async getUsers(fullName?: string, offset = 0, limit = 10): Promise<User[]> {
     try {
       const nameParts = fullName ? fullName.trim().split(' ') : [];
       const firstName = nameParts.length > 0 ? nameParts[0] : '';
@@ -43,12 +49,7 @@ export class UsersService {
         take: limit,
         where: whereCondition,
       });
-
-      const users = totalUsers.map((user) => {
-        const { password: _, ...rest } = user;
-        return rest;
-      });
-      return users;
+      return totalUsers;
     } catch (err: any) {
       throw new HttpException(
         `user get error -> ${err?.message}`,
@@ -57,17 +58,15 @@ export class UsersService {
     }
   }
 
-  async findOne(id: UUID): Promise<Omit<User, 'password'>> {
+  async findOne(id: UUID): Promise<User> {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID '${id}' not found`);
     }
-    // TODO: do it in a DTO
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return user;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       const { password, name, familyName } = createUserDto;
 
@@ -79,9 +78,7 @@ export class UsersService {
           HttpStatus.CONFLICT,
         );
       }
-      const saltRounds = 10;
-      const salt = await bcrypt.genSalt(saltRounds);
-      const hashedPassword = await bcrypt.hash(password, salt);
+      const hashedPassword = this.passwordService.hashPassword(password);
       const user = await this.usersRepository.save(
         new User({
           name: name,
@@ -98,9 +95,7 @@ export class UsersService {
           ],
         }),
       );
-      // TODO: do it in a DTO
-      const { password: _, ...userWithoutPassword } = user;
-      return userWithoutPassword;
+      return user;
     } catch (err: any) {
       throw new HttpException(
         `user create error ->  ${err?.message}`,

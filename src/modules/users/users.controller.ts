@@ -13,15 +13,19 @@ import {
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+import { User } from './user.entity';
 import { CurrentUser } from '@app/common/decorators/current-user.decorator';
 import { UUID } from '@app/common/types';
-
-import { User } from './user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UsersService } from './users.service';
-import { GetUsersQuery } from './dto/get-users-query.dto';
 import { JwtAuthGuard, PanelUserJwtAuthGuard } from '@app/common/guards';
+
+//services
+import { UsersService } from './users.service';
 import { PanelUsersService } from '../panel-users/panel-users.service';
+
+//dtos
+import { CreateUserDto } from './dto/create-user.dto';
+import { GetUsersQuery } from './dto/get-users-query.dto';
+import { UserWithoutPasswordDto } from '@app/auth/dto/user-without-password.dto';
 
 @ApiTags('Users')
 @ApiCookieAuth()
@@ -38,8 +42,13 @@ export class UsersController {
   @Get()
   async getUsers(
     @Query() { fullName, offset, limit }: GetUsersQuery,
-  ): Promise<Omit<User, 'password'>[]> {
-    return this.usersService.getUsers(fullName?.trim(), offset, limit);
+  ): Promise<UserWithoutPasswordDto[]> {
+    const users = await this.usersService.getUsers(
+      fullName?.trim(),
+      offset,
+      limit,
+    );
+    return users.map((user) => new UserWithoutPasswordDto(user));
   }
 
   @ApiOperation({ summary: 'Find Me App User' })
@@ -54,8 +63,9 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Get('/find-one/:id')
-  async findOne(@Param('id') id: UUID): Promise<Omit<User, 'password'>> {
-    return await this.usersService.findOne(id);
+  async findOne(@Param('id') id: UUID): Promise<UserWithoutPasswordDto> {
+    const user = await this.usersService.findOne(id);
+    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Create App User' })
@@ -64,8 +74,9 @@ export class UsersController {
   @Post('/create')
   async create(
     @Body() createUserDto: CreateUserDto,
-  ): Promise<Omit<User, 'password'>> {
-    return await this.usersService.create(createUserDto);
+  ): Promise<UserWithoutPasswordDto> {
+    const user = await this.usersService.create(createUserDto);
+    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Update App User' })

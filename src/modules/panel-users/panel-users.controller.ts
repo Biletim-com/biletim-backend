@@ -19,12 +19,11 @@ import { CurrentUser } from '@app/common/decorators';
 import { UUID } from '@app/common/types';
 import { PanelUserJwtAuthGuard } from '@app/common/guards/panel-user-jwt-auth.guard';
 
-import { PanelUser } from './panel-user.entity';
-
 // dtos
 import { PanelUsersService } from './panel-users.service';
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
 import { GetPanelUsersQuery } from './dto/get-panel-users-query.dto';
+import { PanelUserWithoutPasswordDto } from './dto/panel-user-without-password.dto';
 
 @ApiTags('Panel-Users')
 @ApiCookieAuth()
@@ -38,8 +37,13 @@ export class PanelUsersController {
   @Get('/all')
   async getUsers(
     @Query() { fullName, offset, limit }: GetPanelUsersQuery,
-  ): Promise<Omit<PanelUser, 'password'>[]> {
-    return this.panelUsersService.getUsers(fullName?.trim(), offset, limit);
+  ): Promise<PanelUserWithoutPasswordDto[]> {
+    const users = await this.panelUsersService.getUsers(
+      fullName?.trim(),
+      offset,
+      limit,
+    );
+    return users.map((user) => new PanelUserWithoutPasswordDto(user));
   }
 
   @ApiOperation({ summary: 'Find Me Panel User' })
@@ -54,8 +58,9 @@ export class PanelUsersController {
   @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Get('/find-one/:id')
-  async findOne(@Param('id') id: UUID): Promise<Omit<PanelUser, 'password'>> {
-    return await this.panelUsersService.findOne(id);
+  async findOne(@Param('id') id: UUID): Promise<PanelUserWithoutPasswordDto> {
+    const user = await this.panelUsersService.findOne(id);
+    return new PanelUserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Create SUPER ADMIN For Panel' })
@@ -82,8 +87,11 @@ export class PanelUsersController {
   @HttpCode(201)
   async createPanelAdmin(
     @Body() createPanelAdminDto: CreatePanelUserDto,
-  ): Promise<any> {
-    return this.panelUsersService.createPanelAdmin(createPanelAdminDto);
+  ): Promise<PanelUserWithoutPasswordDto> {
+    const user = await this.panelUsersService.createPanelAdmin(
+      createPanelAdminDto,
+    );
+    return new PanelUserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Update Panel User' })

@@ -105,10 +105,10 @@ export class BiletAllParser {
     response: BusStopPointResponse,
   ): BusTerminalDto[] => {
     const extractedResult = this.extractResult(response);
-    const karaNoktalar = extractedResult['KaraNoktalar'][0];
-    const karaNoktaList = karaNoktalar['KaraNokta'];
+    const busTerminals = extractedResult['KaraNoktalar'][0];
+    const busTerminal = busTerminals['KaraNokta'];
 
-    return karaNoktaList.map((entry) => {
+    return busTerminal.map((entry) => {
       const stopPointParsed: BusTerminal = Object.assign({});
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         stopPointParsed[key] = value;
@@ -123,7 +123,7 @@ export class BiletAllParser {
     const extractedResult = this.extractResult(response);
     const newDataSet = extractedResult['NewDataSet'][0];
     const table = newDataSet['Table'];
-    const oTipOzellik = newDataSet['OTipOzellik'];
+    const typeFeatures = newDataSet['OTipOzellik'];
 
     const schedules = table.map((entry) => {
       const scheduleParsed: BusSchedule = Object.assign({});
@@ -133,7 +133,7 @@ export class BiletAllParser {
       return new BusScheduleDto(scheduleParsed);
     });
 
-    const features = oTipOzellik.map((entry) => {
+    const features = typeFeatures.map((entry) => {
       const featureParsed: BusFeature = Object.assign({});
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         featureParsed[key] = value;
@@ -147,15 +147,15 @@ export class BiletAllParser {
 
   public parseBusSearchResponse = (response: BusResponse): BusSearchDto => {
     const extractedResult = this.extractResult(response);
-    const otobus = extractedResult['Otobus'][0];
+    const bus = extractedResult['Otobus'][0];
 
     const tripParsed: BusTrip = Object.assign({});
-    for (const [key, [value]] of ObjectTyped.entries(otobus['Sefer'][0])) {
+    for (const [key, [value]] of ObjectTyped.entries(bus['Sefer'][0])) {
       tripParsed[key] = value;
     }
     const trip = new BusTripDto(tripParsed);
 
-    const seats = otobus['Koltuk'].map((entry) => {
+    const seats = bus['Koltuk'].map((entry) => {
       const seatParsed: Seat = Object.assign({});
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         seatParsed[key] = value;
@@ -163,7 +163,7 @@ export class BiletAllParser {
       return new BusSeatDto(seatParsed);
     });
 
-    const travelTypes = otobus['SeyahatTipleri'].map((entry) => {
+    const travelTypes = bus['SeyahatTipleri'].map((entry) => {
       const travelTypeParsed: TravelType = Object.assign({});
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         travelTypeParsed[key] = value;
@@ -171,7 +171,7 @@ export class BiletAllParser {
       return new BusTravelTypeDto(travelTypeParsed);
     });
 
-    const features = otobus['OTipOzellik'].map((entry) => {
+    const features = bus['OTipOzellik'].map((entry) => {
       const featureParsed: BusFeature = Object.assign({});
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         featureParsed[key] = value;
@@ -181,7 +181,7 @@ export class BiletAllParser {
 
     const paymentRuleParsed: PaymentRule = Object.assign({});
     for (const [key, [value]] of ObjectTyped.entries(
-      otobus['OdemeKurallari'][0],
+      bus['OdemeKurallari'][0],
     )) {
       paymentRuleParsed[key] = value;
     }
@@ -194,8 +194,8 @@ export class BiletAllParser {
     response: BusSeatAvailabilityResponse,
   ): BusSeatAvailabilityDto => {
     const extractedResult = this.extractResult(response);
-    const islemSonuc = extractedResult['IslemSonuc'][0];
-    return new BusSeatAvailabilityDto(islemSonuc['Sonuc'][0] === 'true');
+    const transactionResult = extractedResult['IslemSonuc'][0];
+    return new BusSeatAvailabilityDto(transactionResult['Sonuc'][0] === 'true');
   };
 
   public parseBoardingPoint = (

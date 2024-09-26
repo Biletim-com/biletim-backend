@@ -59,7 +59,7 @@ export class AuthService {
     this.cookieService.setAuthCookie(tokens, response);
   }
 
-  async register(registerUserRequest: RegisterUserRequest): Promise<any> {
+  async register(registerUserRequest: RegisterUserRequest): Promise<User> {
     try {
       const { password, name, familyName } = registerUserRequest;
       const email = registerUserRequest.email.toLowerCase();
@@ -107,9 +107,6 @@ export class AuthService {
         }),
       );
 
-      // TODO: this should be done is DTO
-      const { password: _, ...userWithoutPassword } = user;
-
       const { verificationCode } = await this.uniqueSixDigitNumber();
       await this.verificationsRepository.save(
         new Verification({
@@ -130,7 +127,7 @@ export class AuthService {
 
       await this.sendEmail(EmailType.SIGNUP, emailOptions);
 
-      return userWithoutPassword;
+      return user;
     } catch (err: any) {
       Logger.error(err);
       throw new HttpException(
@@ -390,7 +387,6 @@ export class AuthService {
 
     if (!user) {
       const password: string = uuidv4();
-      // @ts-ignore
       user = await this.usersService.create({
         email: email,
         password: password,
@@ -398,6 +394,7 @@ export class AuthService {
         familyName: familyName,
       });
     }
+
     this.login(user, response);
     return user;
   }

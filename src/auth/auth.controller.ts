@@ -25,6 +25,8 @@ import { VerificationDto } from './dto/verification.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { LoginUserRequest } from './dto/login-user-request.dto';
 import { LoginOAuth2Dto } from './dto/login-oauth2.dto';
+import { UserWithoutPasswordDto } from './dto/user-without-password.dto';
+import { PanelUserWithoutPasswordDto } from '@app/modules/panel-users/dto/panel-user-without-password.dto';
 
 // guards
 import { PanelUserLocalAuthGuard } from './guards/panel-user-local-auth.guard';
@@ -44,9 +46,9 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
     @CurrentUser() user: PanelUser,
     @Body() _: LoginUserRequest,
-  ): Promise<PanelUser> {
+  ): Promise<PanelUserWithoutPasswordDto> {
     this.authService.login(user, response);
-    return user;
+    return new PanelUserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'App Login' })
@@ -57,9 +59,9 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
     @CurrentUser() user: User,
     @Body() _: LoginUserRequest,
-  ): Promise<User> {
+  ): Promise<UserWithoutPasswordDto> {
     this.authService.login(user, response);
-    return user;
+    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({
@@ -70,8 +72,12 @@ export class AuthController {
   async loginWithOAuth2(
     @Res({ passthrough: true }) response: Response,
     @Body() loginOAuth2Dto: LoginOAuth2Dto,
-  ): Promise<User> {
-    return this.authService.loginWithOAuth2(loginOAuth2Dto, response);
+  ): Promise<UserWithoutPasswordDto> {
+    const user = await this.authService.loginWithOAuth2(
+      loginOAuth2Dto,
+      response,
+    );
+    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Register User' })
@@ -80,8 +86,9 @@ export class AuthController {
   @HttpCode(200)
   async register(
     @Body() registerUserRequest: RegisterUserRequest,
-  ): Promise<any> {
-    return this.authService.register(registerUserRequest);
+  ): Promise<UserWithoutPasswordDto> {
+    const user = await this.authService.register(registerUserRequest);
+    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Verify App User' })
