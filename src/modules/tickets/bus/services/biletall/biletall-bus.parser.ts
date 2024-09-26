@@ -105,10 +105,10 @@ export class BiletAllParser {
     response: BusStopPointResponse,
   ): BusTerminalDto[] => {
     const extractedResult = this.extractResult(response);
-    const stopPoints = extractedResult['KaraNoktalar'][0];
-    const stopPoint = stopPoints['KaraNokta'];
+    const busTerminals = extractedResult['KaraNoktalar'][0];
+    const busTerminal = busTerminals['KaraNokta'];
 
-    return stopPoint.map((entry) => {
+    return busTerminal.map((entry) => {
       const stopPointParsed: BusTerminal = Object.assign({});
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         stopPointParsed[key] = value;

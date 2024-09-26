@@ -6,8 +6,8 @@ export class PanelUserWithoutPasswordDto {
   name: string;
   familyName: string;
   email: string;
-  phone?: string | null;
-  address?: string | null;
+  phone?: Nullable<string>;
+  address?: Nullable<string>;
   isDeleted: boolean;
   isSuperAdmin: boolean;
   createdAt: Date;

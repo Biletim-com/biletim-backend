@@ -6,11 +6,11 @@ export class UserWithoutPasswordDto {
   name: string;
   familyName: string;
   email: string;
-  phone?: string | null;
-  address?: string | null;
+  phone?: Nullable<string>;
+  address?: Nullable<string>;
   isVerified: boolean;
   isDeleted: boolean;
-  forgotPasswordCode?: string | null;
+  forgotPasswordCode?: Nullable<string>;
   isUsed: boolean;
   createdAt: Date;
   updatedAt: Date;
