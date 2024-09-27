@@ -8,13 +8,13 @@ import { TicketsParser } from './tickets.parser';
 import { PnrSearchDomesticFlightDto } from './dto/tickets-pnr-search-domestic-flight.dto';
 import { PnrSearchAbroadFlightDto } from './dto/tickets-pnr-search-abroad-flight.dto';
 import { PnrSearchBusDto } from './dto/tickets-pnr-search-bus.dto';
-import { BiletAllService } from './bus/services/biletall/biletall-bus.service';
+import { BiletAllBusService } from './bus/services/biletall/biletall-bus.service';
 import { BiletAllParser } from './bus/services/biletall/biletall-bus.parser';
 
 @Injectable()
 export class TicketsService {
   constructor(
-    private readonly biletallService: BiletAllService,
+    private readonly biletallBusService: BiletAllBusService,
     private readonly biletAllParser: BiletAllParser,
     private readonly ticketsParser: TicketsParser,
   ) {}
@@ -33,7 +33,7 @@ export class TicketsService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    const res = await this.biletallService.run<any>(xml);
+    const res = await this.biletallBusService.run<any>(xml);
 
     const extractedResult: any = await this.biletAllParser.extractResult(res);
     const ticket = extractedResult['Bilet'][0];

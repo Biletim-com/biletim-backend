@@ -77,13 +77,6 @@ export class BusScheduleRequestDto {
   @IsNotEmpty()
   @IsString()
   ip: string;
-
-  constructor(partial: Partial<BusScheduleRequestDto>) {
-    Object.assign(this, partial);
-    this.companyNo = this.companyNo ?? '0';
-    this.includeIntermediatePoints = this.includeIntermediatePoints ?? 1;
-    this.operationType = this.operationType ?? 0;
-  }
 }
 
 export class BusScheduleDto {

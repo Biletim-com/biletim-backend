@@ -5,7 +5,7 @@ import { BiletallPlaneParser } from '@app/modules/tickets/plane/services/biletal
 import { BiletallPlaneService } from '@app/modules/tickets/plane/services/biletall/biletall-plane.service';
 import { AirportRepository } from '@app/modules/tickets/plane/repositories/airport.repository';
 
-import { BiletAllService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
+import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
 import { BiletAllParser } from '@app/modules/tickets/bus/services/biletall/biletall-bus.parser';
 
 import { AirportsCronJobService } from './job.service';
@@ -17,7 +17,7 @@ import { AirportsCronJobService } from './job.service';
     BiletallPlaneParser,
     BiletAllApiConfigService,
     AirportRepository,
-    BiletAllService,
+    BiletAllBusService,
     BiletAllParser,
   ],
 })

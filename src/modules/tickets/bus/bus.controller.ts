@@ -3,7 +3,7 @@
 import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 
 // services
-import { BiletAllService } from './services/biletall/biletall-bus.service';
+import { BiletAllBusService } from './services/biletall/biletall-bus.service';
 import { BusService } from './services/bus.service';
 
 // dto
@@ -35,7 +35,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 @Controller('bus')
 export class BusController {
   constructor(
-    private readonly biletAllService: BiletAllService,
+    private readonly biletAllBusService: BiletAllBusService,
     private readonly busService: BusService,
   ) {}
 
@@ -44,7 +44,7 @@ export class BusController {
   async company(
     @Query() requestDto: BusCompanyRequestDto,
   ): Promise<BusCompanyDto[]> {
-    return this.biletAllService.company(requestDto);
+    return this.biletAllBusService.company(requestDto);
   }
 
   @ApiOperation({ summary: 'Search Bus Terminals By Name' })
@@ -60,7 +60,7 @@ export class BusController {
   async scheduleList(
     @Body() requestDto: BusScheduleRequestDto,
   ): Promise<BusScheduleAndBusFeaturesDto> {
-    return this.biletAllService.scheduleList(requestDto);
+    return this.biletAllBusService.scheduleList(requestDto);
   }
 
   @ApiOperation({ summary: 'Search Bus For One Company' })
@@ -68,7 +68,7 @@ export class BusController {
   async busSearch(
     @Body() requestDto: BusSearchRequestDto,
   ): Promise<BusSearchDto> {
-    return await this.biletAllService.busSearch(requestDto);
+    return await this.biletAllBusService.busSearch(requestDto);
   }
 
   @ApiOperation({ summary: 'Check Bus Seat Availability' })
@@ -76,7 +76,7 @@ export class BusController {
   async busSeatAvailability(
     @Body() requestDto: BusSeatAvailabilityRequestDto,
   ): Promise<BusSeatAvailabilityDto> {
-    return this.biletAllService.busSeatAvailability(requestDto);
+    return this.biletAllBusService.busSeatAvailability(requestDto);
   }
 
   @ApiOperation({ summary: 'Search Boarding Points Information' })
@@ -84,7 +84,7 @@ export class BusController {
   async boardingPoint(
     @Body() requestDto: BoardingPointRequestDto,
   ): Promise<BoardingPointDto[]> {
-    return this.biletAllService.boardingPoint(requestDto);
+    return this.biletAllBusService.boardingPoint(requestDto);
   }
 
   @ApiOperation({ summary: 'Search Bus Service Information' })
@@ -92,7 +92,7 @@ export class BusController {
   async serviceInformation(
     @Body() requestDto: ServiceInformationRequestDto,
   ): Promise<ServiceInformationDto[]> {
-    return this.biletAllService.serviceInformation(requestDto);
+    return this.biletAllBusService.serviceInformation(requestDto);
   }
 
   @ApiOperation({ summary: 'Search Route' })
@@ -100,12 +100,12 @@ export class BusController {
   async getRoute(
     @Body() requestDto: BusRouteRequestDto,
   ): Promise<BusRouteDetailDto[]> {
-    return this.biletAllService.getRoute(requestDto);
+    return this.biletAllBusService.getRoute(requestDto);
   }
 
   @ApiOperation({ summary: 'Handle Bus Ticket Sale Request' })
   @Post('sale-request')
   async saleRequest(@Body() requestDto: BusPurchaseDto) {
-    return this.biletAllService.saleRequest(requestDto);
+    return this.biletAllBusService.saleRequest(requestDto);
   }
 }

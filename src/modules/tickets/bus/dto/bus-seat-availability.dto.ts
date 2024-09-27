@@ -44,12 +44,6 @@ export class BusSeatAvailabilityRequestDto extends OmitType(
   @Type(() => BusSeatDto)
   @IsNotEmpty()
   seats: BusSeatDto[];
-
-  constructor(partial: Partial<BusSeatAvailabilityRequestDto>) {
-    super(partial);
-    Object.assign(this, partial);
-    this.operationType = this.operationType ?? 0;
-  }
 }
 
 export class BusSeatAvailabilityDto {
