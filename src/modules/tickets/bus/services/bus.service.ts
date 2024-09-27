@@ -5,7 +5,7 @@ import { BusTerminal } from '../entities/bus-terminal.entity';
 
 @Injectable()
 export class BusService {
-  constructor(private readonly busTerminalRepostiory: BusTerminalRepository) {}
+  constructor(private readonly busTerminalRepository: BusTerminalRepository) {}
 
   public async getBusTerminalsByName(
     searchTerm: string,
@@ -15,7 +15,7 @@ export class BusService {
       .map((term) => `${term}:*`)
       .join(' & ');
 
-    return this.busTerminalRepostiory
+    return this.busTerminalRepository
       .createQueryBuilder('bus_terminals')
       .where("bus_terminals.name_text @@ to_tsquery('simple', :name)")
       .andWhere('bus_terminals.appear_in_search = true')

@@ -11,11 +11,6 @@ export class BusCompanyRequestDto {
   @IsString()
   @IsOptional()
   companyNo?: string;
-
-  constructor(partial: Partial<BusCompanyDto>) {
-    Object.assign(this, partial);
-    this.companyNo = this.companyNo ?? '0';
-  }
 }
 
 export class BusCompanyDto {

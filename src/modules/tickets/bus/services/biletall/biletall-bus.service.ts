@@ -92,7 +92,9 @@ export class BiletAllService {
   }
 
   async company(requestDto: BusCompanyRequestDto): Promise<BusCompanyDto[]> {
-    const companiesXml = `<Firmalar><FirmaNo>${requestDto.companyNo}</FirmaNo></Firmalar>`;
+    const companiesXml = `<Firmalar><FirmaNo>${
+      requestDto.companyNo ?? 0
+    }</FirmaNo></Firmalar>`;
     const res = await this.run<BiletAllCompanyResponse>(companiesXml);
     return this.biletAllParser.parseCompany(res);
   }
