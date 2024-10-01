@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
 
-import { BiletAllService } from './services/biletall/biletall-bus.service';
+import { BiletAllBusService } from './services/biletall/biletall-bus.service';
 import { BiletAllParser } from './services/biletall/biletall-bus.parser';
 import { BusController } from './bus.controller';
 import { BusTerminal } from './entities/bus-terminal.entity';
@@ -16,10 +16,10 @@ import { BusService } from './services/bus.service';
   providers: [
     BusService,
     BiletAllApiConfigService,
-    BiletAllService,
+    BiletAllBusService,
     BiletAllParser,
     BusTerminalRepository,
   ],
-  exports: [BiletAllService],
+  exports: [BiletAllBusService],
 })
 export class BusModule {}

@@ -57,12 +57,6 @@ export class BusSearchRequestDto extends OmitType(BusScheduleRequestDto, [
   @IsString()
   @IsNotEmpty()
   tripTrackingNumber: string;
-
-  constructor(partial: Partial<BusSearchDto>) {
-    super(partial);
-    Object.assign(this, partial);
-    this.operationType = this.operationType ?? 0;
-  }
 }
 
 export class BusTripDto {

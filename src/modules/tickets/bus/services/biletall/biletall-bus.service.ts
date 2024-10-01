@@ -45,7 +45,7 @@ import { BiletallPaymentRules } from '@app/common/types';
 import { BiletAllGender } from '@app/common/helpers';
 
 @Injectable()
-export class BiletAllService {
+export class BiletAllBusService {
   constructor(
     private biletAllApiConfigService: BiletAllApiConfigService,
     private biletAllParser: BiletAllParser,
@@ -111,12 +111,12 @@ export class BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Sefer: {
-        FirmaNo: requestDto.companyNo,
+        FirmaNo: requestDto.companyNo ?? '0',
         KalkisNoktaID: requestDto.departurePointId,
         VarisNoktaID: requestDto.arrivalPointId,
         Tarih: requestDto.date,
-        AraNoktaGelsin: requestDto.includeIntermediatePoints,
-        IslemTipi: requestDto.operationType,
+        AraNoktaGelsin: requestDto.includeIntermediatePoints ?? 1,
+        IslemTipi: requestDto.operationType ?? 0,
         YolcuSayisi: requestDto.passengerCount,
         Ip: requestDto.ip,
       },
@@ -136,7 +136,7 @@ export class BiletAllService {
         Tarih: dayjs(requestDto.date).format('YYYY-MM-DD'),
         Saat: requestDto.time,
         HatNo: requestDto.routeNumber,
-        IslemTipi: requestDto.operationType,
+        IslemTipi: requestDto.operationType ?? 0,
         YolcuSayisi: requestDto.passengerCount,
         SeferTakipNo: requestDto.tripTrackingNumber,
         Ip: requestDto.ip,
@@ -159,7 +159,7 @@ export class BiletAllService {
         Tarih: requestDto.date,
         Saat: requestDto.time,
         HatNo: requestDto.routeNumber,
-        IslemTipi: requestDto.operationType,
+        IslemTipi: requestDto.operationType ?? 0,
         SeferTakipNo: requestDto.tripTrackingNumber,
         Ip: requestDto.ip,
         Koltuklar: {

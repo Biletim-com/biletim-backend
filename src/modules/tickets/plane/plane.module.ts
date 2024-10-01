@@ -4,7 +4,7 @@ import { BiletAllApiConfigService } from '@app/configs/bilet-all-api/config.serv
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
 
 import { PlaneController } from './plane.controller';
-import { BiletAllService } from '../bus/services/biletall/biletall-bus.service';
+import { BiletAllBusService } from '../bus/services/biletall/biletall-bus.service';
 import { BiletAllParser } from '../bus/services/biletall/biletall-bus.parser';
 import { BiletallPlaneService } from './services/biletall/biletall-plane.service';
 import { BiletallPlaneParser } from './services/biletall/biletall-plane.parser';
@@ -16,7 +16,7 @@ import { Airport } from './entities/airport.entity';
   controllers: [PlaneController],
   providers: [
     PlaneService,
-    BiletAllService,
+    BiletAllBusService,
     BiletallPlaneParser,
     BiletAllApiConfigService,
     BiletAllParser,
