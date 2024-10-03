@@ -83,6 +83,7 @@ export class BiletAllBusService extends BiletAllService {
         Ip: requestDto.ip,
       },
     };
+
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BusScheduleAndFeaturesResponse>(xml);
     return this.biletAllBusParserService.parseBusSchedule(res);
