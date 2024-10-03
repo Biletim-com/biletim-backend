@@ -1,4 +1,4 @@
-import { BusTerminal } from '../services/biletall/types/biletall-bus-stop-points.type';
+import { BusTerminal } from '../services/biletall/types/biletall-bus-terminal.type';
 
 export class BusTerminalDto {
   id: string;

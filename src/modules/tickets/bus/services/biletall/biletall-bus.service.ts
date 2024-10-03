@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
-import axios from 'axios';
 import * as dayjs from 'dayjs';
 
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 
-import { BiletAllParser } from './biletall-bus.parser';
+import { BiletAllBusParserService } from './biletall-bus-parser.service';
 
 // dtos
 import { BusCompanyDto, BusCompanyRequestDto } from '../../dto/bus-company.dto';
@@ -32,7 +31,7 @@ import {
 
 // types
 import { BiletAllCompanyResponse } from './types/biletall-company.type';
-import { BusStopPointResponse } from './types/biletall-bus-stop-points.type';
+import { BusStopPointResponse } from './types/biletall-bus-terminal.type';
 import { BusScheduleAndFeaturesResponse } from './types/biletall-trip-search.type';
 import { BusResponse } from './types/biletall-bus-search.type';
 import { BusSeatAvailabilityResponse } from './types/biletall-bus-seat-availability.type';
@@ -43,52 +42,15 @@ import { BiletallPaymentRules } from '@app/common/types';
 
 // helpers
 import { BiletAllGender } from '@app/common/helpers';
+import { BiletAllService } from '@app/common/services/biletall.service';
 
 @Injectable()
-export class BiletAllBusService {
+export class BiletAllBusService extends BiletAllService {
   constructor(
-    private biletAllApiConfigService: BiletAllApiConfigService,
-    private biletAllParser: BiletAllParser,
-  ) {}
-
-  public async run<T>(bodyXml: string): Promise<T> {
-    const soapEnvelope = `
-    <?xml version="1.0" encoding="utf-8"?>
-      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://tempuri.org/">
-        <soap:Body>
-          <tns:XmlIslet>
-            <tns:xmlIslem>
-              ${bodyXml}
-            </tns:xmlIslem>
-            <tns:xmlYetki>
-              <Kullanici>
-                <Adi>${this.biletAllApiConfigService.biletAllApiUsername}</Adi>
-                <Sifre>${this.biletAllApiConfigService.biletAllApiPassword}</Sifre>
-              </Kullanici>
-            </tns:xmlYetki>
-          </tns:XmlIslet>
-        </soap:Body>
-      </soap:Envelope>`;
-    const config = {
-      headers: {
-        'Content-Type': 'text/xml; charset=utf-8',
-      },
-    };
-
-    try {
-      const response = await axios.post(
-        this.biletAllApiConfigService.biletAllApiBaseUrl,
-        soapEnvelope.trim(),
-        config,
-      );
-      if (!response || !response.data) {
-        throw new Error('Response is undefined.');
-      }
-      return xml2js.parseStringPromise(response.data) as T;
-    } catch (error) {
-      console.error('Error running XML request:', error);
-      throw new Error('Failed to process XML request');
-    }
+    biletAllApiConfigService: BiletAllApiConfigService,
+    private biletAllBusParserService: BiletAllBusParserService,
+  ) {
+    super(biletAllApiConfigService);
   }
 
   async company(requestDto: BusCompanyRequestDto): Promise<BusCompanyDto[]> {
@@ -96,13 +58,13 @@ export class BiletAllBusService {
       requestDto.companyNo ?? 0
     }</FirmaNo></Firmalar>`;
     const res = await this.run<BiletAllCompanyResponse>(companiesXml);
-    return this.biletAllParser.parseCompany(res);
+    return this.biletAllBusParserService.parseCompany(res);
   }
 
   async busTerminals(): Promise<BusTerminalDto[]> {
     const stopPointsXml = `<KaraNoktaGetirKomut/>`;
     const res = await this.run<BusStopPointResponse>(stopPointsXml);
-    return this.biletAllParser.parseBusTerminals(res);
+    return this.biletAllBusParserService.parseBusTerminals(res);
   }
 
   async scheduleList(
@@ -123,7 +85,7 @@ export class BiletAllBusService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BusScheduleAndFeaturesResponse>(xml);
-    return this.biletAllParser.parseBusSchedule(res);
+    return this.biletAllBusParserService.parseBusSchedule(res);
   }
 
   async busSearch(requestDto: BusSearchRequestDto): Promise<BusSearchDto> {
@@ -144,7 +106,7 @@ export class BiletAllBusService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BusResponse>(xml);
-    return this.biletAllParser.parseBusSearchResponse(res);
+    return this.biletAllBusParserService.parseBusSearchResponse(res);
   }
 
   async busSeatAvailability(
@@ -172,7 +134,7 @@ export class BiletAllBusService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BusSeatAvailabilityResponse>(xml);
-    return this.biletAllParser.parseBusSeatAvailability(res);
+    return this.biletAllBusParserService.parseBusSeatAvailability(res);
   }
 
   async boardingPoint(
@@ -189,7 +151,7 @@ export class BiletAllBusService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<BoardingPointResponse>(xml);
-    return this.biletAllParser.parseBoardingPoint(res);
+    return this.biletAllBusParserService.parseBoardingPoint(res);
   }
 
   async serviceInformation(
@@ -208,7 +170,7 @@ export class BiletAllBusService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<ServiceInformationResponse>(xml);
-    return this.biletAllParser.parseServiceInformation(res);
+    return this.biletAllBusParserService.parseServiceInformation(res);
   }
 
   async getRoute(requestDto: BusRouteRequestDto): Promise<BusRouteDetailDto[]> {
@@ -226,7 +188,7 @@ export class BiletAllBusService {
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<RouteDetailResponse>(xml);
-    return this.biletAllParser.parseRouteDetail(res);
+    return this.biletAllBusParserService.parseRouteDetail(res);
   }
 
   // this method needs to define the payment strategy

@@ -1,4 +1,4 @@
-import { SoapEnvelope } from './biletall-soap-envelope.type';
+import { SoapEnvelope } from '@app/common/types';
 
 export type BiletAllCompany = {
   Firma_No: string;

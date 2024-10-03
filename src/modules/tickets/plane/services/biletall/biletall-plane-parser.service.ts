@@ -1,18 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import {
-  PlaneAirport,
-  PlaneAirportResponse,
-} from './types/biletall-plane-airport.type';
-import { BiletAllParser } from '../../../bus/services/biletall/biletall-bus.parser';
+
+import { BiletAllParserService } from '@app/common/services';
+
+// dto
 import { PlaneAirportDto } from '../../dto/plane-airport.dto';
-import {
-  DomesticFlightResponse,
-  FlightOption,
-  FlightSegment,
-  OptionFare,
-  OptionFareDetail,
-  SegmentClass,
-} from './types/biletall-plane-domistic-flight-schedule.type';
 import {
   DomesticFlightScheduleDto,
   DomesticFlightSegmentDto,
@@ -22,11 +13,6 @@ import {
   SegmentClassDto,
 } from '../../dto/plane-domestic-flight-schedule.dto';
 import { ObjectTyped } from '@app/common/utils/object-typed.util';
-import {
-  AbroadFlightOption,
-  AbroadFlightResponse,
-  AbroadFlightSegment,
-} from './types/biletall-plane-abroad-flight-schedule.type';
 import {
   AbroadFlightOptionDto,
   AbroadFlightScheduleDto,
@@ -39,6 +25,23 @@ import {
   PlanePullPriceFlightDto,
   PriceListDto,
 } from '../../dto/plane-pull-price-flight.dto';
+import { PlanePassengerAgeRuleDto } from '../../dto/plane-company-passenger-age-rule.dto';
+import { FlightTicketReservationDto } from '../../dto/plane-ticket-reservation.dto';
+import { FlightTicketPurchaseDto } from '../../dto/plane-ticket-purchase.dto';
+
+// types
+import {
+  PlaneAirport,
+  PlaneAirportResponse,
+} from './types/biletall-plane-airport.type';
+import {
+  FlightTicketPurchaseResult,
+  PlaneTicketPurchaseResponse,
+} from './types/biletall-plane-ticket-purchase.type';
+import {
+  FlightTicketReservationResult,
+  PlaneTicketReservationResponse,
+} from './types/biletall-plane-ticket-reservation.type';
 import {
   AdditionalServiceRule,
   BaggageInfo,
@@ -50,24 +53,24 @@ import {
   PlanePassengerAgeRule,
   PlanePassengerAgeRulesResponse,
 } from './types/plane-biletall-company-passanger-age-rules.type';
-import { PlanePassengerAgeRuleDto } from '../../dto/plane-company-passenger-age-rule.dto';
 import {
-  FlightTicketReservationResult,
-  PlaneTicketReservationResponse,
-} from './types/biletall-plane-ticket-reservation.type';
-import { FlightTicketReservationDto } from '../../dto/plane-ticket-reservation.dto';
-import { FlightTicketPurchaseDto } from '../../dto/plane-ticket-purchase.dto';
+  AbroadFlightOption,
+  AbroadFlightResponse,
+  AbroadFlightSegment,
+} from './types/biletall-plane-abroad-flight-schedule.type';
 import {
-  FlightTicketPurchaseResult,
-  PlaneTicketPurchaseResponse,
-} from './types/biletall-plane-ticket-purchase.type';
+  DomesticFlightResponse,
+  FlightOption,
+  FlightSegment,
+  OptionFare,
+  OptionFareDetail,
+  SegmentClass,
+} from './types/biletall-plane-domistic-flight-schedule.type';
 
 @Injectable()
-export class BiletallPlaneParser {
-  constructor(private readonly biletAllParser: BiletAllParser) {}
-
+export class BiletAllPlaneParserService extends BiletAllParserService {
   public parseAirport = (response: PlaneAirportResponse): PlaneAirportDto[] => {
-    const extractedResult = this.biletAllParser.extractResult(response);
+    const extractedResult = this.extractResult(response);
     const airports = extractedResult['HavaNoktalar'][0];
     const airportList = airports['HavaNokta'];
 
@@ -83,7 +86,7 @@ export class BiletallPlaneParser {
   public parseDomesticFlightResponse = (
     response: DomesticFlightResponse,
   ): DomesticFlightScheduleDto => {
-    const extractedResult = this.biletAllParser.extractResult(response);
+    const extractedResult = this.extractResult(response);
     const newDataSet = extractedResult['NewDataSet'][0];
     const flightOptionsDataSet = newDataSet['Secenekler'] ?? [];
     const flightOptionsMap = new Map<string, FlightOptionDto>();
@@ -275,7 +278,7 @@ export class BiletallPlaneParser {
   public parseAbroadFlightResponse = (
     response: AbroadFlightResponse,
   ): AbroadFlightScheduleDto => {
-    const extractedResult = this.biletAllParser.extractResult(response);
+    const extractedResult = this.extractResult(response);
     const newDataSet = extractedResult['NewDataSet'][0];
     const flightOptionsDataSet = newDataSet['Secenekler'] ?? [];
     const flightOptionsMap = new Map<string, AbroadFlightOptionDto>();
@@ -361,7 +364,7 @@ export class BiletallPlaneParser {
   public parsePullPriceOfFlightResponse = (
     response: PlanePullPriceResponse,
   ): PlanePullPriceFlightDto => {
-    const extractedResult = this.biletAllParser.extractResult(response);
+    const extractedResult = this.extractResult(response);
     const newDataSet = extractedResult['NewDataSet'][0];
 
     const priceListDataSet = newDataSet['FiyatListesi'] ?? [];
@@ -416,7 +419,7 @@ export class BiletallPlaneParser {
   public parsePassengerAgeRule = (
     response: PlanePassengerAgeRulesResponse,
   ): PlanePassengerAgeRuleDto[] => {
-    const extractedResult = this.biletAllParser.extractResult(response);
+    const extractedResult = this.extractResult(response);
     const PassengerAgeRules =
       extractedResult['TasiyiciFirmaYolcuYasKurallar'][0];
     const PassengerAgeRule = PassengerAgeRules['TasiyiciFirmaYolcuYasKural'];
@@ -433,7 +436,7 @@ export class BiletallPlaneParser {
   public parseFlightTicketReservation = (
     response: PlaneTicketReservationResponse,
   ): FlightTicketReservationDto => {
-    const extractedResult = this.biletAllParser.extractResult(response);
+    const extractedResult = this.extractResult(response);
     const ticketResult = extractedResult['IslemSonuc'];
 
     if (!Array.isArray(ticketResult) || ticketResult.length === 0) {
@@ -455,7 +458,7 @@ export class BiletallPlaneParser {
   public parseFlightTicketPurchase = (
     response: PlaneTicketPurchaseResponse,
   ): FlightTicketPurchaseDto => {
-    const extractedResult = this.biletAllParser.extractResult(response);
+    const extractedResult = this.extractResult(response);
     const ticketResult = extractedResult['IslemSonuc'];
 
     if (!Array.isArray(ticketResult) || ticketResult.length === 0) {

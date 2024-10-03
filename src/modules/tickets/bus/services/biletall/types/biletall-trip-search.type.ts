@@ -1,5 +1,5 @@
+import { SoapEnvelope } from '@app/common/types';
 import { BusFeature } from './biletall-bus-feature.type';
-import { SoapEnvelope } from './biletall-soap-envelope.type';
 
 export type BusSchedule = {
   ID: string;

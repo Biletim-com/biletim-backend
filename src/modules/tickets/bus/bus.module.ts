@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 
-import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
 
-import { BiletAllBusService } from './services/biletall/biletall-bus.service';
-import { BiletAllParser } from './services/biletall/biletall-bus.parser';
-import { BusController } from './bus.controller';
 import { BusTerminal } from './entities/bus-terminal.entity';
 import { BusTerminalRepository } from './repositories/bus-terminal.repository';
+import { BusController } from './bus.controller';
+
+import { BiletAllService } from '@app/common/services/biletall.service';
+import { BiletAllBusService } from './services/biletall/biletall-bus.service';
+import { BiletAllBusParserService } from './services/biletall/biletall-bus-parser.service';
 import { BusService } from './services/bus.service';
 
 @Module({
@@ -15,9 +16,9 @@ import { BusService } from './services/bus.service';
   controllers: [BusController],
   providers: [
     BusService,
-    BiletAllApiConfigService,
     BiletAllBusService,
-    BiletAllParser,
+    BiletAllService,
+    BiletAllBusParserService,
     BusTerminalRepository,
   ],
   exports: [BiletAllBusService],

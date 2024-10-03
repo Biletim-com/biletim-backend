@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import { RestClientService } from '@app/providers/rest-client/provider.service';
@@ -12,7 +11,6 @@ export class FacebookOAuth2Strategy extends OAuth2Strategy {
   protected TOKEN_URL = 'https://graph.facebook.com/v20.0/oauth/access_token';
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly restClientService: RestClientService,
     private readonly oAuthLoginWithFacebookConfigService: OAuthLoginWithFacebookConfigService,

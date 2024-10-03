@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 
-import { BiletAllBusService } from '../../../bus/services/biletall/biletall-bus.service';
-import { BiletallPlaneParser } from './biletall-plane.parser';
+import { BiletAllPlaneParserService } from './biletall-plane-parser.service';
 
 // dto
 import {
@@ -48,20 +47,22 @@ import { BiletAllPlanePassengerType } from './helpers/plane-passanger-type.helpe
 import { BiletAllPlaneTicketOperationType } from './helpers/plane-ticket-operation-type.helper';
 import { BiletAllPlaneTravelType } from './helpers/plane-travel-type.helper';
 import { BiletAllGender } from '@app/common/helpers';
+import { BiletAllService } from '@app/common/services/biletall.service';
+import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 
 @Injectable()
-export class BiletallPlaneService {
+export class BiletAllPlaneService extends BiletAllService {
   constructor(
-    private readonly biletallBusService: BiletAllBusService,
-    private readonly biletallPlaneParser: BiletallPlaneParser,
-  ) {}
+    biletAllApiConfigService: BiletAllApiConfigService,
+    private readonly biletAllPlaneParserService: BiletAllPlaneParserService,
+  ) {
+    super(biletAllApiConfigService);
+  }
 
   async airportSearch(): Promise<PlaneAirportDto[]> {
     const airportXML = '<HavaNoktaGetirKomut/>';
-    const res = await this.biletallBusService.run<PlaneAirportResponse>(
-      airportXML,
-    );
-    return this.biletallPlaneParser.parseAirport(res);
+    const res = await this.run<PlaneAirportResponse>(airportXML);
+    return this.biletAllPlaneParserService.parseAirport(res);
   }
 
   async domesticFlightScheduleSearch(
@@ -86,8 +87,8 @@ export class BiletallPlaneService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    const res = await this.biletallBusService.run<DomesticFlightResponse>(xml);
-    return this.biletallPlaneParser.parseDomesticFlightResponse(res);
+    const res = await this.run<DomesticFlightResponse>(xml);
+    return this.biletAllPlaneParserService.parseDomesticFlightResponse(res);
   }
 
   async abroadFlightScheduleSearch(
@@ -119,8 +120,8 @@ export class BiletallPlaneService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    const res = await this.biletallBusService.run<AbroadFlightResponse>(xml);
-    return this.biletallPlaneParser.parseAbroadFlightResponse(res);
+    const res = await this.run<AbroadFlightResponse>(xml);
+    return this.biletAllPlaneParserService.parseAbroadFlightResponse(res);
   }
 
   async pullPriceOfFlight(
@@ -155,15 +156,14 @@ export class BiletallPlaneService {
     };
 
     const xml = builder.buildObject(requestDocument);
-    const res = await this.biletallBusService.run<PlanePullPriceResponse>(xml);
-    return this.biletallPlaneParser.parsePullPriceOfFlightResponse(res);
+    const res = await this.run<PlanePullPriceResponse>(xml);
+    return this.biletAllPlaneParserService.parsePullPriceOfFlightResponse(res);
   }
 
   async planePassengerAgeRules(): Promise<PlanePassengerAgeRuleDto[]> {
     const xml = '<TasiyiciFirmaYolcuYasKurallar/>';
-    const res =
-      await this.biletallBusService.run<PlanePassengerAgeRulesResponse>(xml);
-    return this.biletallPlaneParser.parsePassengerAgeRule(res);
+    const res = await this.run<PlanePassengerAgeRulesResponse>(xml);
+    return this.biletAllPlaneParserService.parsePassengerAgeRule(res);
   }
 
   async planeTicketReservation(
@@ -217,9 +217,8 @@ export class BiletallPlaneService {
     };
 
     const xml = builder.buildObject(requestDocument);
-    const res =
-      await this.biletallBusService.run<PlaneTicketReservationResponse>(xml);
-    return this.biletallPlaneParser.parseFlightTicketReservation(res);
+    const res = await this.run<PlaneTicketReservationResponse>(xml);
+    return this.biletAllPlaneParserService.parseFlightTicketReservation(res);
   }
 
   async planeTicketPurchase(
@@ -312,11 +311,9 @@ export class BiletallPlaneService {
     };
 
     const xml = builder.buildObject(requestDocument);
-    const res = await this.biletallBusService.run<PlaneTicketPurchaseResponse>(
-      xml,
-    );
+    const res = await this.run<PlaneTicketPurchaseResponse>(xml);
 
-    return this.biletallPlaneParser.parseFlightTicketPurchase(res);
+    return this.biletAllPlaneParserService.parseFlightTicketPurchase(res);
   }
 
   async planeConvertReservationToSale(
@@ -398,8 +395,8 @@ export class BiletallPlaneService {
     };
 
     const xml = builder.buildObject(requestDocument);
-    const res = await this.biletallBusService.run<any>(xml);
+    const res = await this.run<any>(xml);
 
-    return this.biletallPlaneParser.parseFlightTicketPurchase(res);
+    return this.biletAllPlaneParserService.parseFlightTicketPurchase(res);
   }
 }
