@@ -3,7 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { Airport } from '@app/modules/tickets/plane/entities/airport.entity';
 import { AirportRepository } from '@app/modules/tickets/plane/repositories/airport.repository';
-import { BiletallPlaneService } from '@app/modules/tickets/plane/services/biletall/biletall-plane.service';
+import { BiletAllPlaneService } from '@app/modules/tickets/plane/services/biletall/biletall-plane.service';
 
 // dto
 import { PlaneAirportDto } from '@app/modules/tickets/plane/dto/plane-airport.dto';
@@ -14,12 +14,12 @@ export class AirportsCronJobService implements OnModuleInit {
   private readonly logger = new Logger(AirportsCronJobService.name);
 
   constructor(
-    private readonly biletallPlaneService: BiletallPlaneService,
+    private readonly biletAllPlaneService: BiletAllPlaneService,
     private readonly airportRepository: AirportRepository,
   ) {}
 
   onModuleInit() {
-    this.saveAirportsToDb();
+    // this.saveAirportsToDb();
   }
 
   private splitIntoChunks = (array: PlaneAirportDto[]): PlaneAirportDto[][] => {
@@ -33,7 +33,7 @@ export class AirportsCronJobService implements OnModuleInit {
   private async fetchAirportDataFromBiletAll(): Promise<PlaneAirportDto[][]> {
     try {
       this.logger.log('Fetching airport data from BiletAll');
-      const response = await this.biletallPlaneService.airportSearch();
+      const response = await this.biletAllPlaneService.airportSearch();
       return this.splitIntoChunks(response);
     } catch (error) {
       this.logger.error('Error fetching airport data from BiletAll', error);

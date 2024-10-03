@@ -10,7 +10,7 @@ import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule
 import { BusSearchRequestDto } from '@app/modules/tickets/bus/dto/bus-search.dto';
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 import { ServiceInformationRequestDto } from '@app/modules/tickets/bus/dto/bus-service-information.dto';
-import { BiletAllParser } from '@app/modules/tickets/bus/services/biletall/biletall-bus.parser';
+import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
 import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
 import { BusService } from '@app/modules/tickets/bus/services/bus.service';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -49,7 +49,7 @@ describe('BusController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
       providers: [
-        BiletAllParser,
+        BiletAllBusParserService,
         BiletAllBusService,
         BiletAllApiConfigService,
         {

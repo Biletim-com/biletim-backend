@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 
 import { PasswordService } from '@app/auth/services/password.service';
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
-import { SuperAdminConfigService } from '@app/configs/super-admin';
 
 import { UsersService } from '../users/users.service';
 
@@ -23,7 +22,6 @@ import { VerificationsRepository } from '../users/verification/verification.repo
     UsersRepository,
     VerificationsRepository,
     PanelUsersRepository,
-    SuperAdminConfigService,
   ],
   exports: [PanelUsersService, PanelUsersRepository],
 })

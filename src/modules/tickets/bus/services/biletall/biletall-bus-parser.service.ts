@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
 import { ObjectTyped } from '@app/common/utils/object-typed.util';
-import { BiletAllResponseError } from '@app/common/errors/biletall/biletall-response.error';
+
+// services
+import { BiletAllParserService } from '@app/common/services';
 
 // types
-import { SoapEnvelope } from './types/biletall-soap-envelope.type';
-import { ErrorResponse } from './types/biletall-error.type';
 import { BusFeature } from './types/biletall-bus-feature.type';
-import { ActionResult } from './types/biletall-action-result.type';
 import {
   BiletAllCompany,
   BiletAllCompanyResponse,
@@ -15,7 +14,7 @@ import {
 import {
   BusTerminal,
   BusStopPointResponse,
-} from './types/biletall-bus-stop-points.type';
+} from './types/biletall-bus-terminal.type';
 import {
   BusSchedule,
   BusScheduleAndFeaturesResponse,
@@ -59,32 +58,7 @@ import {
 import { BusTerminalDto } from '../../dto/bus-terminal.dto';
 
 @Injectable()
-export class BiletAllParser {
-  public isErrorResponse(response: any): response is ErrorResponse {
-    return (
-      Array.isArray(response?.IslemSonuc) &&
-      response.IslemSonuc.some((islemSonuc: ActionResult) =>
-        Array.isArray(islemSonuc.Hata),
-      )
-    );
-  }
-
-  public extractResult<T>(response: SoapEnvelope<T>): T {
-    const envelope = response['soap:Envelope'];
-    const body = envelope['soap:Body'][0];
-    const xmlIsletResponse = body['XmlIsletResponse'][0];
-    const result = xmlIsletResponse['XmlIsletResult'][0];
-
-    if (this.isErrorResponse(result)) {
-      const errorMessage =
-        result.IslemSonuc[0]?.Hata?.[0] ||
-        'Something went wrong with the Soap client';
-      throw new BiletAllResponseError(errorMessage);
-    }
-
-    return result;
-  }
-
+export class BiletAllBusParserService extends BiletAllParserService {
   public parseCompany = (
     response: BiletAllCompanyResponse,
   ): BusCompanyDto[] => {
