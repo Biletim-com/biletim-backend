@@ -1,5 +1,68 @@
 import { Injectable } from '@nestjs/common';
 
+import { ObjectTyped } from '@app/common/utils/object-typed.util';
+import { BiletAllParserService } from '@app/common/services';
+
+// dto
+import {
+  InvoiceAbroadFlightDto,
+  MembershipAbroadFlightDto,
+  OpenTicketAbroadFlightDto,
+  PassengerAbroadFlightDto,
+  PaymentRulesAbroadFlightDto,
+  PnrAbroadFlightDto,
+  PnrExtraServiceSegmentAbroadFlightDto,
+  PnrSearchAbroadFlightDto,
+  SeatNumbersAbroadFlightDto,
+  SegmentAbroadFlightDto,
+} from '../../dto/tickets-pnr-search-abroad-flight.dto';
+import {
+  AgencyPrepaymentDomesticFlightDto,
+  CollectionDomesticFlightDto,
+  CommissionDomesticFlightDto,
+  InvoiceDomesticFlightDto,
+  MembershipDomesticFlightDto,
+  OpenTicketDomesticFlightDto,
+  PassengerDomesticFlightDto,
+  PnrDomesticFlightDto,
+  PnrExtraServiceSegmentDomesticFlightDto,
+  PnrSearchDomesticFlightDto,
+  PnrTransactionDetailDomesticFlightDto,
+  SeatNumbersDomesticFlightDto,
+  SegmentDomesticFlightDto,
+} from '../../dto/tickets-pnr-search-domestic-flight.dto';
+import {
+  AgencyPrepaymentBus,
+  CollectionBus,
+  CommissionBus,
+  InvoiceBus,
+  MembershipBus,
+  OpenTicketBus,
+  PassengerBus,
+  PnrBus,
+  PnrExtraServiceSegmentBus,
+  PnrSearchBusDataSet,
+  PnrTransactionDetailBus,
+  SeatNumbersBus,
+  SegmentBus,
+} from '../../type/tickets-pnr-search-bus-response.type';
+import {
+  AgencyPrepaymentBusDto,
+  CollectionBusDto,
+  CommissionBusDto,
+  InvoiceBusDto,
+  MembershipBusDto,
+  OpenTicketBusDto,
+  PassengerBusDto,
+  PnrBusDto,
+  PnrExtraServiceSegmentBusDto,
+  PnrSearchBusDto,
+  PnrTransactionDetailBusDto,
+  SeatNumbersBusDto,
+  SegmentBusDto,
+} from '../../dto/tickets-pnr-search-bus.dto';
+
+// types
 import { PnrSearchResponse } from './type/tickets-pnr-search-union.type';
 import {
   InvoiceAbroadFlight,
@@ -28,70 +91,9 @@ import {
   SeatNumbersDomesticFlight,
   SegmentDomesticFlight,
 } from './type/tickets-pnr-search-domestic-flight-response.type';
-import {
-  InvoiceAbroadFlightDto,
-  MembershipAbroadFlightDto,
-  OpenTicketAbroadFlightDto,
-  PassengerAbroadFlightDto,
-  PaymentRulesAbroadFlightDto,
-  PnrAbroadFlightDto,
-  PnrExtraServiceSegmentAbroadFlightDto,
-  PnrSearchAbroadFlightDto,
-  SeatNumbersAbroadFlightDto,
-  SegmentAbroadFlightDto,
-} from './dto/tickets-pnr-search-abroad-flight.dto';
-import {
-  AgencyPrepaymentDomesticFlightDto,
-  CollectionDomesticFlightDto,
-  CommissionDomesticFlightDto,
-  InvoiceDomesticFlightDto,
-  MembershipDomesticFlightDto,
-  OpenTicketDomesticFlightDto,
-  PassengerDomesticFlightDto,
-  PnrDomesticFlightDto,
-  PnrExtraServiceSegmentDomesticFlightDto,
-  PnrSearchDomesticFlightDto,
-  PnrTransactionDetailDomesticFlightDto,
-  SeatNumbersDomesticFlightDto,
-  SegmentDomesticFlightDto,
-} from './dto/tickets-pnr-search-domestic-flight.dto';
-import {
-  AgencyPrepaymentBus,
-  CollectionBus,
-  CommissionBus,
-  InvoiceBus,
-  MembershipBus,
-  OpenTicketBus,
-  PassengerBus,
-  PnrBus,
-  PnrExtraServiceSegmentBus,
-  PnrSearchBusDataSet,
-  PnrTransactionDetailBus,
-  SeatNumbersBus,
-  SegmentBus,
-} from './type/tickets-pnr-search-bus-response.type';
-import {
-  AgencyPrepaymentBusDto,
-  CollectionBusDto,
-  CommissionBusDto,
-  InvoiceBusDto,
-  MembershipBusDto,
-  OpenTicketBusDto,
-  PassengerBusDto,
-  PnrBusDto,
-  PnrExtraServiceSegmentBusDto,
-  PnrSearchBusDto,
-  PnrTransactionDetailBusDto,
-  SeatNumbersBusDto,
-  SegmentBusDto,
-} from './dto/tickets-pnr-search-bus.dto';
-import { ObjectTyped } from '@app/common/utils/object-typed.util';
-import { BiletAllParser } from './bus/services/biletall/biletall-bus.parser';
 
 @Injectable()
-export class TicketsParser {
-  constructor(private readonly biletAllParser: BiletAllParser) {}
-
+export class BiletAllPnrParserService extends BiletAllParserService {
   private parsePnrSearchBusResponse = (
     extractedResult: PnrSearchBusDataSet,
   ): PnrSearchBusDto => {
@@ -438,7 +440,7 @@ export class TicketsParser {
     | PnrSearchBusDto
     | PnrSearchDomesticFlightDto
     | PnrSearchAbroadFlightDto => {
-    const extractedResult: any = this.biletAllParser.extractResult(response);
+    const extractedResult: any = this.extractResult(response);
     const ticket = extractedResult['Bilet'][0];
     const pnr = ticket['PNR'][0];
     const pnrTip = pnr['PnrTip'][0];

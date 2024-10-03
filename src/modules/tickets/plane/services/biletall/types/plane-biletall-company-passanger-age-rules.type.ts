@@ -1,4 +1,4 @@
-import { SoapEnvelope } from '@app/modules/tickets/bus/services/biletall/types/biletall-soap-envelope.type';
+import { SoapEnvelope } from '@app/common/types';
 
 export type PlanePassengerAgeRule = {
   TasiyiciFirmaNo: string[];

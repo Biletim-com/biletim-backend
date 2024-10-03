@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { BiletallPlaneService } from './services/biletall/biletall-plane.service';
+import { BiletAllPlaneService } from './services/biletall/biletall-plane.service';
 import {
   DomesticFlightScheduleDto,
   PlaneDomesticFlightScheduleRequestDto,
@@ -27,14 +27,14 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 @ApiTags('Plane')
 @Controller('plane')
 export class PlaneController {
-  constructor(private readonly biletallPlaneService: BiletallPlaneService) {}
+  constructor(private readonly biletAllPlaneService: BiletAllPlaneService) {}
 
   @ApiOperation({ summary: 'Search Domestic Flight Schedule' })
   @Post('domestic-flight-schedule')
   async domesticFlightScheduleSearch(
     @Body() requestDto: PlaneDomesticFlightScheduleRequestDto,
   ): Promise<DomesticFlightScheduleDto> {
-    return this.biletallPlaneService.domesticFlightScheduleSearch(requestDto);
+    return this.biletAllPlaneService.domesticFlightScheduleSearch(requestDto);
   }
 
   @ApiOperation({ summary: 'Search Abroad Flight Schedule' })
@@ -42,7 +42,7 @@ export class PlaneController {
   async abroadFlightScheduleSearch(
     @Body() requestDto: PlaneAbroadFlightScheduleRequestDto,
   ): Promise<AbroadFlightScheduleDto> {
-    return this.biletallPlaneService.abroadFlightScheduleSearch(requestDto);
+    return this.biletAllPlaneService.abroadFlightScheduleSearch(requestDto);
   }
 
   @ApiOperation({ summary: 'Pull Price Of Flight' })
@@ -50,13 +50,13 @@ export class PlaneController {
   async pullPriceOfFlight(
     @Body() requestDto: PullPriceFlightRequestDto,
   ): Promise<PlanePullPriceFlightDto> {
-    return this.biletallPlaneService.pullPriceOfFlight(requestDto);
+    return this.biletAllPlaneService.pullPriceOfFlight(requestDto);
   }
 
   @ApiOperation({ summary: 'Get Plane Passenger Age Rules' })
   @Get('passenger-age-rules')
   async planePassengerAgeRules(): Promise<PlanePassengerAgeRuleDto[]> {
-    return this.biletallPlaneService.planePassengerAgeRules();
+    return this.biletAllPlaneService.planePassengerAgeRules();
   }
 
   @ApiOperation({ summary: 'Reservation Flight Ticket' })
@@ -64,7 +64,7 @@ export class PlaneController {
   async planeTicketReservation(
     @Body() requestDto: FlightReservationRequestDto,
   ): Promise<FlightTicketReservationDto> {
-    return this.biletallPlaneService.planeTicketReservation(requestDto);
+    return this.biletAllPlaneService.planeTicketReservation(requestDto);
   }
 
   @ApiOperation({ summary: 'Purchase Flight Ticket' })
@@ -72,7 +72,7 @@ export class PlaneController {
   async planeTicketPurchase(
     @Body() requestDto: FlightTicketPurchaseRequestDto,
   ): Promise<FlightTicketPurchaseDto> {
-    return this.biletallPlaneService.planeTicketPurchase(requestDto);
+    return this.biletAllPlaneService.planeTicketPurchase(requestDto);
   }
 
   @ApiOperation({ summary: 'Convert Reservation To Sale' })
@@ -80,6 +80,6 @@ export class PlaneController {
   async planeConvertReservationToSale(
     @Body() requestDto: FlightConvertReservationToSaleRequestDto,
   ): Promise<any> {
-    return this.biletallPlaneService.planeConvertReservationToSale(requestDto);
+    return this.biletAllPlaneService.planeConvertReservationToSale(requestDto);
   }
 }

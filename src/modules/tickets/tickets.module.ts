@@ -1,20 +1,19 @@
 import { Module } from '@nestjs/common';
-import { TicketsService } from './tickets.service';
+
+import { TicketsService } from './services/tickets.service';
 import { TicketsController } from './tickets.controller';
+
+// modules
 import { BusModule } from './bus/bus.module';
 import { PlaneModule } from './plane/plane.module';
-import { TicketsParser } from './tickets.parser';
-import { BiletAllBusService } from './bus/services/biletall/biletall-bus.service';
-import { BiletAllParser } from './bus/services/biletall/biletall-bus.parser';
+
+// services
+import { BiletAllPnrService } from './services/biletall/biletall-pnr.service';
+import { BiletAllPnrParserService } from './services/biletall/biletall-pnr-parser.service';
 
 @Module({
   imports: [BusModule, PlaneModule],
-  providers: [
-    TicketsService,
-    BiletAllBusService,
-    BiletAllParser,
-    TicketsParser,
-  ],
+  providers: [TicketsService, BiletAllPnrService, BiletAllPnrParserService],
   controllers: [TicketsController],
 })
 export class TicketsModule {}
