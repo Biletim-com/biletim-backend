@@ -350,7 +350,6 @@ export class BiletAllBusService {
     };
 
     const xml = builder.buildObject(requestDocument);
-    return xml;
-    // return this.run(xml);
+    return this.run(xml);
   }
 }
