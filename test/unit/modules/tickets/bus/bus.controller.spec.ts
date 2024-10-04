@@ -93,9 +93,8 @@ describe('BusController', () => {
         getBusTerminalsByNameMockResponse,
       );
 
-      const queryDto = { name: 'Adana' };
-
-      const result = await controller.busTerminalsByName(queryDto);
+      const queryDto = { searchTerm: 'Adana' };
+      const result = await controller.searchBusTerminals(queryDto);
 
       expect(busServiceMock.getBusTerminalsByName).toBeCalledWith('Adana');
       expect(result).toStrictEqual(getBusTerminalsByNameMockResponse);

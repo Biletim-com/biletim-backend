@@ -1,5 +1,3 @@
-// src/biletall/biletall.controller.ts
-
 import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 
 // services
@@ -47,12 +45,12 @@ export class BusController {
     return this.biletAllBusService.company(requestDto);
   }
 
-  @ApiOperation({ summary: 'Search Bus Terminals By Name' })
+  @ApiOperation({ summary: 'Search Bus Terminals By Terminal name and Region' })
   @Get('bus-terminal-search')
-  async busTerminalsByName(
-    @Query() { name }: BusTerminalSearchQueryDto,
+  async searchBusTerminals(
+    @Query() { searchTerm }: BusTerminalSearchQueryDto,
   ): Promise<BusTerminal[]> {
-    return this.busService.getBusTerminalsByName(name);
+    return this.busService.searchBusTerminals(searchTerm);
   }
 
   @ApiOperation({ summary: 'Get Schedule List and Features' })
