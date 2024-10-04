@@ -1,7 +1,7 @@
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { BusController } from '@app/modules/tickets/bus/bus.controller';
 import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
-import { BiletAllParser } from '@app/modules/tickets/bus/services/biletall/biletall-bus.parser';
+
 import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -28,6 +28,8 @@ import { BoardingPointRequestDto } from '@app/modules/tickets/bus/dto/bus-boardi
 import { ServiceInformationRequestDto } from '@app/modules/tickets/bus/dto/bus-service-information.dto';
 import { BusRouteRequestDto } from '@app/modules/tickets/bus/dto/bus-route.dto';
 import { BusPurchaseDto } from '@app/modules/tickets/bus/dto/bus-purchase.dto';
+import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
+import { BiletAllParserService, BiletAllService } from '@app/common/services';
 
 describe('BiletAllBusService', () => {
   const mockParser = {
@@ -40,7 +42,6 @@ describe('BiletAllBusService', () => {
     parseServiceInformation: jest.fn(),
     parseRouteDetail: jest.fn(),
   };
-  const mockRun = jest.fn();
   const mockTransactionRules = jest.fn();
 
   let service: BiletAllBusService;
@@ -53,12 +54,14 @@ describe('BiletAllBusService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
       providers: [
-        BiletAllBusService,
         BiletAllApiConfigService,
+        BiletAllBusService,
         BusService,
         BusTerminalRepository,
+        BiletAllService,
+        BiletAllParserService,
         {
-          provide: BiletAllParser,
+          provide: BiletAllBusParserService,
           useValue: mockParser,
         },
         { provide: DataSource, useValue: mockDataSource },
@@ -67,11 +70,7 @@ describe('BiletAllBusService', () => {
     }).compile();
 
     service = module.get<BiletAllBusService>(BiletAllBusService);
-    service['run'] = mockRun;
     service['transactionRules'] = mockTransactionRules;
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -80,7 +79,7 @@ describe('BiletAllBusService', () => {
 
   describe('company method', () => {
     it('should return informations of relevant company', async () => {
-      const requestDto: BusCompanyRequestDto = { companyNo: '2' };
+      const requestDto: BusCompanyRequestDto = { companyNo: '0' };
       const mockXmlResponse = fs.readFileSync(
         path.resolve(
           __dirname,
@@ -89,14 +88,16 @@ describe('BiletAllBusService', () => {
         'utf-8',
       );
 
-      mockRun.mockResolvedValueOnce(mockXmlResponse);
+      const runSpy = jest
+        .spyOn(BiletAllService.prototype, 'run')
+        .mockResolvedValueOnce(mockXmlResponse);
       mockParser.parseCompany.mockResolvedValueOnce(busCompanyMockResponse);
       const result = await service.company(requestDto);
 
-      expect(mockRun).toHaveBeenCalledWith(
+      expect(runSpy).toHaveBeenCalledWith(
         `<Firmalar><FirmaNo>${requestDto.companyNo}</FirmaNo></Firmalar>`,
       );
-      expect(mockParser.parseCompany).toBeCalledWith(mockXmlResponse);
+      expect(mockParser.parseCompany).toHaveBeenCalledWith(mockXmlResponse);
       expect(result).toStrictEqual(busCompanyMockResponse);
     });
   });
@@ -111,13 +112,15 @@ describe('BiletAllBusService', () => {
         'utf-8',
       );
 
-      mockRun.mockResolvedValueOnce(mockXmlResponse);
+      const runSpy = jest
+        .spyOn(BiletAllService.prototype, 'run')
+        .mockResolvedValueOnce(mockXmlResponse);
       mockParser.parseBusTerminals.mockResolvedValueOnce(
         getBusTerminalsByNameMockResponse,
       );
       const result = await service.busTerminals();
 
-      expect(mockRun).toHaveBeenCalledWith(`<KaraNoktaGetirKomut/>`);
+      expect(runSpy).toHaveBeenCalledWith(`<KaraNoktaGetirKomut/>`);
       expect(mockParser.parseBusTerminals).toBeCalledWith(mockXmlResponse);
       expect(result).toStrictEqual(getBusTerminalsByNameMockResponse);
     });
@@ -144,7 +147,9 @@ describe('BiletAllBusService', () => {
         'utf-8',
       );
 
-      mockRun.mockResolvedValueOnce(mockXmlResponse);
+      const runSpy = jest
+        .spyOn(BiletAllService.prototype, 'run')
+        .mockResolvedValueOnce(mockXmlResponse);
       mockParser.parseBusSchedule.mockResolvedValueOnce(
         scheduleListMockResponse,
       );
@@ -161,7 +166,7 @@ describe('BiletAllBusService', () => {
         `  <Ip>${requestDto.ip}</Ip>\n` +
         `</Sefer>`;
 
-      expect(mockRun).toHaveBeenCalledWith(expectedXml);
+      expect(runSpy).toHaveBeenCalledWith(expectedXml);
       expect(mockParser.parseBusSchedule).toBeCalledWith(mockXmlResponse);
       expect(result).toStrictEqual(scheduleListMockResponse);
     });
@@ -190,7 +195,9 @@ describe('BiletAllBusService', () => {
         'utf-8',
       );
 
-      mockRun.mockResolvedValueOnce(mockXmlResponse);
+      const runSpy = jest
+        .spyOn(BiletAllService.prototype, 'run')
+        .mockResolvedValueOnce(mockXmlResponse);
       mockParser.parseBusSearchResponse.mockResolvedValueOnce(
         busSearchMockResponse,
       );
@@ -209,7 +216,7 @@ describe('BiletAllBusService', () => {
         `  <Ip>${requestDto.ip}</Ip>\n` +
         `</Otobus>`;
 
-      expect(mockRun).toHaveBeenCalledWith(expectedXml);
+      expect(runSpy).toHaveBeenCalledWith(expectedXml);
       expect(mockParser.parseBusSearchResponse).toBeCalledWith(mockXmlResponse);
       expect(result).toStrictEqual(busSearchMockResponse);
     });
@@ -243,7 +250,9 @@ describe('BiletAllBusService', () => {
         'utf-8',
       );
 
-      mockRun.mockResolvedValueOnce(mockXmlResponse);
+      const runSpy = jest
+        .spyOn(BiletAllService.prototype, 'run')
+        .mockResolvedValueOnce(mockXmlResponse);
 
       mockParser.parseBusSeatAvailability.mockResolvedValueOnce(
         busSeatAvailabilityMockResponse,
@@ -273,7 +282,7 @@ describe('BiletAllBusService', () => {
         `  </Koltuklar>\n` +
         `</OtobusKoltukKontrol>\n`;
 
-      expect(mockRun).toHaveBeenCalledWith(expectedXml.trim());
+      expect(runSpy).toHaveBeenCalledWith(expectedXml.trim());
       expect(mockParser.parseBusSeatAvailability).toBeCalledWith(
         mockXmlResponse,
       );
@@ -298,7 +307,9 @@ describe('BiletAllBusService', () => {
         'utf-8',
       );
 
-      mockRun.mockResolvedValueOnce(mockXmlResponse);
+      const runSpy = jest
+        .spyOn(BiletAllService.prototype, 'run')
+        .mockResolvedValueOnce(mockXmlResponse);
       mockParser.parseBoardingPoint.mockResolvedValueOnce(
         boardingPointMockResponse,
       );
@@ -311,7 +322,7 @@ describe('BiletAllBusService', () => {
         `  <HatNo>${requestDto.routeNumber}</HatNo>\n` +
         `</BinecegiYer>`;
 
-      expect(mockRun).toHaveBeenCalledWith(expectedXml);
+      expect(runSpy).toHaveBeenCalledWith(expectedXml);
       expect(mockParser.parseBoardingPoint).toBeCalledWith(mockXmlResponse);
       expect(result).toStrictEqual(boardingPointMockResponse);
     });
@@ -334,7 +345,9 @@ describe('BiletAllBusService', () => {
         'utf-8',
       );
 
-      mockRun.mockResolvedValueOnce(mockXmlResponse);
+      const runSpy = jest
+        .spyOn(BiletAllService.prototype, 'run')
+        .mockResolvedValueOnce(mockXmlResponse);
       mockParser.parseServiceInformation.mockResolvedValueOnce(
         serviceInformationMockResponse,
       );
@@ -349,7 +362,7 @@ describe('BiletAllBusService', () => {
         `  <Saat/>\n` +
         `</Servis_2>`;
 
-      expect(mockRun).toHaveBeenCalledWith(expectedXml.trim());
+      expect(runSpy).toHaveBeenCalledWith(expectedXml.trim());
       expect(mockParser.parseServiceInformation).toBeCalledWith(
         mockXmlResponse,
       );
@@ -377,7 +390,9 @@ describe('BiletAllBusService', () => {
         'utf-8',
       );
 
-      mockRun.mockResolvedValueOnce(mockXmlResponse);
+      const runSpy = jest
+        .spyOn(BiletAllService.prototype, 'run')
+        .mockResolvedValueOnce(mockXmlResponse);
       mockParser.parseRouteDetail.mockResolvedValueOnce(getRouteMockResponse);
       const result = await service.getRoute(requestDto);
       const expectedXml =
@@ -391,7 +406,7 @@ describe('BiletAllBusService', () => {
         `  <Tarih>${requestDto.date}</Tarih>\n` +
         `</Hat>`;
 
-      expect(mockRun).toHaveBeenCalledWith(expectedXml.trim());
+      expect(runSpy).toHaveBeenCalledWith(expectedXml.trim());
       expect(mockParser.parseRouteDetail).toBeCalledWith(mockXmlResponse);
       expect(result).toStrictEqual(getRouteMockResponse);
     });
@@ -440,7 +455,9 @@ describe('BiletAllBusService', () => {
         'utf-8',
       );
 
-      mockRun.mockResolvedValueOnce(mockXmlResponse);
+      const runSpy = jest
+        .spyOn(BiletAllService.prototype, 'run')
+        .mockResolvedValueOnce(mockXmlResponse);
       const result = await service.saleRequest(requestDto);
       const expectedXml = `
 <IslemSatis>
@@ -495,7 +512,7 @@ describe('BiletAllBusService', () => {
         tripTrackingNumber: '20470',
         ip: '127.0.0.1',
       });
-      expect(mockRun).toHaveBeenCalledWith(expectedXml.trim());
+      expect(runSpy).toHaveBeenCalledWith(expectedXml.trim());
       expect(result).toStrictEqual(mockXmlResponse);
     });
   });
