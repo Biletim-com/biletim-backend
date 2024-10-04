@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { BiletAllPlaneService } from './services/biletall/biletall-plane.service';
 import {
   DomesticFlightScheduleDto,
@@ -23,11 +23,28 @@ import {
 } from './dto/plane-ticket-purchase.dto';
 import { FlightConvertReservationToSaleRequestDto } from './dto/plane-convert-reservation-to-sale.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Airport } from './entities/airport.entity';
+import { PlaneService } from './services/plane.service';
+import { AirportSearchQueryDto } from './dto/airport-search-query.dto';
 
 @ApiTags('Plane')
 @Controller('plane')
 export class PlaneController {
-  constructor(private readonly biletAllPlaneService: BiletAllPlaneService) {}
+  constructor(
+    private readonly planeService: PlaneService,
+    private readonly biletAllPlaneService: BiletAllPlaneService,
+  ) {}
+
+  @ApiOperation({
+    summary:
+      'Airport search by CountryName, CityName, AirportCode and AirportName',
+  })
+  @Get('airport-search')
+  async busTerminalsByName(
+    @Query() { searchText }: AirportSearchQueryDto,
+  ): Promise<Airport[]> {
+    return this.planeService.searchAirports(searchText);
+  }
 
   @ApiOperation({ summary: 'Search Domestic Flight Schedule' })
   @Post('domestic-flight-schedule')

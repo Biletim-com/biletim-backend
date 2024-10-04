@@ -17,6 +17,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./src:/app/src
+      - ./test:/app/test
 
   biletim-db:
     image: postgres:15

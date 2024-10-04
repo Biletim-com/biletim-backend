@@ -7,9 +7,7 @@ import { BusTerminal } from '../entities/bus-terminal.entity';
 export class BusService {
   constructor(private readonly busTerminalRepository: BusTerminalRepository) {}
 
-  public async getBusTerminalsByName(
-    searchTerm: string,
-  ): Promise<BusTerminal[]> {
+  public async searchBusTerminals(searchTerm: string): Promise<BusTerminal[]> {
     const formattedSearchTerm = searchTerm
       .split(' ')
       .map((term) => `${term}:*`)
@@ -17,7 +15,7 @@ export class BusService {
 
     return this.busTerminalRepository
       .createQueryBuilder('bus_terminals')
-      .where("bus_terminals.name_text @@ to_tsquery('simple', :name)")
+      .where("bus_terminals.search_text @@ to_tsquery('simple', :name)")
       .andWhere('bus_terminals.appear_in_search = true')
       .setParameters({ name: formattedSearchTerm })
       .getMany();

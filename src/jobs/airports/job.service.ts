@@ -19,7 +19,7 @@ export class AirportsCronJobService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    // this.saveAirportsToDb();
+    this.saveAirportsToDb();
   }
 
   private splitIntoChunks = (array: PlaneAirportDto[]): PlaneAirportDto[][] => {

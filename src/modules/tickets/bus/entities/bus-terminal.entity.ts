@@ -35,13 +35,13 @@ export class BusTerminal extends AbstractEntity<BusTerminal> {
   // since TypeORM does support GIN indexes natively
   // it is decided to be added manually in the migration file
   // and ignored while synching
-  @Index('name_text_idx', { synchronize: false })
+  @Index('name_region_text_idx', { synchronize: false })
   @Column({
     type: 'tsvector',
     nullable: true,
     select: false,
     generatedType: 'STORED',
-    asExpression: `to_tsvector('simple', name)`,
+    asExpression: `to_tsvector('simple', name || ' ' || COALESCE(region, ''))`,
   })
-  private readonly nameText: string;
+  private readonly searchText: string;
 }
