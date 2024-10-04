@@ -209,7 +209,7 @@ export class BusScheduleAndBusFeaturesDto {
   typeFeatureIcon?: string;
 
   constructor(
-    public combinedSchedulesAndFeatures: {
+    public SchedulesAndFeatures: {
       schedule: BusScheduleDto;
       features: BusFeaturesDto[];
     }[],
