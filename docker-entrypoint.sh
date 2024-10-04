@@ -1,3 +1,3 @@
 #!/bin/bash
-pnpm migration:run
+# pnpm migration:run
 pnpm start:prod
