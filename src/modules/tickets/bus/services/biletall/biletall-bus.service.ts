@@ -312,7 +312,6 @@ export class BiletAllBusService extends BiletAllService {
     };
 
     const xml = builder.buildObject(requestDocument);
-    return xml;
-    // return this.run(xml);
+    return this.run(xml);
   }
 }
