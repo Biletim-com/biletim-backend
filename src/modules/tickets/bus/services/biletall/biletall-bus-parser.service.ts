@@ -115,7 +115,7 @@ export class BiletAllBusParserService extends BiletAllParserService {
       return new BusFeaturesDto(featureParsed);
     });
 
-    const combinedSchedulesAndFeatures = schedules.map((schedule) => {
+    const SchedulesAndFeatures = schedules.map((schedule) => {
       const featureIndexes = schedule.busTypeFeature
         ? schedule.busTypeFeature
             .split('')
@@ -130,7 +130,7 @@ export class BiletAllBusParserService extends BiletAllParserService {
       };
     });
 
-    return new BusScheduleAndBusFeaturesDto(combinedSchedulesAndFeatures);
+    return new BusScheduleAndBusFeaturesDto(SchedulesAndFeatures);
   };
 
   public parseBusSearchResponse = (response: BusResponse): BusSearchDto => {
