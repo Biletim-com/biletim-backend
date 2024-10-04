@@ -58,6 +58,10 @@ biletim_api:
     HOTEL_API_BASE_URL: https://api.worldota.net/api/b2b/v3
     HOTEL_WS_USERNAME: 8175
     HOTEL_WS_PASSWORD: 88346326-e817-4e3f-8852-44185a44e606
+    GOOGLE_OAUTH_CLIENT_ID: 347389858095-q2bqpat4bphrt778h8qfuepcd0tbt5o2.apps.googleusercontent.com
+    GOOGLE_OAUTH_CLIENT_SECRET: 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
+    FACEBOOK_OAUTH_CLIENT_ID: facebookClient12345
+    FACEBOOK_OAUTH_CLIENT_SECRET: facebookClientSecret12345
 
   volumeMounts:
     biletim-api: '/app/images'
