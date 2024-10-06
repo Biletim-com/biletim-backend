@@ -25,6 +25,8 @@ import { ErrorInterceptor } from '@app/common/interceptors';
 
 // Jobs
 import { JobsModule } from '@app/jobs/jobs.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { EventEmitterModule } from '@nestjs/event-emitter/dist/event-emitter.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { JobsModule } from '@app/jobs/jobs.module';
     JobsModule,
     UsersModule,
     PanelUsersModule,
+    NotificationsModule,
+    EventEmitterModule.forRoot(),
     HotelModule,
     TicketsModule,
     BookingModule,

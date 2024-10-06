@@ -20,5 +20,9 @@ declare namespace NodeJS {
     SUPER_ADMIN_EMAIL: string;
     SUPER_ADMIN_PASSWORD: string;
     SUPER_ADMIN_KEY: string;
+    EMAIL_USERNAME: string;
+    EMAIL_PASSWORD: string;
+    EMAIL_PORT: string;
+    EMAIL_HOST: string;
   }
 }

@@ -27,6 +27,7 @@ import { TokenRefreshMiddleware } from './middlewares/token-refresh.middleware';
 import { AuthConfigService } from '@app/configs/auth';
 import { OAuthLoginWithFacebookConfigService } from '@app/configs/oauth-facebook';
 import { OAuthLoginWithGoogleConfigService } from '@app/configs/oauth-google';
+import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { OAuthLoginWithGoogleConfigService } from '@app/configs/oauth-google';
     RestClientService,
     OAuthLoginWithGoogleConfigService,
     OAuthLoginWithFacebookConfigService,
+    EventEmitterService,
   ],
   exports: [AuthService, PasswordService],
 })

@@ -13,6 +13,7 @@ import { VerificationsRepository } from './verification/verification.repository'
 
 import { PanelUsersModule } from '../panel-users/panel-users.module';
 import { PanelUsersService } from '../panel-users/panel-users.service';
+import { VerificationService } from './verification/verification.service';
 
 @Module({
   imports: [
@@ -26,7 +27,13 @@ import { PanelUsersService } from '../panel-users/panel-users.service';
     PanelUsersService,
     UsersRepository,
     VerificationsRepository,
+    VerificationService,
   ],
-  exports: [UsersService, UsersRepository, VerificationsRepository],
+  exports: [
+    UsersService,
+    UsersRepository,
+    VerificationsRepository,
+    VerificationService,
+  ],
 })
 export class UsersModule {}

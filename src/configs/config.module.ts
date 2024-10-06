@@ -46,6 +46,11 @@ import loginWithFacebookConfiguration, {
   OAuthLoginWithFacebookEnvVarsValidation,
 } from './oauth-facebook';
 
+import notificationsConfiguration, {
+  NotificationsConfigService,
+  NotificationsEnvVarsValidation,
+} from './notifications';
+
 @Global()
 @Module({
   imports: [
@@ -60,6 +65,7 @@ import loginWithFacebookConfiguration, {
         superAdminConfiguration,
         loginWithGoogleConfiguration,
         loginWithFacebookConfiguration,
+        notificationsConfiguration,
       ],
       validate: async (config) =>
         Promise.all([
@@ -69,6 +75,7 @@ import loginWithFacebookConfiguration, {
           ConfigValidator.validate(BiletAllApiEnvVarsValidation, config),
           ConfigValidator.validate(HotelApiEnvVarsValidation, config),
           ConfigValidator.validate(SuperAdminEnvVarsValidation, config),
+          ConfigValidator.validate(NotificationsEnvVarsValidation, config),
           ConfigValidator.validate(
             OAuthLoginWithGoogleEnvVarsValidation,
             config,
@@ -90,6 +97,7 @@ import loginWithFacebookConfiguration, {
     SuperAdminConfigService,
     OAuthLoginWithGoogleConfigService,
     OAuthLoginWithFacebookConfigService,
+    NotificationsConfigService,
   ],
   exports: [
     ConfigService,
@@ -101,6 +109,7 @@ import loginWithFacebookConfiguration, {
     SuperAdminConfigService,
     OAuthLoginWithGoogleConfigService,
     OAuthLoginWithFacebookConfigService,
+    NotificationsConfigService,
   ],
 })
 export class ConfigModule {}
