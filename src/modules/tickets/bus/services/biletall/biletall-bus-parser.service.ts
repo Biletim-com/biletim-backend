@@ -112,11 +112,25 @@ export class BiletAllBusParserService extends BiletAllParserService {
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
         featureParsed[key] = value;
       }
-
       return new BusFeaturesDto(featureParsed);
     });
 
-    return new BusScheduleAndBusFeaturesDto(schedules, features);
+    const SchedulesAndFeatures = schedules.map((schedule) => {
+      const featureIndexes = schedule.busTypeFeature
+        ? schedule.busTypeFeature
+            .split('')
+            .map((value, index) => (value === '1' ? index : -1))
+            .filter((index) => index !== -1)
+        : [];
+      const relatedFeatures = featureIndexes.map((index) => features[index]);
+
+      return {
+        schedule,
+        features: relatedFeatures,
+      };
+    });
+
+    return new BusScheduleAndBusFeaturesDto(SchedulesAndFeatures);
   };
 
   public parseBusSearchResponse = (response: BusResponse): BusSearchDto => {
