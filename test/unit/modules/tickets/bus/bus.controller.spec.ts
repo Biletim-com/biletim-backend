@@ -28,7 +28,7 @@ import {
 
 describe('BusController', () => {
   const busServiceMock = {
-    getBusTerminalsByName: jest.fn(),
+    searchBusTerminals: jest.fn(),
   };
 
   const biletAllBusServiceMock = {
@@ -89,14 +89,14 @@ describe('BusController', () => {
 
   describe('busTerminalsByName method', () => {
     it('should return bus terminals based on the name', async () => {
-      busServiceMock.getBusTerminalsByName.mockResolvedValueOnce(
+      busServiceMock.searchBusTerminals.mockResolvedValueOnce(
         getBusTerminalsByNameMockResponse,
       );
 
       const queryDto = { searchTerm: 'Adana' };
       const result = await controller.searchBusTerminals(queryDto);
 
-      expect(busServiceMock.getBusTerminalsByName).toBeCalledWith('Adana');
+      expect(busServiceMock.searchBusTerminals).toBeCalledWith('Adana');
       expect(result).toStrictEqual(getBusTerminalsByNameMockResponse);
     });
   });
