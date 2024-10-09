@@ -3,6 +3,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 import { NotificationsConfigService } from '@app/configs/notifications';
+import { AuthConfigService } from '@app/configs/auth';
 
 import { EmailNotificationService } from './services/email-notification.service';
 
@@ -31,6 +32,10 @@ import { EmailNotificationStrategy } from './strategies/email-notification.strat
       inject: [NotificationsConfigService],
     }),
   ],
-  providers: [EmailNotificationService, EmailNotificationStrategy],
+  providers: [
+    EmailNotificationService,
+    EmailNotificationStrategy,
+    AuthConfigService,
+  ],
 })
 export class NotificationsModule {}

@@ -7,10 +7,14 @@ import {
 } from '@app/providers/event-emitter/decorators/on-event.decorator';
 
 import { EmailNotificationStrategy } from '../strategies/email-notification.strategy';
+import { AuthConfigService } from '@app/configs/auth';
 
 @Injectable()
 export class EmailNotificationService {
-  constructor(private readonly notification: EmailNotificationStrategy) {}
+  constructor(
+    private readonly notification: EmailNotificationStrategy,
+    private readonly authConfigService: AuthConfigService,
+  ) {}
 
   @OnEvents(['user.created', 'user.email.updated'])
   async sendSetupProfileEmail({
@@ -37,7 +41,7 @@ export class EmailNotificationService {
       context: {
         header: 'Password reset',
         content: 'Click the button below to reset your password.',
-        url: `http://localhost:3000?code=${verificationCode}`,
+        url: `${this.authConfigService.resetPasswordUrl}?verificationCode=${verificationCode}`,
       },
     });
   }

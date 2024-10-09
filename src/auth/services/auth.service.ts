@@ -35,7 +35,6 @@ export class AuthService {
     private usersService: UsersService,
     private tokenService: TokenService,
     private cookieService: CookieService,
-    private usersRepository: UsersRepository,
     private verificationService: VerificationService,
     private passwordService: PasswordService,
     private readonly eventEmitter: EventEmitterService,
