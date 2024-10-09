@@ -81,7 +81,6 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Register User' })
-  @ApiCookieAuth()
   @Post('/signup')
   @HttpCode(200)
   async register(
@@ -98,7 +97,7 @@ export class AuthController {
   async appVerification(
     @Body() verificationDto: VerificationDto,
   ): Promise<any> {
-    return this.authService.appVerification(+verificationDto.verificationCode);
+    return this.authService.appVerification(verificationDto);
   }
 
   @ApiOperation({ summary: 'Forgot Password' })

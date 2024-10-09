@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -20,6 +21,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { User } from './user.entity';
 import { Passenger } from '../passengers/passenger.entity';
+import { RegisterUserRequest } from '@app/auth/dto/register-user-request.dto';
+import { Verification } from './verification/verification.entity';
 
 @Injectable()
 export class UsersService {
@@ -70,6 +73,7 @@ export class UsersService {
     try {
       const { password, name, familyName } = createUserDto;
 
+      // validation
       const email = createUserDto.email.toLowerCase();
       const existUser = await this.findByEmail(email);
       if (existUser) {
@@ -111,9 +115,12 @@ export class UsersService {
       if (!user) {
         throw new NotFoundException(`User with id ${userId} not found`);
       }
+
+      // validate password at dto or delete this
       if (data.password) {
         data.password = await bcrypt.hash(data.password, 10);
       }
+      // typeorm ignore this ?? check
       if (user.isDeleted)
         throw new HttpException(
           'user not active, please contact your super admin',
@@ -121,6 +128,7 @@ export class UsersService {
         );
       const checkEmail = await this.findByEmail(email);
 
+      // validate func
       if (checkEmail && user.email !== checkEmail.email)
         throw new HttpException(
           'this email address is already used by someone else',
@@ -146,12 +154,15 @@ export class UsersService {
 
   async delete(userId: UUID) {
     try {
+      // new func
       const user = await this.usersRepository.findOneBy({
         id: userId,
       });
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
+      // new func
+
       await this.usersRepository.delete({
         id: userId,
       });
@@ -164,10 +175,16 @@ export class UsersService {
     }
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOneBy({
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.usersRepository.findOneBy({
       email,
     });
+
+    if (!user) {
+      throw new NotFoundException(`User not found with this email`);
+    }
+
+    return user;
   }
 
   async findAppUserById(id: UUID, findOptions?: FindOptionsRelations<User>) {
@@ -175,6 +192,7 @@ export class UsersService {
       where: { id },
       relations: findOptions,
     });
+
     if (!appUser) {
       throw new NotFoundException(`User not found with this id`);
     }
@@ -194,5 +212,69 @@ export class UsersService {
       );
     }
     return user;
+  }
+
+  async registerEmailCheck(email: string): Promise<User | null> {
+    const user = await this.usersRepository.findOneBy({
+      email,
+    });
+
+    if (user) {
+      throw new ConflictException('This email address is already in use.');
+    }
+
+    return user;
+  }
+
+  async registerUser(dto: RegisterUserRequest): Promise<User> {
+    const user = await this.usersRepository.save(
+      new User({
+        ...dto,
+        password: this.passwordService.hashPassword(dto.password),
+      }),
+    );
+
+    return user;
+  }
+
+  async updateVerificationCode(
+    userId: UUID,
+    verificationId: UUID,
+  ): Promise<User> {
+    return await this.usersRepository.save(
+      new User({
+        id: userId,
+        isVerified: true,
+        verification: new Verification({
+          id: verificationId,
+          isUsed: true,
+        }),
+      }),
+    );
+  }
+
+  async updateUserPasswordCode(
+    email: string,
+    forgotPasswordCode: string,
+  ): Promise<void> {
+    await this.usersRepository.update(
+      { email },
+      { forgotPasswordCode, isUsed: false },
+    );
+  }
+
+  async updateUserPassword(
+    email: string,
+    password: string,
+    updateOptions: boolean = true,
+  ): Promise<void> {
+    const updateData: any = { password };
+
+    if (updateOptions) {
+      updateData.forgotPasswordCode = null;
+      updateData.isUsed = true;
+    }
+
+    await this.usersRepository.update({ email }, updateData);
   }
 }
