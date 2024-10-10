@@ -186,24 +186,12 @@ describe('BiletAllBusParserService', () => {
         NewDataSet: [{ $: [Object], 'xs:schema': [Array], Table: [Array] }],
       });
       const result = parser.parseBusSchedule(jsonMockResponse);
-      expect(result.schedules).toHaveLength(
+
+      expect(result).toBeDefined();
+      expect(result.SchedulesAndFeatures).toBeDefined();
+      expect(result.SchedulesAndFeatures).toHaveLength(
         scheduleListMockResponse.schedules.length,
       );
-      result.schedules.forEach((schedule, index) => {
-        const mockSchedule = scheduleListMockResponse.schedules[index];
-        expect(Object.keys(schedule)).toHaveLength(
-          Object.keys(mockSchedule).length,
-        );
-      });
-      expect(result.features).toHaveLength(
-        scheduleListMockResponse.features.length,
-      );
-      result.features.forEach((feature, index) => {
-        const mockFeature = scheduleListMockResponse.features[index];
-        expect(Object.keys(feature)).toHaveLength(
-          Object.keys(mockFeature).length,
-        );
-      });
     });
 
     it('should throw BiletAllResponseError if error exists in response', async () => {

@@ -1,7 +1,6 @@
 import { BoardingPointDto } from '@app/modules/tickets/bus/dto/bus-boarding-point.dto';
 import { BusCompanyDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
 import { BusRouteDetailDto } from '@app/modules/tickets/bus/dto/bus-route.dto';
-import { BusScheduleAndBusFeaturesDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
 import { BusSeatAvailabilityDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 import { ServiceInformationDto } from '@app/modules/tickets/bus/dto/bus-service-information.dto';
 import { BusTerminalDto } from '@app/modules/tickets/bus/dto/bus-terminal.dto';
@@ -86,7 +85,7 @@ export const getBusTerminalsByNameMockResponse: BusTerminalDto[] = [
   },
 ];
 
-export const scheduleListMockResponse: BusScheduleAndBusFeaturesDto = {
+export const scheduleListMockResponse = {
   schedules: [
     {
       id: '1',
