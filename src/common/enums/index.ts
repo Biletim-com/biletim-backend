@@ -6,3 +6,7 @@ export * from './passanger-type.enum';
 export * from './plane-flight-class-type.enum';
 export * from './plane-invoice-type.enum';
 export * from './plane-ticket-operation-type.enum';
+export * from './currency.enum';
+export * from './bank-card-type.enum';
+export * from './transaction-status.enum';
+export * from './transaction-type.enum';
