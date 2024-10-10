@@ -4,6 +4,7 @@
     "json",
     "ts"
   ],
+  "preset": "ts-jest",
   "rootDir": ".",
   "testRegex": ".*\\.spec\\.ts$",
   "moduleNameMapper": {
