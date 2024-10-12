@@ -15,6 +15,7 @@ import { DateISODate } from '@app/common/types';
 
 // dto
 import { BusFeaturesDto } from './bus-search.dto';
+import { IsReturnDateGreaterDate } from '@app/common/decorators/is-return-date-greater-date.decorator';
 
 // request to be sent to get the available dates
 export class BusScheduleRequestDto {
@@ -50,6 +51,19 @@ export class BusScheduleRequestDto {
   @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
   date: DateISODate;
 
+  @ApiProperty({
+    description: 'The return date in the format "yyyy-MM-dd" (optional).',
+    example: '2024-10-28',
+    required: false,
+  })
+  @IsDateString({}, { message: 'Return date must be in the format yyyy-MM-dd' })
+  @IsOptional()
+  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
+  @IsReturnDateGreaterDate('date', {
+    message: 'Return date must be greater than date',
+  })
+  returnDate?: DateISODate;
+
   @IsInt()
   @IsOptional()
   includeIntermediatePoints?: number;
@@ -76,7 +90,7 @@ export class BusScheduleRequestDto {
   })
   @IsNotEmpty()
   @IsString()
-  ip: string;
+  ip = '127.0.0.1';
 }
 
 export class BusScheduleDto {
@@ -202,16 +216,22 @@ export class BusScheduleDto {
   }
 }
 
-export class BusScheduleAndBusFeaturesDto {
+export class BusScheduleListParserDto {
   typeFeature?: string;
   typeFeatureDescription?: string;
   typeFeatureDetail?: string;
   typeFeatureIcon?: string;
-
   constructor(
-    public SchedulesAndFeatures: {
+    public schedulesAndFeatures: {
       schedule: BusScheduleDto;
       features: BusFeaturesDto[];
     }[],
+  ) {}
+}
+
+export class BusScheduleListResponseDto {
+  constructor(
+    public departureSchedulesAndFeatures: BusScheduleListParserDto,
+    public returnSchedulesAndFeatures?: BusScheduleListParserDto,
   ) {}
 }

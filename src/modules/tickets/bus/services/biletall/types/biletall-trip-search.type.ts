@@ -29,9 +29,9 @@ export type BusSchedule = {
   OTipAciklamasi: string;
   OtobusTelefonu: string;
   OtobusPlaka: string;
-  SeyahatSuresi: string;
+  SeyahatSuresi?: string;
   SeyahatSuresiGosterimTipi: string;
-  YaklasikSeyahatSuresi: string;
+  YaklasikSeyahatSuresi?: string;
   BiletFiyati1: string;
   BiletFiyatiInternet: string;
   Sinif_Farki: string;
