@@ -9,7 +9,6 @@ import { BiletAllBusParserService } from './biletall-bus-parser.service';
 // dtos
 import { BusCompanyDto, BusCompanyRequestDto } from '../../dto/bus-company.dto';
 import {
-  BusScheduleListParserDto,
   BusScheduleListResponseDto,
   BusScheduleRequestDto,
 } from '../../dto/bus-schedule-list.dto';
@@ -87,12 +86,12 @@ export class BiletAllBusService extends BiletAllService {
     };
 
     const xml = builder.buildObject(requestDocument);
-    const res = await this.run<BusScheduleAndFeaturesResponse>(xml);
+    const departureResponsePromise =
+      this.run<BusScheduleAndFeaturesResponse>(xml);
 
-    const departureSchedulesAndFeatures =
-      this.biletAllBusParserService.parseBusSchedule(res);
-
-    let returnSchedulesAndFeatures: BusScheduleListParserDto | undefined;
+    let returnResponsePromise:
+      | Promise<BusScheduleAndFeaturesResponse>
+      | undefined;
 
     if (requestDto.returnDate) {
       const returnRequestDocument = {
@@ -109,17 +108,23 @@ export class BiletAllBusService extends BiletAllService {
       };
 
       const returnXml = builder.buildObject(returnRequestDocument);
-      const returnRes = await this.run<BusScheduleAndFeaturesResponse>(
-        returnXml,
-      );
-
-      returnSchedulesAndFeatures =
-        this.biletAllBusParserService.parseBusSchedule(returnRes);
+      returnResponsePromise =
+        this.run<BusScheduleAndFeaturesResponse>(returnXml);
     }
-    return new BusScheduleListResponseDto(
-      departureSchedulesAndFeatures,
-      returnSchedulesAndFeatures,
-    );
+    const [departureSchedulesAndFeatures, returnSchedulesAndFeatures] =
+      await Promise.all([departureResponsePromise, returnResponsePromise]);
+
+    return {
+      departureSchedulesAndFeatures:
+        this.biletAllBusParserService.parseBusSchedule(
+          departureSchedulesAndFeatures,
+        ),
+      returnSchedulesAndFeatures: returnSchedulesAndFeatures
+        ? this.biletAllBusParserService.parseBusSchedule(
+            returnSchedulesAndFeatures,
+          )
+        : undefined,
+    };
   }
 
   async busSearch(requestDto: BusSearchRequestDto): Promise<BusSearchDto> {

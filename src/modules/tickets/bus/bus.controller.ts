@@ -58,7 +58,11 @@ export class BusController {
   async scheduleList(
     @Query() requestDto: BusScheduleRequestDto,
   ): Promise<BusScheduleListResponseDto> {
-    return this.biletAllBusService.scheduleList(requestDto);
+    const response = await this.biletAllBusService.scheduleList(requestDto);
+    return new BusScheduleListResponseDto(
+      response.departureSchedulesAndFeatures,
+      response?.returnSchedulesAndFeatures,
+    );
   }
   @ApiOperation({ summary: 'Search Bus For One Company' })
   @Post('bus-search')
