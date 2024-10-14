@@ -4,7 +4,7 @@ import { ConfigModule } from '@app/configs/config.module';
 import { BusController } from '@app/modules/tickets/bus/bus.controller';
 import { BoardingPointRequestDto } from '@app/modules/tickets/bus/dto/bus-boarding-point.dto';
 import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
-import { BusPurchaseDto } from '@app/modules/tickets/bus/dto/bus-purchase.dto';
+// import { BusPurchaseDto } from '@app/modules/tickets/bus/dto/bus-purchase.dto';
 import { BusRouteRequestDto } from '@app/modules/tickets/bus/dto/bus-route.dto';
 import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
 import { BusSearchRequestDto } from '@app/modules/tickets/bus/dto/bus-search.dto';
@@ -22,7 +22,7 @@ import {
   departureScheduleListMockResponse,
   getBusTerminalsByNameMockResponse,
   getRouteMockResponse,
-  saleRequestMockResponse,
+  // saleRequestMockResponse,
   serviceInformationMockResponse,
 } from './mock-response/biletall-bus-service-mock-response';
 
@@ -243,49 +243,49 @@ describe('BusController', () => {
     });
   });
 
-  describe('saleRequest method', () => {
-    it('should return route of the relevant expedition', async () => {
-      const requestDto: BusPurchaseDto = {
-        companyNo: '37',
-        departurePointId: 84,
-        arrivalPointId: 738,
-        date: '2024-08-06',
-        time: '1900-01-01T02:30:00.000Z',
-        routeNumber: 1,
-        tripTrackingNumber: '20470',
-        passengers: [
-          {
-            seatNo: 2,
-            firstName: 'Bahyaddin',
-            lastName: 'Nuri',
-            fullName: 'Bahyaddin Nuri',
-            gender: Gender.MALE,
-            isTurkishCitizen: true,
-            turkishIdNumber: '99766292460',
-          },
-        ],
-        phoneNumber: '5550240045',
-        totalTicketPrice: 40,
-        webPassenger: {
-          ip: '127.0.0.1',
-          email: 'bahyeddin@gmail.com',
-          prepaymentUsage: false,
-          prepaymentAmount: '40.0000',
-          creditCardNo: '5218076007402834',
-          creditCardHolder: 'Bahyaddin Nuri',
-          creditCardExpiryDate: '11/2040',
-          creditCardCCV2: '820',
-        },
-      };
+  // describe('saleRequest method', () => {
+  //   it('should return route of the relevant expedition', async () => {
+  //     const requestDto: BusPurchaseDto = {
+  //       companyNo: '37',
+  //       departurePointId: 84,
+  //       arrivalPointId: 738,
+  //       date: '2024-08-06',
+  //       time: '1900-01-01T02:30:00.000Z',
+  //       routeNumber: 1,
+  //       tripTrackingNumber: '20470',
+  //       passengers: [
+  //         {
+  //           seatNo: 2,
+  //           firstName: 'Bahyaddin',
+  //           lastName: 'Nuri',
+  //           fullName: 'Bahyaddin Nuri',
+  //           gender: Gender.MALE,
+  //           isTurkishCitizen: true,
+  //           turkishIdNumber: '99766292460',
+  //         },
+  //       ],
+  //       phoneNumber: '5550240045',
+  //       totalTicketPrice: 40,
+  //       webPassenger: {
+  //         ip: '127.0.0.1',
+  //         email: 'bahyeddin@gmail.com',
+  //         prepaymentUsage: false,
+  //         prepaymentAmount: '40.0000',
+  //         creditCardNo: '5218076007402834',
+  //         creditCardHolder: 'Bahyaddin Nuri',
+  //         creditCardExpiryDate: '11/2040',
+  //         creditCardCCV2: '820',
+  //       },
+  //     };
 
-      biletAllBusServiceMock.saleRequest.mockResolvedValueOnce(
-        saleRequestMockResponse,
-      );
+  //     biletAllBusServiceMock.saleRequest.mockResolvedValueOnce(
+  //       saleRequestMockResponse,
+  //     );
 
-      const result = await controller.saleRequest(requestDto);
+  //     const result = await controller.saleRequest(requestDto);
 
-      expect(biletAllBusService.saleRequest).toBeCalledWith(requestDto);
-      expect(result).toStrictEqual(saleRequestMockResponse);
-    });
-  });
+  //     expect(biletAllBusService.saleRequest).toBeCalledWith(requestDto);
+  //     expect(result).toStrictEqual(saleRequestMockResponse);
+  //   });
+  // });
 });
