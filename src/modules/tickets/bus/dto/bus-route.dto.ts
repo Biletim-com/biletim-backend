@@ -7,7 +7,6 @@ import { ApiProperty } from '@nestjs/swagger';
 export class BusRouteRequestDto extends OmitType(BusScheduleRequestDto, [
   'includeIntermediatePoints',
   'operationType',
-  'passengerCount',
   'ip',
   'companyNo',
 ]) {
