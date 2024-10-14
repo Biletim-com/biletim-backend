@@ -23,7 +23,7 @@ import {
   ServiceInformationRequestDto,
   ServiceInformationDto,
 } from './dto/bus-service-information.dto';
-// import { BusPurchaseDto } from './dto/bus-purchase.dto';
+import { BusPurchaseDto } from './dto/bus-purchase.dto';
 import { BusRouteRequestDto, BusRouteDetailDto } from './dto/bus-route.dto';
 import { BusTerminalSearchQueryDto } from './dto/bus-terminal-search-query.dto';
 import { BusTerminal } from './entities/bus-terminal.entity';
@@ -104,9 +104,9 @@ export class BusController {
     return this.biletAllBusService.getRoute(requestDto);
   }
 
-  // @ApiOperation({ summary: 'Handle Bus Ticket Sale Request' })
+  @ApiOperation({ summary: 'Handle Bus Ticket Sale Request' })
   // @Post('sale-request')
-  // async saleRequest(@Body() requestDto: BusPurchaseDto) {
-  //   return this.biletAllBusService.saleRequest(requestDto);
-  // }
+  async saleRequest(@Body() requestDto: BusPurchaseDto) {
+    return this.biletAllBusService.saleRequest(requestDto);
+  }
 }

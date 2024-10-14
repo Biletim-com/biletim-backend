@@ -14,16 +14,16 @@ import {
 } from '../../dto/plane-pull-price-flight.dto';
 import { PlanePassengerAgeRulesResponse } from './types/plane-biletall-company-passanger-age-rules.type';
 import { PlanePassengerAgeRuleDto } from '../../dto/plane-company-passenger-age-rule.dto';
-// import {
-//   FlightReservationRequestDto,
-//   FlightTicketReservationDto,
-// } from '../../dto/plane-ticket-reservation.dto';
-// import { PlaneTicketReservationResponse } from './types/biletall-plane-ticket-reservation.type';
-// import {
-//   FlightTicketPurchaseDto,
-//   FlightTicketPurchaseRequestDto,
-// } from '../../dto/plane-ticket-purchase.dto';
-// import { FlightConvertReservationToSaleRequestDto } from '../../dto/plane-convert-reservation-to-sale.dto';
+import {
+  FlightReservationRequestDto,
+  FlightTicketReservationDto,
+} from '../../dto/plane-ticket-reservation.dto';
+import { PlaneTicketReservationResponse } from './types/biletall-plane-ticket-reservation.type';
+import {
+  FlightTicketPurchaseDto,
+  FlightTicketPurchaseRequestDto,
+} from '../../dto/plane-ticket-purchase.dto';
+import { FlightConvertReservationToSaleRequestDto } from '../../dto/plane-convert-reservation-to-sale.dto';
 import {
   DomesticFlightScheduleDto,
   PlaneDomesticFlightScheduleRequestDto,
@@ -31,22 +31,22 @@ import {
 import { PlaneAirportDto } from '../../dto/plane-airport.dto';
 
 // enums
-// import { PlaneInvoiceType } from '@app/common/enums';
+import { PlaneInvoiceType } from '@app/common/enums';
 
 // types
 import { PlanePullPriceResponse } from './types/biletall-plane-pull-price-flight.type';
 import { DomesticFlightResponse } from './types/biletall-plane-domistic-flight-schedule.type';
 import { AbroadFlightResponse } from './types/biletall-plane-abroad-flight-schedule.type';
-// import { PlaneTicketPurchaseResponse } from './types/biletall-plane-ticket-purchase.type';
+import { PlaneTicketPurchaseResponse } from './types/biletall-plane-ticket-purchase.type';
 import { PlaneAirportResponse } from './types/biletall-plane-airport.type';
 
 // helpers
 import { BiletAllFlightClassType } from './helpers/plane-flight-class-type.helper';
-// import { BiletAllPlaneInvoiceType } from './helpers/plane-invoice-type.helper';
-// import { BiletAllPlanePassengerType } from './helpers/plane-passanger-type.helper';
+import { BiletAllPlaneInvoiceType } from './helpers/plane-invoice-type.helper';
+import { BiletAllPlanePassengerType } from './helpers/plane-passanger-type.helper';
 import { BiletAllPlaneTicketOperationType } from './helpers/plane-ticket-operation-type.helper';
 import { BiletAllPlaneTravelType } from './helpers/plane-travel-type.helper';
-// import { BiletAllGender } from '@app/common/helpers';
+import { BiletAllGender } from '@app/common/helpers';
 import { BiletAllService } from '@app/common/services/biletall.service';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 
@@ -166,237 +166,237 @@ export class BiletAllPlaneService extends BiletAllService {
     return this.biletAllPlaneParserService.parsePassengerAgeRule(res);
   }
 
-  // async planeTicketReservation(
-  //   requestDto: FlightReservationRequestDto,
-  // ): Promise<FlightTicketReservationDto> {
-  //   const builder = new xml2js.Builder({ headless: true });
-  //   const requestDocument = {
-  //     IslemUcak_2: {
-  //       IslemTip: BiletAllPlaneTicketOperationType.reservation,
-  //       FirmaNo: requestDto.companyNo,
-  //       TelefonNo: requestDto.phoneNumber,
-  //       CepTelefonNo: requestDto.mobilePhoneNumber,
-  //       Email: requestDto.email,
-  //       HatirlaticiNot: '',
-  //       ...requestDto.segments.reduce((acc, segment, index) => {
-  //         acc[`Segment${index + 1}`] = {
-  //           Kalkis: segment.departureAirport,
-  //           Varis: segment.arrivalAirport,
-  //           KalkisTarih: segment.departureDate,
-  //           VarisTarih: segment.arrivalDate,
-  //           UcusNo: segment.flightNo,
-  //           FirmaKod: segment.airlineCode,
-  //           Sinif: segment.travelClass,
-  //           DonusMu: segment.isReturnSegment ? 1 : 0,
-  //           ...(segment.flightCode && { SeferKod: segment.flightCode }),
-  //         };
-  //         return acc;
-  //       }, {}),
-  //       ...requestDto.passengers.reduce((acc, passenger, index) => {
-  //         acc[`Yolcu${index + 1}`] = {
-  //           Ad: passenger.firstName,
-  //           Soyad: passenger.lastName,
-  //           Cinsiyet: BiletAllGender[passenger.gender],
-  //           YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
-  //           TCKimlikNo: passenger.turkishIdNumber,
-  //           DogumTarih: passenger.birthday,
-  //           ...(passenger.passportNumber && {
-  //             PasaportNo: passenger.passportNumber,
-  //           }),
-  //           ...(passenger.passportExpiryDate && {
-  //             PasaportGecerlilikTarihi: passenger.passportExpiryDate,
-  //           }),
-  //           MilNo: passenger.passportNumber || '',
-  //           NetFiyat: passenger.netPrice || 0,
-  //           Vergi: passenger.tax || 0,
-  //           ServisUcret: passenger.serviceFee || 0,
-  //         };
-  //         return acc;
-  //       }, {}),
-  //     },
-  //   };
+  async planeTicketReservation(
+    requestDto: FlightReservationRequestDto,
+  ): Promise<FlightTicketReservationDto> {
+    const builder = new xml2js.Builder({ headless: true });
+    const requestDocument = {
+      IslemUcak_2: {
+        IslemTip: BiletAllPlaneTicketOperationType.reservation,
+        FirmaNo: requestDto.companyNo,
+        TelefonNo: requestDto.phoneNumber,
+        CepTelefonNo: requestDto.mobilePhoneNumber,
+        Email: requestDto.email,
+        HatirlaticiNot: '',
+        ...requestDto.segments.reduce((acc, segment, index) => {
+          acc[`Segment${index + 1}`] = {
+            Kalkis: segment.departureAirport,
+            Varis: segment.arrivalAirport,
+            KalkisTarih: segment.departureDate,
+            VarisTarih: segment.arrivalDate,
+            UcusNo: segment.flightNo,
+            FirmaKod: segment.airlineCode,
+            Sinif: segment.travelClass,
+            DonusMu: segment.isReturnSegment ? 1 : 0,
+            ...(segment.flightCode && { SeferKod: segment.flightCode }),
+          };
+          return acc;
+        }, {}),
+        ...requestDto.passengers.reduce((acc, passenger, index) => {
+          acc[`Yolcu${index + 1}`] = {
+            Ad: passenger.firstName,
+            Soyad: passenger.lastName,
+            Cinsiyet: BiletAllGender[passenger.gender],
+            YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
+            TCKimlikNo: passenger.turkishIdNumber,
+            DogumTarih: passenger.birthday,
+            ...(passenger.passportNumber && {
+              PasaportNo: passenger.passportNumber,
+            }),
+            ...(passenger.passportExpiryDate && {
+              PasaportGecerlilikTarihi: passenger.passportExpiryDate,
+            }),
+            MilNo: passenger.passportNumber || '',
+            NetFiyat: passenger.netPrice || 0,
+            Vergi: passenger.tax || 0,
+            ServisUcret: passenger.serviceFee || 0,
+          };
+          return acc;
+        }, {}),
+      },
+    };
 
-  //   const xml = builder.buildObject(requestDocument);
-  //   const res = await this.run<PlaneTicketReservationResponse>(xml);
-  //   return this.biletAllPlaneParserService.parseFlightTicketReservation(res);
-  // }
+    const xml = builder.buildObject(requestDocument);
+    const res = await this.run<PlaneTicketReservationResponse>(xml);
+    return this.biletAllPlaneParserService.parseFlightTicketReservation(res);
+  }
 
-  // async planeTicketPurchase(
-  //   requestDto: FlightTicketPurchaseRequestDto,
-  // ): Promise<FlightTicketPurchaseDto> {
-  //   const builder = new xml2js.Builder({ headless: true });
-  //   const requestDocument = {
-  //     IslemUcak_2: {
-  //       IslemTip: BiletAllPlaneTicketOperationType.purchase,
-  //       FirmaNo: requestDto.companyNo,
-  //       TelefonNo: requestDto.phoneNumber,
-  //       CepTelefonNo: requestDto.mobilePhoneNumber,
-  //       Email: requestDto.email,
-  //       HatirlaticiNot: '',
-  //       ...requestDto.segments.reduce((acc, segment, index) => {
-  //         acc[`Segment${index + 1}`] = {
-  //           Kalkis: segment.departureAirport,
-  //           Varis: segment.arrivalAirport,
-  //           KalkisTarih: segment.departureDate,
-  //           VarisTarih: segment.arrivalDate,
-  //           UcusNo: segment.flightNo,
-  //           FirmaKod: segment.airlineCode,
-  //           Sinif: segment.travelClass,
-  //           DonusMu: segment.isReturnSegment ? 1 : 0,
-  //           ...(segment.flightCode && { SeferKod: segment.flightCode }),
-  //         };
-  //         return acc;
-  //       }, {}),
-  //       ...requestDto.passengers.reduce((acc, passenger, index) => {
-  //         acc[`Yolcu${index + 1}`] = {
-  //           Ad: passenger.firstName,
-  //           Soyad: passenger.lastName,
-  //           Cinsiyet: BiletAllGender[passenger.gender],
-  //           YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
-  //           TCKimlikNo: passenger.turkishIdNumber,
-  //           DogumTarih: passenger.birthday,
-  //           ...(passenger.passportNumber && {
-  //             PasaportNo: passenger.passportNumber,
-  //           }),
-  //           ...(passenger.passportExpiryDate && {
-  //             PasaportGecerlilikTarihi: passenger.passportExpiryDate,
-  //           }),
-  //           MilNo: passenger.passportNumber || '',
-  //           NetFiyat: passenger.netPrice || 0,
-  //           Vergi: passenger.tax || 0,
-  //           ServisUcret: passenger.serviceFee || 0,
-  //         };
-  //         return acc;
-  //       }, {}),
-  //       ...(requestDto.invoice && {
-  //         Fatura: {
-  //           FaturaTip: BiletAllPlaneInvoiceType[requestDto.invoice.invoiceType],
+  async planeTicketPurchase(
+    requestDto: FlightTicketPurchaseRequestDto,
+  ): Promise<FlightTicketPurchaseDto> {
+    const builder = new xml2js.Builder({ headless: true });
+    const requestDocument = {
+      IslemUcak_2: {
+        IslemTip: BiletAllPlaneTicketOperationType.purchase,
+        FirmaNo: requestDto.companyNo,
+        TelefonNo: requestDto.phoneNumber,
+        CepTelefonNo: requestDto.mobilePhoneNumber,
+        Email: requestDto.email,
+        HatirlaticiNot: '',
+        ...requestDto.segments.reduce((acc, segment, index) => {
+          acc[`Segment${index + 1}`] = {
+            Kalkis: segment.departureAirport,
+            Varis: segment.arrivalAirport,
+            KalkisTarih: segment.departureDate,
+            VarisTarih: segment.arrivalDate,
+            UcusNo: segment.flightNo,
+            FirmaKod: segment.airlineCode,
+            Sinif: segment.travelClass,
+            DonusMu: segment.isReturnSegment ? 1 : 0,
+            ...(segment.flightCode && { SeferKod: segment.flightCode }),
+          };
+          return acc;
+        }, {}),
+        ...requestDto.passengers.reduce((acc, passenger, index) => {
+          acc[`Yolcu${index + 1}`] = {
+            Ad: passenger.firstName,
+            Soyad: passenger.lastName,
+            Cinsiyet: BiletAllGender[passenger.gender],
+            YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
+            TCKimlikNo: passenger.turkishIdNumber,
+            DogumTarih: passenger.birthday,
+            ...(passenger.passportNumber && {
+              PasaportNo: passenger.passportNumber,
+            }),
+            ...(passenger.passportExpiryDate && {
+              PasaportGecerlilikTarihi: passenger.passportExpiryDate,
+            }),
+            MilNo: passenger.passportNumber || '',
+            NetFiyat: passenger.netPrice || 0,
+            Vergi: passenger.tax || 0,
+            ServisUcret: passenger.serviceFee || 0,
+          };
+          return acc;
+        }, {}),
+        ...(requestDto.invoice && {
+          Fatura: {
+            FaturaTip: BiletAllPlaneInvoiceType[requestDto.invoice.invoiceType],
 
-  //           ...(requestDto.invoice.invoiceType ===
-  //             PlaneInvoiceType.INDIVIDUAL && {
-  //             KisiAd: requestDto.invoice.individualFirstName,
-  //             KisiSoyad: requestDto.invoice.individualLastName,
-  //             KisiTCKimlikNo: requestDto.invoice.individualTurkishIdNumber,
-  //             KisiAdres: requestDto.invoice.individualAddress,
-  //           }),
-  //           ...(requestDto.invoice.invoiceType ===
-  //             PlaneInvoiceType.CORPORATE && {
-  //             FirmaAd: requestDto.invoice.companyName,
-  //             FirmaVergiNo: requestDto.invoice.companyTaxNumber,
-  //             FirmaVergiDairesi: requestDto.invoice.companyTaxOffice,
-  //             FirmaAdres: requestDto.invoice.companyAddress,
-  //           }),
-  //         },
-  //       }),
-  //       WebYolcu: {
-  //         Ip: requestDto.webPassenger.ip,
-  //         KartNo: requestDto.webPassenger.creditCardNumber,
-  //         KartSahibi: requestDto.webPassenger.creditCardHolderName,
-  //         SonKullanmaTarihi: requestDto.webPassenger.creditCardExpiryDate,
-  //         CCV2: requestDto.webPassenger.creditCardCCV2,
-  //         ...(requestDto.webPassenger.openTicketPnrCode && {
-  //           AcikBiletPNR: requestDto.webPassenger.openTicketPnrCode,
-  //         }),
-  //         ...(requestDto.webPassenger.openTicketSurname && {
-  //           AcikBiletSoyad: requestDto.webPassenger.openTicketSurname,
-  //         }),
-  //         ...(requestDto.webPassenger.openTicketAmount && {
-  //           AcikBiletMiktar: requestDto.webPassenger.openTicketAmount,
-  //         }),
-  //         ...(requestDto.webPassenger.reservationPnrCode && {
-  //           RezervasyonPNR: requestDto.webPassenger.reservationPnrCode,
-  //         }),
-  //       },
-  //     },
-  //   };
+            ...(requestDto.invoice.invoiceType ===
+              PlaneInvoiceType.INDIVIDUAL && {
+              KisiAd: requestDto.invoice.individualFirstName,
+              KisiSoyad: requestDto.invoice.individualLastName,
+              KisiTCKimlikNo: requestDto.invoice.individualTurkishIdNumber,
+              KisiAdres: requestDto.invoice.individualAddress,
+            }),
+            ...(requestDto.invoice.invoiceType ===
+              PlaneInvoiceType.CORPORATE && {
+              FirmaAd: requestDto.invoice.companyName,
+              FirmaVergiNo: requestDto.invoice.companyTaxNumber,
+              FirmaVergiDairesi: requestDto.invoice.companyTaxOffice,
+              FirmaAdres: requestDto.invoice.companyAddress,
+            }),
+          },
+        }),
+        WebYolcu: {
+          Ip: requestDto.webPassenger.ip,
+          KartNo: requestDto.webPassenger.creditCardNumber,
+          KartSahibi: requestDto.webPassenger.creditCardHolderName,
+          SonKullanmaTarihi: requestDto.webPassenger.creditCardExpiryDate,
+          CCV2: requestDto.webPassenger.creditCardCCV2,
+          ...(requestDto.webPassenger.openTicketPnrCode && {
+            AcikBiletPNR: requestDto.webPassenger.openTicketPnrCode,
+          }),
+          ...(requestDto.webPassenger.openTicketSurname && {
+            AcikBiletSoyad: requestDto.webPassenger.openTicketSurname,
+          }),
+          ...(requestDto.webPassenger.openTicketAmount && {
+            AcikBiletMiktar: requestDto.webPassenger.openTicketAmount,
+          }),
+          ...(requestDto.webPassenger.reservationPnrCode && {
+            RezervasyonPNR: requestDto.webPassenger.reservationPnrCode,
+          }),
+        },
+      },
+    };
 
-  //   const xml = builder.buildObject(requestDocument);
-  //   const res = await this.run<PlaneTicketPurchaseResponse>(xml);
+    const xml = builder.buildObject(requestDocument);
+    const res = await this.run<PlaneTicketPurchaseResponse>(xml);
 
-  //   return this.biletAllPlaneParserService.parseFlightTicketPurchase(res);
-  // }
+    return this.biletAllPlaneParserService.parseFlightTicketPurchase(res);
+  }
 
-  // async planeConvertReservationToSale(
-  //   requestDto: FlightConvertReservationToSaleRequestDto,
-  // ): Promise<any> {
-  //   const builder = new xml2js.Builder({ headless: true });
-  //   const requestDocument = {
-  //     IslemUcak_2: {
-  //       IslemTip: BiletAllPlaneTicketOperationType.purchase,
-  //       FirmaNo: requestDto.companyNo,
-  //       CepTelefonNo: requestDto.mobilePhoneNumber,
-  //       Email: requestDto.email,
-  //       HatirlaticiNot: '',
-  //       ...requestDto.segments.reduce((acc, segment, index) => {
-  //         acc[`Segment${index + 1}`] = {
-  //           Kalkis: segment.departureAirport,
-  //           Varis: segment.arrivalAirport,
-  //           KalkisTarih: segment.departureDate,
-  //           VarisTarih: segment.arrivalDate,
-  //           UcusNo: segment.flightNo,
-  //           FirmaKod: segment.airlineCode,
-  //           Sinif: segment.travelClass,
-  //           DonusMu: segment.isReturnSegment ? 1 : 0,
-  //           ...(segment.flightCode && { SeferKod: segment.flightCode }),
-  //         };
-  //         return acc;
-  //       }, {}),
-  //       ...requestDto.passengers.reduce((acc, passenger, index) => {
-  //         acc[`Yolcu${index + 1}`] = {
-  //           Ad: passenger.firstName,
-  //           Soyad: passenger.lastName,
-  //           Cinsiyet: BiletAllGender[passenger.gender],
-  //           YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
-  //           ...(passenger.turkishIdNumber && {
-  //             TCKimlikNo: passenger.turkishIdNumber,
-  //           }),
-  //           ...(passenger.passportNumber && {
-  //             PasaportNo: passenger.passportNumber,
-  //           }),
-  //           ...(passenger.passportExpiryDate && {
-  //             PasaportGecerlilikTarihi: passenger.passportExpiryDate,
-  //           }),
-  //           MilNo: passenger.passportNumber || '',
-  //           NetFiyat: passenger.netPrice || 0,
-  //           Vergi: passenger.tax || 0,
-  //           ServisUcret: passenger.serviceFee || 0,
-  //         };
-  //         return acc;
-  //       }, {}),
-  //       ...(requestDto.invoice && {
-  //         Fatura: {
-  //           FaturaTip: BiletAllPlaneInvoiceType[requestDto.invoice.invoiceType],
+  async planeConvertReservationToSale(
+    requestDto: FlightConvertReservationToSaleRequestDto,
+  ): Promise<any> {
+    const builder = new xml2js.Builder({ headless: true });
+    const requestDocument = {
+      IslemUcak_2: {
+        IslemTip: BiletAllPlaneTicketOperationType.purchase,
+        FirmaNo: requestDto.companyNo,
+        CepTelefonNo: requestDto.mobilePhoneNumber,
+        Email: requestDto.email,
+        HatirlaticiNot: '',
+        ...requestDto.segments.reduce((acc, segment, index) => {
+          acc[`Segment${index + 1}`] = {
+            Kalkis: segment.departureAirport,
+            Varis: segment.arrivalAirport,
+            KalkisTarih: segment.departureDate,
+            VarisTarih: segment.arrivalDate,
+            UcusNo: segment.flightNo,
+            FirmaKod: segment.airlineCode,
+            Sinif: segment.travelClass,
+            DonusMu: segment.isReturnSegment ? 1 : 0,
+            ...(segment.flightCode && { SeferKod: segment.flightCode }),
+          };
+          return acc;
+        }, {}),
+        ...requestDto.passengers.reduce((acc, passenger, index) => {
+          acc[`Yolcu${index + 1}`] = {
+            Ad: passenger.firstName,
+            Soyad: passenger.lastName,
+            Cinsiyet: BiletAllGender[passenger.gender],
+            YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
+            ...(passenger.turkishIdNumber && {
+              TCKimlikNo: passenger.turkishIdNumber,
+            }),
+            ...(passenger.passportNumber && {
+              PasaportNo: passenger.passportNumber,
+            }),
+            ...(passenger.passportExpiryDate && {
+              PasaportGecerlilikTarihi: passenger.passportExpiryDate,
+            }),
+            MilNo: passenger.passportNumber || '',
+            NetFiyat: passenger.netPrice || 0,
+            Vergi: passenger.tax || 0,
+            ServisUcret: passenger.serviceFee || 0,
+          };
+          return acc;
+        }, {}),
+        ...(requestDto.invoice && {
+          Fatura: {
+            FaturaTip: BiletAllPlaneInvoiceType[requestDto.invoice.invoiceType],
 
-  //           ...(requestDto.invoice.invoiceType ===
-  //             PlaneInvoiceType.INDIVIDUAL && {
-  //             KisiAd: requestDto.invoice.individualFirstName,
-  //             KisiSoyad: requestDto.invoice.individualLastName,
-  //             KisiTCKimlikNo: requestDto.invoice.individualTurkishIdNumber,
-  //             KisiAdres: requestDto.invoice.individualAddress,
-  //           }),
-  //           ...(requestDto.invoice.invoiceType ===
-  //             PlaneInvoiceType.CORPORATE && {
-  //             FirmaAd: requestDto.invoice.companyName,
-  //             FirmaVergiNo: requestDto.invoice.companyTaxNumber,
-  //             FirmaVergiDairesi: requestDto.invoice.companyTaxOffice,
-  //             FirmaAdres: requestDto.invoice.companyAddress,
-  //           }),
-  //         },
-  //       }),
-  //       WebYolcu: {
-  //         Ip: requestDto.webPassenger.ip,
-  //         KartNo: requestDto.webPassenger.creditCardNumber,
-  //         KartSahibi: requestDto.webPassenger.creditCardHolderName,
-  //         SonKullanmaTarihi: requestDto.webPassenger.creditCardExpiryDate,
-  //         CCV2: requestDto.webPassenger.creditCardCCV2,
-  //         RezervasyonPNR: requestDto.webPassenger.reservationPnrCode,
-  //       },
-  //     },
-  //   };
+            ...(requestDto.invoice.invoiceType ===
+              PlaneInvoiceType.INDIVIDUAL && {
+              KisiAd: requestDto.invoice.individualFirstName,
+              KisiSoyad: requestDto.invoice.individualLastName,
+              KisiTCKimlikNo: requestDto.invoice.individualTurkishIdNumber,
+              KisiAdres: requestDto.invoice.individualAddress,
+            }),
+            ...(requestDto.invoice.invoiceType ===
+              PlaneInvoiceType.CORPORATE && {
+              FirmaAd: requestDto.invoice.companyName,
+              FirmaVergiNo: requestDto.invoice.companyTaxNumber,
+              FirmaVergiDairesi: requestDto.invoice.companyTaxOffice,
+              FirmaAdres: requestDto.invoice.companyAddress,
+            }),
+          },
+        }),
+        WebYolcu: {
+          Ip: requestDto.webPassenger.ip,
+          KartNo: requestDto.webPassenger.creditCardNumber,
+          KartSahibi: requestDto.webPassenger.creditCardHolderName,
+          SonKullanmaTarihi: requestDto.webPassenger.creditCardExpiryDate,
+          CCV2: requestDto.webPassenger.creditCardCCV2,
+          RezervasyonPNR: requestDto.webPassenger.reservationPnrCode,
+        },
+      },
+    };
 
-  //   const xml = builder.buildObject(requestDocument);
-  //   const res = await this.run<any>(xml);
+    const xml = builder.buildObject(requestDocument);
+    const res = await this.run<any>(xml);
 
-  //   return this.biletAllPlaneParserService.parseFlightTicketPurchase(res);
-  // }
+    return this.biletAllPlaneParserService.parseFlightTicketPurchase(res);
+  }
 }
