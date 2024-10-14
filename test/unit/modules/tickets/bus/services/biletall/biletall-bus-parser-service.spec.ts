@@ -8,9 +8,9 @@ import {
   boardingPointMockResponse,
   busCompanyMockResponse,
   busSeatAvailabilityMockResponse,
+  departureScheduleListMockResponse,
   getBusTerminalsByNameMockResponse,
   getRouteMockResponse,
-  scheduleListMockResponse,
   serviceInformationMockResponse,
 } from '../../mock-response/biletall-bus-service-mock-response';
 import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
@@ -24,13 +24,13 @@ import { parseStringPromise } from 'xml2js';
 import { BiletAllResponseError } from '@app/common/errors';
 import { SoapEnvelope } from '@app/common/types';
 import { BusStopPointResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-bus-terminal.type';
-import { BusScheduleAndFeaturesResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-trip-search.type';
 
 import { BusResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-bus-search.type';
 import { BusSeatAvailabilityResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-bus-seat-availability.type';
 import { BoardingPointResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-boarding-point.type';
 import { ServiceInformationResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-service-information.type';
 import { RouteDetailResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-route.type';
+import { BusScheduleAndFeaturesResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-trip-search.type';
 
 describe('BiletAllBusParserService', () => {
   const mockBiletAllParserService = {
@@ -188,9 +188,10 @@ describe('BiletAllBusParserService', () => {
       const result = parser.parseBusSchedule(jsonMockResponse);
 
       expect(result).toBeDefined();
-      expect(result.SchedulesAndFeatures).toBeDefined();
-      expect(result.SchedulesAndFeatures).toHaveLength(
-        scheduleListMockResponse.schedules.length,
+      expect(result.schedulesAndFeatures).toBeDefined();
+      expect(result.schedulesAndFeatures).toHaveLength(
+        departureScheduleListMockResponse.departureSchedulesAndFeatures
+          .schedulesAndFeatures.length,
       );
     });
 

@@ -12,15 +12,15 @@ import {
   busCompanyMockResponse,
   busSearchMockResponse,
   busSeatAvailabilityMockResponse,
+  departureScheduleListMockResponse,
   getBusTerminalsByNameMockResponse,
   getRouteMockResponse,
-  scheduleListMockResponse,
+  returnScheduleListMockResponse,
   serviceInformationMockResponse,
 } from '../../mock-response/biletall-bus-service-mock-response';
 import { BusService } from '@app/modules/tickets/bus/services/bus.service';
 import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus-terminal.repository';
 import { DataSource } from 'typeorm';
-import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
 import { BusSearchRequestDto } from '@app/modules/tickets/bus/dto/bus-search.dto';
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 import { Gender } from '@app/common/enums';
@@ -30,6 +30,8 @@ import { BusRouteRequestDto } from '@app/modules/tickets/bus/dto/bus-route.dto';
 import { BusPurchaseDto } from '@app/modules/tickets/bus/dto/bus-purchase.dto';
 import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
 import { BiletAllParserService, BiletAllService } from '@app/common/services';
+import { parseStringPromise } from 'xml2js';
+import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
 
 describe('BiletAllBusService', () => {
   const mockParser = {
@@ -48,6 +50,7 @@ describe('BiletAllBusService', () => {
   let mockDataSource: Partial<DataSource>;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     mockDataSource = {
       createEntityManager: jest.fn(),
     };
@@ -127,6 +130,19 @@ describe('BiletAllBusService', () => {
   });
 
   describe('scheduleList method', () => {
+    let runSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetModules();
+    });
+
+    afterEach(() => {
+      if (runSpy) {
+        runSpy.mockRestore();
+      }
+    });
+
     it('should return schedule list and feature of flight', async () => {
       const requestDto: BusScheduleRequestDto = {
         companyNo: '37',
@@ -135,8 +151,8 @@ describe('BiletAllBusService', () => {
         date: '2024-10-15',
         includeIntermediatePoints: 1,
         operationType: 0,
-        ip: '127.0.0.1',
         passengerCount: '1',
+        ip: '127.0.0.1',
       };
 
       const mockXmlResponse = fs.readFileSync(
@@ -146,14 +162,18 @@ describe('BiletAllBusService', () => {
         ),
         'utf-8',
       );
+      const jsonResult = await parseStringPromise(mockXmlResponse);
 
-      const runSpy = jest
+      runSpy = jest
         .spyOn(BiletAllService.prototype, 'run')
-        .mockResolvedValueOnce(mockXmlResponse);
+        .mockResolvedValueOnce(jsonResult);
+
       mockParser.parseBusSchedule.mockResolvedValueOnce(
-        scheduleListMockResponse,
+        departureScheduleListMockResponse,
       );
+
       const result = await service.scheduleList(requestDto);
+
       const expectedXml =
         `<Sefer>\n` +
         `  <FirmaNo>${requestDto.companyNo}</FirmaNo>\n` +
@@ -167,8 +187,105 @@ describe('BiletAllBusService', () => {
         `</Sefer>`;
 
       expect(runSpy).toHaveBeenCalledWith(expectedXml);
-      expect(mockParser.parseBusSchedule).toBeCalledWith(mockXmlResponse);
-      expect(result).toStrictEqual(scheduleListMockResponse);
+      expect(mockParser.parseBusSchedule).toHaveBeenCalledWith(jsonResult);
+
+      const departureSchedulesAndFeatures =
+        await result.departureSchedulesAndFeatures;
+
+      expect(departureSchedulesAndFeatures).toStrictEqual(
+        departureScheduleListMockResponse,
+      );
+    });
+
+    it('should return schedule list and feature of flight for two requests', async () => {
+      const requestDto: BusScheduleRequestDto = {
+        companyNo: '37',
+        departurePointId: '84',
+        arrivalPointId: '738',
+        date: '2024-10-15',
+        includeIntermediatePoints: 1,
+        operationType: 0,
+        passengerCount: '1',
+        ip: '127.0.0.1',
+      };
+
+      const requestDto2: BusScheduleRequestDto = {
+        ...requestDto,
+        date: '2024-10-28',
+      };
+
+      const mockXmlResponse1 = fs.readFileSync(
+        path.resolve(
+          __dirname,
+          '../../../../../../fixtures/biletall/bus/schedule-list.response.xml',
+        ),
+        'utf-8',
+      );
+
+      const mockXmlResponse2 = fs.readFileSync(
+        path.resolve(
+          __dirname,
+          '../../../../../../fixtures/biletall/bus/bus-schedule-list-return-date.response.xml',
+        ),
+        'utf-8',
+      );
+
+      const jsonResult1 = await parseStringPromise(mockXmlResponse1);
+      const jsonResult2 = await parseStringPromise(mockXmlResponse2);
+
+      runSpy = jest
+        .spyOn(BiletAllService.prototype, 'run')
+        .mockResolvedValueOnce(jsonResult1)
+        .mockResolvedValueOnce(jsonResult2);
+
+      mockParser.parseBusSchedule.mockResolvedValueOnce(
+        departureScheduleListMockResponse,
+      );
+      mockParser.parseBusSchedule.mockResolvedValueOnce(
+        returnScheduleListMockResponse,
+      );
+
+      const result1 = await service.scheduleList(requestDto);
+      const result2 = await service.scheduleList(requestDto2);
+      const expectedXml =
+        `<Sefer>\n` +
+        `  <FirmaNo>${requestDto.companyNo}</FirmaNo>\n` +
+        `  <KalkisNoktaID>${requestDto.departurePointId}</KalkisNoktaID>\n` +
+        `  <VarisNoktaID>${requestDto.arrivalPointId}</VarisNoktaID>\n` +
+        `  <Tarih>${requestDto.date}</Tarih>\n` +
+        `  <AraNoktaGelsin>${requestDto.includeIntermediatePoints}</AraNoktaGelsin>\n` +
+        `  <IslemTipi>${requestDto.operationType}</IslemTipi>\n` +
+        `  <YolcuSayisi>${requestDto.passengerCount}</YolcuSayisi>\n` +
+        `  <Ip>${requestDto.ip}</Ip>\n` +
+        `</Sefer>`;
+
+      const expectedXml2 =
+        `<Sefer>\n` +
+        `  <FirmaNo>${requestDto2.companyNo}</FirmaNo>\n` +
+        `  <KalkisNoktaID>${requestDto2.departurePointId}</KalkisNoktaID>\n` +
+        `  <VarisNoktaID>${requestDto2.arrivalPointId}</VarisNoktaID>\n` +
+        `  <Tarih>${requestDto2.date}</Tarih>\n` +
+        `  <AraNoktaGelsin>${requestDto2.includeIntermediatePoints}</AraNoktaGelsin>\n` +
+        `  <IslemTipi>${requestDto2.operationType}</IslemTipi>\n` +
+        `  <YolcuSayisi>${requestDto2.passengerCount}</YolcuSayisi>\n` +
+        `  <Ip>${requestDto2.ip}</Ip>\n` +
+        `</Sefer>`;
+
+      expect(runSpy).toHaveBeenCalledTimes(2);
+      expect(runSpy).toHaveBeenNthCalledWith(1, expectedXml);
+      expect(runSpy).toHaveBeenNthCalledWith(2, expectedXml2);
+
+      const departureSchedulesAndFeatures =
+        await result1.departureSchedulesAndFeatures;
+      const returnSchedulesAndFeatures =
+        await result2.departureSchedulesAndFeatures;
+
+      expect(departureSchedulesAndFeatures).toEqual(
+        departureScheduleListMockResponse,
+      );
+      expect(returnSchedulesAndFeatures).toEqual(
+        returnScheduleListMockResponse,
+      );
     });
   });
 

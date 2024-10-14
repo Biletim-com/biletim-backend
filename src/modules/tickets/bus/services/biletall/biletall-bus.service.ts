@@ -9,7 +9,7 @@ import { BiletAllBusParserService } from './biletall-bus-parser.service';
 // dtos
 import { BusCompanyDto, BusCompanyRequestDto } from '../../dto/bus-company.dto';
 import {
-  BusScheduleAndBusFeaturesDto,
+  BusScheduleListResponseDto,
   BusScheduleRequestDto,
 } from '../../dto/bus-schedule-list.dto';
 import { BusSearchDto, BusSearchRequestDto } from '../../dto/bus-search.dto';
@@ -69,8 +69,9 @@ export class BiletAllBusService extends BiletAllService {
 
   async scheduleList(
     requestDto: BusScheduleRequestDto,
-  ): Promise<BusScheduleAndBusFeaturesDto> {
+  ): Promise<BusScheduleListResponseDto> {
     const builder = new xml2js.Builder({ headless: true });
+
     const requestDocument = {
       Sefer: {
         FirmaNo: requestDto.companyNo ?? '0',
@@ -85,8 +86,45 @@ export class BiletAllBusService extends BiletAllService {
     };
 
     const xml = builder.buildObject(requestDocument);
-    const res = await this.run<BusScheduleAndFeaturesResponse>(xml);
-    return this.biletAllBusParserService.parseBusSchedule(res);
+    const departureResponsePromise =
+      this.run<BusScheduleAndFeaturesResponse>(xml);
+
+    let returnResponsePromise:
+      | Promise<BusScheduleAndFeaturesResponse>
+      | undefined;
+
+    if (requestDto.returnDate) {
+      const returnRequestDocument = {
+        Sefer: {
+          FirmaNo: requestDto.companyNo ?? '0',
+          KalkisNoktaID: requestDto.arrivalPointId,
+          VarisNoktaID: requestDto.departurePointId,
+          Tarih: requestDto.returnDate,
+          AraNoktaGelsin: requestDto.includeIntermediatePoints ?? 1,
+          IslemTipi: requestDto.operationType ?? 0,
+          YolcuSayisi: requestDto.passengerCount,
+          Ip: requestDto.ip,
+        },
+      };
+
+      const returnXml = builder.buildObject(returnRequestDocument);
+      returnResponsePromise =
+        this.run<BusScheduleAndFeaturesResponse>(returnXml);
+    }
+    const [departureSchedulesAndFeatures, returnSchedulesAndFeatures] =
+      await Promise.all([departureResponsePromise, returnResponsePromise]);
+
+    return {
+      departureSchedulesAndFeatures:
+        this.biletAllBusParserService.parseBusSchedule(
+          departureSchedulesAndFeatures,
+        ),
+      returnSchedulesAndFeatures: returnSchedulesAndFeatures
+        ? this.biletAllBusParserService.parseBusSchedule(
+            returnSchedulesAndFeatures,
+          )
+        : undefined,
+    };
   }
 
   async busSearch(requestDto: BusSearchRequestDto): Promise<BusSearchDto> {

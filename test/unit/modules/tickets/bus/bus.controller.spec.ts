@@ -19,10 +19,10 @@ import {
   busCompanyMockResponse,
   busSearchMockResponse,
   busSeatAvailabilityMockResponse,
+  departureScheduleListMockResponse,
   getBusTerminalsByNameMockResponse,
   getRouteMockResponse,
   saleRequestMockResponse,
-  scheduleListMockResponse,
   serviceInformationMockResponse,
 } from './mock-response/biletall-bus-service-mock-response';
 
@@ -113,13 +113,13 @@ describe('BusController', () => {
       };
 
       biletAllBusServiceMock.scheduleList.mockResolvedValueOnce(
-        scheduleListMockResponse,
+        departureScheduleListMockResponse,
       );
 
       const result = await controller.scheduleList(requestDto);
 
       expect(biletAllBusService.scheduleList).toBeCalledWith(requestDto);
-      expect(result).toStrictEqual(scheduleListMockResponse);
+      expect(result).toStrictEqual(departureScheduleListMockResponse);
     });
   });
 

@@ -7,8 +7,8 @@ import { BusService } from './services/bus.service';
 // dto
 import { BusCompanyDto, BusCompanyRequestDto } from './dto/bus-company.dto';
 import {
+  BusScheduleListResponseDto,
   BusScheduleRequestDto,
-  BusScheduleAndBusFeaturesDto,
 } from './dto/bus-schedule-list.dto';
 import { BusSearchRequestDto, BusSearchDto } from './dto/bus-search.dto';
 import {
@@ -54,13 +54,16 @@ export class BusController {
   }
 
   @ApiOperation({ summary: 'Get Schedule List and Features' })
-  @Post('schedule-list')
+  @Get('schedule-list')
   async scheduleList(
-    @Body() requestDto: BusScheduleRequestDto,
-  ): Promise<BusScheduleAndBusFeaturesDto> {
-    return this.biletAllBusService.scheduleList(requestDto);
+    @Query() requestDto: BusScheduleRequestDto,
+  ): Promise<BusScheduleListResponseDto> {
+    const response = await this.biletAllBusService.scheduleList(requestDto);
+    return new BusScheduleListResponseDto(
+      response.departureSchedulesAndFeatures,
+      response?.returnSchedulesAndFeatures,
+    );
   }
-
   @ApiOperation({ summary: 'Search Bus For One Company' })
   @Post('bus-search')
   async busSearch(

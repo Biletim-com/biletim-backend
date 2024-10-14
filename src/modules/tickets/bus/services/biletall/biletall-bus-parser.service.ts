@@ -53,7 +53,7 @@ import {
 } from '../../dto/bus-search.dto';
 import {
   BusScheduleDto,
-  BusScheduleAndBusFeaturesDto,
+  BusScheduleListParserDto,
 } from '../../dto/bus-schedule-list.dto';
 import { BusTerminalDto } from '../../dto/bus-terminal.dto';
 
@@ -93,7 +93,7 @@ export class BiletAllBusParserService extends BiletAllParserService {
 
   public parseBusSchedule = (
     response: BusScheduleAndFeaturesResponse,
-  ): BusScheduleAndBusFeaturesDto => {
+  ): BusScheduleListParserDto => {
     const extractedResult = this.extractResult(response);
     const newDataSet = extractedResult['NewDataSet'][0];
     const table = newDataSet['Table'];
@@ -101,15 +101,25 @@ export class BiletAllBusParserService extends BiletAllParserService {
 
     const schedules = table.map((entry) => {
       const scheduleParsed: BusSchedule = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
+
+      for (const [key, [value]] of Object.entries(entry)) {
         scheduleParsed[key] = value;
+      }
+
+      if (scheduleParsed.SeyahatSuresiGosterimTipi === '0') {
+        scheduleParsed.SeyahatSuresi = 'Travel time should not be shown';
+        delete scheduleParsed.YaklasikSeyahatSuresi;
+      } else if (scheduleParsed.SeyahatSuresiGosterimTipi === '1') {
+        delete scheduleParsed.SeyahatSuresi;
+      } else if (scheduleParsed.SeyahatSuresiGosterimTipi === '2') {
+        delete scheduleParsed.YaklasikSeyahatSuresi;
       }
       return new BusScheduleDto(scheduleParsed);
     });
 
     const features = typeFeatures.map((entry) => {
       const featureParsed: BusFeature = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
+      for (const [key, [value]] of Object.entries(entry)) {
         featureParsed[key] = value;
       }
       return new BusFeaturesDto(featureParsed);
@@ -130,7 +140,7 @@ export class BiletAllBusParserService extends BiletAllParserService {
       };
     });
 
-    return new BusScheduleAndBusFeaturesDto(SchedulesAndFeatures);
+    return new BusScheduleListParserDto(SchedulesAndFeatures);
   };
 
   public parseBusSearchResponse = (response: BusResponse): BusSearchDto => {
