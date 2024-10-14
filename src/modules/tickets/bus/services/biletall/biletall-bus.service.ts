@@ -21,7 +21,7 @@ import {
   ServiceInformationDto,
   ServiceInformationRequestDto,
 } from '../../dto/bus-service-information.dto';
-import { BusPurchaseDto } from '../../dto/bus-purchase.dto';
+// import { BusPurchaseDto } from '../../dto/bus-purchase.dto';
 import { BusRouteDetailDto, BusRouteRequestDto } from '../../dto/bus-route.dto';
 import { BusTerminalDto } from '../../dto/bus-terminal.dto';
 import {
@@ -38,7 +38,7 @@ import { BusSeatAvailabilityResponse } from './types/biletall-bus-seat-availabil
 import { RouteDetailResponse } from './types/biletall-route.type';
 import { ServiceInformationResponse } from './types/biletall-service-information.type';
 import { BoardingPointResponse } from './types/biletall-boarding-point.type';
-import { BiletallPaymentRules } from '@app/common/types';
+// import { BiletallPaymentRules } from '@app/common/types';
 
 // helpers
 import { BiletAllGender } from '@app/common/helpers';
@@ -234,123 +234,123 @@ export class BiletAllBusService extends BiletAllService {
   // Otobus cevap xml"i içerisinde,
   // OnOdemeAktifMi aktif mi parametresi sıfır geliyor ise firma posundan işlem yapılmalı.
   // 1 geliyor ise ön ödemeli satış(kendi posunuz ile) yapılabilinir.
-  private async transactionRules(busSearchDto: BusSearchRequestDto) {
-    const { paymentRules } = await this.busSearch({
-      companyNo: busSearchDto.companyNo,
-      departurePointId: busSearchDto.departurePointId,
-      arrivalPointId: busSearchDto.arrivalPointId,
-      date: busSearchDto.date,
-      time: busSearchDto.time,
-      routeNumber: busSearchDto.routeNumber,
-      operationType: busSearchDto.operationType,
-      passengerCount: busSearchDto.passengerCount,
-      tripTrackingNumber: busSearchDto.tripTrackingNumber,
-      ip: busSearchDto.ip,
-    });
-    const rules: BiletallPaymentRules[] = [];
-    if (paymentRules.prePaymentActive) {
-      rules.push('VIRTUAL_POS');
-    } else {
-      rules.push('BUS_COMPANY_VIRTUAL_POS');
-    }
+  // private async transactionRules(busSearchDto: BusSearchRequestDto) {
+  //   const { paymentRules } = await this.busSearch({
+  //     companyNo: busSearchDto.companyNo,
+  //     departurePointId: busSearchDto.departurePointId,
+  //     arrivalPointId: busSearchDto.arrivalPointId,
+  //     date: busSearchDto.date,
+  //     time: busSearchDto.time,
+  //     routeNumber: busSearchDto.routeNumber,
+  //     operationType: busSearchDto.operationType,
+  //     passengerCount: busSearchDto.passengerCount,
+  //     tripTrackingNumber: busSearchDto.tripTrackingNumber,
+  //     ip: busSearchDto.ip,
+  //   });
+  //   const rules: BiletallPaymentRules[] = [];
+  //   if (paymentRules.prePaymentActive) {
+  //     rules.push('VIRTUAL_POS');
+  //   } else {
+  //     rules.push('BUS_COMPANY_VIRTUAL_POS');
+  //   }
 
-    if (
-      paymentRules.payment3DSecureActive &&
-      paymentRules.payment3DSecureMandatory
-    ) {
-      rules.push('3D_SECURE');
-    }
+  //   if (
+  //     paymentRules.payment3DSecureActive &&
+  //     paymentRules.payment3DSecureMandatory
+  //   ) {
+  //     rules.push('3D_SECURE');
+  //   }
 
-    console.log({ rules });
-  }
+  //   console.log({ rules });
+  // }
 
-  async saleRequest(requestDto: BusPurchaseDto): Promise<any> {
-    const builder = new xml2js.Builder({ headless: true });
+  // async saleRequest(requestDto: BusPurchaseDto): Promise<any> {
+  //   const builder = new xml2js.Builder({ headless: true });
 
-    const {
-      companyNo,
-      departurePointId,
-      arrivalPointId,
-      date,
-      time,
-      routeNumber,
-      passengers,
-      tripTrackingNumber,
-      webPassenger: { ip },
-    } = requestDto;
+  //   const {
+  //     companyNo,
+  //     departurePointId,
+  //     arrivalPointId,
+  //     date,
+  //     time,
+  //     routeNumber,
+  //     passengers,
+  //     tripTrackingNumber,
+  //     webPassenger: { ip },
+  //   } = requestDto;
 
-    const passengerCount = passengers.length.toString();
+  //   const passengerCount = passengers.length.toString();
 
-    await this.transactionRules({
-      companyNo: companyNo ?? '0',
-      departurePointId: String(departurePointId),
-      arrivalPointId: String(arrivalPointId),
-      date,
-      time,
-      routeNumber: String(routeNumber),
-      operationType: 0,
-      passengerCount,
-      tripTrackingNumber,
-      ip,
-    });
+  //   await this.transactionRules({
+  //     companyNo: companyNo ?? '0',
+  //     departurePointId: String(departurePointId),
+  //     arrivalPointId: String(arrivalPointId),
+  //     date,
+  //     time,
+  //     routeNumber: String(routeNumber),
+  //     operationType: 0,
+  //     passengerCount,
+  //     tripTrackingNumber,
+  //     ip,
+  //   });
 
-    const requestDocument = {
-      IslemSatis: {
-        FirmaNo: companyNo,
-        KalkisNoktaID: departurePointId,
-        VarisNoktaID: arrivalPointId,
-        Tarih: dayjs(date).format('YYYY-MM-DD'),
-        Saat: time,
-        HatNo: routeNumber,
-        SeferNo: tripTrackingNumber,
-        KalkisTerminalAdiSaatleri: '',
-        ...requestDto.passengers.reduce((acc, passenger, index) => {
-          acc[`KoltukNo${index + 1}`] = passenger.seatNo;
-          acc[`Adi${index + 1}`] = passenger.firstName;
-          acc[`Soyadi${index + 1}`] = passenger.lastName;
-          acc[`Cinsiyet${index + 1}`] = BiletAllGender[passenger.gender];
-          acc[`TcVatandasiMi${index + 1}`] = passenger.isTurkishCitizen ? 1 : 0;
-          acc[`TcKimlikNo${index + 1}`] = passenger.turkishIdNumber;
-          acc[`PasaportUlkeKod${index + 1}`] = passenger.passportCountryCode;
-          acc[`PasaportNo${index + 1}`] = passenger.passportNumber;
-          if (passenger.boardingLocation)
-            acc[`BinecegiYer${index + 1}`] = passenger.boardingLocation;
-          if (passenger.departureServiceLocation)
-            acc[`ServisYeriKalkis${index + 1}`] =
-              passenger.departureServiceLocation;
-          if (passenger.arrivalServiceLocation)
-            acc[`ServisYeriVaris${index + 1}`] =
-              passenger.arrivalServiceLocation;
-          return acc;
-        }, {}),
-        TelefonNo: requestDto.phoneNumber,
-        ToplamBiletFiyati: requestDto.totalTicketPrice,
-        YolcuSayisi: passengerCount,
-        BiletSeriNo: 1,
-        OdemeSekli: 0,
-        FirmaAciklama: undefined,
-        HatirlaticiNot: undefined,
-        SeyahatTipi: 0,
-        WebYolcu: {
-          WebUyeNo: 0,
-          Ip: ip,
-          Email: requestDto.webPassenger.email,
-          ...(requestDto.webPassenger.creditCardNo && {
-            KrediKartNo: requestDto.webPassenger.creditCardNo,
-            KrediKartSahip: requestDto.webPassenger.creditCardHolder,
-            KrediKartGecerlilikTarihi:
-              requestDto.webPassenger.creditCardExpiryDate,
-            KrediKartCCV2: requestDto.webPassenger.creditCardCCV2,
-          }),
-          ...(requestDto.webPassenger.prepaymentUsage && {
-            OnOdemeKullan: requestDto.webPassenger.prepaymentUsage,
-            OnOdemeTutar: requestDto.webPassenger.prepaymentAmount,
-          }),
-        },
-      },
-    };
+  //   const requestDocument = {
+  //     IslemSatis: {
+  //       FirmaNo: companyNo,
+  //       KalkisNoktaID: departurePointId,
+  //       VarisNoktaID: arrivalPointId,
+  //       Tarih: dayjs(date).format('YYYY-MM-DD'),
+  //       Saat: time,
+  //       HatNo: routeNumber,
+  //       SeferNo: tripTrackingNumber,
+  //       KalkisTerminalAdiSaatleri: '',
+  //       ...requestDto.passengers.reduce((acc, passenger, index) => {
+  //         acc[`KoltukNo${index + 1}`] = passenger.seatNo;
+  //         acc[`Adi${index + 1}`] = passenger.firstName;
+  //         acc[`Soyadi${index + 1}`] = passenger.lastName;
+  //         acc[`Cinsiyet${index + 1}`] = BiletAllGender[passenger.gender];
+  //         acc[`TcVatandasiMi${index + 1}`] = passenger.isTurkishCitizen ? 1 : 0;
+  //         acc[`TcKimlikNo${index + 1}`] = passenger.turkishIdNumber;
+  //         acc[`PasaportUlkeKod${index + 1}`] = passenger.passportCountryCode;
+  //         acc[`PasaportNo${index + 1}`] = passenger.passportNumber;
+  //         if (passenger.boardingLocation)
+  //           acc[`BinecegiYer${index + 1}`] = passenger.boardingLocation;
+  //         if (passenger.departureServiceLocation)
+  //           acc[`ServisYeriKalkis${index + 1}`] =
+  //             passenger.departureServiceLocation;
+  //         if (passenger.arrivalServiceLocation)
+  //           acc[`ServisYeriVaris${index + 1}`] =
+  //             passenger.arrivalServiceLocation;
+  //         return acc;
+  //       }, {}),
+  //       TelefonNo: requestDto.phoneNumber,
+  //       ToplamBiletFiyati: requestDto.totalTicketPrice,
+  //       YolcuSayisi: passengerCount,
+  //       BiletSeriNo: 1,
+  //       OdemeSekli: 0,
+  //       FirmaAciklama: undefined,
+  //       HatirlaticiNot: undefined,
+  //       SeyahatTipi: 0,
+  //       WebYolcu: {
+  //         WebUyeNo: 0,
+  //         Ip: ip,
+  //         Email: requestDto.webPassenger.email,
+  //         ...(requestDto.webPassenger.creditCardNo && {
+  //           KrediKartNo: requestDto.webPassenger.creditCardNo,
+  //           KrediKartSahip: requestDto.webPassenger.creditCardHolder,
+  //           KrediKartGecerlilikTarihi:
+  //             requestDto.webPassenger.creditCardExpiryDate,
+  //           KrediKartCCV2: requestDto.webPassenger.creditCardCCV2,
+  //         }),
+  //         ...(requestDto.webPassenger.prepaymentUsage && {
+  //           OnOdemeKullan: requestDto.webPassenger.prepaymentUsage,
+  //           OnOdemeTutar: requestDto.webPassenger.prepaymentAmount,
+  //         }),
+  //       },
+  //     },
+  //   };
 
-    const xml = builder.buildObject(requestDocument);
-    return this.run(xml);
-  }
+  //   const xml = builder.buildObject(requestDocument);
+  //   return this.run(xml);
+  // }
 }
