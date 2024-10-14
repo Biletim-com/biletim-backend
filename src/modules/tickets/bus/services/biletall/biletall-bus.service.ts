@@ -80,7 +80,7 @@ export class BiletAllBusService extends BiletAllService {
         Tarih: requestDto.date,
         AraNoktaGelsin: requestDto.includeIntermediatePoints ?? 1,
         IslemTipi: requestDto.operationType ?? 0,
-        YolcuSayisi: requestDto.passengerCount,
+        YolcuSayisi: '1',
         Ip: requestDto.ip,
       },
     };
@@ -102,7 +102,7 @@ export class BiletAllBusService extends BiletAllService {
           Tarih: requestDto.returnDate,
           AraNoktaGelsin: requestDto.includeIntermediatePoints ?? 1,
           IslemTipi: requestDto.operationType ?? 0,
-          YolcuSayisi: requestDto.passengerCount,
+          YolcuSayisi: '1',
           Ip: requestDto.ip,
         },
       };

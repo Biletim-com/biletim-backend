@@ -4,7 +4,6 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  MinLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import * as dayjs from 'dayjs';
@@ -71,17 +70,6 @@ export class BusScheduleRequestDto {
   @IsInt()
   @IsOptional()
   operationType?: number;
-
-  @ApiProperty({
-    description:
-      'The number of passengers, must be at least 1 character long if provided.',
-    example: '1',
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  @MinLength(1)
-  passengerCount?: string;
 
   @ApiProperty({
     description: 'The IP address of the user making the request.',

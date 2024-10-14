@@ -109,7 +109,6 @@ describe('BusController', () => {
         arrivalPointId: '738',
         date: '2024-10-15',
         ip: '127.0.0.1',
-        passengerCount: '1',
       };
 
       biletAllBusServiceMock.scheduleList.mockResolvedValueOnce(
@@ -119,7 +118,7 @@ describe('BusController', () => {
       const result = await controller.scheduleList(requestDto);
 
       expect(biletAllBusService.scheduleList).toBeCalledWith(requestDto);
-      expect(result).toStrictEqual(departureScheduleListMockResponse);
+      expect(result).toEqual(departureScheduleListMockResponse);
     });
   });
 

@@ -151,7 +151,6 @@ describe('BiletAllBusService', () => {
         date: '2024-10-15',
         includeIntermediatePoints: 1,
         operationType: 0,
-        passengerCount: '1',
         ip: '127.0.0.1',
       };
 
@@ -182,7 +181,7 @@ describe('BiletAllBusService', () => {
         `  <Tarih>${requestDto.date}</Tarih>\n` +
         `  <AraNoktaGelsin>${requestDto.includeIntermediatePoints}</AraNoktaGelsin>\n` +
         `  <IslemTipi>${requestDto.operationType}</IslemTipi>\n` +
-        `  <YolcuSayisi>${requestDto.passengerCount}</YolcuSayisi>\n` +
+        `  <YolcuSayisi>1</YolcuSayisi>\n` +
         `  <Ip>${requestDto.ip}</Ip>\n` +
         `</Sefer>`;
 
@@ -205,7 +204,6 @@ describe('BiletAllBusService', () => {
         date: '2024-10-15',
         includeIntermediatePoints: 1,
         operationType: 0,
-        passengerCount: '1',
         ip: '127.0.0.1',
       };
 
@@ -255,7 +253,7 @@ describe('BiletAllBusService', () => {
         `  <Tarih>${requestDto.date}</Tarih>\n` +
         `  <AraNoktaGelsin>${requestDto.includeIntermediatePoints}</AraNoktaGelsin>\n` +
         `  <IslemTipi>${requestDto.operationType}</IslemTipi>\n` +
-        `  <YolcuSayisi>${requestDto.passengerCount}</YolcuSayisi>\n` +
+        `  <YolcuSayisi>1</YolcuSayisi>\n` +
         `  <Ip>${requestDto.ip}</Ip>\n` +
         `</Sefer>`;
 
@@ -267,7 +265,7 @@ describe('BiletAllBusService', () => {
         `  <Tarih>${requestDto2.date}</Tarih>\n` +
         `  <AraNoktaGelsin>${requestDto2.includeIntermediatePoints}</AraNoktaGelsin>\n` +
         `  <IslemTipi>${requestDto2.operationType}</IslemTipi>\n` +
-        `  <YolcuSayisi>${requestDto2.passengerCount}</YolcuSayisi>\n` +
+        `  <YolcuSayisi>1</YolcuSayisi>\n` +
         `  <Ip>${requestDto2.ip}</Ip>\n` +
         `</Sefer>`;
 

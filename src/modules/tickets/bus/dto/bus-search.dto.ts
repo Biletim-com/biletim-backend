@@ -1,6 +1,12 @@
 // info regarding the bus
 
-import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { BusScheduleRequestDto } from './bus-schedule-list.dto';
 import { OmitType } from '@nestjs/swagger/dist/type-helpers/omit-type.helper';
 import { ApiProperty } from '@nestjs/swagger';
@@ -57,6 +63,17 @@ export class BusSearchRequestDto extends OmitType(BusScheduleRequestDto, [
   @IsString()
   @IsNotEmpty()
   tripTrackingNumber: string;
+
+  @ApiProperty({
+    description:
+      'The number of passengers, must be at least 1 character long if provided.',
+    example: '1',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @MinLength(1)
+  passengerCount?: string;
 }
 
 export class BusTripDto {

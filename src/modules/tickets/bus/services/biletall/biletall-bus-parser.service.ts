@@ -110,8 +110,16 @@ export class BiletAllBusParserService extends BiletAllParserService {
         scheduleParsed.SeyahatSuresi = 'Travel time should not be shown';
         delete scheduleParsed.YaklasikSeyahatSuresi;
       } else if (scheduleParsed.SeyahatSuresiGosterimTipi === '1') {
-        delete scheduleParsed.SeyahatSuresi;
+        if (scheduleParsed.YaklasikSeyahatSuresi) {
+          scheduleParsed.YaklasikSeyahatSuresi += ' hour';
+          delete scheduleParsed.SeyahatSuresi;
+        }
       } else if (scheduleParsed.SeyahatSuresiGosterimTipi === '2') {
+        const timeString = scheduleParsed.SeyahatSuresi;
+        if (timeString) {
+          const formattedTime = `${timeString.substring(11, 16)} hour`;
+          scheduleParsed.SeyahatSuresi = formattedTime;
+        }
         delete scheduleParsed.YaklasikSeyahatSuresi;
       }
       return new BusScheduleDto(scheduleParsed);
