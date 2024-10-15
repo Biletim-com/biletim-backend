@@ -10,7 +10,10 @@ import {
   BusScheduleListResponseDto,
   BusScheduleRequestDto,
 } from './dto/bus-schedule-list.dto';
-import { BusSearchRequestDto, BusSearchDto } from './dto/bus-search.dto';
+import {
+  BusTicketDetailDto,
+  BusTicketDetailRequestDto,
+} from './dto/bus-ticket-detail.dto';
 import {
   BusSeatAvailabilityDto,
   BusSeatAvailabilityRequestDto,
@@ -23,8 +26,6 @@ import {
   ServiceInformationRequestDto,
   ServiceInformationDto,
 } from './dto/bus-service-information.dto';
-import { BusPurchaseDto } from './dto/bus-purchase.dto';
-import { BusRouteRequestDto, BusRouteDetailDto } from './dto/bus-route.dto';
 import { BusTerminalSearchQueryDto } from './dto/bus-terminal-search-query.dto';
 import { BusTerminal } from './entities/bus-terminal.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -64,12 +65,13 @@ export class BusController {
       response?.returnSchedulesAndFeatures,
     );
   }
-  @ApiOperation({ summary: 'Search Bus For One Company' })
-  @Post('bus-search')
-  async busSearch(
-    @Body() requestDto: BusSearchRequestDto,
-  ): Promise<BusSearchDto> {
-    return await this.biletAllBusService.busSearch(requestDto);
+  @ApiOperation({ summary: 'Search Bus Situation Of Seats And Route Plan' })
+  @Post('bus-ticket-detail')
+  async busTicketDetail(
+    @Body() requestDto: BusTicketDetailRequestDto,
+  ): Promise<BusTicketDetailDto> {
+    const response = await this.biletAllBusService.busTicketDetail(requestDto);
+    return new BusTicketDetailDto(response.busDetail, response.routeDetail);
   }
 
   @ApiOperation({ summary: 'Check Bus Seat Availability' })
@@ -96,17 +98,9 @@ export class BusController {
     return this.biletAllBusService.serviceInformation(requestDto);
   }
 
-  @ApiOperation({ summary: 'Search Route' })
-  @Post('get-route')
-  async getRoute(
-    @Body() requestDto: BusRouteRequestDto,
-  ): Promise<BusRouteDetailDto[]> {
-    return this.biletAllBusService.getRoute(requestDto);
-  }
-
-  @ApiOperation({ summary: 'Handle Bus Ticket Sale Request' })
-  // @Post('sale-request')
-  async saleRequest(@Body() requestDto: BusPurchaseDto) {
-    return this.biletAllBusService.saleRequest(requestDto);
-  }
+  // @ApiOperation({ summary: 'Handle Bus Ticket Sale Request' })
+  //  @Post('sale-request')
+  // async saleRequest(@Body() requestDto: BusPurchaseDto) {
+  //   return this.biletAllBusService.saleRequest(requestDto);
+  // }
 }

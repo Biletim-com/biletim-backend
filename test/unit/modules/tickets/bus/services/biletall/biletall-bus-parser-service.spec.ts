@@ -244,9 +244,9 @@ describe('BiletAllBusParserService', () => {
       mockBiletAllParserService.extractResult.mockReturnValue({
         NewDataSet: [{ $: [Object], 'xs:schema': [Array], Table: [Array] }],
       });
-      const result = parser.parseBusSearchResponse(jsonMockResponse);
+      const result = parser.parseBusDetailResponse(jsonMockResponse);
 
-      expect(result).toHaveProperty('trip');
+      expect(result).toHaveProperty('bus');
 
       expect(result).toHaveProperty('seats');
       expect(Array.isArray(result.seats)).toBe(true);
@@ -255,10 +255,6 @@ describe('BiletAllBusParserService', () => {
       expect(result).toHaveProperty('travelTypes');
       expect(Array.isArray(result.travelTypes)).toBe(true);
       expect(result.travelTypes.length).toBeGreaterThan(0);
-
-      expect(result).toHaveProperty('features');
-      expect(Array.isArray(result.features)).toBe(true);
-      expect(result.features.length).toBeGreaterThan(0);
 
       expect(result).toHaveProperty('paymentRules');
     });
@@ -292,7 +288,7 @@ describe('BiletAllBusParserService', () => {
       });
 
       expect(() => {
-        parser.parseBusSearchResponse(mockErrorResponse);
+        parser.parseBusDetailResponse(mockErrorResponse);
       }).toThrow(BiletAllResponseError);
     });
   });

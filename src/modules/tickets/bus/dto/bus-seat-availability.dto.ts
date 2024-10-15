@@ -1,11 +1,18 @@
-import { OmitType } from '@nestjs/swagger/dist/type-helpers/omit-type.helper';
-import { BusSearchRequestDto } from './bus-search.dto';
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Gender } from '@app/common/enums';
 import { ApiProperty } from '@nestjs/swagger';
-
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsInEnumKeys } from '@app/common/decorators';
+import { DateISODate, DateTime } from '@app/common/types';
+import * as dayjs from 'dayjs';
 
 class BusSeatDto {
   @ApiProperty({
@@ -30,10 +37,87 @@ class BusSeatDto {
 }
 
 // check wether the passenger can buy the requested ticket based on their gender
-export class BusSeatAvailabilityRequestDto extends OmitType(
-  BusSearchRequestDto,
-  ['passengerCount'],
-) {
+export class BusSeatAvailabilityRequestDto {
+  @ApiProperty({
+    description: 'Company number',
+    example: '17',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  companyNo: string;
+
+  @ApiProperty({
+    description: 'The departure point ID, which is a required field.',
+    example: '84',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  departurePointId: string;
+
+  @ApiProperty({
+    description: 'The arrival point ID, which is a required field.',
+    example: '738',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  arrivalPointId: string;
+
+  @ApiProperty({
+    description: 'The travel date in the format "yyyy-MM-dd".',
+    example: '2024-10-15',
+    required: true,
+  })
+  @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
+  @IsNotEmpty()
+  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
+  date: DateISODate;
+
+  @ApiProperty({
+    description: 'The travel date and time in the format yyyy-MM-ddTHH:mm:ss.',
+    example: '2024-09-15T12:30:00',
+    required: true,
+  })
+  @IsDateString(
+    {},
+    { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
+  )
+  @IsNotEmpty()
+  time: DateTime;
+
+  @ApiProperty({
+    description: 'The route number for the bus, required field.',
+    example: '3',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  routeNumber: string;
+
+  @IsInt()
+  @IsOptional()
+  operationType?: number;
+
+  @ApiProperty({
+    description: 'The trip tracking number.',
+    example: '2221',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  tripTrackingNumber: string;
+
+  @ApiProperty({
+    description: 'The IP address of the user making the request.',
+    example: '127.0.0.1',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  ip = '127.0.0.1';
+
   @ApiProperty({
     description: 'List of seat information',
     type: [BusSeatDto],

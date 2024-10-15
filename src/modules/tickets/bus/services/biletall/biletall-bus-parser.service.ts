@@ -44,14 +44,14 @@ import { BoardingPointDto } from '../../dto/bus-boarding-point.dto';
 import { BusSeatAvailabilityDto } from '../../dto/bus-seat-availability.dto';
 import { BusCompanyDto } from '../../dto/bus-company.dto';
 import {
-  BusFeaturesDto,
-  BusSearchDto,
+  BusDetailDto,
   BusSeatDto,
   BusTravelTypeDto,
   BusTripDto,
   CompanyPaymentRulesDto,
-} from '../../dto/bus-search.dto';
+} from '../../dto/bus-ticket-detail.dto';
 import {
+  BusFeaturesDto,
   BusScheduleDto,
   BusScheduleListParserDto,
 } from '../../dto/bus-schedule-list.dto';
@@ -151,15 +151,16 @@ export class BiletAllBusParserService extends BiletAllParserService {
     return new BusScheduleListParserDto(SchedulesAndFeatures);
   };
 
-  public parseBusSearchResponse = (response: BusResponse): BusSearchDto => {
+  public parseBusDetailResponse = (response: BusResponse): BusDetailDto => {
     const extractedResult = this.extractResult(response);
     const bus = extractedResult['Otobus'][0];
 
-    const tripParsed: BusTrip = Object.assign({});
+    const expeditionParsed: BusTrip = Object.assign({});
     for (const [key, [value]] of ObjectTyped.entries(bus['Sefer'][0])) {
-      tripParsed[key] = value;
+      expeditionParsed[key] = value;
     }
-    const trip = new BusTripDto(tripParsed);
+
+    const expedition = new BusTripDto(expeditionParsed);
 
     const seats = bus['Koltuk'].map((entry) => {
       const seatParsed: Seat = Object.assign({});
@@ -177,14 +178,6 @@ export class BiletAllBusParserService extends BiletAllParserService {
       return new BusTravelTypeDto(travelTypeParsed);
     });
 
-    const features = bus['OTipOzellik'].map((entry) => {
-      const featureParsed: BusFeature = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        featureParsed[key] = value;
-      }
-      return new BusFeaturesDto(featureParsed);
-    });
-
     const paymentRuleParsed: PaymentRule = Object.assign({});
     for (const [key, [value]] of ObjectTyped.entries(
       bus['OdemeKurallari'][0],
@@ -193,7 +186,7 @@ export class BiletAllBusParserService extends BiletAllParserService {
     }
     const paymentRules = new CompanyPaymentRulesDto(paymentRuleParsed);
 
-    return new BusSearchDto(trip, seats, travelTypes, features, paymentRules);
+    return new BusDetailDto(expedition, seats, travelTypes, paymentRules);
   };
 
   public parseBusSeatAvailability = (
