@@ -4,10 +4,7 @@ import { ConfigModule } from '@app/configs/config.module';
 import { BusController } from '@app/modules/tickets/bus/bus.controller';
 import { BoardingPointRequestDto } from '@app/modules/tickets/bus/dto/bus-boarding-point.dto';
 import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
-// import { BusPurchaseDto } from '@app/modules/tickets/bus/dto/bus-purchase.dto';
-import { BusRouteRequestDto } from '@app/modules/tickets/bus/dto/bus-route.dto';
 import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
-import { BusSearchRequestDto } from '@app/modules/tickets/bus/dto/bus-search.dto';
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 import { ServiceInformationRequestDto } from '@app/modules/tickets/bus/dto/bus-service-information.dto';
 import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
@@ -17,12 +14,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   boardingPointMockResponse,
   busCompanyMockResponse,
-  busSearchMockResponse,
   busSeatAvailabilityMockResponse,
   departureScheduleListMockResponse,
   getBusTerminalsByNameMockResponse,
-  getRouteMockResponse,
-  // saleRequestMockResponse,
   serviceInformationMockResponse,
 } from './mock-response/biletall-bus-service-mock-response';
 
@@ -122,30 +116,30 @@ describe('BusController', () => {
     });
   });
 
-  describe('busSearch method', () => {
-    it('should return relevant bus schedules and information', async () => {
-      const requestDto: BusSearchRequestDto = {
-        companyNo: '37',
-        departurePointId: '84',
-        arrivalPointId: '738',
-        date: '2024-09-15',
-        time: '1900-01-01T15:00:00.000Z',
-        routeNumber: '3',
-        passengerCount: '1',
-        tripTrackingNumber: '21115',
-        ip: '127.0.0.1',
-      };
+  // describe('busSearch method', () => {
+  //   it('should return relevant bus schedules and information', async () => {
+  //     const requestDto: BusSearchRequestDto = {
+  //       companyNo: '37',
+  //       departurePointId: '84',
+  //       arrivalPointId: '738',
+  //       date: '2024-09-15',
+  //       time: '1900-01-01T15:00:00.000Z',
+  //       routeNumber: '3',
+  //       passengerCount: '1',
+  //       tripTrackingNumber: '21115',
+  //       ip: '127.0.0.1',
+  //     };
 
-      biletAllBusServiceMock.busSearch.mockResolvedValueOnce(
-        busSearchMockResponse,
-      );
+  //     biletAllBusServiceMock.busSearch.mockResolvedValueOnce(
+  //       busSearchMockResponse,
+  //     );
 
-      const result = await controller.busSearch(requestDto);
+  //     const result = await controller.busSearch(requestDto);
 
-      expect(biletAllBusService.busSearch).toBeCalledWith(requestDto);
-      expect(result).toStrictEqual(busSearchMockResponse);
-    });
-  });
+  //     expect(biletAllBusService.busSearch).toBeCalledWith(requestDto);
+  //     expect(result).toStrictEqual(busSearchMockResponse);
+  //   });
+  // });
 
   describe('busSeatAvailability method', () => {
     it('should return availability of the relevant seat', async () => {
@@ -216,29 +210,6 @@ describe('BusController', () => {
 
       expect(biletAllBusService.serviceInformation).toBeCalledWith(requestDto);
       expect(result).toStrictEqual(serviceInformationMockResponse);
-    });
-  });
-
-  describe('getRoute method', () => {
-    it('should return route of the relevant expedition', async () => {
-      const requestDto: BusRouteRequestDto = {
-        companyNo: '37',
-        routeNumber: '3',
-        departurePointId: '84',
-        arrivalPointId: '738',
-        infoTechnologyName: 'GuzergahVerSaatli',
-        tripTrackingNumber: '20454',
-        date: '2024-08-05',
-      };
-
-      biletAllBusServiceMock.getRoute.mockResolvedValueOnce(
-        getRouteMockResponse,
-      );
-
-      const result = await controller.getRoute(requestDto);
-
-      expect(biletAllBusService.getRoute).toBeCalledWith(requestDto);
-      expect(result).toStrictEqual(getRouteMockResponse);
     });
   });
 

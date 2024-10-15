@@ -13,8 +13,9 @@ import { BusSchedule } from '../services/biletall/types/biletall-trip-search.typ
 import { DateISODate } from '@app/common/types';
 
 // dto
-import { BusFeaturesDto } from './bus-search.dto';
+
 import { IsReturnDateGreaterDate } from '@app/common/decorators/is-return-date-greater-date.decorator';
+import { BusFeature } from '../services/biletall/types/biletall-bus-feature.type';
 
 // request to be sent to get the available dates
 export class BusScheduleRequestDto {
@@ -203,6 +204,19 @@ export class BusScheduleDto {
     this.isSalesRedirected = schedule.SatisYonlendirilecekMi;
     this.seatSelectionAvailable = schedule.KoltukSecimiVar;
     this.tripCode = schedule.SeferKod;
+  }
+}
+export class BusFeaturesDto {
+  typeFeature: string;
+  typeFeatureDescription: string;
+  typeFeatureDetail: string;
+  typeFeatureIcon: string;
+
+  constructor(feature: BusFeature) {
+    this.typeFeature = feature.O_Tip_Ozellik;
+    this.typeFeatureDescription = feature.O_Tip_Ozellik_Aciklama;
+    this.typeFeatureDetail = feature.O_Tip_Ozellik_Detay;
+    this.typeFeatureIcon = feature.O_Tip_Ozellik_Icon;
   }
 }
 

@@ -1,14 +1,5 @@
 // info regarding the bus
-
-import {
-  IsDateString,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator';
-import { BusScheduleRequestDto } from './bus-schedule-list.dto';
-import { OmitType } from '@nestjs/swagger/dist/type-helpers/omit-type.helper';
+import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 // types
 import {
@@ -17,14 +8,13 @@ import {
   Seat,
   TravelType,
 } from '../services/biletall/types/biletall-bus-search.type';
-import { BusFeature } from '../services/biletall/types/biletall-bus-feature.type';
-import { DateTime } from '@app/common/types/datetime.type';
+import { DateISODate, DateTime } from '@app/common/types/datetime.type';
+import * as dayjs from 'dayjs';
+import { Transform } from 'class-transformer';
+import { BusRouteDetailDto } from './bus-route.dto';
 
 // plate, driver...
-export class BusSearchRequestDto extends OmitType(BusScheduleRequestDto, [
-  'includeIntermediatePoints',
-  'companyNo',
-]) {
+export class BusTicketDetailRequestDto {
   @ApiProperty({
     description: 'Company number',
     example: '0',
@@ -33,6 +23,34 @@ export class BusSearchRequestDto extends OmitType(BusScheduleRequestDto, [
   @IsString()
   @IsNotEmpty()
   companyNo: string;
+
+  @ApiProperty({
+    description: 'The departure point ID, which is a required field.',
+    example: '84',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  departurePointId: string;
+
+  @ApiProperty({
+    description: 'The arrival point ID, which is a required field.',
+    example: '738',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  arrivalPointId: string;
+
+  @ApiProperty({
+    description: 'The travel date in the format "yyyy-MM-dd".',
+    example: '2024-10-15',
+    required: true,
+  })
+  @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
+  @IsNotEmpty()
+  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
+  date: DateISODate;
 
   @ApiProperty({
     description: 'The travel date and time in the format yyyy-MM-ddTHH:mm:ss.',
@@ -63,17 +81,6 @@ export class BusSearchRequestDto extends OmitType(BusScheduleRequestDto, [
   @IsString()
   @IsNotEmpty()
   tripTrackingNumber: string;
-
-  @ApiProperty({
-    description:
-      'The number of passengers, must be at least 1 character long if provided.',
-    example: '1',
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  @MinLength(1)
-  passengerCount?: string;
 }
 
 export class BusTripDto {
@@ -134,7 +141,7 @@ export class BusTripDto {
   busSeatLayout: string;
   busHESCodeMandatory: string;
   doubleSeatCanBeSoldToSinglePassenger: string;
-  singleSeatsFullDoubleSeatsSalePossible: string;
+  canSellDoubleSeatsToSinglePassengerIfSingleSeatsAreFull: string;
   approximateTravelDuration: string;
   travelDurationDisplayType: string;
   canSelectSeatsWithDifferentPrices: string;
@@ -167,7 +174,34 @@ export class BusTripDto {
     this.isSaleActive = trip.SatisAktifMi;
     this.maximumReservationDateTime = trip.MaximumRezerveTarihiSaati;
     this.busType = trip.OtobusTip;
-    this.busTypeClass = trip.OtobusTipSinif;
+    if (trip.OtobusTipSinif !== undefined) {
+      const internetTicketPrice = Number(trip.BiletFiyatiInternet);
+      const classDifferencePrice = Number(trip.BiletFiyatiSinifFarki);
+      const totalPrice = (internetTicketPrice + classDifferencePrice).toFixed(
+        2,
+      );
+
+      this.busTypeClass = (() => {
+        switch (trip.OtobusTipSinif) {
+          case '0':
+            return `Bütün koltukların fiyatı ${internetTicketPrice.toFixed(
+              2,
+            )} TL`;
+
+          case '1':
+            return `Bütün koltukların fiyatı  ${totalPrice} TL`;
+
+          case '2':
+            return `Otobüsün sadece üst kat koltuklarının fiyatı ${totalPrice} TL`;
+
+          case '3':
+            return `Otobüsün sadece alt kat koltuklarının fiyatı ${totalPrice} TL`;
+
+          default:
+            return `${internetTicketPrice.toFixed(2)} TL`;
+        }
+      })();
+    }
     this.busTypeSecondFloorRow = trip.OtobusTipIkinciKatSira;
     this.busPlate = trip.OtobusPlaka;
     this.busCaptainName = trip.OtobusKaptanAdi;
@@ -186,7 +220,7 @@ export class BusTripDto {
     this.busTypeFeature = trip.OTipOzellik;
     this.backwardSeats = trip.YonuTersKoltuklar;
     this.idNumberRequiredForBranchSale =
-      trip.SubeSatistaTcKimlikNoYazmakZorunlu;
+      trip.SubeSatistaTcKimlikNoYazmakZorunlu === '1' ? 'true' : 'false';
     this.travelDuration = trip.SeyahatSuresi;
     this.tripTypeDescription = trip.SeferTipiAciklamasi;
     this.busTypeDescription = trip.OTipAciklamasi;
@@ -197,22 +231,31 @@ export class BusTripDto {
     this.payment3DSecureMandatory = trip.Odeme3DSecureZorunluMu;
     this.paypalUpperLimit = trip.PaypalUstLimit;
     this.maximumEmptyMaleSeats = trip.MaximumBosBayYaniSayisi;
-    this.sellableSeatCount = trip.SatilabilirKoltukSayi;
+    this.sellableSeatCount = `${trip.SatilabilirKoltukSayi}  - Şirket tarafından belirlenen sayıdır. Bu, otobüste satılabilecek toplam koltuk sayısını gösterir. Bu sayıdan daha fazla işlem gönderdiğinizde hata alırsınız.`;
     this.reservationCannotBeMadeReason = trip.RezervasyonNedenYapilamaz;
-    this.companyMaxTotalTicketPrice = trip.FirmaMaxToplamBiletFiyati;
-    this.canProcessWithPassportNumber = trip.PasaportNoIleIslemYapilirMi;
+    if (
+      trip.FirmaMaxToplamBiletFiyati !== undefined &&
+      Number(trip.FirmaMaxToplamBiletFiyati) > 0
+    ) {
+      const totalPrice = Number(trip.FirmaMaxToplamBiletFiyati).toFixed(2);
+      this.companyMaxTotalTicketPrice = `${totalPrice} TL - İlgili otobüs için şirket tarafından belirlenen maksimum işlem tutarıdır. Bu değeri aşan işlemlerinizde hata alırsınız.`;
+    }
+    this.canProcessWithPassportNumber =
+      trip.PasaportNoIleIslemYapilirMi === '1' ? 'true' : 'false';
     this.canSelectSeatsOfDifferentGenders =
-      trip.FarkliCinsiyetteKoltuklarSecilebilirMi;
+      trip.FarkliCinsiyetteKoltuklarSecilebilirMi === '1' ? 'true' : 'false';
     this.busSeatLayout = trip.OtobusKoltukBoslukSemasi;
     this.busHESCodeMandatory = trip.OtobusHesKoduZorunluMu;
     this.doubleSeatCanBeSoldToSinglePassenger =
-      trip.CiftKoltukTekYolcuyaSatilabilirMi;
-    this.singleSeatsFullDoubleSeatsSalePossible =
-      trip.TekliKoltuklarDoluysaCiftliKoltuktanSatisYapilabilirMi;
+      trip.CiftKoltukTekYolcuyaSatilabilirMi === '1' ? 'true' : 'false';
+    this.canSellDoubleSeatsToSinglePassengerIfSingleSeatsAreFull =
+      trip.TekliKoltuklarDoluysaCiftliKoltuktanSatisYapilabilirMi === '1'
+        ? 'true'
+        : 'false';
     this.approximateTravelDuration = trip.YaklasikSeyahatSuresi;
     this.travelDurationDisplayType = trip.SeyahatSuresiGosterimTipi;
     this.canSelectSeatsWithDifferentPrices =
-      trip.FarkliFiyattaKoltuklarSecilebilirMi;
+      trip.FarkliFiyattaKoltuklarSecilebilirMi === '1' ? 'true' : 'false';
     this.ticketCancellationActive = trip.BiletIptalAktifMi;
     this.openMoneyUsageActive = trip.AcikParaKullanimAktifMi;
     this.cancellationTimeUntilDepartureMinutes =
@@ -225,17 +268,67 @@ export class BusTripDto {
 }
 
 export class BusSeatDto {
-  seatString: string;
+  seatStr: string;
   seatNumber: string;
-  status: string;
-  adjacentStatus: string;
+  seatSituation: string;
+  seatSideSituation: string;
   internetSeatPrice: string;
 
   constructor(seat: Seat) {
-    this.seatString = seat.KoltukStr;
-    this.seatNumber = seat.KoltukNo;
-    this.status = seat.Durum;
-    this.adjacentStatus = seat.DurumYan;
+    if (seat.KoltukStr !== undefined) {
+      const seatMap: { [key: string]: string } = {
+        '01': '1 Numaralı koltuk',
+        KO: 'Koridor',
+        KA: 'Kapı (ayrı ayrı değerler birleşiyor)',
+        PI: 'Kapı (ayrı ayrı değerler birleşiyor)',
+        MA: 'Masa (ayrı ayrı değerler birleşiyor)',
+        SA: 'Masa (ayrı ayrı değerler birleşiyor)',
+        PR: 'Personel Koltuğu',
+      };
+
+      const seatDescription = seatMap[seat.KoltukStr.trim()];
+
+      this.seatStr = seatDescription ? seatDescription : seat.KoltukStr.trim();
+    } else {
+      this.seatStr = 'Koltuk bilgisi yok';
+    }
+    if (seat.KoltukNo !== undefined) {
+      this.seatNumber = seat.KoltukNo;
+      if (this.seatNumber === '-1' || this.seatNumber === '-3') {
+        this.seatNumber += ' ( Koridor, Kapı veya Masaya denk gelen yerdir.)';
+      }
+    } else {
+      this.seatNumber = 'Koltuk numarası yok';
+    }
+    if (seat.Durum !== undefined) {
+      const seatStatusMap: { [key: number]: string } = {
+        0: 'Koltuk Boş',
+        1: 'Koltuk Bir Kadına Satılmış',
+        2: 'Koltuk Bir Kadına Rezerve',
+        3: 'Koltuk Bir Erkeğe Satılmış',
+        4: 'Koltuk Bir Erkeğe Rezerve',
+        5: 'Koltuk Satılmakta',
+        6: 'Koltuk Satılamaz',
+      };
+      this.seatSituation = seatStatusMap[seat.Durum] || 'Bilinmeyen durum';
+    } else {
+      this.seatSituation = 'Durum bilgisi yok';
+    }
+    if (seat.DurumYan !== undefined) {
+      const seatSideStatusMap: { [key: number]: string } = {
+        0: 'Yan Koltuk Boş (Her İki Cinse Satılabilir)',
+        1: 'Yan Koltuk Bir Kadına Satılmış (Sadece Kadına Satılabilir)',
+        2: 'Yan Koltuk Bir Erkeğe Satılmış (Sadece Erkeğe Satılabilir)',
+        3: 'Yan Koltuk Belirsiz (Hiçbir Şekilde Satılamaz)',
+        4: 'Yan Koltuk Belirsiz (Hiçbir Şekilde Satılamaz)',
+        5: 'Yan Koltuk Belirsiz (Hiçbir Şekilde Satılamaz)',
+        6: 'Yan Koltuk Belirsiz (Hiçbir Şekilde Satılamaz)',
+      };
+      this.seatSideSituation =
+        seatSideStatusMap[seat.DurumYan] || 'Bilinmeyen durum';
+    } else {
+      this.seatSideSituation = 'Yan koltuk durumu bilgisi yok';
+    }
     this.internetSeatPrice = seat.KoltukFiyatiInternet;
   }
 }
@@ -255,19 +348,7 @@ export class BusTravelTypeDto {
     this.singleSeatPriceDifference = travelType.BiletTekKoltukFarki;
   }
 }
-export class BusFeaturesDto {
-  typeFeature: string;
-  typeFeatureDescription: string;
-  typeFeatureDetail: string;
-  typeFeatureIcon: string;
 
-  constructor(feature: BusFeature) {
-    this.typeFeature = feature.O_Tip_Ozellik;
-    this.typeFeatureDescription = feature.O_Tip_Ozellik_Aciklama;
-    this.typeFeatureDetail = feature.O_Tip_Ozellik_Detay;
-    this.typeFeatureIcon = feature.O_Tip_Ozellik_Icon;
-  }
-}
 export class CompanyPaymentRulesDto {
   payment3DSecureActive: boolean;
   payment3DSecureMandatory: boolean;
@@ -310,12 +391,18 @@ export class CompanyPaymentRulesDto {
   }
 }
 
-export class BusSearchDto {
+export class BusDetailDto {
   constructor(
-    public trip: BusTripDto,
+    public bus: BusTripDto,
     public seats: BusSeatDto[],
     public travelTypes: BusTravelTypeDto[],
-    public features: BusFeaturesDto[],
     public paymentRules: CompanyPaymentRulesDto,
+  ) {}
+}
+
+export class BusTicketDetailDto {
+  constructor(
+    public busDetail: BusDetailDto,
+    public routeDetail: BusRouteDetailDto[],
   ) {}
 }
