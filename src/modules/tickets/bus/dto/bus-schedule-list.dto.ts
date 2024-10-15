@@ -85,6 +85,7 @@ export class BusScheduleDto {
   id?: string;
   timeOfDay?: string;
   companyNumber?: string;
+  companyLogo?: string;
   companyName?: string;
   localTime?: string;
   localInternetTime?: string;
@@ -146,6 +147,7 @@ export class BusScheduleDto {
     this.timeOfDay = schedule.Vakit;
     this.companyNumber = schedule.FirmaNo;
     this.companyName = schedule.FirmaAdi;
+    this.companyLogo = `https://eticket.ipektr.com/wsbos3/LogoVer.Aspx?fnum=${schedule.FirmaNo}`;
     this.localTime = schedule.YerelSaat;
     this.localInternetTime = schedule.YerelInternetSaat;
     this.date = schedule.Tarih;
