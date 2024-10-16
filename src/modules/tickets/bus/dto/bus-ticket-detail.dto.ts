@@ -300,35 +300,8 @@ export class BusSeatDto {
     } else {
       this.seatNumber = 'Koltuk numarası yok';
     }
-    if (seat.Durum !== undefined) {
-      const seatStatusMap: { [key: number]: string } = {
-        0: 'Koltuk Boş',
-        1: 'Koltuk Bir Kadına Satılmış',
-        2: 'Koltuk Bir Kadına Rezerve',
-        3: 'Koltuk Bir Erkeğe Satılmış',
-        4: 'Koltuk Bir Erkeğe Rezerve',
-        5: 'Koltuk Satılmakta',
-        6: 'Koltuk Satılamaz',
-      };
-      this.seatSituation = seatStatusMap[seat.Durum] || 'Bilinmeyen durum';
-    } else {
-      this.seatSituation = 'Durum bilgisi yok';
-    }
-    if (seat.DurumYan !== undefined) {
-      const seatSideStatusMap: { [key: number]: string } = {
-        0: 'Yan Koltuk Boş (Her İki Cinse Satılabilir)',
-        1: 'Yan Koltuk Bir Kadına Satılmış (Sadece Kadına Satılabilir)',
-        2: 'Yan Koltuk Bir Erkeğe Satılmış (Sadece Erkeğe Satılabilir)',
-        3: 'Yan Koltuk Belirsiz (Hiçbir Şekilde Satılamaz)',
-        4: 'Yan Koltuk Belirsiz (Hiçbir Şekilde Satılamaz)',
-        5: 'Yan Koltuk Belirsiz (Hiçbir Şekilde Satılamaz)',
-        6: 'Yan Koltuk Belirsiz (Hiçbir Şekilde Satılamaz)',
-      };
-      this.seatSideSituation =
-        seatSideStatusMap[seat.DurumYan] || 'Bilinmeyen durum';
-    } else {
-      this.seatSideSituation = 'Yan koltuk durumu bilgisi yok';
-    }
+    this.seatSituation = seat.Durum;
+    this.seatSideSituation = seat.DurumYan;
     this.internetSeatPrice = seat.KoltukFiyatiInternet;
   }
 }
