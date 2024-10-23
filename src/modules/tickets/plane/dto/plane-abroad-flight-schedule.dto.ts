@@ -62,6 +62,7 @@ export class AbroadFlightOptionDto {
   isReservable: string;
   isCharterFlight: string;
   companyNo: string;
+  provider: string;
 
   constructor(option: AbroadFlightOption) {
     this.id = option.ID;
@@ -81,6 +82,7 @@ export class AbroadFlightOptionDto {
     this.isReservable = option.RezervasyonYapilabilirMi;
     this.isCharterFlight = option.CharterSeferMi;
     this.companyNo = option.FirmaNo;
+    this.provider = option.Saglayici;
   }
 }
 
@@ -89,6 +91,7 @@ export class AbroadFlightSegmentDto {
   optionId: string;
   flightId: string;
   transfer: string;
+  companyLogo: string;
   flightNo: string;
   flightCode: string;
   airline: string;
@@ -109,12 +112,15 @@ export class AbroadFlightSegmentDto {
   time: string;
   classType: string;
   remainingSeatCount: string;
+  pricePackageDescription: string;
+  pricePackageKey: string;
 
   constructor(segment: AbroadFlightSegment) {
     this.id = segment.ID;
     this.optionId = segment.SecenekID;
     this.flightId = segment.UcusID;
     this.transfer = segment.Aktarma;
+    this.companyLogo = `https://ws.biletall.com/HavaYoluLogo/orta/${segment.HavaYoluKod}.png`;
     this.flightNo = segment.SeferNo;
     this.flightCode = segment.SeferKod;
     this.airline = segment.HavaYolu;
@@ -135,20 +141,23 @@ export class AbroadFlightSegmentDto {
     this.time = segment.Vakit;
     this.classType = segment.Sinif;
     this.remainingSeatCount = segment.KalanKoltukSayi;
+    this.pricePackageDescription = segment.FiyatPaketTanimi;
+    this.pricePackageKey = segment.FiyatPaketAnahtari;
   }
 }
 
 export class AbroadFlightScheduleDto {
   constructor(
-    public groupedFlight: Array<{
+    public departureFlights: Array<{
+      flightOption: AbroadFlightOptionDto | undefined;
       flightId: string;
       segments: AbroadFlightSegmentDto[];
-      flightOption: AbroadFlightOptionDto | undefined;
     }>,
-    public groupedReturnFlight: Array<{
+    public returnFlights: Array<{
+      flightOption: AbroadFlightOptionDto | undefined;
       flightId: string;
       segments: AbroadFlightSegmentDto[];
-      flightOption: AbroadFlightOptionDto | undefined;
     }> = [],
+    public operationId?: string | null,
   ) {}
 }

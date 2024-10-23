@@ -66,6 +66,11 @@ import {
   OptionFareDetail,
   SegmentClass,
 } from './types/biletall-plane-domistic-flight-schedule.type';
+import {
+  BrandFareInfo,
+  pullAbroadFlightPricePackagesResponse,
+} from './types/biletall-plane-pull-abroad-flight-price-packages.type';
+//import { FlightClassType } from '@app/common/enums';
 
 @Injectable()
 export class BiletAllPlaneParserService extends BiletAllParserService {
@@ -133,20 +138,8 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       }
     });
 
-    const segmentClassesDataSet = newDataSet['SegmentSiniflar'] ?? [];
-    const segmentClassesMap = new Map<string, SegmentClassDto>();
-
-    segmentClassesDataSet.forEach((entry) => {
-      const segmentClassParsed: SegmentClass = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        segmentClassParsed[key] = value;
-      }
-      const segmentClassDto = new SegmentClassDto(segmentClassParsed);
-      segmentClassesMap.set(segmentClassDto.segmentId, segmentClassDto);
-    });
-
     const optionFaresDataSet = newDataSet['SecenekUcretler'] ?? [];
-    const optionFaresMap = new Map<string, OptionFareDto>();
+    const optionFaresBySecenekID2 = new Map<string, OptionFareDto[]>();
 
     optionFaresDataSet.forEach((entry) => {
       const optionFareParsed: OptionFare = Object.assign({});
@@ -154,14 +147,18 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
         optionFareParsed[key] = value;
       }
       const optionFareDto = new OptionFareDto(optionFareParsed);
-      optionFaresMap.set(optionFareDto.id, optionFareDto);
+      const secenekID2 = optionFareDto.optionId2;
+
+      if (secenekID2) {
+        if (!optionFaresBySecenekID2.has(secenekID2)) {
+          optionFaresBySecenekID2.set(secenekID2, []);
+        }
+        optionFaresBySecenekID2.get(secenekID2)?.push(optionFareDto);
+      }
     });
 
     const optionFareDetailsDataSet = newDataSet['SecenekUcretDetaylar'] ?? [];
-    const optionFaresWithDetails: {
-      optionFare: OptionFareDto;
-      details: OptionFareDetailDto[];
-    }[] = [];
+    const optionFareDetailsMap = new Map<string, OptionFareDetailDto[]>();
 
     optionFareDetailsDataSet.forEach((entry) => {
       const optionFareDetailParsed: OptionFareDetail = Object.assign({});
@@ -173,113 +170,146 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       );
       const optionFareId = optionFareDetailDto.optionFareId;
 
-      if (optionFaresMap.has(optionFareId)) {
-        const optionFare = optionFaresMap.get(optionFareId)!;
+      if (!optionFareDetailsMap.has(optionFareId)) {
+        optionFareDetailsMap.set(optionFareId, []);
+      }
+      optionFareDetailsMap.get(optionFareId)?.push(optionFareDetailDto);
+    });
 
-        const existingEntry = optionFaresWithDetails.find(
-          (opt) => opt.optionFare.id === optionFareId,
+    const segmentClassesDataSet = newDataSet['SegmentSiniflar'] ?? [];
+    const segmentClassesByOptionFareId = new Map<string, SegmentClassDto[]>();
+
+    segmentClassesDataSet.forEach((entry) => {
+      const segmentClassParsed: SegmentClass = Object.assign({});
+      for (const [key, [value]] of ObjectTyped.entries(entry)) {
+        segmentClassParsed[key] = value;
+      }
+      const segmentClassDto = new SegmentClassDto(segmentClassParsed);
+      const optionFareId = segmentClassDto.optionFareId;
+
+      if (!segmentClassesByOptionFareId.has(optionFareId)) {
+        segmentClassesByOptionFareId.set(optionFareId, []);
+      }
+      segmentClassesByOptionFareId.get(optionFareId)?.push(segmentClassDto);
+    });
+
+    const departureFlightsWithFares = this.createFinalResponseWithFares(
+      flightOptionsWithSegments,
+      optionFaresBySecenekID2,
+      optionFareDetailsMap,
+      segmentClassesByOptionFareId,
+      false,
+    );
+
+    const returnFlightOptionsDataSet = newDataSet['DonusSecenekler'] ?? [];
+    const returnFlightSegmentsDataSet = newDataSet['DonusSegmentler'] ?? [];
+
+    const returnFlightOptionsMap = new Map<string, FlightOptionDto>();
+    returnFlightOptionsDataSet.forEach((entry) => {
+      const flightOptionParsed: FlightOption = Object.assign({});
+      for (const [key, [value]] of ObjectTyped.entries(entry)) {
+        flightOptionParsed[key] = value;
+      }
+      const flightOptionDto = new FlightOptionDto(flightOptionParsed);
+      returnFlightOptionsMap.set(flightOptionDto.id, flightOptionDto);
+    });
+
+    const returnFlightOptionsWithSegments: {
+      flightOption: FlightOptionDto;
+      segments: DomesticFlightSegmentDto[];
+    }[] = [];
+
+    returnFlightSegmentsDataSet.forEach((entry) => {
+      const flightSegmentParsed: FlightSegment = Object.assign({});
+      for (const [key, [value]] of ObjectTyped.entries(entry)) {
+        flightSegmentParsed[key] = value;
+      }
+      const flightSegmentDto = new DomesticFlightSegmentDto(
+        flightSegmentParsed,
+      );
+      const optionId = flightSegmentDto.optionId;
+
+      if (returnFlightOptionsMap.has(optionId)) {
+        const flightOption = returnFlightOptionsMap.get(optionId)!;
+
+        const existingEntry = returnFlightOptionsWithSegments.find(
+          (opt) => opt.flightOption.id === optionId,
         );
         if (existingEntry) {
-          existingEntry.details.push(optionFareDetailDto);
+          existingEntry.segments.push(flightSegmentDto);
         } else {
-          optionFaresWithDetails.push({
-            optionFare,
-            details: [optionFareDetailDto],
+          returnFlightOptionsWithSegments.push({
+            flightOption,
+            segments: [flightSegmentDto],
           });
         }
       }
     });
 
-    const finalOptionFaresResponse: {
-      optionFare: OptionFareDto;
-      optionFareDetail: OptionFareDetailDto[];
-    }[] = optionFaresWithDetails.map((entry) => ({
-      optionFare: entry.optionFare,
-      optionFareDetail: entry.details,
-    }));
+    const ReturnFlightsWithFares = this.createFinalResponseWithFares(
+      returnFlightOptionsWithSegments,
+      optionFaresBySecenekID2,
+      optionFareDetailsMap,
+      segmentClassesByOptionFareId,
+      true,
+    );
 
-    const optionFaresBySecenekID2 = new Map<
-      string,
-      { optionFare: OptionFareDto; optionFareDetail: OptionFareDetailDto[] }
-    >();
+    return {
+      departureFlightsWithFares,
+      ReturnFlightsWithFares,
+    };
+  };
 
-    finalOptionFaresResponse.forEach((entry) => {
-      const secenekID2 = entry.optionFare.optionId2;
-      if (secenekID2) {
-        optionFaresBySecenekID2.set(secenekID2, {
-          optionFare: entry.optionFare,
-          optionFareDetail: entry.optionFareDetail,
-        });
-      }
-    });
-
-    const finalResponseWithFares: {
+  private createFinalResponseWithFares(
+    optionsWithSegments: {
       flightOption: FlightOptionDto;
       segments: DomesticFlightSegmentDto[];
-      optionFare?: OptionFareDto;
-      optionFareDetail?: OptionFareDetailDto[];
-      segmentClass?: SegmentClassDto;
-    }[] = flightOptionsWithSegments.map((entry) => {
-      const flightOptionId = entry.flightOption.id;
-
-      let relatedOptionFare;
-      for (const [_key, value] of optionFaresBySecenekID2.entries()) {
-        if (value.optionFare.optionId2 === flightOptionId) {
-          relatedOptionFare = value;
-          break;
-        }
-      }
-
+    }[],
+    optionFaresByOptionId: Map<string, OptionFareDto[]>,
+    optionFareDetailsMap: Map<string, OptionFareDetailDto[]>,
+    segmentClassesByOptionFareId: Map<string, SegmentClassDto[]>,
+    useId2ForFares = false,
+  ) {
+    return optionsWithSegments.map((entry) => {
+      const flightOptionId = useId2ForFares
+        ? entry.flightOption.id2
+        : entry.flightOption.id;
+      const relatedOptionFares =
+        optionFaresByOptionId.get(flightOptionId) || [];
       const segmentsWithClasses = entry.segments.map((segment) => {
-        const segmentClass = segmentClassesMap.get(segment.id);
+        const segmentOptionFares = relatedOptionFares.map((fare) => {
+          const segmentClassesForFare =
+            segmentClassesByOptionFareId.get(fare.id) || [];
+          const segmentClassForOptionFare = segmentClassesForFare.length
+            ? segmentClassesForFare[0]
+            : null;
+
+          return {
+            ...fare,
+            fareDetails: optionFareDetailsMap.get(fare.id) || [],
+            segmentClass: segmentClassForOptionFare,
+          };
+        });
+
         return {
           ...segment,
-          segmentClass,
+          optionFares: segmentOptionFares,
         };
       });
 
       return {
         flightOption: entry.flightOption,
         segments: segmentsWithClasses,
-        optionFare: relatedOptionFare?.optionFare,
-        optionFareDetail: relatedOptionFare?.optionFareDetail,
-        segmentClass:
-          segmentsWithClasses.length > 0
-            ? segmentsWithClasses[0].segmentClass
-            : undefined,
       };
     });
-
-    const returnFlightOptionsDataSet = newDataSet['DonusSecenekler'] ?? [];
-    const returnFlightOptions = returnFlightOptionsDataSet.map((entry) => {
-      const flightOptionParsed: FlightOption = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        flightOptionParsed[key] = value;
-      }
-      return new FlightOptionDto(flightOptionParsed);
-    });
-
-    const returnFlightSegmentsDataSet = newDataSet['DonusSegmentler'] ?? [];
-    const returnFlightSegments = returnFlightSegmentsDataSet.map((entry) => {
-      const flightSegmentParsed: FlightSegment = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        flightSegmentParsed[key] = value;
-      }
-      return new DomesticFlightSegmentDto(flightSegmentParsed);
-    });
-
-    return new DomesticFlightScheduleDto(
-      finalResponseWithFares,
-      returnFlightOptions,
-      returnFlightSegments,
-    );
-  };
+  }
 
   public parseAbroadFlightResponse = (
     response: AbroadFlightResponse,
   ): AbroadFlightScheduleDto => {
     const extractedResult = this.extractResult(response);
     const newDataSet = extractedResult['NewDataSet'][0];
+
     const flightOptionsDataSet = newDataSet['Secenekler'] ?? [];
     const flightOptionsMap = new Map<string, AbroadFlightOptionDto>();
 
@@ -312,15 +342,15 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       groupedSegments[flightSegmentDto.flightId].push(flightSegmentDto);
     });
 
-    const groupedFlight = Object.entries(groupedSegments).map(
+    const departureFlights = Object.entries(groupedSegments).map(
       ([flightId, segments]) => {
         const optionId = segments[0]?.optionId;
         const flightOption = flightOptionsMap.get(optionId);
 
         return {
+          flightOption,
           flightId: `${flightId}`,
           segments,
-          flightOption,
         };
       },
     );
@@ -345,20 +375,183 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       groupedReturnSegments[flightSegmentDto.flightId].push(flightSegmentDto);
     });
 
-    const groupedReturnFlight = Object.entries(groupedReturnSegments).map(
+    const returnFlights = Object.entries(groupedReturnSegments).map(
       ([flightId, segments]) => {
         const optionId = segments[0]?.optionId;
         const flightOption = flightOptionsMap.get(optionId);
 
         return {
+          flightOption,
           flightId: `${flightId}`,
           segments,
-          flightOption,
         };
       },
     );
 
-    return new AbroadFlightScheduleDto(groupedFlight, groupedReturnFlight);
+    const operationIdArray = newDataSet['IslemId'] ?? [];
+    let operationId = null;
+    if (operationIdArray.length > 0 && operationIdArray[0]?.Value) {
+      operationId = operationIdArray[0].Value[0];
+    }
+
+    return { departureFlights, returnFlights, operationId };
+  };
+
+  public parsePullAbroadFlightPricePackagesResponse = (
+    response: pullAbroadFlightPricePackagesResponse,
+  ): any => {
+    const extractedResult = this.extractResult(response);
+    const newDataSet = extractedResult['BrandFareResponse'][0];
+    const brandFareInfosDataSet = newDataSet['BrandFareInfos'] ?? [];
+
+    const parseBrandFareInfos = (brandFareInfosDataSet) => {
+      if (!brandFareInfosDataSet || !Array.isArray(brandFareInfosDataSet)) {
+        return [];
+      }
+
+      return brandFareInfosDataSet.map((brandFareInfosEntry) => {
+        const brandFareInfoParsed: BrandFareInfo =
+          brandFareInfosEntry.BrandFareInfo?.[0] || {};
+
+        return {
+          ...brandFareInfoParsed,
+          BrandPriceInfo: parseBrandPriceInfo(
+            brandFareInfoParsed.BrandPriceInfo || {},
+          ),
+          BrandInfo: parseBrandInfo(brandFareInfoParsed.BrandInfo || {}),
+          BrandSegmentInfos: parseBrandSegmentInfos(
+            brandFareInfoParsed.BrandSegmentInfos || [],
+          ),
+          BrandImportantNotes: parseBrandImportantNotes(
+            brandFareInfoParsed.BrandImportantNotes || [],
+          ),
+        };
+      });
+    };
+
+    const parseBrandPriceInfo = (brandPriceInfo) => {
+      if (!brandPriceInfo) {
+        return {};
+      }
+
+      return {
+        ...brandPriceInfo,
+        PassengerTypeFareInfos: parsePassengerTypeFareInfos(
+          brandPriceInfo.PassengerTypeFareInfos || [],
+        ),
+      };
+    };
+
+    const parsePassengerTypeFareInfos = (passengerTypeFareInfos) => {
+      if (!passengerTypeFareInfos || !Array.isArray(passengerTypeFareInfos)) {
+        return [];
+      }
+
+      return passengerTypeFareInfos.map((passengerTypeFareInfo) => {
+        return {
+          ...passengerTypeFareInfo,
+          PriceOfPieces: parsePriceOfPieces(
+            passengerTypeFareInfo.PriceOfPieces || [],
+          ),
+          BaggageAllowances: parseBaggageAllowances(
+            passengerTypeFareInfo.BaggageAllowances || [],
+          ),
+        };
+      });
+    };
+
+    const parsePriceOfPieces = (priceOfPieces) => {
+      if (!priceOfPieces || !Array.isArray(priceOfPieces)) {
+        return [];
+      }
+
+      return priceOfPieces.map((piece) => {
+        return {
+          ...piece,
+        };
+      });
+    };
+
+    const parseBaggageAllowances = (baggageAllowances) => {
+      if (!baggageAllowances || !Array.isArray(baggageAllowances)) {
+        return [];
+      }
+
+      return baggageAllowances.map((allowance) => {
+        return {
+          ...allowance,
+        };
+      });
+    };
+    const parseBrandInfo = (brandInfo) => {
+      if (!brandInfo) {
+        return {};
+      }
+
+      return {
+        ...brandInfo,
+        BrandServiceInfos: parseBrandServiceInfos(
+          brandInfo.BrandServiceInfos || [],
+        ),
+      };
+    };
+
+    const parseBrandServiceInfos = (brandServiceInfos) => {
+      if (!brandServiceInfos || !Array.isArray(brandServiceInfos)) {
+        return [];
+      }
+
+      return brandServiceInfos.map((serviceInfo) => {
+        return {
+          ...serviceInfo,
+          BrandServices: parseBrandServices(serviceInfo.BrandServices || []),
+        };
+      });
+    };
+    const parseBrandServices = (brandServices) => {
+      if (!brandServices || !Array.isArray(brandServices)) {
+        return [];
+      }
+
+      return brandServices.map((service) => {
+        return {
+          ...service,
+        };
+      });
+    };
+
+    const parseBrandSegmentInfos = (brandSegmentInfos) => {
+      if (!brandSegmentInfos || !Array.isArray(brandSegmentInfos)) {
+        return [];
+      }
+
+      return brandSegmentInfos.map((segmentInfo) => {
+        return {
+          ...segmentInfo,
+        };
+      });
+    };
+
+    const parseBrandImportantNotes = (brandImportantNotes) => {
+      if (!brandImportantNotes || !Array.isArray(brandImportantNotes)) {
+        return [];
+      }
+
+      return brandImportantNotes.map((note) => {
+        return {
+          ...note,
+        };
+      });
+    };
+    const brandFareInfosDto = parseBrandFareInfos(brandFareInfosDataSet);
+
+    return {
+      transactionId: newDataSet.TransactionId?.[0] || '',
+      currencyTypeCode: newDataSet.CurrencyTypeCode?.[0] || '',
+      isSuccess: newDataSet.IsSuccess?.[0] || '',
+      message: newDataSet?.Message?.[0] || '',
+      brandFareInfos: brandFareInfosDto,
+    };
   };
 
   public parsePullPriceOfFlightResponse = (
