@@ -205,7 +205,7 @@ export class DomesticFlightSegmentDto {
     this.id = segment.ID;
     this.optionId = segment.SecenekID;
     this.companyId = segment.FirmaID;
-    this.companyLogo = `https://eticket.ipektr.com/wsbos3/LogoVer.Aspx?fnum=${segment.FirmaID}`;
+    this.companyLogo = `https://ws.biletall.com/HavaYoluLogo/orta/${segment.Firma}.png`;
     this.airlineCode = segment.Firma;
     this.airline = segment.FirmaAd;
     this.flightNo = segment.SeferNo;

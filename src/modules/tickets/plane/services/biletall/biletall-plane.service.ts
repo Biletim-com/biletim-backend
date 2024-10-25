@@ -64,7 +64,6 @@ export class BiletAllPlaneService extends BiletAllService {
   async domesticFlightScheduleSearch(
     requestDto: PlaneFlightScheduleRequestDto,
   ): Promise<DomesticFlightScheduleDto> {
-    console.log(requestDto);
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Sefer: {
