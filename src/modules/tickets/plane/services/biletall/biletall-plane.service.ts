@@ -76,25 +76,13 @@ export class BiletAllPlaneService extends BiletAllService {
         }),
         SeyahatTipi: BiletAllPlaneTravelType[requestDto.travelType],
         IslemTipi: 0,
-        YetiskinSayi: requestDto.adultCount,
-        ...(requestDto.childCount && {
-          CocukSayi: requestDto.childCount,
-        }),
-        ...(requestDto.babyCount && {
-          BebekSayi: requestDto.babyCount,
-        }),
-        ...(requestDto.studentCount && {
-          OgrenciSayi: requestDto.studentCount,
-        }),
-        ...(requestDto.olderCount && {
-          YasliSayi: requestDto.olderCount,
-        }),
-        ...(requestDto.militaryCount && {
-          AskerSayi: requestDto.militaryCount,
-        }),
-        ...(requestDto.youthCount && {
-          GencSayi: requestDto.youthCount,
-        }),
+        YetiskinSayi: requestDto.adultCount || 0,
+        CocukSayi: requestDto.childCount || 0,
+        BebekSayi: requestDto.babyCount || 0,
+        OgrenciSayi: requestDto.studentCount || 0,
+        YasliSayi: requestDto.olderCount || 0,
+        AskerSayi: requestDto.militaryCount || 0,
+        GencSayi: requestDto.youthCount || 0,
         Ip: '127.0.0.1',
       },
     };
@@ -118,9 +106,9 @@ export class BiletAllPlaneService extends BiletAllService {
 
         SeyahatTipi: BiletAllPlaneTravelType[requestDto.travelType],
         IslemTipi: 0,
-        YetiskinSayi: requestDto.adultCount,
-        CocukSayi: requestDto.childCount,
-        BebekSayi: requestDto.babyCount,
+        YetiskinSayi: requestDto.adultCount || 0,
+        CocukSayi: requestDto.childCount || 0,
+        BebekSayi: requestDto.babyCount || 0,
         Ip: '127.0.0.1',
       },
     };
