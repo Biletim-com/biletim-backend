@@ -127,10 +127,17 @@ export class FlightOptionDto {
   priceP: string;
   priceE: string;
   priceB: string;
-  luggageP: string;
+  serviceFeeP: string;
+  serviceFeeE: string;
+  serviceFeeB: string;
+  totalPriceE: string;
+  totalPriceB: string;
+  totalServiceFeeE: string;
+  totalServiceFeeB: string;
   luggageE: string;
   luggageB: string;
   time: string;
+  id2: string;
   companyNo: string;
 
   constructor(option: FlightOption) {
@@ -138,10 +145,17 @@ export class FlightOptionDto {
     this.priceP = option.FiyatP;
     this.priceE = option.FiyatE;
     this.priceB = option.FiyatB;
-    this.luggageP = option.BagajP;
+    this.serviceFeeP = option.ServisUcretP;
+    this.serviceFeeE = option.ServisUcretE;
+    this.serviceFeeB = option.ServisUcretB;
+    this.totalPriceE = option.ToplamFiyatE;
+    this.totalPriceB = option.ToplamFiyatB;
+    this.totalServiceFeeE = option.ToplamServisUcretE;
+    this.totalServiceFeeB = option.ToplamServisUcretB;
     this.luggageE = option.BagajE;
     this.luggageB = option.BagajB;
     this.time = option.Vakit;
+    this.id2 = option.ID2;
     this.companyNo = option.FirmaNo;
   }
 }
@@ -149,9 +163,11 @@ export class FlightOptionDto {
 export class DomesticFlightSegmentDto {
   id: string;
   optionId: string;
+  companyId: string;
   airlineCode: string;
   airline: string;
   flightNo: string;
+  companyFlightNo: string;
   flightCode: string;
   departureAirport: string;
   arrivalAirport: string;
@@ -166,19 +182,34 @@ export class DomesticFlightSegmentDto {
   classP: string;
   classE: string;
   classB: string;
+  cabinClassP: string;
+  cabinClassE: string;
+  cabinClassB: string;
   seatP: string;
   seatE: string;
   seatB: string;
   luggageP: string;
   luggageE: string;
   luggageB: string;
+  routeNo: string;
+  companyCampaignDescription: string;
+  isSeatCountFromService: string;
+  isMealPaid: string;
+  corridorCount: string;
+  floorCount: string;
+  seatDistance: string;
+  id2: string;
+  companyLogo: string;
 
   constructor(segment: FlightSegment) {
     this.id = segment.ID;
     this.optionId = segment.SecenekID;
+    this.companyId = segment.FirmaID;
+    this.companyLogo = `https://ws.biletall.com/HavaYoluLogo/orta/${segment.Firma}.png`;
     this.airlineCode = segment.Firma;
     this.airline = segment.FirmaAd;
     this.flightNo = segment.SeferNo;
+    this.companyFlightNo = segment.FirmaSeferNo;
     this.flightCode = segment.SeferKod;
     this.departureAirport = segment.Kalkis;
     this.arrivalAirport = segment.Varis;
@@ -193,12 +224,23 @@ export class DomesticFlightSegmentDto {
     this.classP = segment.SinifP;
     this.classE = segment.SinifE;
     this.classB = segment.SinifB;
+    this.cabinClassP = segment.KabinSinifP;
+    this.cabinClassE = segment.KabinSinifE;
+    this.cabinClassB = segment.KabinSinifB;
     this.seatP = segment.KoltukP;
     this.seatE = segment.KoltukE;
     this.seatB = segment.KoltukB;
     this.luggageP = segment.BagajP;
     this.luggageE = segment.BagajE;
     this.luggageB = segment.BagajB;
+    this.routeNo = segment.RotaNo;
+    this.companyCampaignDescription = segment.FirmaKampanyaAciklama;
+    this.isSeatCountFromService = segment.KalanKoltukSayisiServistenMiGeliyor;
+    this.isMealPaid = segment.YemekUcretliMi;
+    this.corridorCount = segment.KoridorSayi;
+    this.floorCount = segment.KatSayi;
+    this.seatDistance = segment.KoltukMesafe;
+    this.id2 = segment.SegmentID2;
   }
 }
 
@@ -207,6 +249,7 @@ export class SegmentClassDto {
   optionFareId: string;
   classCode: string;
   seatCount: string;
+  isSeatCountFromService: string;
   fee: string;
   missingSeat: string;
 
@@ -215,6 +258,8 @@ export class SegmentClassDto {
     this.optionFareId = segmentClass.SecenekUcretID;
     this.classCode = segmentClass.SinifKod;
     this.seatCount = segmentClass.KoltukSayi;
+    this.isSeatCountFromService =
+      segmentClass.KalanKoltukSayisiServistenMiGeliyor;
     this.fee = segmentClass.Ucret;
     this.missingSeat = segmentClass.EksikKoltukMu;
   }
@@ -226,6 +271,7 @@ export class OptionFareDto {
   className: string;
   classType: string;
   seatCount: string;
+  isSeatCountFromService: string;
   luggage: string;
   singlePassengerFee: string;
   singlePassengerServiceFee: string;
@@ -239,6 +285,8 @@ export class OptionFareDto {
     this.className = optionFare.SinifAd;
     this.classType = optionFare.SinifTip;
     this.seatCount = optionFare.KoltukSayi;
+    this.isSeatCountFromService =
+      optionFare.KalanKoltukSayisiServistenMiGeliyor;
     this.luggage = optionFare.Bagaj;
     this.singlePassengerFee = optionFare.TekYolcuUcret;
     this.singlePassengerServiceFee = optionFare.TekYolcuServisUcret;
@@ -264,14 +312,21 @@ export class OptionFareDetailDto {
 
 export class DomesticFlightScheduleDto {
   constructor(
-    public finalResponseWithFares: Array<{
+    public departureFlightsWithFares: Array<{
       flightOption: FlightOptionDto;
-      segments: DomesticFlightSegmentDto[];
-      optionFare?: OptionFareDto;
-      optionFareDetail?: OptionFareDetailDto[];
-      segmentClass?: SegmentClassDto;
+      segments: DomesticFlightSegmentDto[] & {
+        optionFares?: OptionFareDto[];
+        optionFareDetails?: OptionFareDetailDto[];
+        segmentClasses?: SegmentClassDto[];
+      };
     }>,
-    public returnFlightOptions: FlightOptionDto[],
-    public returnFlightSegments: DomesticFlightSegmentDto[],
+    public ReturnFlightsWithFares: Array<{
+      flightOption: FlightOptionDto;
+      segments: DomesticFlightSegmentDto[] & {
+        optionFares?: OptionFareDto[];
+        optionFareDetails?: OptionFareDetailDto[];
+        segmentClasses?: SegmentClassDto[];
+      };
+    }>,
   ) {}
 }

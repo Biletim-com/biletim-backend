@@ -18,6 +18,7 @@ export type AbroadFlightOption = {
   RezervasyonYapilabilirMi: string;
   CharterSeferMi: string;
   FirmaNo: string;
+  Saglayici: string;
 };
 
 export type AbroadFlightSegment = {
@@ -45,6 +46,8 @@ export type AbroadFlightSegment = {
   Vakit: string;
   Sinif: string;
   KalanKoltukSayi: string;
+  FiyatPaketTanimi: string;
+  FiyatPaketAnahtari: string;
 };
 
 type AbroadFlightDataSet = {
