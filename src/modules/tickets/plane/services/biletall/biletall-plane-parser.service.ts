@@ -67,9 +67,21 @@ import {
   SegmentClass,
 } from './types/biletall-plane-domistic-flight-schedule.type';
 import {
-  BrandFareInfo,
+  BaggageAllowance,
+  PassengerTypeFareInfo,
+  PriceOfPiece,
   pullAbroadFlightPricePackagesResponse,
 } from './types/biletall-plane-pull-abroad-flight-price-packages.type';
+import {
+  BrandFareInfoDto,
+  BrandImportantNoteDto,
+  BrandInfoDto,
+  BrandPriceInfoDto,
+  BrandSegmentInfoDto,
+  BrandServiceDto,
+  BrandServiceInfoDto,
+  PassengerTypeFareInfoDto,
+} from '../../dto/plane-pull-abroad-flight-price-packages.dto';
 //import { FlightClassType } from '@app/common/enums';
 
 @Injectable()
@@ -401,154 +413,348 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
     response: pullAbroadFlightPricePackagesResponse,
   ): any => {
     const extractedResult = this.extractResult(response);
-    const newDataSet = extractedResult['BrandFareResponse'][0];
-    const brandFareInfosDataSet = newDataSet['BrandFareInfos'] ?? [];
+    const newDataSet = extractedResult['BrandFareResponse']?.[0] || {};
 
-    const parseBrandFareInfos = (brandFareInfosDataSet) => {
-      if (!brandFareInfosDataSet || !Array.isArray(brandFareInfosDataSet)) {
+    const brandFareInfosDataSet =
+      newDataSet['BrandFareInfos']?.[0]?.BrandFareInfo || [];
+    console.warn('Brand Fare Infos Data Set:', brandFareInfosDataSet);
+
+    const parseBrandFareInfos = (brandFareInfos: any[]): BrandFareInfoDto[] => {
+      if (!Array.isArray(brandFareInfos)) {
+        console.warn('brandFareInfos is not an array:', brandFareInfos);
         return [];
       }
 
-      return brandFareInfosDataSet.map((brandFareInfosEntry) => {
-        const brandFareInfoParsed: BrandFareInfo =
-          brandFareInfosEntry.BrandFareInfo?.[0] || {};
+      return brandFareInfos.map((brandFareInfo) => {
+        const { $: _, ...rest } = brandFareInfo || {};
+        console.warn('Parsing BrandFareInfo:', rest);
 
-        return {
-          ...brandFareInfoParsed,
-          BrandPriceInfo: parseBrandPriceInfo(
-            brandFareInfoParsed.BrandPriceInfo || {},
+        const brandFareData: BrandFareInfoDto = {
+          isBundle: rest.IsBundle?.[0] || '',
+          tripType: rest.TripType?.[0] || '',
+          brandPriceInfo: parseBrandPriceInfo(rest.BrandPriceInfo?.[0] || {}),
+          brandInfo: parseBrandInfo(rest.BrandInfo?.[0] || {}),
+          brandSegmentInfos: parseBrandSegmentInfos(
+            rest.BrandSegmentInfos?.[0]?.BrandSegmentInfo || [],
           ),
-          BrandInfo: parseBrandInfo(brandFareInfoParsed.BrandInfo || {}),
-          BrandSegmentInfos: parseBrandSegmentInfos(
-            brandFareInfoParsed.BrandSegmentInfos || [],
-          ),
-          BrandImportantNotes: parseBrandImportantNotes(
-            brandFareInfoParsed.BrandImportantNotes || [],
+          brandImportantNotes: parseBrandImportantNotes(
+            rest.BrandImportantNotes?.[0]?.BrandImportantNote || [],
           ),
         };
+
+        return brandFareData;
       });
     };
 
-    const parseBrandPriceInfo = (brandPriceInfo) => {
+    const parseBrandPriceInfo = (brandPriceInfo): BrandPriceInfoDto => {
       if (!brandPriceInfo) {
-        return {};
+        console.warn('brandPriceInfo is undefined or null:', brandPriceInfo);
+        throw new Error('Invalid brandPriceInfo');
       }
 
-      return {
+      console.warn('Parsing Brand Price Info:', brandPriceInfo);
+
+      const passengerTypeFareInfos =
+        brandPriceInfo.PassengerTypeFareInfos?.[0]?.PassengerTypeFareInfo || [];
+
+      console.log('Extracted PassengerTypeFareInfos:', passengerTypeFareInfos);
+
+      const baggageInfo = brandPriceInfo.BaggageInformation?.[0] || '';
+      const cleanedBaggageInfo = baggageInfo.replace(/[\r\n]+/g, ' ').trim();
+      const brandPriceData: BrandPriceInfoDto = {
         ...brandPriceInfo,
         PassengerTypeFareInfos: parsePassengerTypeFareInfos(
-          brandPriceInfo.PassengerTypeFareInfos || [],
+          passengerTypeFareInfos,
         ),
+        servicePriceMax: brandPriceInfo.ServicePriceMax?.[0] || '',
+        servicePriceKA: brandPriceInfo.ServicePriceKA?.[0] || '',
+        servicePriceBA: brandPriceInfo.ServicePriceBA?.[0] || '',
+        sotalPassengerCount: brandPriceInfo.TotalPassengerCount?.[0] || '',
+        totalPrice: brandPriceInfo.TotalPrice?.[0] || '',
+        totalBasePrice: brandPriceInfo.TotalBasePrice?.[0] || '',
+        totalTaxPrice: brandPriceInfo.TotalTaxPrice?.[0] || '',
+        totalServicePrice: brandPriceInfo.TotalServicePrice?.[0] || '',
+        totalMinimumServicePrice:
+          brandPriceInfo.TotalMinimumServicePrice?.[0] || '',
+        baggageInformation: cleanedBaggageInfo,
       };
+
+      console.log('Parsed Brand Price Data:', brandPriceData);
+
+      return brandPriceData;
     };
 
-    const parsePassengerTypeFareInfos = (passengerTypeFareInfos) => {
-      if (!passengerTypeFareInfos || !Array.isArray(passengerTypeFareInfos)) {
+    const parsePassengerTypeFareInfos = (
+      passengerTypeFareInfos: any[],
+    ): PassengerTypeFareInfoDto[] => {
+      if (!Array.isArray(passengerTypeFareInfos)) {
+        console.warn(
+          'PassengerTypeFareInfos is not an array:',
+          passengerTypeFareInfos,
+        );
         return [];
       }
 
-      return passengerTypeFareInfos.map((passengerTypeFareInfo) => {
-        return {
-          ...passengerTypeFareInfo,
-          PriceOfPieces: parsePriceOfPieces(
-            passengerTypeFareInfo.PriceOfPieces || [],
-          ),
-          BaggageAllowances: parseBaggageAllowances(
-            passengerTypeFareInfo.BaggageAllowances || [],
-          ),
+      const parsedInfos: PassengerTypeFareInfoDto[] = [];
+
+      passengerTypeFareInfos.forEach((passengerTypeFareInfo, index) => {
+        const { $: _, ...rest } = passengerTypeFareInfo || {};
+
+        if (!rest) {
+          console.warn(
+            `PassengerTypeFareInfo at index ${index} is undefined or null.`,
+          );
+          return;
+        }
+
+        console.warn(`Parsing PassengerTypeFareInfo at index ${index}:`, rest);
+
+        const priceOfPieces = rest.PriceOfPieces?.[0]?.PriceOfPiece || [];
+        const baggageAllowances =
+          rest.BaggageAllowances?.[0]?.BaggageAllowance || [];
+
+        console.warn(`PriceOfPieces at index ${index}:`, priceOfPieces);
+        console.warn(`BaggageAllowances at index ${index}:`, baggageAllowances);
+
+        const passengerTypeFareData: PassengerTypeFareInfo = {
+          PassengerCount: rest.PassengerCount?.[0] || '0',
+          PassengerType: rest.PassengerType?.[0] || '',
+          PriceOfPieces: parsePriceOfPieces(priceOfPieces),
+          BaggageAllowances: parseBaggageAllowances(baggageAllowances),
+          SinglePassengerPrice: rest.SinglePassengerPrice?.[0] || '0',
+          TotalPrice: rest.TotalPrice?.[0] || '0',
+          MinimumServicePrice: rest.MinimumServicePrice?.[0] || '0',
+          IsFirmCardRequired: rest.IsFirmCardRequired?.[0] || 'false',
         };
+
+        console.log(
+          `Parsed PassengerTypeFareData at index ${index}:`,
+          passengerTypeFareData,
+        );
+
+        try {
+          const dto = new PassengerTypeFareInfoDto(passengerTypeFareData);
+          console.log(dto, 'XXXXXXX');
+          parsedInfos.push(dto);
+        } catch (error) {
+          console.error(
+            `Failed to create PassengerTypeFareInfoDto at index ${index}:`,
+            error,
+          );
+        }
       });
+
+      if (parsedInfos.length === 0) {
+        console.warn(
+          'No valid PassengerTypeFareInfoDto created. Input data:',
+          passengerTypeFareInfos,
+        );
+      }
+
+      return parsedInfos;
     };
 
-    const parsePriceOfPieces = (priceOfPieces) => {
-      if (!priceOfPieces || !Array.isArray(priceOfPieces)) {
+    const parsePriceOfPieces = (priceOfPieces: any[]): PriceOfPiece[] => {
+      if (!Array.isArray(priceOfPieces)) {
+        console.warn('PriceOfPieces is not an array:', priceOfPieces);
         return [];
       }
 
       return priceOfPieces.map((piece) => {
-        return {
-          ...piece,
+        const priceOfPieceData: PriceOfPiece = {
+          PriceType: piece.PriceType?.[0] || '',
+          Price: piece.Price?.[0] || '',
         };
+        return priceOfPieceData;
       });
     };
 
-    const parseBaggageAllowances = (baggageAllowances) => {
-      if (!baggageAllowances || !Array.isArray(baggageAllowances)) {
+    const parseBaggageAllowances = (
+      baggageAllowances: any[],
+    ): BaggageAllowance[] => {
+      if (!Array.isArray(baggageAllowances)) {
+        console.warn('baggageAllowances is not an array:', baggageAllowances);
         return [];
       }
 
-      return baggageAllowances.map((allowance) => {
-        return {
-          ...allowance,
+      return baggageAllowances.map((allowance, index) => {
+        console.log(`Processing allowance at index ${index}:`, allowance);
+        const seatBaggageData = allowance.SeatBaggage?.[0] || {};
+
+        const seatBaggageParsed = {
+          PieceCount: seatBaggageData.PieceCount?.[0] || '0',
+          Amount: seatBaggageData.Amount?.[0] || '0',
+          Unit: seatBaggageData.Unit?.[0] || '',
+          BaggageType: seatBaggageData.BaggageType || [],
+          Dimensions: seatBaggageData.Dimensions?.[0] || '',
+          SeatBaggageInfo: seatBaggageData.SeatBaggageInfo?.[0] || '',
         };
+
+        const baggageAllowanceParsed: BaggageAllowance = {
+          Origin: allowance.Origin || '',
+          Destination: allowance.Destination || '',
+          DepartureTime: allowance.DepartureTime || '',
+          Carrier: allowance.Carrier || '',
+          SeatBaggage: seatBaggageParsed,
+        };
+
+        console.log(
+          `Parsed BaggageAllowance for index ${index}:`,
+          baggageAllowanceParsed,
+        );
+        return baggageAllowanceParsed;
       });
     };
-    const parseBrandInfo = (brandInfo) => {
+
+    const parseBrandInfo = (brandInfo): BrandInfoDto => {
       if (!brandInfo) {
-        return {};
+        console.warn('brandInfo is undefined or null:', brandInfo);
       }
 
-      return {
-        ...brandInfo,
-        BrandServiceInfos: parseBrandServiceInfos(
-          brandInfo.BrandServiceInfos || [],
+      console.log('Raw brandInfo:', brandInfo);
+
+      const brandInfoData: BrandInfoDto = {
+        isActive: brandInfo.IsActive?.[0] === 'true' ? 'true' : 'false',
+        isRecommended:
+          brandInfo.IsRecommended?.[0] === 'true' ? 'true' : 'false',
+        brandId: brandInfo.BrandId?.[0] || '',
+        brandCode: brandInfo.BrandCode?.[0] || '',
+        brandName: brandInfo.BrandName?.[0] || '',
+        brandTier: brandInfo.BrandTier?.[0] || '',
+        brandNote: brandInfo.BrandNote?.[0] || '',
+        class: brandInfo.Class?.[0] || '',
+        cabinClass: brandInfo.CabinClass?.[0] || '',
+        brandServiceInfos: parseBrandServiceInfos(
+          brandInfo.BrandServiceInfos?.[0]?.BrandServiceInfo || [],
         ),
       };
+
+      console.log('Parsed brandInfoData:', brandInfoData);
+
+      return brandInfoData;
     };
 
-    const parseBrandServiceInfos = (brandServiceInfos) => {
-      if (!brandServiceInfos || !Array.isArray(brandServiceInfos)) {
+    const parseBrandServiceInfos = (
+      brandServiceInfos,
+    ): BrandServiceInfoDto[] => {
+      if (!Array.isArray(brandServiceInfos)) {
+        console.warn('BrandServiceInfos is not an array:', brandServiceInfos);
         return [];
       }
+
+      console.log('Raw brandServiceInfos:', brandServiceInfos);
 
       return brandServiceInfos.map((serviceInfo) => {
-        return {
-          ...serviceInfo,
-          BrandServices: parseBrandServices(serviceInfo.BrandServices || []),
+        const { $: _, ...rest } = serviceInfo || {};
+        console.log('Processing BrandServiceInfo:', rest);
+
+        const brandServiceInfoData: BrandServiceInfoDto = {
+          name: rest.Name?.[0] || '',
+          order: rest.Order?.[0] || '',
+          brandServices: parseBrandServices(
+            rest.BrandServices?.[0]?.BrandService || [],
+          ),
         };
+
+        console.log('Parsed BrandServiceInfo:', brandServiceInfoData);
+
+        return brandServiceInfoData;
       });
     };
-    const parseBrandServices = (brandServices) => {
-      if (!brandServices || !Array.isArray(brandServices)) {
+
+    const parseBrandServices = (brandServices): BrandServiceDto[] => {
+      if (!Array.isArray(brandServices)) {
+        console.warn('BrandServices is not an array:', brandServices);
         return [];
       }
+
+      console.log('Raw brandServices:', brandServices);
 
       return brandServices.map((service) => {
+        console.log('Parsing BrandService:', service);
+
         return {
-          ...service,
+          definition: service.Definition?.[0] || '',
+          serviceStatus: service.ServiceStatus?.[0] || '',
+          serviceType: service.ServiceType?.[0] || '',
+          serviceTag: service.ServiceTag?.[0] || '',
+          displayOrder: service.DisplayOrder?.[0] || '',
         };
       });
     };
 
-    const parseBrandSegmentInfos = (brandSegmentInfos) => {
-      if (!brandSegmentInfos || !Array.isArray(brandSegmentInfos)) {
+    const parseBrandSegmentInfos = (
+      brandSegmentInfos,
+    ): BrandSegmentInfoDto[] => {
+      if (!Array.isArray(brandSegmentInfos)) {
+        console.warn('BrandSegmentInfos is not an array:', brandSegmentInfos);
         return [];
       }
+
+      console.log('Raw brandSegmentInfos:', brandSegmentInfos);
 
       return brandSegmentInfos.map((segmentInfo) => {
-        return {
-          ...segmentInfo,
+        console.log('Parsing BrandSegmentInfo:', segmentInfo);
+
+        const segmentInfoData: BrandSegmentInfoDto = {
+          companyNo: segmentInfo.CompanyNo?.[0] || '',
+          origin: segmentInfo.Origin?.[0] || '',
+          destination: segmentInfo.Destination?.[0] || '',
+          classOfService: segmentInfo.ClassOfService?.[0] || '',
+          departureTime: segmentInfo.DepartureTime?.[0] || '',
+          arrivalTime: segmentInfo.ArrivalTime?.[0] || '',
+          cabinClass: segmentInfo.CabinClass?.[0] || '',
+          flightNumber: segmentInfo.FlightNumber?.[0] || '',
+          carrierCode: segmentInfo.CarrierCode?.[0] || '',
+          operatingCarrierCode: segmentInfo.OperatingCarrierCode?.[0] || '',
+          fareRuleKey: segmentInfo.FareRuleKey?.[0] || '',
+          tripCode: segmentInfo.TripCode?.[0] || '',
+          pricePackageDefinition: segmentInfo.PricePackageDefinition?.[0] || '',
+          pricePackageKey: segmentInfo.PricePackageKey?.[0] || '',
+          isReturn: segmentInfo.IsReturn?.[0] || '',
+          pricePackageDetailKey: segmentInfo.PricePackageDetailKey?.[0] || '',
+          fareInfoRef: segmentInfo.FareInfoRef?.[0] || '',
+          group: segmentInfo.Group?.[0] || '',
         };
+        console.log(segmentInfoData);
+        return segmentInfoData;
       });
     };
 
-    const parseBrandImportantNotes = (brandImportantNotes) => {
-      if (!brandImportantNotes || !Array.isArray(brandImportantNotes)) {
+    const parseBrandImportantNotes = (
+      brandImportantNotes,
+    ): BrandImportantNoteDto[] => {
+      if (!Array.isArray(brandImportantNotes)) {
+        console.warn(
+          'BrandImportantNotes is not an array:',
+          brandImportantNotes,
+        );
         return [];
       }
 
+      console.log('Raw brandImportantNotes:', brandImportantNotes);
+
       return brandImportantNotes.map((note) => {
-        return {
-          ...note,
+        console.log('Parsing BrandImportantNote:', note);
+
+        const brandImportantNoteDto: BrandImportantNoteDto = {
+          note: note.Note?.[0] || '',
+          origin: note.Origin?.[0]?.$ || '',
+          destination: note.Destination?.[0]?.$ || '',
         };
+
+        console.log({ brandImportantNoteDto });
+        return brandImportantNoteDto;
       });
     };
+
     const brandFareInfosDto = parseBrandFareInfos(brandFareInfosDataSet);
+    console.warn('Parsed BrandFareInfosDto:', brandFareInfosDto);
 
     return {
       transactionId: newDataSet.TransactionId?.[0] || '',
       currencyTypeCode: newDataSet.CurrencyTypeCode?.[0] || '',
-      isSuccess: newDataSet.IsSuccess?.[0] || '',
+      isSuccess: newDataSet.IsSuccess?.[0] === 'true',
       message: newDataSet?.Message?.[0] || '',
       brandFareInfos: brandFareInfosDto,
     };

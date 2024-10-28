@@ -43,9 +43,9 @@ export class PlaneController {
   }
 
   @ApiOperation({ summary: 'Search Flight Schedule (Domestic/Abroad)' })
-  @Post('flight-schedule')
+  @Get('flight-schedule')
   async flightScheduleSearch(
-    @Body() requestDto: PlaneFlightScheduleRequestDto,
+    @Query() requestDto: PlaneFlightScheduleRequestDto,
   ): Promise<DomesticFlightScheduleDto | AbroadFlightScheduleDto> {
     if (requestDto.isAbroad) {
       const responseAbroadService =

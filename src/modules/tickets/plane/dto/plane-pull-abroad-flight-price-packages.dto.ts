@@ -21,6 +21,7 @@ import {
   BrandServiceInfo,
   PassengerTypeFareInfo,
   PriceOfPiece,
+  SeatBaggage,
 } from '../services/biletall/types/biletall-plane-pull-abroad-flight-price-packages.type';
 
 export class pullAbroadFlightPricePackagesSegmentDto {
@@ -191,28 +192,36 @@ export class PriceOfPieceDto {
     this.price = data.Price;
   }
 }
+export class SeatBaggageDto {
+  pieceCount?: string;
+  amount?: string;
+  unit?: string;
+  baggageType?: string[];
+  dimensions?: string;
+  seatBaggageInfo?: string;
 
+  constructor(data: SeatBaggage) {
+    this.pieceCount = data.PieceCount;
+    this.amount = data.Amount;
+    this.unit = data.Unit;
+    this.baggageType = data.BaggageType;
+    this.dimensions = data.Dimensions;
+    this.seatBaggageInfo = data.SeatBaggageInfo;
+  }
+}
 export class BaggageAllowanceDto {
   origin: string;
   destination: string;
   departureTime: string;
   carrier: string;
-  pieceCount: string;
-  amount: string;
-  unit: string;
-  baggageTypes: string[];
-  seatBaggageInfo: string;
+  seatBaggage?: SeatBaggageDto;
 
   constructor(data: BaggageAllowance) {
     this.origin = data.Origin;
     this.destination = data.Destination;
     this.departureTime = data.DepartureTime;
     this.carrier = data.Carrier;
-    this.pieceCount = data.PieceCount;
-    this.amount = data.Amount;
-    this.unit = data.Unit;
-    this.baggageTypes = data.BaggageTypes;
-    this.seatBaggageInfo = data.SeatBaggageInfo;
+    this.seatBaggage = new SeatBaggageDto(data.SeatBaggage);
   }
 }
 

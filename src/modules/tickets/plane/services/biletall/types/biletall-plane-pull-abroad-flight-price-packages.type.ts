@@ -39,16 +39,20 @@ export type PriceOfPiece = {
   Price: string;
 };
 
+export type SeatBaggage = {
+  PieceCount?: string;
+  Amount?: string;
+  Unit?: string;
+  BaggageType?: string[];
+  Dimensions?: string;
+  SeatBaggageInfo?: string;
+};
 export type BaggageAllowance = {
   Origin: string;
   Destination: string;
   DepartureTime: string;
   Carrier: string;
-  PieceCount: string;
-  Amount: string;
-  Unit: string;
-  BaggageTypes: string[];
-  SeatBaggageInfo: string;
+  SeatBaggage: SeatBaggage;
 };
 
 export type BrandInfo = {
