@@ -462,14 +462,13 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       const baggageInfo = brandPriceInfo.BaggageInformation?.[0] || '';
       const cleanedBaggageInfo = baggageInfo.replace(/[\r\n]+/g, ' ').trim();
       const brandPriceData: BrandPriceInfoDto = {
-        ...brandPriceInfo,
-        PassengerTypeFareInfos: parsePassengerTypeFareInfos(
+        passengerTypeFareInfos: parsePassengerTypeFareInfos(
           passengerTypeFareInfos,
         ),
         servicePriceMax: brandPriceInfo.ServicePriceMax?.[0] || '',
         servicePriceKA: brandPriceInfo.ServicePriceKA?.[0] || '',
         servicePriceBA: brandPriceInfo.ServicePriceBA?.[0] || '',
-        sotalPassengerCount: brandPriceInfo.TotalPassengerCount?.[0] || '',
+        totalPassengerCount: brandPriceInfo.TotalPassengerCount?.[0] || '',
         totalPrice: brandPriceInfo.TotalPrice?.[0] || '',
         totalBasePrice: brandPriceInfo.TotalBasePrice?.[0] || '',
         totalTaxPrice: brandPriceInfo.TotalTaxPrice?.[0] || '',
@@ -585,16 +584,16 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
           PieceCount: seatBaggageData.PieceCount?.[0] || '0',
           Amount: seatBaggageData.Amount?.[0] || '0',
           Unit: seatBaggageData.Unit?.[0] || '',
-          BaggageType: seatBaggageData.BaggageType || [],
+          BaggageType: seatBaggageData.BaggageType?.[0] || [],
           Dimensions: seatBaggageData.Dimensions?.[0] || '',
           SeatBaggageInfo: seatBaggageData.SeatBaggageInfo?.[0] || '',
         };
 
         const baggageAllowanceParsed: BaggageAllowance = {
-          Origin: allowance.Origin || '',
-          Destination: allowance.Destination || '',
-          DepartureTime: allowance.DepartureTime || '',
-          Carrier: allowance.Carrier || '',
+          Origin: allowance.Origin?.[0] || '',
+          Destination: allowance.Destination?.[0] || '',
+          DepartureTime: allowance.DepartureTime?.[0] || '',
+          Carrier: allowance.Carrier?.[0] || '',
           SeatBaggage: seatBaggageParsed,
         };
 
