@@ -47,7 +47,7 @@ export class PlaneController {
   async flightScheduleSearch(
     @Query() requestDto: PlaneFlightScheduleRequestDto,
   ): Promise<DomesticFlightScheduleDto | AbroadFlightScheduleDto> {
-    if (requestDto.isAbroad) {
+    if (requestDto.isAbroad === 'true') {
       const responseAbroadService =
         this.biletAllPlaneService.abroadFlightScheduleSearch(requestDto);
       return new AbroadFlightScheduleDto(

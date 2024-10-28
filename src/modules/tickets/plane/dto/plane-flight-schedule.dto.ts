@@ -6,12 +6,10 @@ import { Expose, Transform } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
-  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   Length,
-  Min,
 } from 'class-validator';
 import * as dayjs from 'dayjs';
 
@@ -84,7 +82,7 @@ export class PlaneFlightScheduleRequestDto {
     required: true,
   })
   @IsNotEmpty()
-  isAbroad: boolean;
+  isAbroad: string;
 
   @ApiProperty({
     description: 'Number of adults (12 years and older)',
@@ -92,8 +90,6 @@ export class PlaneFlightScheduleRequestDto {
     required: true,
   })
   @IsNotEmpty()
-  @IsInt()
-  @Min(0)
   adultCount: number;
 
   @ApiProperty({
@@ -102,8 +98,6 @@ export class PlaneFlightScheduleRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsInt()
-  @Min(0)
   childCount: number;
 
   @ApiProperty({
@@ -112,8 +106,6 @@ export class PlaneFlightScheduleRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsInt()
-  @Min(0)
   babyCount: number;
 
   @ApiProperty({
@@ -122,8 +114,6 @@ export class PlaneFlightScheduleRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsInt()
-  @Min(0)
   studentCount: number;
 
   @ApiProperty({
@@ -132,8 +122,6 @@ export class PlaneFlightScheduleRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsInt()
-  @Min(0)
   olderCount: number;
 
   @ApiProperty({
@@ -142,8 +130,6 @@ export class PlaneFlightScheduleRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsInt()
-  @Min(0)
   militaryCount: number;
 
   @ApiProperty({
@@ -152,7 +138,5 @@ export class PlaneFlightScheduleRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsInt()
-  @Min(0)
   youthCount: number;
 }
