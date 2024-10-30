@@ -21,7 +21,10 @@ import { Airport } from './entities/airport.entity';
 import { PlaneService } from './services/plane.service';
 import { AirportSearchQueryDto } from './dto/airport-search-query.dto';
 import { PlaneFlightScheduleRequestDto } from './dto/plane-flight-schedule.dto';
-import { PullAbroadFlightPricePackagesRequestDto } from './dto/plane-pull-abroad-flight-price-packages.dto';
+import {
+  PullAbroadFlightPricePackagesRequestDto,
+  PullAbroadFlightPricePackagesResponseDto,
+} from './dto/plane-pull-abroad-flight-price-packages.dto';
 
 @ApiTags('Plane')
 @Controller('plane')
@@ -69,8 +72,16 @@ export class PlaneController {
   @Post('pull-abroad-flight-price-packages')
   async pullAbroadFlightPricePackages(
     @Body() requestDto: PullAbroadFlightPricePackagesRequestDto,
-  ): Promise<any> {
-    return this.biletAllPlaneService.pullAbroadFlightPricePackages(requestDto);
+  ): Promise<PullAbroadFlightPricePackagesResponseDto> {
+    const response =
+      await this.biletAllPlaneService.pullAbroadFlightPricePackages(requestDto);
+    return new PullAbroadFlightPricePackagesResponseDto(
+      response.transactionId,
+      response.currencyTypeCode,
+      response.isSuccess,
+      response.message,
+      response.brandFareInfos,
+    );
   }
 
   @ApiOperation({ summary: 'Pull Price Of Flight' })

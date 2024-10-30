@@ -81,6 +81,7 @@ import {
   BrandServiceDto,
   BrandServiceInfoDto,
   PassengerTypeFareInfoDto,
+  PullAbroadFlightPricePackagesResponseDto,
 } from '../../dto/plane-pull-abroad-flight-price-packages.dto';
 //import { FlightClassType } from '@app/common/enums';
 
@@ -411,23 +412,20 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
 
   public parsePullAbroadFlightPricePackagesResponse = (
     response: pullAbroadFlightPricePackagesResponse,
-  ): any => {
+  ): PullAbroadFlightPricePackagesResponseDto => {
     const extractedResult = this.extractResult(response);
     const newDataSet = extractedResult['BrandFareResponse']?.[0] || {};
 
     const brandFareInfosDataSet =
       newDataSet['BrandFareInfos']?.[0]?.BrandFareInfo || [];
-    console.warn('Brand Fare Infos Data Set:', brandFareInfosDataSet);
 
     const parseBrandFareInfos = (brandFareInfos: any[]): BrandFareInfoDto[] => {
       if (!Array.isArray(brandFareInfos)) {
-        console.warn('brandFareInfos is not an array:', brandFareInfos);
         return [];
       }
 
       return brandFareInfos.map((brandFareInfo) => {
         const { $: _, ...rest } = brandFareInfo || {};
-        console.warn('Parsing BrandFareInfo:', rest);
 
         const brandFareData: BrandFareInfoDto = {
           isBundle: rest.IsBundle?.[0] || '',
@@ -448,16 +446,23 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
 
     const parseBrandPriceInfo = (brandPriceInfo): BrandPriceInfoDto => {
       if (!brandPriceInfo) {
-        console.warn('brandPriceInfo is undefined or null:', brandPriceInfo);
-        throw new Error('Invalid brandPriceInfo');
+        return {
+          passengerTypeFareInfos: [],
+          servicePriceMax: '',
+          servicePriceKA: '',
+          servicePriceBA: '',
+          totalPassengerCount: '',
+          totalPrice: '',
+          totalBasePrice: '',
+          totalTaxPrice: '',
+          totalServicePrice: '',
+          totalMinimumServicePrice: '',
+          baggageInformation: '',
+        };
       }
-
-      console.warn('Parsing Brand Price Info:', brandPriceInfo);
 
       const passengerTypeFareInfos =
         brandPriceInfo.PassengerTypeFareInfos?.[0]?.PassengerTypeFareInfo || [];
-
-      console.log('Extracted PassengerTypeFareInfos:', passengerTypeFareInfos);
 
       const baggageInfo = brandPriceInfo.BaggageInformation?.[0] || '';
       const cleanedBaggageInfo = baggageInfo.replace(/[\r\n]+/g, ' ').trim();
@@ -477,9 +482,6 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
           brandPriceInfo.TotalMinimumServicePrice?.[0] || '',
         baggageInformation: cleanedBaggageInfo,
       };
-
-      console.log('Parsed Brand Price Data:', brandPriceData);
-
       return brandPriceData;
     };
 
@@ -487,33 +489,16 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       passengerTypeFareInfos: any[],
     ): PassengerTypeFareInfoDto[] => {
       if (!Array.isArray(passengerTypeFareInfos)) {
-        console.warn(
-          'PassengerTypeFareInfos is not an array:',
-          passengerTypeFareInfos,
-        );
         return [];
       }
-
       const parsedInfos: PassengerTypeFareInfoDto[] = [];
 
-      passengerTypeFareInfos.forEach((passengerTypeFareInfo, index) => {
+      passengerTypeFareInfos.forEach((passengerTypeFareInfo) => {
         const { $: _, ...rest } = passengerTypeFareInfo || {};
-
-        if (!rest) {
-          console.warn(
-            `PassengerTypeFareInfo at index ${index} is undefined or null.`,
-          );
-          return;
-        }
-
-        console.warn(`Parsing PassengerTypeFareInfo at index ${index}:`, rest);
 
         const priceOfPieces = rest.PriceOfPieces?.[0]?.PriceOfPiece || [];
         const baggageAllowances =
           rest.BaggageAllowances?.[0]?.BaggageAllowance || [];
-
-        console.warn(`PriceOfPieces at index ${index}:`, priceOfPieces);
-        console.warn(`BaggageAllowances at index ${index}:`, baggageAllowances);
 
         const passengerTypeFareData: PassengerTypeFareInfo = {
           PassengerCount: rest.PassengerCount?.[0] || '0',
@@ -526,36 +511,15 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
           IsFirmCardRequired: rest.IsFirmCardRequired?.[0] || 'false',
         };
 
-        console.log(
-          `Parsed PassengerTypeFareData at index ${index}:`,
-          passengerTypeFareData,
-        );
-
-        try {
-          const dto = new PassengerTypeFareInfoDto(passengerTypeFareData);
-          console.log(dto, 'XXXXXXX');
-          parsedInfos.push(dto);
-        } catch (error) {
-          console.error(
-            `Failed to create PassengerTypeFareInfoDto at index ${index}:`,
-            error,
-          );
-        }
+        const dto = new PassengerTypeFareInfoDto(passengerTypeFareData);
+        parsedInfos.push(dto);
       });
-
-      if (parsedInfos.length === 0) {
-        console.warn(
-          'No valid PassengerTypeFareInfoDto created. Input data:',
-          passengerTypeFareInfos,
-        );
-      }
 
       return parsedInfos;
     };
 
     const parsePriceOfPieces = (priceOfPieces: any[]): PriceOfPiece[] => {
       if (!Array.isArray(priceOfPieces)) {
-        console.warn('PriceOfPieces is not an array:', priceOfPieces);
         return [];
       }
 
@@ -572,12 +536,10 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       baggageAllowances: any[],
     ): BaggageAllowance[] => {
       if (!Array.isArray(baggageAllowances)) {
-        console.warn('baggageAllowances is not an array:', baggageAllowances);
         return [];
       }
 
-      return baggageAllowances.map((allowance, index) => {
-        console.log(`Processing allowance at index ${index}:`, allowance);
+      return baggageAllowances.map((allowance) => {
         const seatBaggageData = allowance.SeatBaggage?.[0] || {};
 
         const seatBaggageParsed = {
@@ -597,21 +559,11 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
           SeatBaggage: seatBaggageParsed,
         };
 
-        console.log(
-          `Parsed BaggageAllowance for index ${index}:`,
-          baggageAllowanceParsed,
-        );
         return baggageAllowanceParsed;
       });
     };
 
     const parseBrandInfo = (brandInfo): BrandInfoDto => {
-      if (!brandInfo) {
-        console.warn('brandInfo is undefined or null:', brandInfo);
-      }
-
-      console.log('Raw brandInfo:', brandInfo);
-
       const brandInfoData: BrandInfoDto = {
         isActive: brandInfo.IsActive?.[0] === 'true' ? 'true' : 'false',
         isRecommended:
@@ -628,8 +580,6 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
         ),
       };
 
-      console.log('Parsed brandInfoData:', brandInfoData);
-
       return brandInfoData;
     };
 
@@ -637,15 +587,11 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       brandServiceInfos,
     ): BrandServiceInfoDto[] => {
       if (!Array.isArray(brandServiceInfos)) {
-        console.warn('BrandServiceInfos is not an array:', brandServiceInfos);
         return [];
       }
 
-      console.log('Raw brandServiceInfos:', brandServiceInfos);
-
       return brandServiceInfos.map((serviceInfo) => {
         const { $: _, ...rest } = serviceInfo || {};
-        console.log('Processing BrandServiceInfo:', rest);
 
         const brandServiceInfoData: BrandServiceInfoDto = {
           name: rest.Name?.[0] || '',
@@ -654,24 +600,16 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
             rest.BrandServices?.[0]?.BrandService || [],
           ),
         };
-
-        console.log('Parsed BrandServiceInfo:', brandServiceInfoData);
-
         return brandServiceInfoData;
       });
     };
 
     const parseBrandServices = (brandServices): BrandServiceDto[] => {
       if (!Array.isArray(brandServices)) {
-        console.warn('BrandServices is not an array:', brandServices);
         return [];
       }
 
-      console.log('Raw brandServices:', brandServices);
-
       return brandServices.map((service) => {
-        console.log('Parsing BrandService:', service);
-
         return {
           definition: service.Definition?.[0] || '',
           serviceStatus: service.ServiceStatus?.[0] || '',
@@ -686,15 +624,10 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       brandSegmentInfos,
     ): BrandSegmentInfoDto[] => {
       if (!Array.isArray(brandSegmentInfos)) {
-        console.warn('BrandSegmentInfos is not an array:', brandSegmentInfos);
         return [];
       }
 
-      console.log('Raw brandSegmentInfos:', brandSegmentInfos);
-
       return brandSegmentInfos.map((segmentInfo) => {
-        console.log('Parsing BrandSegmentInfo:', segmentInfo);
-
         const segmentInfoData: BrandSegmentInfoDto = {
           companyNo: segmentInfo.CompanyNo?.[0] || '',
           origin: segmentInfo.Origin?.[0] || '',
@@ -715,7 +648,6 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
           fareInfoRef: segmentInfo.FareInfoRef?.[0] || '',
           group: segmentInfo.Group?.[0] || '',
         };
-        console.log(segmentInfoData);
         return segmentInfoData;
       });
     };
@@ -724,31 +656,20 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       brandImportantNotes,
     ): BrandImportantNoteDto[] => {
       if (!Array.isArray(brandImportantNotes)) {
-        console.warn(
-          'BrandImportantNotes is not an array:',
-          brandImportantNotes,
-        );
         return [];
       }
 
-      console.log('Raw brandImportantNotes:', brandImportantNotes);
-
       return brandImportantNotes.map((note) => {
-        console.log('Parsing BrandImportantNote:', note);
-
         const brandImportantNoteDto: BrandImportantNoteDto = {
           note: note.Note?.[0] || '',
           origin: note.Origin?.[0]?.$ || '',
           destination: note.Destination?.[0]?.$ || '',
         };
-
-        console.log({ brandImportantNoteDto });
         return brandImportantNoteDto;
       });
     };
 
     const brandFareInfosDto = parseBrandFareInfos(brandFareInfosDataSet);
-    console.warn('Parsed BrandFareInfosDto:', brandFareInfosDto);
 
     return {
       transactionId: newDataSet.TransactionId?.[0] || '',

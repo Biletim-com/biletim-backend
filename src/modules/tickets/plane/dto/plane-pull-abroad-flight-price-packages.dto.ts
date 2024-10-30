@@ -414,3 +414,13 @@ export class BrandFareInfoDto {
     );
   }
 }
+
+export class PullAbroadFlightPricePackagesResponseDto {
+  constructor(
+    public transactionId: string,
+    public currencyTypeCode: string,
+    public isSuccess: boolean,
+    public message: string,
+    public brandFareInfos: BrandFareInfoDto[],
+  ) {}
+}
