@@ -90,53 +90,53 @@ export class PlaneFlightScheduleRequestDto {
     required: true,
   })
   @IsNotEmpty()
-  adultCount: number;
+  adultCount: string;
 
   @ApiProperty({
     description: 'Number of children (2 - 12 years old)',
-    example: 0,
+    example: '0',
     required: false,
   })
   @IsOptional()
-  childCount: number;
+  childCount: string;
 
   @ApiProperty({
     description: 'Number of babies (0 - 2 years old)',
-    example: 0,
+    example: '0',
     required: false,
   })
   @IsOptional()
-  babyCount: number;
+  babyCount: string;
 
   @ApiProperty({
     description: 'Number of student passengers (13 - 24 years old)',
-    example: 0,
+    example: '0',
     required: false,
   })
   @IsOptional()
-  studentCount: number;
+  studentCount: string;
 
   @ApiProperty({
     description: 'Number of elderly passengers (65 years and older)',
-    example: 0,
+    example: '0',
     required: false,
   })
   @IsOptional()
-  olderCount: number;
+  olderCount: string;
 
   @ApiProperty({
     description: 'Number of military passengers.',
-    example: 0,
+    example: '0',
     required: false,
   })
   @IsOptional()
-  militaryCount: number;
+  militaryCount: string;
 
   @ApiProperty({
     description: 'Number of young passengers (12 - 24 years old)',
-    example: 0,
+    example: '0',
     required: false,
   })
   @IsOptional()
-  youthCount: number;
+  youthCount: string;
 }

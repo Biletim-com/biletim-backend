@@ -43,7 +43,10 @@ import { BiletAllGender } from '@app/common/helpers';
 import { BiletAllService } from '@app/common/services/biletall.service';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { PlaneFlightScheduleRequestDto } from '../../dto/plane-flight-schedule.dto';
-import { PullAbroadFlightPricePackagesRequestDto } from '../../dto/plane-pull-abroad-flight-price-packages.dto';
+import {
+  PullAbroadFlightPricePackagesRequestDto,
+  PullAbroadFlightPricePackagesResponseDto,
+} from '../../dto/plane-pull-abroad-flight-price-packages.dto';
 import { pullAbroadFlightPricePackagesResponse } from './types/biletall-plane-pull-abroad-flight-price-packages.type';
 
 @Injectable()
@@ -77,12 +80,12 @@ export class BiletAllPlaneService extends BiletAllService {
         SeyahatTipi: BiletAllPlaneTravelType[requestDto.travelType],
         IslemTipi: 0,
         YetiskinSayi: requestDto.adultCount,
-        CocukSayi: requestDto.childCount ?? 0,
-        BebekSayi: requestDto.babyCount ?? 0,
-        OgrenciSayi: requestDto.studentCount ?? 0,
-        YasliSayi: requestDto.olderCount ?? 0,
-        AskerSayi: requestDto.militaryCount ?? 0,
-        GencSayi: requestDto.youthCount ?? 0,
+        CocukSayi: requestDto.childCount ?? '0',
+        BebekSayi: requestDto.babyCount ?? '0',
+        OgrenciSayi: requestDto.studentCount ?? '0',
+        YasliSayi: requestDto.olderCount ?? '0',
+        AskerSayi: requestDto.militaryCount ?? '0',
+        GencSayi: requestDto.youthCount ?? '0',
         Ip: '127.0.0.1',
       },
     };
@@ -107,8 +110,8 @@ export class BiletAllPlaneService extends BiletAllService {
         SeyahatTipi: BiletAllPlaneTravelType[requestDto.travelType],
         IslemTipi: 0,
         YetiskinSayi: requestDto.adultCount,
-        CocukSayi: requestDto.childCount ?? 0,
-        BebekSayi: requestDto.babyCount ?? 0,
+        CocukSayi: requestDto.childCount ?? '0',
+        BebekSayi: requestDto.babyCount ?? '0',
         Ip: '127.0.0.1',
       },
     };
@@ -119,7 +122,7 @@ export class BiletAllPlaneService extends BiletAllService {
 
   async pullAbroadFlightPricePackages(
     requestDto: PullAbroadFlightPricePackagesRequestDto,
-  ): Promise<any> {
+  ): Promise<PullAbroadFlightPricePackagesResponseDto> {
     const builder = new xml2js.Builder({ headless: true });
     const segments = requestDto.segments.map((segment, index) => ({
       [`Segment${index + 1}`]: {
