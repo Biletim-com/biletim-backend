@@ -25,7 +25,6 @@ import {
   ServiceInformationRequestDto,
 } from '../../dto/bus-service-information.dto';
 import { BusTicketPurchaseDto } from '@app/common/dtos/bus-ticket-purchase.dto';
-import { BusRouteDetailDto } from '../../dto/bus-route.dto';
 import { BusTerminalDto } from '../../dto/bus-terminal.dto';
 
 // types
@@ -239,24 +238,6 @@ export class BiletAllBusService extends BiletAllService {
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<ServiceInformationResponse>(xml);
     return this.biletAllBusParserService.parseServiceInformation(res);
-  }
-
-  async getRoute(requestDto: BusRouteRequestDto): Promise<BusRouteDetailDto[]> {
-    const builder = new xml2js.Builder({ headless: true });
-    const requestDocument = {
-      Hat: {
-        FirmaNo: requestDto.companyNo,
-        HatNo: requestDto.routeNumber,
-        KalkisNoktaID: requestDto.departurePointId,
-        VarisNoktaID: requestDto.arrivalPointId,
-        BilgiIslemAdi: requestDto.infoTechnologyName,
-        SeferTakipNo: requestDto.tripTrackingNumber,
-        Tarih: dayjs(requestDto.date).format('YYYY-MM-DD'),
-      },
-    };
-    const xml = builder.buildObject(requestDocument);
-    const res = await this.run<RouteDetailResponse>(xml);
-    return this.biletAllBusParserService.parseRouteDetail(res);
   }
 
   // this method needs to define the payment strategy

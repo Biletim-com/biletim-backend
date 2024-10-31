@@ -31,7 +31,6 @@ import {
   ServiceInformationDto,
 } from './dto/bus-service-information.dto';
 import { BusTicketPurchaseDto } from '@app/common/dtos/bus-ticket-purchase.dto';
-import { BusRouteRequestDto, BusRouteDetailDto } from './dto/bus-route.dto';
 import { BusTerminalSearchQueryDto } from './dto/bus-terminal-search-query.dto';
 
 @ApiTags('Bus')
@@ -100,14 +99,6 @@ export class BusController {
     @Body() requestDto: ServiceInformationRequestDto,
   ): Promise<ServiceInformationDto[]> {
     return this.biletAllBusService.serviceInformation(requestDto);
-  }
-
-  @ApiOperation({ summary: 'Search Route' })
-  @Post('get-route')
-  async getRoute(
-    @Body() requestDto: BusRouteRequestDto,
-  ): Promise<BusRouteDetailDto[]> {
-    return this.biletAllBusService.getRoute(requestDto);
   }
 
   // @ApiOperation({ summary: 'Handle Bus Ticket Sale Request' })
