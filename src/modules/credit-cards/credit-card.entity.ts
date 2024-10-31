@@ -4,28 +4,27 @@ import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity'
 
 import { User } from '../users/user.entity';
 
-import { DateTime } from '@app/common/types';
-import { BankCardType } from '@app/common/enums';
+import { DateISODate } from '@app/common/types';
 
-@Entity('bank_cards')
-export class BankCard extends AbstractEntity<BankCard> {
+@Entity('credit_cards')
+export class CreditCard extends AbstractEntity<CreditCard> {
   @Column()
   name: string;
 
   @Column()
-  cardToken: string;
+  hash: string;
 
   @Column()
-  lastFourDigits: string;
+  maskedPan: string;
 
   @Column()
-  cardType: BankCardType;
+  panToken: string;
 
-  @Column('timestamp')
-  expiryDate: DateTime;
+  @Column('date')
+  expiryDate: DateISODate;
 
   @Column()
-  cardholderName: string;
+  holderName: string;
 
   @JoinColumn()
   @ManyToOne(() => User, (user) => user.id)

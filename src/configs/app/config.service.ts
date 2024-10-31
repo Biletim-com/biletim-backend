@@ -28,4 +28,10 @@ export class AppConfigService {
       this.configurationNamespace,
     ).corsWhitelist;
   }
+
+  get backendUrl(): string {
+    return this.configService.getOrThrow<TAppConfiguration>(
+      this.configurationNamespace,
+    ).backendUrl;
+  }
 }

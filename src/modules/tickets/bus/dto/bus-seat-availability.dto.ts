@@ -1,18 +1,19 @@
 import {
   IsArray,
   IsDateString,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Gender } from '@app/common/enums';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsInEnumKeys } from '@app/common/decorators';
 import { DateISODate, DateTime } from '@app/common/types';
 import * as dayjs from 'dayjs';
+
+import { Gender } from '@app/common/enums';
 
 class BusSeatDto {
   @ApiProperty({
@@ -25,12 +26,12 @@ class BusSeatDto {
   seatNumber: string;
 
   @ApiProperty({
-    description: 'Gender of the passenger: MALE or FEMALE.',
-    example: 'MALE',
+    description: 'Gender of the passenger',
     required: true,
+    enum: Gender,
   })
-  @IsInEnumKeys(Gender, {
-    message: 'Gender must be a valid key (FEMALE or MALE)',
+  @IsEnum(Gender, {
+    message: `Must be a valid value: ${Object.values(Gender)}`,
   })
   @IsNotEmpty()
   gender: Gender;

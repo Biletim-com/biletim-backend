@@ -10,10 +10,7 @@ export class ServiceInformationRequestDto extends BoardingPointRequestDto {
     example: '2024-09-13T12:00:00',
     required: false,
   })
-  @IsDateString(
-    {},
-    { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
-  )
+  @IsDateString()
   @IsOptional()
   date?: DateTime;
 
@@ -22,10 +19,7 @@ export class ServiceInformationRequestDto extends BoardingPointRequestDto {
     example: '2024-09-13T15:30:00',
     required: false,
   })
-  @IsDateString(
-    {},
-    { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
-  )
+  @IsDateString()
   @IsOptional()
   time?: DateTime;
 }

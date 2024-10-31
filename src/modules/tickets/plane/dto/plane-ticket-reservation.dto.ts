@@ -7,12 +7,13 @@ import {
   IsNotEmpty,
   Length,
   IsDateString,
+  MaxLength,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { FlightSegmentDto } from './plane-pull-price-flight.dto';
 import { turkishToEnglish } from '../../bus/dto/bus-passenger-info.dto';
 import { DateISODate } from '@app/common/types';
-import * as dayjs from 'dayjs';
+
 import { FlightTicketReservationResult } from '../services/biletall/types/biletall-plane-ticket-reservation.type';
 import { Gender, PassengerType } from '@app/common/enums';
 import { IsInEnumKeys } from '@app/common/decorators';
@@ -68,9 +69,9 @@ export class PlanePassengerInfoDto {
     example: '2000-01-01',
     required: true,
   })
-  @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
-  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
+  @IsDateString()
+  @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
   birthday?: DateISODate;
 
   @ApiProperty({

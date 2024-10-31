@@ -1,4 +1,4 @@
-export enum BankCardType {
+export enum CreditCardType {
   MASTERCARD = 'mastercard',
   VISA = 'visa',
   TROY = 'troy',

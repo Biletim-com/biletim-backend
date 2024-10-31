@@ -1,8 +1,12 @@
 import { Controller, Post, Body, Get, Query } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // services
 import { BiletAllBusService } from './services/biletall/biletall-bus.service';
 import { BusService } from './services/bus.service';
+
+// entities
+import { BusTerminal } from './entities/bus-terminal.entity';
 
 // dto
 import { BusCompanyDto, BusCompanyRequestDto } from './dto/bus-company.dto';
@@ -26,9 +30,9 @@ import {
   ServiceInformationRequestDto,
   ServiceInformationDto,
 } from './dto/bus-service-information.dto';
+import { BusTicketPurchaseDto } from '@app/common/dtos/bus-ticket-purchase.dto';
+import { BusRouteRequestDto, BusRouteDetailDto } from './dto/bus-route.dto';
 import { BusTerminalSearchQueryDto } from './dto/bus-terminal-search-query.dto';
-import { BusTerminal } from './entities/bus-terminal.entity';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Bus')
 @Controller('bus')
@@ -98,9 +102,17 @@ export class BusController {
     return this.biletAllBusService.serviceInformation(requestDto);
   }
 
+  @ApiOperation({ summary: 'Search Route' })
+  @Post('get-route')
+  async getRoute(
+    @Body() requestDto: BusRouteRequestDto,
+  ): Promise<BusRouteDetailDto[]> {
+    return this.biletAllBusService.getRoute(requestDto);
+  }
+
   // @ApiOperation({ summary: 'Handle Bus Ticket Sale Request' })
-  //  @Post('sale-request')
-  // async saleRequest(@Body() requestDto: BusPurchaseDto) {
+  // @Post('sale-request')
+  // async saleRequest(@Body() requestDto: BusTicketPurchaseDto) {
   //   return this.biletAllBusService.saleRequest(requestDto);
   // }
 }

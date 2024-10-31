@@ -24,6 +24,8 @@ import {
   ServiceInformationDto,
   ServiceInformationRequestDto,
 } from '../../dto/bus-service-information.dto';
+import { BusTicketPurchaseDto } from '@app/common/dtos/bus-ticket-purchase.dto';
+import { BusRouteDetailDto } from '../../dto/bus-route.dto';
 import { BusTerminalDto } from '../../dto/bus-terminal.dto';
 
 // types
@@ -77,7 +79,7 @@ export class BiletAllBusService extends BiletAllService {
         FirmaNo: requestDto.companyNo ?? '0',
         KalkisNoktaID: requestDto.departurePointId,
         VarisNoktaID: requestDto.arrivalPointId,
-        Tarih: requestDto.date,
+        Tarih: dayjs(requestDto.date).format('YYYY-MM-DD'),
         AraNoktaGelsin: requestDto.includeIntermediatePoints ?? 1,
         IslemTipi: requestDto.operationType ?? 0,
         YolcuSayisi: '1',
@@ -184,7 +186,7 @@ export class BiletAllBusService extends BiletAllService {
         FirmaNo: requestDto.companyNo,
         KalkisNoktaID: requestDto.departurePointId,
         VarisNoktaID: requestDto.arrivalPointId,
-        Tarih: requestDto.date,
+        Tarih: dayjs(requestDto.date).format('YYYY-MM-DD'),
         Saat: requestDto.time,
         HatNo: requestDto.routeNumber,
         IslemTipi: requestDto.operationType ?? 0,
@@ -239,6 +241,24 @@ export class BiletAllBusService extends BiletAllService {
     return this.biletAllBusParserService.parseServiceInformation(res);
   }
 
+  async getRoute(requestDto: BusRouteRequestDto): Promise<BusRouteDetailDto[]> {
+    const builder = new xml2js.Builder({ headless: true });
+    const requestDocument = {
+      Hat: {
+        FirmaNo: requestDto.companyNo,
+        HatNo: requestDto.routeNumber,
+        KalkisNoktaID: requestDto.departurePointId,
+        VarisNoktaID: requestDto.arrivalPointId,
+        BilgiIslemAdi: requestDto.infoTechnologyName,
+        SeferTakipNo: requestDto.tripTrackingNumber,
+        Tarih: dayjs(requestDto.date).format('YYYY-MM-DD'),
+      },
+    };
+    const xml = builder.buildObject(requestDocument);
+    const res = await this.run<RouteDetailResponse>(xml);
+    return this.biletAllBusParserService.parseRouteDetail(res);
+  }
+
   // this method needs to define the payment strategy
   // Otobus cevap xml"i içerisinde,
   // OnOdemeAktifMi aktif mi parametresi sıfır geliyor ise firma posundan işlem yapılmalı.
@@ -273,7 +293,7 @@ export class BiletAllBusService extends BiletAllService {
   //   console.log({ rules });
   // }
 
-  // async saleRequest(requestDto: BusPurchaseDto): Promise<any> {
+  // async saleRequest(requestDto: BusTicketPurchaseDto): Promise<any> {
   //   const builder = new xml2js.Builder({ headless: true });
 
   //   const {

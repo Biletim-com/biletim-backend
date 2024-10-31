@@ -94,7 +94,6 @@ export class UsersService {
             new Passenger({
               name,
               familyName,
-              email,
             }),
           ],
         }),

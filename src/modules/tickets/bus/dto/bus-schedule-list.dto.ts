@@ -4,9 +4,9 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  MaxLength,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
-import * as dayjs from 'dayjs';
+
 import { ApiProperty } from '@nestjs/swagger';
 // types
 import { BusSchedule } from '../services/biletall/types/biletall-trip-search.type';
@@ -46,9 +46,9 @@ export class BusScheduleRequestDto {
     example: '2024-10-15',
     required: true,
   })
-  @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
+  @IsDateString()
+  @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
   @IsNotEmpty()
-  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
   date: DateISODate;
 
   @ApiProperty({

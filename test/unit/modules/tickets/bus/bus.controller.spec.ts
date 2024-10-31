@@ -1,3 +1,4 @@
+import { Test, TestingModule } from '@nestjs/testing';
 import { Gender } from '@app/common/enums';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { ConfigModule } from '@app/configs/config.module';
@@ -10,7 +11,6 @@ import { ServiceInformationRequestDto } from '@app/modules/tickets/bus/dto/bus-s
 import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
 import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
 import { BusService } from '@app/modules/tickets/bus/services/bus.service';
-import { Test, TestingModule } from '@nestjs/testing';
 import {
   boardingPointMockResponse,
   busCompanyMockResponse,
@@ -19,6 +19,7 @@ import {
   getBusTerminalsByNameMockResponse,
   serviceInformationMockResponse,
 } from './mock-response/biletall-bus-service-mock-response';
+import { CreditCardDto } from '@app/common/dtos';
 
 describe('BusController', () => {
   const busServiceMock = {

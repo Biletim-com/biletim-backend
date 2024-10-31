@@ -588,4 +588,114 @@ describe('BiletAllBusService', () => {
   //     expect(result).toStrictEqual(mockXmlResponse);
   //   });
   // });
+  //     expect(runSpy).toHaveBeenCalledWith(expectedXml.trim());
+  //     expect(mockParser.parseRouteDetail).toBeCalledWith(mockXmlResponse);
+  //     expect(result).toStrictEqual(getRouteMockResponse);
+  //   });
+  // });
+
+  //   describe('saleRequest  method', () => {
+  //     it('should return ticket purchase transaction result', async () => {
+  //       const requestDto: BusTicketPurchaseDto = {
+  //         companyNo: '37',
+  //         departurePointId: 84,
+  //         arrivalPointId: 738,
+  //         date: '2024-08-06',
+  //         time: '1900-01-01T02:30:00.000Z',
+  //         routeNumber: 1,
+  //         tripTrackingNumber: '20470',
+  //         passengers: [
+  //           {
+  //             seatNumber: '2',
+  //             firstName: 'Bahyaddin',
+  //             lastName: 'Nuri',
+  //             fullName: 'Bahyaddin Nuri',
+  //             gender: Gender.MALE,
+  //             isTurkishCitizen: true,
+  //             turkishIdNumber: '99766292460',
+  //           },
+  //         ],
+  //         phoneNumber: '5550240045',
+  //         totalTicketPrice: 40,
+  //         webPassenger: {
+  //           ip: '127.0.0.1',
+  //           email: 'bahyeddin@gmail.com',
+  //           prepaymentUsage: false,
+  //           prepaymentAmount: '40.0000',
+  //           creditCardNo: '5218076007402834',
+  //           creditCardHolder: 'Bahyaddin Nuri',
+  //           creditCardExpiryDate: '11/2040',
+  //           creditCardCCV2: '820',
+  //         },
+  //       };
+
+  //       const mockXmlResponse = fs.readFileSync(
+  //         path.resolve(
+  //           __dirname,
+  //           '../../../../../../fixtures/biletall/bus/bus-purchase.response.xml',
+  //         ),
+  //         'utf-8',
+  //       );
+
+  //       const runSpy = jest
+  //         .spyOn(BiletAllService.prototype, 'run')
+  //         .mockResolvedValueOnce(mockXmlResponse);
+  //       const result = await service.saleRequest(requestDto);
+  //       const expectedXml = `
+  // <IslemSatis>
+  //   <FirmaNo>${requestDto.companyNo}</FirmaNo>
+  //   <KalkisNoktaID>${requestDto.departurePointId}</KalkisNoktaID>
+  //   <VarisNoktaID>${requestDto.arrivalPointId}</VarisNoktaID>
+  //   <Tarih>${requestDto.date}</Tarih>
+  //   <Saat>${requestDto.time}</Saat>
+  //   <HatNo>${requestDto.routeNumber}</HatNo>
+  //   <SeferNo>${requestDto.tripTrackingNumber}</SeferNo>
+  //   <KalkisTerminalAdiSaatleri/>
+  //   <KoltukNo1>${requestDto.passengers[0].seatNo}</KoltukNo1>
+  //   <Adi1>${requestDto.passengers[0].firstName}</Adi1>
+  //   <Soyadi1>${requestDto.passengers[0].lastName}</Soyadi1>
+  //   <Cinsiyet1>${[requestDto.passengers[0].gender === 'male' ? 2 : 1]}</Cinsiyet1>
+  //   <TcVatandasiMi1>${
+  //     requestDto.passengers[0].isTurkishCitizen === true ? 1 : 0
+  //   }</TcVatandasiMi1>
+  //   <TcKimlikNo1>${requestDto.passengers[0].turkishIdNumber}</TcKimlikNo1>
+  //   <PasaportUlkeKod1/>
+  //   <PasaportNo1/>
+  //   <TelefonNo>${requestDto.phoneNumber}</TelefonNo>
+  //   <ToplamBiletFiyati>${requestDto.totalTicketPrice}</ToplamBiletFiyati>
+  //   <YolcuSayisi>${requestDto.passengers.length}</YolcuSayisi>
+  //   <BiletSeriNo>1</BiletSeriNo>
+  //   <OdemeSekli>0</OdemeSekli>
+  //   <FirmaAciklama/>
+  //   <HatirlaticiNot/>
+  //   <SeyahatTipi>0</SeyahatTipi>
+  //   <WebYolcu>
+  //     <WebUyeNo>0</WebUyeNo>
+  //     <Ip>${requestDto.webPassenger.ip}</Ip>
+  //     <Email>${requestDto.webPassenger.email}</Email>
+  //     <KrediKartNo>${requestDto.webPassenger.creditCardNo}</KrediKartNo>
+  //     <KrediKartSahip>${requestDto.webPassenger.creditCardHolder}</KrediKartSahip>
+  //     <KrediKartGecerlilikTarihi>${
+  //       requestDto.webPassenger.creditCardExpiryDate
+  //     }</KrediKartGecerlilikTarihi>
+  //     <KrediKartCCV2>${requestDto.webPassenger.creditCardCCV2}</KrediKartCCV2>
+  //   </WebYolcu>
+  // </IslemSatis>`;
+
+  //       expect(mockTransactionRules).toHaveBeenCalledWith({
+  //         companyNo: '37',
+  //         departurePointId: '84',
+  //         arrivalPointId: '738',
+  //         date: '2024-08-06',
+  //         time: '1900-01-01T02:30:00.000Z',
+  //         routeNumber: '1',
+  //         operationType: 0,
+  //         passengerCount: '1',
+  //         tripTrackingNumber: '20470',
+  //         ip: '127.0.0.1',
+  //       });
+  //       expect(runSpy).toHaveBeenCalledWith(expectedXml.trim());
+  //       expect(result).toStrictEqual(mockXmlResponse);
+  //     });
+  //   });
 });

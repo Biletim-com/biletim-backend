@@ -1,6 +1,6 @@
-import { NotFoundError } from './service.error';
+import { EntityNotFoundError } from './service.error';
 
-export class PassengerNotFoundError extends NotFoundError {
+export class PassengerNotFoundError extends EntityNotFoundError {
   constructor() {
     super('Passenger');
   }

@@ -29,7 +29,6 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new NotFoundException('User is not found');
     }
-
     return user;
   }
 }
