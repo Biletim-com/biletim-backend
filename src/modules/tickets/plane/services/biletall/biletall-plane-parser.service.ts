@@ -309,7 +309,6 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
           optionFares: segmentOptionFares,
         };
       });
-
       return {
         flightOption: entry.flightOption,
         segments: segmentsWithClasses,
