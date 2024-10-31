@@ -59,6 +59,7 @@ export class AbroadFlightOptionDto {
   babyNPrice: string;
   serviceFee: string;
   optionDate: string;
+  minServiceFee: string;
   isReservable: string;
   isCharterFlight: string;
   companyNo: string;
@@ -79,6 +80,7 @@ export class AbroadFlightOptionDto {
     this.babyNPrice = option.BebekNFiyat;
     this.serviceFee = option.ServisUcreti;
     this.optionDate = option.OpsiyonTarihi;
+    this.minServiceFee = option.MinServisUcreti;
     this.isReservable = option.RezervasyonYapilabilirMi;
     this.isCharterFlight = option.CharterSeferMi;
     this.companyNo = option.FirmaNo;
@@ -112,6 +114,14 @@ export class AbroadFlightSegmentDto {
   time: string;
   classType: string;
   remainingSeatCount: string;
+  totalTravelTime: string;
+  isSeatCountFromService: string;
+  aircraftType: string;
+  corridorCount: string;
+  floorCount: string;
+  seatDistance: string;
+  baggage: string;
+  ruleKey: string;
   pricePackageDescription: string;
   pricePackageKey: string;
 
@@ -141,6 +151,14 @@ export class AbroadFlightSegmentDto {
     this.time = segment.Vakit;
     this.classType = segment.Sinif;
     this.remainingSeatCount = segment.KalanKoltukSayi;
+    this.totalTravelTime = segment.ToplamSeyahatSuresi;
+    this.isSeatCountFromService = segment.KalanKoltukSayisiServistenMiGeliyor;
+    this.aircraftType = segment.UcakTip;
+    this.corridorCount = segment.KoridorSayi;
+    this.floorCount = segment.KatSayi;
+    this.seatDistance = segment.KoltukMesafe;
+    this.baggage = segment.Bagaj;
+    this.ruleKey = segment.KuralAnahtar;
     this.pricePackageDescription = segment.FiyatPaketTanimi;
     this.pricePackageKey = segment.FiyatPaketAnahtari;
   }
