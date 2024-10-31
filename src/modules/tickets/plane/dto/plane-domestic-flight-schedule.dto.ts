@@ -215,8 +215,8 @@ export class DomesticFlightSegmentDto {
     this.arrivalAirport = segment.Varis;
     this.departureCity = segment.KalkisSehir;
     this.arrivalCity = segment.VarisSehir;
-    this.departureAirportName = segment.KalkisHavaAlan;
-    this.arrivalAirportName = segment.VarisHavaAlan;
+    this.departureAirportName = segment.KalkisHavaalan;
+    this.arrivalAirportName = segment.VarisHavaalan;
     this.departureDate = segment.KalkisTarih;
     this.arrivalDate = segment.VarisTarih;
     this.duration = segment.Sure;

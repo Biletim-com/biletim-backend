@@ -33,8 +33,8 @@ export type FlightSegment = {
   Varis: string;
   KalkisSehir: string;
   VarisSehir: string;
-  KalkisHavaAlan: string;
-  VarisHavaAlan: string;
+  KalkisHavaalan: string;
+  VarisHavaalan: string;
   KalkisTarih: string;
   VarisTarih: string;
   Sure: string;
