@@ -1,13 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
-
 import { BiletAllPlaneParserService } from './biletall-plane-parser.service';
 
 // dto
-import {
-  AbroadFlightScheduleDto,
-  PlaneAbroadFlightScheduleRequestDto,
-} from '../../dto/plane-abroad-flight-schedule.dto';
+import { AbroadFlightScheduleDto } from '../../dto/plane-abroad-flight-schedule.dto';
 import {
   PlanePullPriceFlightDto,
   PullPriceFlightRequestDto,
@@ -24,10 +20,7 @@ import {
   FlightTicketPurchaseRequestDto,
 } from '../../dto/plane-ticket-purchase.dto';
 import { FlightConvertReservationToSaleRequestDto } from '../../dto/plane-convert-reservation-to-sale.dto';
-import {
-  DomesticFlightScheduleDto,
-  PlaneDomesticFlightScheduleRequestDto,
-} from '../../dto/plane-domestic-flight-schedule.dto';
+import { DomesticFlightScheduleDto } from '../../dto/plane-domestic-flight-schedule.dto';
 import { PlaneAirportDto } from '../../dto/plane-airport.dto';
 
 // enums
@@ -49,6 +42,12 @@ import { BiletAllPlaneTravelType } from './helpers/plane-travel-type.helper';
 import { BiletAllGender } from '@app/common/helpers';
 import { BiletAllService } from '@app/common/services/biletall.service';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
+import { PlaneFlightScheduleRequestDto } from '../../dto/plane-flight-schedule.dto';
+import {
+  PullAbroadFlightPricePackagesRequestDto,
+  PullAbroadFlightPricePackagesResponseDto,
+} from '../../dto/plane-pull-abroad-flight-price-packages.dto';
+import { pullAbroadFlightPricePackagesResponse } from './types/biletall-plane-pull-abroad-flight-price-packages.type';
 
 @Injectable()
 export class BiletAllPlaneService extends BiletAllService {
@@ -66,7 +65,7 @@ export class BiletAllPlaneService extends BiletAllService {
   }
 
   async domesticFlightScheduleSearch(
-    requestDto: PlaneDomesticFlightScheduleRequestDto,
+    requestDto: PlaneFlightScheduleRequestDto,
   ): Promise<DomesticFlightScheduleDto> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
@@ -79,11 +78,15 @@ export class BiletAllPlaneService extends BiletAllService {
           DonusTarih: requestDto.returnDate,
         }),
         SeyahatTipi: BiletAllPlaneTravelType[requestDto.travelType],
-        IslemTipi: BiletAllPlaneTicketOperationType[requestDto.operationType],
+        IslemTipi: 0,
         YetiskinSayi: requestDto.adultCount,
-        CocukSayi: requestDto.childCount,
-        BebekSayi: requestDto.babyCount,
-        Ip: requestDto.ip,
+        CocukSayi: requestDto.childCount ?? '0',
+        BebekSayi: requestDto.babyCount ?? '0',
+        OgrenciSayi: requestDto.studentCount ?? '0',
+        YasliSayi: requestDto.olderCount ?? '0',
+        AskerSayi: requestDto.militaryCount ?? '0',
+        GencSayi: requestDto.youthCount ?? '0',
+        Ip: '127.0.0.1',
       },
     };
     const xml = builder.buildObject(requestDocument);
@@ -92,7 +95,7 @@ export class BiletAllPlaneService extends BiletAllService {
   }
 
   async abroadFlightScheduleSearch(
-    requestDto: PlaneAbroadFlightScheduleRequestDto,
+    requestDto: PlaneFlightScheduleRequestDto,
   ): Promise<AbroadFlightScheduleDto> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
@@ -101,27 +104,60 @@ export class BiletAllPlaneService extends BiletAllService {
         KalkisAdi: requestDto.departureAirport,
         VarisAdi: requestDto.arrivalAirport,
         Tarih: requestDto.departureDate,
-        ...(requestDto.splitSearch === true && {
-          SplitSearch: 1,
-        }),
         ...(requestDto.returnDate && { DonusTarih: requestDto.returnDate }),
-        ...(requestDto.splitSearchRoundTripGroup === true && {
-          SplitSearchGidisDonusGrupla: 1,
-        }),
-        ...(requestDto.classType && {
-          Sinif: BiletAllFlightClassType[requestDto.classType],
-        }),
+        Sinif: BiletAllFlightClassType[requestDto.classType],
+
         SeyahatTipi: BiletAllPlaneTravelType[requestDto.travelType],
-        IslemTipi: BiletAllPlaneTicketOperationType[requestDto.operationType],
+        IslemTipi: 0,
         YetiskinSayi: requestDto.adultCount,
-        CocukSayi: requestDto.childCount,
-        BebekSayi: requestDto.babyCount,
-        Ip: requestDto.ip,
+        CocukSayi: requestDto.childCount ?? '0',
+        BebekSayi: requestDto.babyCount ?? '0',
+        Ip: '127.0.0.1',
       },
     };
     const xml = builder.buildObject(requestDocument);
     const res = await this.run<AbroadFlightResponse>(xml);
     return this.biletAllPlaneParserService.parseAbroadFlightResponse(res);
+  }
+
+  async pullAbroadFlightPricePackages(
+    requestDto: PullAbroadFlightPricePackagesRequestDto,
+  ): Promise<PullAbroadFlightPricePackagesResponseDto> {
+    const builder = new xml2js.Builder({ headless: true });
+    const segments = requestDto.segments.map((segment, index) => ({
+      [`Segment${index + 1}`]: {
+        Kalkis: segment.departure,
+        Varis: segment.arrival,
+        KalkisTarih: segment.departureDate,
+        VarisTarih: segment.arrivalDate,
+        UcusNo: segment.flightNumber,
+        FirmaKod: segment.companyCode,
+        Sinif: segment.flightClass,
+        DonusMu: segment.isReturnFlight,
+        SeferKod: segment.flightCode,
+      },
+    }));
+    const requestDocument = {
+      UcusFiyatPaket: {
+        IslemId: requestDto.operationId,
+        FirmaNo: 1100,
+        ...segments.reduce((acc, segment) => ({ ...acc, ...segment }), {}),
+        YetiskinSayi: requestDto.adultCount,
+        CocukSayi: requestDto.childCount,
+        BebekSayi: requestDto.babyCount,
+        OgrenciSayi: requestDto.studentCount,
+        YasliSayi: requestDto.olderCount,
+        AskerSayi: requestDto.militaryCount,
+        GencSayi: requestDto.youthCount,
+        CIP: 0,
+      },
+    };
+
+    const xml = builder.buildObject(requestDocument);
+    const res = await this.run<pullAbroadFlightPricePackagesResponse>(xml);
+    return this.biletAllPlaneParserService.parsePullAbroadFlightPricePackagesResponse(
+      res,
+    );
   }
 
   async pullPriceOfFlight(

@@ -15,9 +15,11 @@ export type AbroadFlightOption = {
   BebekNFiyat: string;
   ServisUcreti: string;
   OpsiyonTarihi: string;
+  MinServisUcreti: string;
   RezervasyonYapilabilirMi: string;
   CharterSeferMi: string;
   FirmaNo: string;
+  Saglayici: string;
 };
 
 export type AbroadFlightSegment = {
@@ -45,6 +47,16 @@ export type AbroadFlightSegment = {
   Vakit: string;
   Sinif: string;
   KalanKoltukSayi: string;
+  ToplamSeyahatSuresi: string;
+  KalanKoltukSayisiServistenMiGeliyor: string;
+  UcakTip: string;
+  KoridorSayi: string;
+  KatSayi: string;
+  KoltukMesafe: string;
+  KuralAnahtar: string;
+  Bagaj: string;
+  FiyatPaketTanimi: string;
+  FiyatPaketAnahtari: string;
 };
 
 type AbroadFlightDataSet = {

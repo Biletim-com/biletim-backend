@@ -12,14 +12,15 @@ import {
 import { BiletAllOfficialHolidaysService } from './services/biletall/biletall-official-holidays.service';
 
 @ApiTags('Tickets')
-@Controller('tickets')
+@Controller()
 export class TicketsController {
   constructor(
     private readonly biletAllPnrService: BiletAllPnrService,
     private readonly biletAllOfficialHolidaysService: BiletAllOfficialHolidaysService,
   ) {}
 
-  @Post('pnr-search')
+  @Post('tickets/pnr-search')
+  @ApiOperation({ summary: 'Ticket PNR Search' })
   async pnrSearch(
     @Body() requestDto: PnrSearchRequestDto,
   ): Promise<

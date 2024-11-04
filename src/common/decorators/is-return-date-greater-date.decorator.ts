@@ -19,9 +19,9 @@ export const IsReturnDateGreaterDate =
             args.constraints[0]
           ];
           if (!value || !relatedValue) {
-            return true; // If there's no value or relatedValue, skip validation
+            return true;
           }
-          return new Date(value) > new Date(relatedValue);
+          return new Date(value) >= new Date(relatedValue);
         },
         defaultMessage: (args: ValidationArguments): string => {
           return `${args.property} must be greater than ${args.constraints[0]}`;

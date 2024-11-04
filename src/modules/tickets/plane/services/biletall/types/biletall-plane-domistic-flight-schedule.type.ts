@@ -5,26 +5,36 @@ export type FlightOption = {
   FiyatP: string;
   FiyatE: string;
   FiyatB: string;
-  BagajP: string;
+  ServisUcretP: string;
+  ServisUcretE: string;
+  ServisUcretB: string;
+  ToplamFiyatE: string;
+  ToplamFiyatB: string;
+  ToplamServisUcretE: string;
+  ToplamServisUcretB: string;
   BagajE: string;
   BagajB: string;
   Vakit: string;
+  ID2: string;
   FirmaNo: string;
 };
 
 export type FlightSegment = {
   ID: string;
   SecenekID: string;
+  FirmaID: string;
   Firma: string;
   FirmaAd: string;
+  FirmaKampanyaAciklama: string;
   SeferNo: string;
+  FirmaSeferNo: string;
   SeferKod: string;
   Kalkis: string;
   Varis: string;
   KalkisSehir: string;
   VarisSehir: string;
-  KalkisHavaAlan: string;
-  VarisHavaAlan: string;
+  KalkisHavaalan: string;
+  VarisHavaalan: string;
   KalkisTarih: string;
   VarisTarih: string;
   Sure: string;
@@ -32,12 +42,22 @@ export type FlightSegment = {
   SinifP: string;
   SinifE: string;
   SinifB: string;
+  KabinSinifP: string;
+  KabinSinifE: string;
+  KabinSinifB: string;
   KoltukP: string;
   KoltukE: string;
   KoltukB: string;
   BagajP: string;
   BagajE: string;
   BagajB: string;
+  RotaNo: string;
+  KalanKoltukSayisiServistenMiGeliyor: string;
+  YemekUcretliMi: string;
+  KoridorSayi: string;
+  KatSayi: string;
+  KoltukMesafe: string;
+  SegmentID2: string;
 };
 
 export type SegmentClass = {
@@ -45,6 +65,7 @@ export type SegmentClass = {
   SecenekUcretID: string;
   SinifKod: string;
   KoltukSayi: string;
+  KalanKoltukSayisiServistenMiGeliyor: string;
   Ucret: string;
   EksikKoltukMu: string;
 };
@@ -55,6 +76,7 @@ export type OptionFare = {
   SinifAd: string;
   SinifTip: string;
   KoltukSayi: string;
+  KalanKoltukSayisiServistenMiGeliyor: string;
   Bagaj: string;
   TekYolcuUcret: string;
   TekYolcuServisUcret: string;
