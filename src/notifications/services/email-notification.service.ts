@@ -34,14 +34,14 @@ export class EmailNotificationService {
   @OnEvent('user.password.reset')
   async sendResetPasswordEmail({
     recipient,
-    verificationCode,
+    forgotPasswordCode,
   }: SendVerifyAccountEmailNotificationDto): Promise<void> {
     this.notification.send(recipient, 'Password reset', {
       template: 'reset-password',
       context: {
         header: 'Password reset',
         content: 'Click the button below to reset your password.',
-        url: `${this.authConfigService.resetPasswordUrl}?verificationCode=${verificationCode}`,
+        url: `${this.authConfigService.resetPasswordUrl}?verificationCode=${forgotPasswordCode}`,
       },
     });
   }
