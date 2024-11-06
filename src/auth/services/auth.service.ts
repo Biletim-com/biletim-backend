@@ -47,14 +47,24 @@ export class AuthService {
   }
 
   async register(registerUserRequest: RegisterUserRequest): Promise<User> {
-    await this.usersService.registerEmailCheck(
+    const existingUser = await this.usersService.registerEmailCheck(
       registerUserRequest.email.toLowerCase(),
     );
 
-    const user = await this.usersService.registerUser(registerUserRequest);
+    let user: User;
+    let verificationCode: number;
 
-    const verificationCode =
-      await this.verificationService.createVerificationCode(user);
+    if (!existingUser) {
+      user = await this.usersService.registerUser(registerUserRequest);
+      verificationCode = await this.verificationService.createVerificationCode(
+        user,
+      );
+    } else {
+      user = existingUser;
+      verificationCode = await this.verificationService.updateVerificationCode(
+        user,
+      );
+    }
 
     this.eventEmitter.emitEvent('user.created', {
       recipient: user.email,
@@ -82,7 +92,7 @@ export class AuthService {
       throw new BadRequestException('invalid verification code ');
     }
 
-    const updatedUser = await this.usersService.updateVerificationCode(
+    const updatedUser = await this.usersService.updateVerificationStatus(
       userId,
       user.verification.id,
     );

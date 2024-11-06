@@ -24,6 +24,27 @@ export class VerificationService {
     return verificationCode;
   }
 
+  async updateVerificationCode(user: User): Promise<number> {
+    const verification = await this.verificationRepository.findOne({
+      where: { user: { id: user.id } },
+      relations: ['user'],
+    });
+
+    if (!verification) {
+      throw new Error('Verification record not found for this user');
+    }
+
+    const { verificationCode } = await this.uniqueSixDigitNumber();
+
+    verification.verificationCode = verificationCode;
+    verification.isUsed = false;
+    verification.isExpired = false;
+
+    await this.verificationRepository.save(verification);
+
+    return verification.verificationCode;
+  }
+
   async findUserIdByVerificationCode(verificationCode: number) {
     const userVerification = await this.verificationRepository.findOne({
       where: { verificationCode: verificationCode },

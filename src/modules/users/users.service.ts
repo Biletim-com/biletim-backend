@@ -220,10 +220,13 @@ export class UsersService {
     });
 
     if (user) {
-      throw new ConflictException('This email address is already in use.');
+      if (user.isVerified) {
+        throw new ConflictException('This email address is already in use.');
+      }
+      return user;
     }
 
-    return user;
+    return null;
   }
 
   async registerUser(dto: RegisterUserRequest): Promise<User> {
@@ -237,7 +240,7 @@ export class UsersService {
     return user;
   }
 
-  async updateVerificationCode(
+  async updateVerificationStatus(
     userId: UUID,
     verificationId: UUID,
   ): Promise<User> {
