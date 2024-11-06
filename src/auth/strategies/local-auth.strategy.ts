@@ -25,7 +25,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new NotFoundException('User is not found');
     if (!user.isVerified) throw new ForbiddenException('User is not verified');
 
-    const isValidPassword = this.passwordService.validatePassword(
+    const isValidPassword = await this.passwordService.validatePassword(
       password,
       user.password,
     );
