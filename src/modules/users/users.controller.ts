@@ -51,14 +51,6 @@ export class UsersController {
     return users.map((user) => new UserWithoutPasswordDto(user));
   }
 
-  @ApiOperation({ summary: 'Find Me App User' })
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(200)
-  @Get('/me')
-  getMe(@CurrentUser() user: string) {
-    return user;
-  }
-
   @ApiOperation({ summary: 'Find One App User' })
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)

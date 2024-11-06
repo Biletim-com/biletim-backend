@@ -7,6 +7,7 @@ import {
   Req,
   UseGuards,
   Res,
+  Get,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiCookieAuth } from '@nestjs/swagger';
 import type { Response } from 'express';
@@ -61,6 +62,14 @@ export class AuthController {
     @Body() _: LoginUserRequest,
   ): Promise<UserWithoutPasswordDto> {
     this.authService.login(user, response);
+    return new UserWithoutPasswordDto(user);
+  }
+
+  @ApiOperation({ summary: 'Find Me App User' })
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @Get('/me')
+  getMe(@CurrentUser() user: User): UserWithoutPasswordDto {
     return new UserWithoutPasswordDto(user);
   }
 

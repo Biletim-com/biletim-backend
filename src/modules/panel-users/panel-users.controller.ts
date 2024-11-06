@@ -24,6 +24,7 @@ import { PanelUsersService } from './panel-users.service';
 import { CreatePanelUserDto } from './dto/create-panel-user.dto';
 import { GetPanelUsersQuery } from './dto/get-panel-users-query.dto';
 import { PanelUserWithoutPasswordDto } from './dto/panel-user-without-password.dto';
+import { PanelUser } from './panel-user.entity';
 
 @ApiTags('Panel-Users')
 @ApiCookieAuth()
@@ -50,8 +51,8 @@ export class PanelUsersController {
   @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Get('/me')
-  getMe(@CurrentUser() user: any): Promise<any> {
-    return user;
+  getMe(@CurrentUser() user: PanelUser): PanelUserWithoutPasswordDto {
+    return new PanelUserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'Find One Panel User' })
