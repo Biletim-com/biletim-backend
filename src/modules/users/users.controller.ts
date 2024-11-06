@@ -100,7 +100,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Delete App User' })
-  @UseGuards(PanelUserJwtAuthGuard)
+  //@UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Delete('/:id')
   async delete(@Param('id') id: UUID) {
