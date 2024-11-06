@@ -95,9 +95,10 @@ export class AuthController {
   @HttpCode(200)
   @Post('/verify')
   async appVerification(
+    @Res({ passthrough: true }) response: Response,
     @Body() verificationDto: VerificationDto,
   ): Promise<any> {
-    return this.authService.appVerification(verificationDto);
+    return this.authService.appVerification(verificationDto, response);
   }
 
   @ApiOperation({ summary: 'Forgot Password' })

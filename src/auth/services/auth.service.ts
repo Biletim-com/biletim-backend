@@ -6,15 +6,12 @@ import {
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import type { Response } from 'express';
-
 import { TokenService } from './token.service';
 import { CookieService } from './cookie.service';
 import { PasswordService } from './password.service';
 import { OAuth2StrategyFactory } from '../factories/oauth2-strategy.factory';
-
 import { User } from '@app/modules/users/user.entity';
 import { UsersService } from '@app/modules/users/users.service';
-import { UsersRepository } from '@app/modules/users/users.repository';
 import { PanelUser } from '@app/modules/panel-users/panel-user.entity';
 
 // dtos
@@ -67,10 +64,10 @@ export class AuthService {
     return user;
   }
 
-  async appVerification(dto: VerificationDto): Promise<{
-    accessToken: string;
-    refreshToken: string;
-  }> {
+  async appVerification(
+    dto: VerificationDto,
+    response: Response,
+  ): Promise<{ message: string; statusCode: number }> {
     const { verificationCode } = dto;
 
     const userId = await this.verificationService.findUserIdByVerificationCode(
@@ -90,7 +87,12 @@ export class AuthService {
       user.verification.id,
     );
 
-    return this.tokenService.generateTokens(updatedUser);
+    this.login(updatedUser, response);
+
+    return {
+      message: 'Verification completed successfully',
+      statusCode: HttpStatus.OK,
+    };
   }
 
   async forgotPassword(email: string) {
