@@ -12,7 +12,20 @@ async function bootstrap() {
 
   const appConfigService = app.get<AppConfigService>(AppConfigService);
 
-  app.enableCors();
+  app.enableCors({
+    origin: function (origin, callback) {
+      if (
+        !origin ||
+        appConfigService.corsWhitelist.split(',').includes('*') ||
+        appConfigService.corsWhitelist.split(',').indexOf(origin) !== -1
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  });
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useLogger(app.get<Logger>(Logger));

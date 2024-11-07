@@ -36,3 +36,4 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+feed_en_v3.json.zst
