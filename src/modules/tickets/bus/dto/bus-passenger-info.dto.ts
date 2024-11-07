@@ -15,27 +15,6 @@ import {
 import { Gender } from '@app/common/enums';
 import { DateISODate } from '@app/common/types';
 
-export const turkishToEnglish = (text: string): string => {
-  const turkishMap: { [key: string]: string } = {
-    Ç: 'C',
-    Ğ: 'G',
-    İ: 'I',
-    Ö: 'O',
-    Ş: 'S',
-    Ü: 'U',
-    ç: 'c',
-    ğ: 'g',
-    ı: 'i',
-    ö: 'o',
-    ş: 's',
-    ü: 'u',
-  };
-  return text
-    .split('')
-    .map((char) => turkishMap[char] || char)
-    .join('');
-};
-
 export class BusPassengerInfoDto {
   @ApiProperty({
     description: 'Seat number assigned to the passenger.',
@@ -90,8 +69,8 @@ export class BusPassengerInfoDto {
     required: false,
   })
   @IsBoolean()
-  @IsOptional()
-  isTurkishCitizen?: boolean;
+  @IsNotEmpty()
+  isTurkishCitizen: boolean;
 
   @ApiProperty({
     description:
@@ -142,33 +121,4 @@ export class BusPassengerInfoDto {
   @IsDateString()
   @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
   passportExpirationDate?: DateISODate;
-
-  @ApiProperty({
-    description: 'Boarding location of the passenger.',
-    required: false,
-  })
-  @IsString()
-  @MaxLength(15)
-  @IsOptional()
-  boardingTerminalId?: string;
-
-  @ApiProperty({
-    description: 'Service location for departure.',
-    example: 'Service Point A',
-    required: false,
-  })
-  @IsString()
-  @MaxLength(15)
-  @IsOptional()
-  departureServiceLocationId?: string;
-
-  @ApiProperty({
-    description: 'Service location for arrival.',
-    example: 'Service Point B',
-    required: false,
-  })
-  @IsString()
-  @MaxLength(15)
-  @IsOptional()
-  arrivalServiceLocationId?: string;
 }

@@ -11,7 +11,6 @@ import {
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { FlightSegmentDto } from './plane-pull-price-flight.dto';
-import { turkishToEnglish } from '../../bus/dto/bus-passenger-info.dto';
 import { DateISODate } from '@app/common/types';
 
 import { FlightTicketReservationResult } from '../services/biletall/types/biletall-plane-ticket-reservation.type';
@@ -27,7 +26,6 @@ export class PlanePassengerInfoDto {
   })
   @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => turkishToEnglish(value))
   firstName: string;
 
   @ApiProperty({
@@ -37,7 +35,6 @@ export class PlanePassengerInfoDto {
   })
   @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => turkishToEnglish(value))
   lastName: string;
 
   @ApiProperty({

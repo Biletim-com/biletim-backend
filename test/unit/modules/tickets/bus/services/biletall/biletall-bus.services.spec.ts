@@ -145,9 +145,8 @@ describe('BiletAllBusService', () => {
         arrivalPointId: '738',
         date: '2024-10-15',
         includeIntermediatePoints: 1,
-        operationType: 0,
-        ip: '127.0.0.1',
       };
+      const clientIp = '127.0.0.1';
 
       const mockXmlResponse = fs.readFileSync(
         path.resolve(
@@ -166,7 +165,7 @@ describe('BiletAllBusService', () => {
         departureScheduleListMockResponse,
       );
 
-      const result = await service.scheduleList(requestDto);
+      const result = await service.scheduleList(clientIp, requestDto);
 
       const expectedXml =
         `<Sefer>\n` +
@@ -175,9 +174,9 @@ describe('BiletAllBusService', () => {
         `  <VarisNoktaID>${requestDto.arrivalPointId}</VarisNoktaID>\n` +
         `  <Tarih>${requestDto.date}</Tarih>\n` +
         `  <AraNoktaGelsin>${requestDto.includeIntermediatePoints}</AraNoktaGelsin>\n` +
-        `  <IslemTipi>${requestDto.operationType}</IslemTipi>\n` +
+        `  <IslemTipi>0</IslemTipi>\n` +
         `  <YolcuSayisi>1</YolcuSayisi>\n` +
-        `  <Ip>${requestDto.ip}</Ip>\n` +
+        `  <Ip>${clientIp}</Ip>\n` +
         `</Sefer>`;
 
       expect(runSpy).toHaveBeenCalledWith(expectedXml);
@@ -198,14 +197,14 @@ describe('BiletAllBusService', () => {
         arrivalPointId: '738',
         date: '2024-10-15',
         includeIntermediatePoints: 1,
-        operationType: 0,
-        ip: '127.0.0.1',
       };
 
       const requestDto2: BusScheduleRequestDto = {
         ...requestDto,
         date: '2024-10-28',
       };
+
+      const clientIp = '127.0.0.1';
 
       const mockXmlResponse1 = fs.readFileSync(
         path.resolve(
@@ -238,8 +237,8 @@ describe('BiletAllBusService', () => {
         returnScheduleListMockResponse,
       );
 
-      const result1 = await service.scheduleList(requestDto);
-      const result2 = await service.scheduleList(requestDto2);
+      const result1 = await service.scheduleList(clientIp, requestDto);
+      const result2 = await service.scheduleList(clientIp, requestDto2);
       const expectedXml =
         `<Sefer>\n` +
         `  <FirmaNo>${requestDto.companyNo}</FirmaNo>\n` +
@@ -247,9 +246,9 @@ describe('BiletAllBusService', () => {
         `  <VarisNoktaID>${requestDto.arrivalPointId}</VarisNoktaID>\n` +
         `  <Tarih>${requestDto.date}</Tarih>\n` +
         `  <AraNoktaGelsin>${requestDto.includeIntermediatePoints}</AraNoktaGelsin>\n` +
-        `  <IslemTipi>${requestDto.operationType}</IslemTipi>\n` +
+        `  <IslemTipi>0</IslemTipi>\n` +
         `  <YolcuSayisi>1</YolcuSayisi>\n` +
-        `  <Ip>${requestDto.ip}</Ip>\n` +
+        `  <Ip>${clientIp}</Ip>\n` +
         `</Sefer>`;
 
       const expectedXml2 =
@@ -259,9 +258,9 @@ describe('BiletAllBusService', () => {
         `  <VarisNoktaID>${requestDto2.arrivalPointId}</VarisNoktaID>\n` +
         `  <Tarih>${requestDto2.date}</Tarih>\n` +
         `  <AraNoktaGelsin>${requestDto2.includeIntermediatePoints}</AraNoktaGelsin>\n` +
-        `  <IslemTipi>${requestDto2.operationType}</IslemTipi>\n` +
+        `  <IslemTipi>0</IslemTipi>\n` +
         `  <YolcuSayisi>1</YolcuSayisi>\n` +
-        `  <Ip>${requestDto2.ip}</Ip>\n` +
+        `  <Ip>${clientIp}</Ip>\n` +
         `</Sefer>`;
 
       expect(runSpy).toHaveBeenCalledTimes(2);
@@ -334,23 +333,22 @@ describe('BiletAllBusService', () => {
 
   describe('busSeatAvailability method', () => {
     it('should return status of the company seat', async () => {
-      const requestDto: BusSeatAvailabilityRequestDto = {
-        companyNo: '37',
-        departurePointId: '84',
-        arrivalPointId: '738',
-        date: '2024-09-20',
-        time: '1900-01-01T22:00:00.000Z',
-        routeNumber: '3',
-        operationType: 0,
-        tripTrackingNumber: '21202',
-        ip: '127.0.0.1',
-        seats: [
-          {
-            seatNumber: '1',
-            gender: Gender.MALE,
-          },
-        ],
-      };
+      const requestDto: BusSeatAvailabilityRequestDto =
+        new BusSeatAvailabilityRequestDto({
+          companyNo: '37',
+          departurePointId: '84',
+          arrivalPointId: '738',
+          travelStartDateTime: '2024-09-20T22:00:00.000Z',
+          routeNumber: '3',
+          tripTrackingNumber: '21202',
+          seats: [
+            {
+              seatNumber: '1',
+              gender: Gender.MALE,
+            },
+          ],
+        });
+      const clientIp = '127.0.0.1';
 
       const mockXmlResponse = fs.readFileSync(
         path.resolve(
@@ -367,7 +365,8 @@ describe('BiletAllBusService', () => {
       mockParser.parseBusSeatAvailability.mockResolvedValueOnce(
         busSeatAvailabilityMockResponse,
       );
-      const result = await service.busSeatAvailability(requestDto);
+
+      const result = await service.busSeatAvailability(clientIp, requestDto);
       const expectedXml =
         `<OtobusKoltukKontrol>\n` +
         `  <FirmaNo>${requestDto.companyNo}</FirmaNo>\n` +
@@ -376,9 +375,9 @@ describe('BiletAllBusService', () => {
         `  <Tarih>${requestDto.date}</Tarih>\n` +
         `  <Saat>${requestDto.time}</Saat>\n` +
         `  <HatNo>${requestDto.routeNumber}</HatNo>\n` +
-        `  <IslemTipi>${requestDto.operationType}</IslemTipi>\n` +
+        `  <IslemTipi>0</IslemTipi>\n` +
         `  <SeferTakipNo>${requestDto.tripTrackingNumber}</SeferTakipNo>\n` +
-        `  <Ip>${requestDto.ip}</Ip>\n` +
+        `  <Ip>${clientIp}</Ip>\n` +
         `  <Koltuklar>\n` +
         `${requestDto.seats
           .map(

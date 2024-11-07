@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  ValueTransformer,
+} from 'typeorm';
 
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
@@ -13,8 +19,20 @@ import { Order } from '@app/modules/orders/order.entity';
 
 @Entity('bus_tickets')
 export class BusTicket extends AbstractEntity<BusTicket> {
-  @Column({ select: false })
+  @Column()
   companyNo: string;
+
+  @Column('varchar', { nullable: true })
+  ticketNumber?: Nullable<string>;
+
+  @Column()
+  ticketOrder: number;
+
+  @Column()
+  routeNumber: string;
+
+  @Column()
+  tripTrackingNumber: string;
 
   @Column()
   seatNumber: string;
@@ -28,8 +46,11 @@ export class BusTicket extends AbstractEntity<BusTicket> {
   @Column('varchar')
   gender: Gender;
 
-  @Column('timestamp')
+  @Column({ type: 'timestamptz' })
   travelStartDateTime: DateTime;
+
+  @Column()
+  isTurkishCitizen: boolean;
 
   @Column('varchar', { nullable: true, length: 11 })
   tcNumber?: Nullable<string>;

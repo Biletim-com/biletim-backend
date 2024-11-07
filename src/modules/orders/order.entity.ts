@@ -17,6 +17,12 @@ export class Order extends AbstractEntity<Order> {
   @Column('varchar')
   userEmail: string;
 
+  @Column('varchar')
+  userPhoneNumber: string;
+
+  @Column('varchar', { nullable: true })
+  pnr?: Nullable<string>;
+
   @JoinColumn()
   @ManyToOne(() => User, { nullable: true })
   user?: Nullable<User>;

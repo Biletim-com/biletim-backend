@@ -3,22 +3,25 @@ import {
   IsArray,
   IsDateString,
   IsEmail,
-  IsInt,
   IsNotEmpty,
-  IsPositive,
+  IsNumberString,
   IsString,
   IsUUID,
   Length,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import * as dayjs from 'dayjs';
+
+// utils
+import { normalizeDecimal } from '@app/common/utils';
 
 // types
-import { DateTime, UUID } from '@app/common/types';
+import { DateISODate, DateTime, UUID } from '@app/common/types';
 
 // dtos
-import { CreditCardDto } from './credit-card.dto';
+import { CreditCardDto } from '@app/common/dtos/credit-card.dto';
 import { BusPassengerInfoDto } from '@app/modules/tickets/bus/dto/bus-passenger-info.dto';
 
 // purchase
@@ -33,7 +36,7 @@ export class BusTicketPurchaseDto {
 
   @ApiProperty({
     description: 'Departure terminal ID for the bus trip',
-    example: 'c4fe88bd-0137-452c-9eb3-157b9475d56c',
+    example: 'fa975977-5dde-4eb3-81d4-135bfa832e55',
     required: true,
   })
   @IsUUID()
@@ -42,7 +45,7 @@ export class BusTicketPurchaseDto {
 
   @ApiProperty({
     description: 'Arrival point ID for the bus trip',
-    example: 'c0e2a626-8e1d-4688-8c04-d93aef9b8961',
+    example: '8447bc12-49d3-4dec-8e30-eb2a6638bec6',
     required: true,
   })
   @IsUUID()
@@ -50,8 +53,8 @@ export class BusTicketPurchaseDto {
   arrivalTerminalId: UUID;
 
   @ApiProperty({
-    description: 'Date of the trip in the format YYYY-MM-ddTHH:mm.SS',
-    example: '2024-09-20T15:00.00',
+    description: 'Date and Time of the trip in the format YYYY-MM-ddTHH:mm:SS',
+    example: '2024-09-20T15:00:00',
     required: true,
   })
   @IsDateString()
@@ -60,30 +63,31 @@ export class BusTicketPurchaseDto {
 
   @ApiProperty({
     description: 'Route number for the bus trip',
-    example: 1,
+    example: '1',
     required: true,
   })
-  @IsInt()
+  @IsNumberString()
   @IsNotEmpty()
-  routeNumber: number;
+  routeNumber: string;
 
   @ApiProperty({
     description: 'Tracking number for the trip',
     example: '20470',
     required: true,
   })
-  @IsString()
+  @IsNumberString()
   @IsNotEmpty()
   tripTrackingNumber: string;
 
   @ApiProperty({
     description: 'Total price of the tickets',
-    example: 150,
+    example: '150.00',
     required: true,
   })
-  @IsPositive()
+  @IsNumberString()
   @IsNotEmpty()
-  totalTicketPrice: number;
+  @Transform(({ value }) => normalizeDecimal(value))
+  totalTicketPrice: string;
 
   @ApiProperty({
     description: 'Contact email address of the person booking the ticket',
@@ -125,4 +129,19 @@ export class BusTicketPurchaseDto {
   @ValidateNested()
   @Type(() => CreditCardDto)
   creditCard: CreditCardDto;
+
+  get date(): DateISODate {
+    return dayjs(this.travelStartDateTime).format('YYYY-MM-DD') as DateISODate;
+  }
+
+  get time(): DateTime {
+    return this.travelStartDateTime as DateTime;
+  }
+
+  get foreignPassengerExists(): boolean {
+    const turkishCitizens = this.passengers.filter(
+      (passenger) => passenger.isTurkishCitizen,
+    );
+    return turkishCitizens.length !== this.passengers.length;
+  }
 }

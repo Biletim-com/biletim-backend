@@ -4,6 +4,8 @@ import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { VakifBankEnrollmentService } from './services/vakif-bank-enrollment.service';
 import { PoxClientService } from '@app/providers/pox-client/provider.service';
 import { PaymentConfigService } from '@app/configs/payment';
+import { HtmlTemplateService } from '@app/payment/services/html-template.service';
+import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 
 // interfaces
 import { IPayment } from '../../interfaces/payment.interface';
@@ -16,15 +18,22 @@ import { PaymentProvider } from '@app/common/enums';
 
 // dtos
 import { CreditCardDto } from '@app/common/dtos';
-import { PaymentResultDto } from '@app/payment/dto/payment-result.dto';
+import { VakifBankPaymentResultDto } from '@app/payment/dto/vakif-bank-payment-result.dto';
 
 // types
-import { VposResponse, SaleResponse } from './types/v-pos-response.type';
+import {
+  VposResponse,
+  SaleResponse,
+  CancelResponse,
+  RefundResponse,
+} from './types/v-pos-response.type';
+import { UUID } from '@app/common/types';
 
 // constants
 import { threeDSecureResponse } from './constants/3d-response.constant';
 import { vPOSResponse } from './constants/vpos-reponse.constant';
-import { UUID } from '@app/common/types';
+
+// utils
 import { normalizeDecimal } from '@app/common/utils';
 
 @Injectable()
@@ -36,6 +45,8 @@ export class VakifBankPaymentStrategy implements IPayment {
     private readonly poxClientService: PoxClientService,
     private readonly paymentConfigService: PaymentConfigService,
     private readonly vakifBankEnrollmentService: VakifBankEnrollmentService,
+    private readonly htmlTemplateService: HtmlTemplateService,
+    private readonly transactionsRepository: TransactionsRepository,
   ) {}
 
   private async sendRequest<T extends VposResponse>(
@@ -73,13 +84,13 @@ export class VakifBankPaymentStrategy implements IPayment {
   }
 
   async startPayment(
+    _clientIp: string,
     creditCard: CreditCardDto,
     transaction: Transaction,
   ): Promise<string> {
     const card3DsEligibility =
       await this.vakifBankEnrollmentService.checkCard3DsEligibility(
-        transaction.id,
-        transaction.amount,
+        transaction,
         creditCard,
       );
 
@@ -94,39 +105,35 @@ export class VakifBankPaymentStrategy implements IPayment {
     }
 
     const { ACSUrl, PaReq, TermUrl, MD } = card3DsEligibility.details;
-    return `<html>
-             <head>
-             <title>GET724 MPI 3D-Secure Processing Page</title>
-             </head>
-             <body >
-                 <form name="downloadForm" action="${ACSUrl}" method="POST">
-                 <noscript>
-                 <br>
-                 <br>
-                 <center>
-                     <h1>Processing your 3-D Secure Transaction</h1>
-                     <h2>
-                         JavaScript is currently disabled or is not supported by your browser.
-                     <br>
-                     </h2>
-                     <h3>Please click Submit to continue the processing of your 3-D Secure transaction. Enrolled Returns true</h3>
-                     <input type="submit" value="Submit">
-                 </center>
-                 </noscript>
-                     <input type="hidden" name="PaReq" value="${PaReq}">
-                     <input type="hidden" name="TermUrl" value="${TermUrl}">
-                     <input type="hidden" name="MD" value="${MD}">
-                 </form>
-                 <SCRIPT LANGUAGE="Javascript" >
-                     document.downloadForm.submit();
-                 </SCRIPT>
-             </body>
-         </html>
-         `;
+
+    const templateData = {
+      formAction: ACSUrl,
+      fields: [
+        {
+          name: 'PaReq',
+          value: PaReq,
+        },
+        {
+          name: 'TermUrl',
+          value: TermUrl,
+        },
+        {
+          name: 'MD',
+          value: MD,
+        },
+      ],
+    };
+
+    const htmlString = await this.htmlTemplateService.renderTemplate(
+      '3d-secure',
+      templateData,
+    );
+    return htmlString;
   }
 
   finishPayment(
-    paymentDetailsDto: PaymentResultDto,
+    clientIp: string,
+    paymentDetailsDto: VakifBankPaymentResultDto,
     orderId: UUID,
   ): Promise<SaleResponse> {
     const {
@@ -149,17 +156,54 @@ export class VakifBankPaymentStrategy implements IPayment {
         CAVV: Cavv,
         MpiTransactionId: VerifyEnrollmentRequestId,
         OrderId: orderId,
-        ClientIp: '190.20.13.12',
+        ClientIp: clientIp,
         TransactionDeviceSource: 0,
       },
     };
     return this.sendRequest('/VposService/v3/Vposreq.aspx', body);
   }
 
-  cancelPayment(): Promise<void> {
-    throw new Error('Method not implemented.');
+  /**
+   * İptal işlemleri, başarılı gerçekleşmiş ve henüz günsonu alınmamış bir satış veya iade işlemini iptal etmek için kullanılır.
+   */
+  async cancelPayment(
+    clientIp: string,
+    transactionOrTransactionId: UUID | Transaction,
+  ): Promise<CancelResponse> {
+    const transaction = await this.transactionsRepository.findEntityData(
+      transactionOrTransactionId,
+    );
+
+    const body = {
+      VposRequest: {
+        ...this.authCredentials,
+        TransactionType: 'Cancel',
+        ReferenceTransactionId: transaction.id,
+        ClientIp: clientIp,
+      },
+    };
+    return this.sendRequest('/VposService/v3/Vposreq.aspx', body);
   }
-  refundPayment(): Promise<void> {
-    throw new Error('Method not implemented.');
+
+  /**
+   * İade işlemi, başarılı gerçekleşmiş ve günsonu alınarak finansallaşmış bir işlemi iade etmek için kullanılır.
+   */
+  async refundPayment(
+    clientIp: string,
+    transactionOrTransactionId: UUID | Transaction,
+  ): Promise<RefundResponse> {
+    const transaction = await this.transactionsRepository.findEntityData(
+      transactionOrTransactionId,
+    );
+    const body = {
+      VposRequest: {
+        ...this.authCredentials,
+        TransactionType: 'Refund',
+        CurrencyAmount: transaction.amount,
+        ReferenceTransactionId: transaction.id,
+        ClientIp: clientIp,
+      },
+    };
+    return this.sendRequest('/VposService/v3/Vposreq.aspx', body);
   }
 }

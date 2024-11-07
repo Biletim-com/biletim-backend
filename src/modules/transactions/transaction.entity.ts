@@ -5,9 +5,13 @@ import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity'
 import { Wallet } from '../wallets/wallet.entity';
 import { CreditCard } from '../credit-cards/credit-card.entity';
 
+// utils
+import { normalizeDecimal } from '@app/common/utils';
+
 import {
   Currency,
   PaymentMethod,
+  PaymentProvider,
   TransactionStatus,
   TransactionType,
 } from '@app/common/enums';
@@ -15,8 +19,14 @@ import { Order } from '../orders/order.entity';
 
 @Entity('transactions')
 export class Transaction extends AbstractEntity<Transaction> {
-  @Column({ type: 'decimal' })
-  amount: number;
+  @Column({
+    type: 'decimal',
+    transformer: {
+      to: (value: string) => normalizeDecimal(value),
+      from: (value: string) => value,
+    },
+  })
+  amount: string;
 
   @Column('varchar')
   currency: Currency;
@@ -29,6 +39,12 @@ export class Transaction extends AbstractEntity<Transaction> {
 
   @Column('varchar')
   paymentMethod: PaymentMethod;
+
+  @Column('varchar', { nullable: true })
+  paymentProvider?: Nullable<PaymentProvider>;
+
+  @Column('varchar', { nullable: true })
+  errorMessage?: Nullable<string>;
 
   // anonymous credit cards
   @Column('varchar', { nullable: true })

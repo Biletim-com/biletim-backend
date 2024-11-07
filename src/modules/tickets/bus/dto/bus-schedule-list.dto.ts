@@ -69,19 +69,6 @@ export class BusScheduleRequestDto {
   @IsInt()
   @IsOptional()
   includeIntermediatePoints?: number;
-
-  @IsInt()
-  @IsOptional()
-  operationType?: number;
-
-  @ApiProperty({
-    description: 'The IP address of the user making the request.',
-    example: '127.0.0.1',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  ip = '127.0.0.1';
 }
 
 export class BusScheduleDto {

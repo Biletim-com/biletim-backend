@@ -20,6 +20,7 @@ import { CreditCardDto } from '@app/common/dtos';
 
 // utils
 import { normalizeDecimal } from '@app/common/utils';
+import { Transaction } from '@app/modules/transactions/transaction.entity';
 
 @Injectable()
 export class VakifBankEnrollmentService {
@@ -54,20 +55,20 @@ export class VakifBankEnrollmentService {
   }
 
   async checkCard3DsEligibility(
-    requestId: string,
-    amount: number,
+    transaction: Transaction,
     creditCard: CreditCardDto,
   ): Promise<ThreeDSecureEligibilityResponse> {
     const body = {
       ...this.authCredentials,
-      VerifyEnrollmentRequestId: requestId,
+      VerifyEnrollmentRequestId: transaction.id,
       Pan: creditCard.pan,
       ExpiryDate: dayjs(creditCard.expiryDate).format('YYMM'),
-      PurchaseAmount: normalizeDecimal(amount),
+      PurchaseAmount: normalizeDecimal(transaction.amount),
+      // TODO: Update those fields
       Currency: '949', //949:TRY 840:USD 978:EUR 826:GBP
       BrandName: '100', // 100:VISA 200:MASTERCARD 300:TROY
-      SuccessUrl: `${this.applicationConfigService.backendUrl}/payment/success`,
-      FailureUrl: `${this.applicationConfigService.backendUrl}/payment/failure`,
+      SuccessUrl: `${this.applicationConfigService.backendUrl}/payment/success?provider=${PaymentProvider.VAKIF_BANK}`,
+      FailureUrl: `${this.applicationConfigService.backendUrl}/payment/failure?provider=${PaymentProvider.VAKIF_BANK}`,
     };
 
     const {

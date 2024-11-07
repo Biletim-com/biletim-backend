@@ -1,6 +1,7 @@
 // info regarding the bus
 import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+
 // types
 import {
   BusTrip,
@@ -10,11 +11,14 @@ import {
 } from '../services/biletall/types/biletall-bus-search.type';
 import { DateISODate, DateTime } from '@app/common/types/datetime.type';
 import * as dayjs from 'dayjs';
-import { Transform } from 'class-transformer';
 import { BusRouteDetailDto } from './bus-route.dto';
 
 // plate, driver...
 export class BusTicketDetailRequestDto {
+  constructor(data: Omit<BusTicketDetailRequestDto, 'date' | 'time'>) {
+    Object.assign(this, data);
+  }
+
   @ApiProperty({
     description: 'Company number',
     example: '0',
@@ -43,26 +47,13 @@ export class BusTicketDetailRequestDto {
   arrivalPointId: string;
 
   @ApiProperty({
-    description: 'The travel date in the format "yyyy-MM-dd".',
-    example: '2024-10-15',
+    description: 'Date and Time of the trip in the format YYYY-MM-ddTHH:mm:SS',
+    example: '2024-09-20T15:00:00',
     required: true,
   })
-  @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
+  @IsDateString()
   @IsNotEmpty()
-  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
-  date: DateISODate;
-
-  @ApiProperty({
-    description: 'The travel date and time in the format yyyy-MM-ddTHH:mm:ss.',
-    example: '2024-09-15T12:30:00',
-    required: true,
-  })
-  @IsDateString(
-    {},
-    { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
-  )
-  @IsNotEmpty()
-  time: DateTime;
+  travelStartDateTime: DateTime;
 
   @ApiProperty({
     description: 'The route number for the bus, required field.',
@@ -81,6 +72,14 @@ export class BusTicketDetailRequestDto {
   @IsString()
   @IsNotEmpty()
   tripTrackingNumber: string;
+
+  get date(): DateISODate {
+    return dayjs(this.travelStartDateTime).format('YYYY-MM-DD') as DateISODate;
+  }
+
+  get time(): DateTime {
+    return this.travelStartDateTime as DateTime;
+  }
 }
 
 export class BusTripDto {
@@ -122,7 +121,7 @@ export class BusTripDto {
   occupancyRateDiscountApplied: string;
   busTypeFeature: string;
   backwardSeats: string;
-  idNumberRequiredForBranchSale: string;
+  idNumberRequiredForBranchSale: boolean;
   travelDuration: string;
   tripTypeDescription: string;
   busTypeDescription: string;
@@ -136,7 +135,7 @@ export class BusTripDto {
   sellableSeatCount: string;
   reservationCannotBeMadeReason: string;
   companyMaxTotalTicketPrice: string;
-  canProcessWithPassportNumber: string;
+  canProcessWithPassportNumber: boolean;
   canSelectSeatsOfDifferentGenders: string;
   busSeatLayout: string;
   busHESCodeMandatory: string;
@@ -220,7 +219,7 @@ export class BusTripDto {
     this.busTypeFeature = trip.OTipOzellik;
     this.backwardSeats = trip.YonuTersKoltuklar;
     this.idNumberRequiredForBranchSale =
-      trip.SubeSatistaTcKimlikNoYazmakZorunlu === '1' ? 'true' : 'false';
+      trip.SubeSatistaTcKimlikNoYazmakZorunlu === '1' ? true : false;
     this.travelDuration = trip.SeyahatSuresi;
     this.tripTypeDescription = trip.SeferTipiAciklamasi;
     this.busTypeDescription = trip.OTipAciklamasi;
@@ -241,7 +240,7 @@ export class BusTripDto {
       this.companyMaxTotalTicketPrice = `${totalPrice} TL - İlgili otobüs için şirket tarafından belirlenen maksimum işlem tutarıdır. Bu değeri aşan işlemlerinizde hata alırsınız.`;
     }
     this.canProcessWithPassportNumber =
-      trip.PasaportNoIleIslemYapilirMi === '1' ? 'true' : 'false';
+      trip.PasaportNoIleIslemYapilirMi === '1' ? true : false;
     this.canSelectSeatsOfDifferentGenders =
       trip.FarkliCinsiyetteKoltuklarSecilebilirMi === '1' ? 'true' : 'false';
     this.busSeatLayout = trip.OtobusKoltukBoslukSemasi;

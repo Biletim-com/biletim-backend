@@ -7,14 +7,20 @@ import { PoxClientModule } from '@app/providers/pox-client/provider.module';
 import { PaymentController } from './payment.controller';
 
 // services
+import { HtmlTemplateService } from './services/html-template.service';
+import { PaymentService } from './services/payment.service';
+import { PaymentProviderFactory } from './factories/payment-provider.factory';
+import { PaymentResultHandlerProviderFactory } from './factories/payment-result-handler-provider.factory';
 import { VakifBankCardService } from './providers/vakif-bank/services/vakif-bank-card.service';
 import { VakifBankCustomerService } from './providers/vakif-bank/services/vakif-bank-customer.service';
 import { VakifBankPaymentStrategy } from './providers/vakif-bank/vakif-bank-payment.strategy';
+import { VakifBankPaymentResultHandlerStrategy } from './providers/vakif-bank/vakif-bank-payment-result-handler.strategy';
 import { VakifBankEnrollmentService } from './providers/vakif-bank/services/vakif-bank-enrollment.service';
-import { PaymentProviderFactory } from './factories/payment-provider.factory';
-import { PaymentService } from './services/payment.service';
-import { PaymentResponseHandlerService } from './services/payment-response-handler.service';
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
+import { BiletAllPaymentStrategy } from './providers/biletall/biletall-payment.strategy';
+import { BiletAllPaymentResultHandlerStrategy } from './providers/biletall/biletall-payment-result-handler.strategy';
+import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
+import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
 
 @Module({
   imports: [
@@ -33,14 +39,20 @@ import { TransactionsRepository } from '@app/modules/transactions/transactions.r
   ],
   controllers: [PaymentController],
   providers: [
-    PaymentProviderFactory,
+    HtmlTemplateService,
     PaymentService,
-    PaymentResponseHandlerService,
+    PaymentProviderFactory,
+    PaymentResultHandlerProviderFactory,
     VakifBankCardService,
     VakifBankCustomerService,
     VakifBankPaymentStrategy,
     VakifBankEnrollmentService,
+    VakifBankPaymentResultHandlerStrategy,
+    BiletAllPaymentStrategy,
+    BiletAllPaymentResultHandlerStrategy,
     TransactionsRepository,
+    BiletAllBusService,
+    BiletAllBusParserService,
   ],
   exports: [
     PaymentProviderFactory,

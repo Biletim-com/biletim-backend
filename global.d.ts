@@ -7,7 +7,8 @@ declare namespace NodeJS {
     LOG_LEVEL: 'log' | 'error' | 'warn' | 'debug' | 'verbose' | 'fatal';
     JWT_SECRET: string;
     RESET_PASSWORD_URL: string;
-    BILETALL_WSDL_URI: string;
+    BILETALL_BASE_URI: string;
+    BILETALL_3DSECURE_BASE_URI: string;
     BILETALL_WS_USERNAME: string;
     BILETALL_WS_PASSWORD: string;
     HOTEL_API_BASE_URL: string;
