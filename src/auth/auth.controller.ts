@@ -65,6 +65,16 @@ export class AuthController {
     return new UserWithoutPasswordDto(user);
   }
 
+  @ApiOperation({ summary: 'App Logout' })
+  @Post('/logout')
+  @HttpCode(200)
+  async logout(
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<{ result: true }> {
+    this.authService.logout(response);
+    return { result: true };
+  }
+
   @ApiOperation({ summary: 'Find Me App User' })
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
