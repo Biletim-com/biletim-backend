@@ -14,7 +14,7 @@ import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { IPayment } from '@app/payment/interfaces/payment.interface';
 
 // dtos
-import { CreditCardDto } from '@app/common/dtos';
+import { BankCardDto } from '@app/common/dtos';
 
 // enums
 import { PaymentProvider } from '@app/common/enums';
@@ -36,7 +36,7 @@ export class BiletAllPaymentStrategy implements IPayment {
 
   async startPayment(
     clientIp: string,
-    creditCard: CreditCardDto,
+    bankCard: BankCardDto,
     transaction: Transaction,
   ): Promise<string> {
     const { encode } = this.biletAllEncryptorService;
@@ -45,7 +45,7 @@ export class BiletAllPaymentStrategy implements IPayment {
       transaction,
       transaction.order,
       transaction.order.busTickets,
-      creditCard,
+      bankCard,
     );
 
     const templateData = {

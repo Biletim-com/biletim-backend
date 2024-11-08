@@ -3,62 +3,62 @@ import { Injectable } from '@nestjs/common';
 
 import { User } from '../../users/user.entity';
 import { UsersRepository } from '../../users/users.repository';
-import { CreditCard } from '../credit-card.entity';
-import { CreditCardsRepository } from '../credit-cards.repository';
-import { CreditCardValidationService } from '../services/credit-card-validation.service';
+import { BankCard } from '../bank-card.entity';
+import { BankCardsRepository } from '../bank-cards.repository';
+import { BankCardValidationService } from './bank-card-validation.service';
 import { VakifBankCardService } from '@app/payment/providers/vakif-bank/services/vakif-bank-card.service';
 import { VakifBankCustomerService } from '@app/payment/providers/vakif-bank/services/vakif-bank-customer.service';
 
 // dtos
-import { UpdateCreditCardDto } from '../dto/update-credit-card-request.dto';
-import { CreateCreditCardDto } from '../dto/create-credit-card-request.dto';
+import { UpdateBankCardDto } from '../dto/update-bank-card-request.dto';
+import { CreateBankCardDto } from '../dto/create-bank-card-request.dto';
 
 // types
 import { UUID } from '@app/common/types';
 
 // errors
 import {
-  CreditCardNotFoundError,
-  CreditCardUniqueConstraintViolationError,
+  BankCardNotFoundError,
+  BankCardUniqueConstraintViolationError,
 } from '@app/common/errors';
 
 @Injectable()
-export class CreditCardsService {
+export class BankCardsService {
   constructor(
-    private readonly creditCardsRepository: CreditCardsRepository,
-    private readonly creditCardValidationService: CreditCardValidationService,
+    private readonly bankCardsRepository: BankCardsRepository,
+    private readonly bankCardValidationService: BankCardValidationService,
     private readonly usersRepository: UsersRepository,
     private readonly vakifBankCardService: VakifBankCardService,
     private readonly vakifBankCustomerService: VakifBankCustomerService,
   ) {}
 
-  async listCreditCards(userOrUserId: User | UUID): Promise<CreditCard[]> {
+  async listBankCards(userOrUserId: User | UUID): Promise<BankCard[]> {
     const existingUser = await this.usersRepository.findEntityData(
       userOrUserId,
     );
 
-    return this.creditCardsRepository.find({
+    return this.bankCardsRepository.find({
       where: { user: { id: existingUser.id } },
     });
   }
 
-  async createCreditCard(
+  async createBankCard(
     userOrUserId: User | UUID,
-    createCreditCardDto: CreateCreditCardDto,
-  ): Promise<CreditCard> {
+    createBankCardDto: CreateBankCardDto,
+  ): Promise<BankCard> {
     const existingUser = await this.usersRepository.findEntityData(
       userOrUserId,
     );
 
-    const existingUserCards = await this.creditCardsRepository.findBy({
+    const existingUserCards = await this.bankCardsRepository.findBy({
       user: { id: existingUser.id },
     });
     const existingUserCard = existingUserCards.find((existingUserCard) =>
-      compareSync(createCreditCardDto.pan, existingUserCard.hash),
+      compareSync(createBankCardDto.pan, existingUserCard.hash),
     );
 
     if (existingUserCard) {
-      throw new CreditCardUniqueConstraintViolationError(['pan']);
+      throw new BankCardUniqueConstraintViolationError(['pan']);
     }
 
     // create user first on VPOS
@@ -75,55 +75,58 @@ export class CreditCardsService {
     // create credit card
     const createdVPosCard = await this.vakifBankCardService.createCustomerCard(
       customerId,
-      createCreditCardDto,
+      createBankCardDto,
     );
 
     // create card on DB
-    const creditCardToCreate = new CreditCard({
-      name: createCreditCardDto.name,
-      holderName: createCreditCardDto.holderName,
-      expiryDate: createCreditCardDto.expiryDate,
-      panToken: createdVPosCard.CreateCustomerPanResponse.PanCode,
-      hash: hashSync(createCreditCardDto.pan, 12),
-      maskedPan: createCreditCardDto.maskedPan,
+    const bankCardToCreate = new BankCard({
+      name: createBankCardDto.name,
+      holderName: createBankCardDto.holderName,
+      expiryDate: createBankCardDto.expiryDate,
+      vakifPanToken: createdVPosCard.CreateCustomerPanResponse.PanCode,
+      // TODO: REPLACE IT WITH GARANTI
+      garantiPanToken: createdVPosCard.CreateCustomerPanResponse.PanCode,
+      // TODO: REPLACE IT WITH RATEHAWK TOKEN
+      ratehawkPanToken: createdVPosCard.CreateCustomerPanResponse.PanCode,
+      hash: hashSync(createBankCardDto.pan, 12),
+      maskedPan: createBankCardDto.maskedPan,
       user: existingUser,
     });
 
-    await this.creditCardsRepository.insert(creditCardToCreate);
-    return creditCardToCreate;
+    await this.bankCardsRepository.insert(bankCardToCreate);
+    return bankCardToCreate;
   }
 
-  async updateCreditCard(
+  async updateBankCard(
     userOrUserId: User | UUID,
-    creditCardId: UUID,
-    updateCreditCardDto: UpdateCreditCardDto,
-  ): Promise<CreditCard> {
-    const { name, holderName, expiryDate, pan, maskedPan } =
-      updateCreditCardDto;
+    bankCardId: UUID,
+    updateBankCardDto: UpdateBankCardDto,
+  ): Promise<BankCard> {
+    const { name, holderName, expiryDate, pan, maskedPan } = updateBankCardDto;
     const existingUser = await this.usersRepository.findEntityData(
       userOrUserId,
     );
 
-    const existingCreditCard = await this.creditCardsRepository.findOneBy({
-      id: creditCardId,
+    const existingBankCard = await this.bankCardsRepository.findOneBy({
+      id: bankCardId,
       user: { id: existingUser.id },
     });
-    if (!existingCreditCard) {
-      throw new CreditCardNotFoundError();
+    if (!existingBankCard) {
+      throw new BankCardNotFoundError();
     }
 
     if (pan) {
-      const isCreditCardUnique =
-        await this.creditCardValidationService.isUserCardUnique(
+      const isBankCardUnique =
+        await this.bankCardValidationService.isUserCardUnique(
           existingUser.id,
           pan,
         );
-      if (!isCreditCardUnique) {
-        throw new CreditCardUniqueConstraintViolationError(['pan']);
+      if (!isBankCardUnique) {
+        throw new BankCardUniqueConstraintViolationError(['pan']);
       }
     }
 
-    const creditCardToUpdate = new CreditCard({
+    const bankCardToUpdate = new BankCard({
       name,
       holderName,
       expiryDate,
@@ -138,41 +141,41 @@ export class CreditCardsService {
     await this.vakifBankCardService.updateCustomerCard(
       this.vakifBankCustomerService.generateVPosCustomerId(existingUser.id),
       {
-        panToken: existingCreditCard.panToken,
+        panToken: existingBankCard.vakifPanToken,
         pan,
         holderName,
         expiryDate,
       },
     );
 
-    await this.creditCardsRepository.update(
-      existingCreditCard.id,
-      creditCardToUpdate,
+    await this.bankCardsRepository.update(
+      existingBankCard.id,
+      bankCardToUpdate,
     );
 
-    return { ...existingCreditCard, ...creditCardToUpdate };
+    return { ...existingBankCard, ...bankCardToUpdate };
   }
 
-  async deleteCreditCard(
+  async deleteBankCard(
     userOrUserId: User | UUID,
-    creditCardId: UUID,
+    bankCardId: UUID,
   ): Promise<void> {
     const existingUser = await this.usersRepository.findEntityData(
       userOrUserId,
     );
 
-    const existingCard = await this.creditCardsRepository.findOneBy({
-      id: creditCardId,
+    const existingCard = await this.bankCardsRepository.findOneBy({
+      id: bankCardId,
       user: { id: existingUser.id },
     });
     if (!existingCard) {
-      throw new CreditCardNotFoundError();
+      throw new BankCardNotFoundError();
     }
 
     await this.vakifBankCardService.deleteCustomerCard(
       this.vakifBankCustomerService.generateVPosCustomerId(existingUser.id),
-      existingCard.panToken,
+      existingCard.vakifPanToken,
     );
-    await this.creditCardsRepository.delete(existingCard.id);
+    await this.bankCardsRepository.delete(existingCard.id);
   }
 }

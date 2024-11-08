@@ -7,7 +7,7 @@ import { User } from '../users/user.entity';
 import { DateISODate } from '@app/common/types';
 
 @Entity('credit_cards')
-export class CreditCard extends AbstractEntity<CreditCard> {
+export class BankCard extends AbstractEntity<BankCard> {
   @Column()
   name: string;
 
@@ -18,7 +18,13 @@ export class CreditCard extends AbstractEntity<CreditCard> {
   maskedPan: string;
 
   @Column()
-  panToken: string;
+  vakifPanToken: string;
+
+  @Column()
+  garantiPanToken: string;
+
+  @Column()
+  ratehawkPanToken: string;
 
   @Column('date')
   expiryDate: DateISODate;

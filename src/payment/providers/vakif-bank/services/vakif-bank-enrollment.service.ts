@@ -4,23 +4,27 @@ import { Injectable } from '@nestjs/common';
 import { AppConfigService } from '@app/configs/app';
 import { PaymentConfigService } from '@app/configs/payment';
 import { PoxClientService } from '@app/providers/pox-client/provider.service';
+import { Transaction } from '@app/modules/transactions/transaction.entity';
 
 // decorators
 import { InjectPoxClient } from '@app/providers/pox-client/decorators';
 
 // enums
-import { PaymentProvider } from '@app/common/enums';
+import { Currency, PaymentProvider } from '@app/common/enums';
 
 // types
 import { EnrollmentResponse } from '../types/enrollment-response.type';
 import { ThreeDSecureEligibilityResponse } from '../types/3ds-eligibility.type';
 
 // dtos
-import { CreditCardDto } from '@app/common/dtos';
+import { BankCardDto } from '@app/common/dtos';
 
 // utils
 import { normalizeDecimal } from '@app/common/utils';
-import { Transaction } from '@app/modules/transactions/transaction.entity';
+
+// helpers
+import { VakifBankCurrency } from '../helpers/vakif-bank-currency.helper';
+import { VakifBankBankCardBrand } from '../helpers/vakif-bank-credit-card-brand.helper';
 
 @Injectable()
 export class VakifBankEnrollmentService {
@@ -56,7 +60,7 @@ export class VakifBankEnrollmentService {
 
   async checkCard3DsEligibility(
     transaction: Transaction,
-    creditCard: CreditCardDto,
+    creditCard: BankCardDto,
   ): Promise<ThreeDSecureEligibilityResponse> {
     const body = {
       ...this.authCredentials,
@@ -64,9 +68,8 @@ export class VakifBankEnrollmentService {
       Pan: creditCard.pan,
       ExpiryDate: dayjs(creditCard.expiryDate).format('YYMM'),
       PurchaseAmount: normalizeDecimal(transaction.amount),
-      // TODO: Update those fields
-      Currency: '949', //949:TRY 840:USD 978:EUR 826:GBP
-      BrandName: '100', // 100:VISA 200:MASTERCARD 300:TROY
+      Currency: VakifBankCurrency[Currency.TL],
+      BrandName: VakifBankBankCardBrand[creditCard.cardType],
       SuccessUrl: `${this.applicationConfigService.backendUrl}/payment/success?provider=${PaymentProvider.VAKIF_BANK}`,
       FailureUrl: `${this.applicationConfigService.backendUrl}/payment/failure?provider=${PaymentProvider.VAKIF_BANK}`,
     };

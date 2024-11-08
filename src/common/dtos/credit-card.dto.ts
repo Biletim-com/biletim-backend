@@ -10,8 +10,10 @@ import {
   Max,
   Min,
 } from 'class-validator';
+import { BankCardType } from '../enums';
+import { identifyCardType } from '../utils';
 
-export class CreditCardDto {
+export class BankCardDto {
   @ApiProperty({ required: true, minLength: 16, maxLength: 16 })
   @IsNotEmpty()
   @IsCreditCard()
@@ -58,5 +60,9 @@ export class CreditCardDto {
 
   get maskedPan(): string {
     return `${this.pan.slice(0, 6)}${'*'.repeat(7)}${this.pan.slice(-2)}`;
+  }
+
+  get cardType(): BankCardType {
+    return identifyCardType(this.pan);
   }
 }

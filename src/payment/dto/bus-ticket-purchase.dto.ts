@@ -21,7 +21,7 @@ import { normalizeDecimal } from '@app/common/utils';
 import { DateISODate, DateTime, UUID } from '@app/common/types';
 
 // dtos
-import { CreditCardDto } from '@app/common/dtos/credit-card.dto';
+import { BankCardDto } from '@app/common/dtos/credit-card.dto';
 import { BusPassengerInfoDto } from '@app/modules/tickets/bus/dto/bus-passenger-info.dto';
 
 // purchase
@@ -122,13 +122,13 @@ export class BusTicketPurchaseDto {
   passengers: BusPassengerInfoDto[];
 
   @ApiProperty({
-    description: 'Credit card info',
-    type: CreditCardDto,
+    description: 'Bank card info',
+    type: BankCardDto,
     required: true,
   })
   @ValidateNested()
-  @Type(() => CreditCardDto)
-  creditCard: CreditCardDto;
+  @Type(() => BankCardDto)
+  bankCard: BankCardDto;
 
   get date(): DateISODate {
     return dayjs(this.travelStartDateTime).format('YYYY-MM-DD') as DateISODate;

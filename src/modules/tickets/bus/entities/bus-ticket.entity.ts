@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  ValueTransformer,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
@@ -46,7 +40,7 @@ export class BusTicket extends AbstractEntity<BusTicket> {
   @Column('varchar')
   gender: Gender;
 
-  @Column({ type: 'timestamptz' })
+  @Column('varchar')
   travelStartDateTime: DateTime;
 
   @Column()

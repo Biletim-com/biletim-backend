@@ -1,4 +1,4 @@
-import { FlightClassType } from '@app/common/enums/plane-flight-class-type.enum';
+import { FlightClassType } from '@app/common/enums';
 import { IsBoolean, IsOptional } from 'class-validator';
 import { PlaneDomesticFlightScheduleRequestDto } from './plane-domestic-flight-schedule.dto';
 import {

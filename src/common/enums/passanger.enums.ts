@@ -8,3 +8,8 @@ export enum PassengerType {
   SOLDIER = 'soldier',
   YOUTH = 'youth',
 }
+
+export enum Gender {
+  FEMALE = 'female',
+  MALE = 'male',
+}

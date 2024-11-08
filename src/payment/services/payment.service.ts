@@ -89,13 +89,11 @@ export class PaymentService {
       );
     }
 
-    // const paymentProviderType = transactionRules.includes(
-    //   'BILETALL_VIRTUAL_POS',
-    // )
-    //   ? PaymentProvider.BILET_ALL
-    //   : PaymentProvider.VAKIF_BANK;
-
-    const paymentProviderType = PaymentProvider.VAKIF_BANK;
+    const paymentProviderType = transactionRules.includes(
+      'INTERNAL_VIRTUAL_POS',
+    )
+      ? PaymentProvider.BILET_ALL
+      : PaymentProvider.VAKIF_BANK;
 
     try {
       /**
@@ -109,10 +107,10 @@ export class PaymentService {
         paymentMethod: PaymentMethod.CREDIT_CARD,
         paymentProvider: paymentProviderType,
         // unregistered card
-        cardholderName: busTicketPurchaseDto.creditCard.holderName,
-        maskedPan: busTicketPurchaseDto.creditCard.maskedPan,
+        cardholderName: busTicketPurchaseDto.bankCard.holderName,
+        maskedPan: busTicketPurchaseDto.bankCard.maskedPan,
 
-        creditCard: null,
+        bankCard: null,
         wallet: null,
       });
       await queryRunner.manager.insert(Transaction, transaction);
@@ -127,10 +125,6 @@ export class PaymentService {
         transaction,
       });
       await queryRunner.manager.insert(Order, order);
-
-      console.log({
-        travelStartDateTime: busTicketPurchaseDto.travelStartDateTime,
-      });
 
       /**
        * Create Bus ticket and assign the order
@@ -178,7 +172,7 @@ export class PaymentService {
 
       const htmlContent = await paymentProvider.startPayment(
         clientIp,
-        busTicketPurchaseDto.creditCard,
+        busTicketPurchaseDto.bankCard,
         { ...transaction, order: { ...order, busTickets } },
       );
       await queryRunner.commitTransaction();

@@ -19,7 +19,6 @@ import {
   getBusTerminalsByNameMockResponse,
   serviceInformationMockResponse,
 } from './mock-response/biletall-bus-service-mock-response';
-import { CreditCardDto } from '@app/common/dtos';
 
 describe('BusController', () => {
   const busServiceMock = {

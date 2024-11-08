@@ -17,7 +17,7 @@ import { InjectPoxClient } from '@app/providers/pox-client/decorators';
 import { PaymentProvider } from '@app/common/enums';
 
 // dtos
-import { CreditCardDto } from '@app/common/dtos';
+import { BankCardDto } from '@app/common/dtos';
 import { VakifBankPaymentResultDto } from '@app/payment/dto/vakif-bank-payment-result.dto';
 
 // types
@@ -85,13 +85,13 @@ export class VakifBankPaymentStrategy implements IPayment {
 
   async startPayment(
     _clientIp: string,
-    creditCard: CreditCardDto,
+    bankCard: BankCardDto,
     transaction: Transaction,
   ): Promise<string> {
     const card3DsEligibility =
       await this.vakifBankEnrollmentService.checkCard3DsEligibility(
         transaction,
-        creditCard,
+        bankCard,
       );
 
     if (!card3DsEligibility.isEligibile) {
@@ -182,7 +182,12 @@ export class VakifBankPaymentStrategy implements IPayment {
         ClientIp: clientIp,
       },
     };
-    return this.sendRequest('/VposService/v3/Vposreq.aspx', body);
+    const resp = await this.sendRequest<CancelResponse>(
+      '/VposService/v3/Vposreq.aspx',
+      body,
+    );
+    this.logger.log('CancelVakifBankPayment', resp);
+    return resp;
   }
 
   /**
@@ -204,6 +209,11 @@ export class VakifBankPaymentStrategy implements IPayment {
         ClientIp: clientIp,
       },
     };
-    return this.sendRequest('/VposService/v3/Vposreq.aspx', body);
+    const resp = await this.sendRequest<RefundResponse>(
+      '/VposService/v3/Vposreq.aspx',
+      body,
+    );
+    this.logger.log('RefundVakifBankPayment', resp);
+    return resp;
   }
 }

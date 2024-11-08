@@ -10,7 +10,7 @@ import {
 import { DateISODate } from '@app/common/types';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateCreditCardDto {
+export class CreateBankCardDto {
   @ApiProperty({ required: true })
   @IsNotEmpty()
   @IsString()

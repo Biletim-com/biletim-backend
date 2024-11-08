@@ -30,7 +30,7 @@ import {
   ServiceInformationDto,
   ServiceInformationRequestDto,
 } from '../../dto/bus-service-information.dto';
-import { CreditCardDto } from '@app/common/dtos';
+import { BankCardDto } from '@app/common/dtos';
 import { BusTerminalDto } from '../../dto/bus-terminal.dto';
 import {
   BusSeatAvailabilityDto,
@@ -308,7 +308,7 @@ export class BiletAllBusService extends BiletAllService {
     transaction: Transaction,
     order: Order,
     tickets: BusTicket[],
-    creditCard: CreditCardDto,
+    bankCard: BankCardDto,
   ): Promise<string>;
 
   async saleRequest(
@@ -316,7 +316,7 @@ export class BiletAllBusService extends BiletAllService {
     transaction: Transaction,
     order: Order,
     tickets: BusTicket[],
-    creditCard?: undefined,
+    bankCard?: undefined,
   ): Promise<BusTicketSaleDto>;
 
   async saleRequest(
@@ -324,7 +324,7 @@ export class BiletAllBusService extends BiletAllService {
     transaction: Transaction,
     order: Order,
     tickets: BusTicket[],
-    creditCard?: CreditCardDto,
+    bankCard?: BankCardDto,
   ): Promise<BusTicketSaleDto | string> {
     const builder = new xml2js.Builder({
       headless: true,
@@ -340,15 +340,13 @@ export class BiletAllBusService extends BiletAllService {
     } = tickets[0];
     const date = dayjs(travelStartDateTime).format('YYYY-MM-DD');
 
-    console.log({ departureTerminal, arrivalTerminal, travelStartDateTime });
-
     const requestDocument = {
       IslemSatis: {
         FirmaNo: companyNo,
         KalkisNoktaID: departureTerminal.externalId,
         VarisNoktaID: arrivalTerminal.externalId,
         Tarih: date,
-        Saat: '1900-01-01T10:30:00+03:00',
+        Saat: '2024-11-15T10:30:00',
         HatNo: routeNumber,
         SeferNo: tripTrackingNumber,
         KalkisTerminalAdiSaatleri: '',
@@ -378,14 +376,14 @@ export class BiletAllBusService extends BiletAllService {
           Ip: clientIp,
           Email: order.userEmail,
           // if credit card passed this means we purchase via biletall
-          ...(creditCard?.pan
+          ...(bankCard?.pan
             ? {
-                KrediKartNo: creditCard.pan,
-                KrediKartSahip: creditCard.holderName,
-                KrediKartGecerlilikTarihi: dayjs(creditCard.expiryDate).format(
+                KrediKartNo: bankCard.pan,
+                KrediKartSahip: bankCard.holderName,
+                KrediKartGecerlilikTarihi: dayjs(bankCard.expiryDate).format(
                   'MM.YYYY',
                 ),
-                KrediKartCCV2: creditCard.cvv,
+                KrediKartCCV2: bankCard.cvv,
               }
             : {
                 OnOdemeKullan: 1,
@@ -396,7 +394,7 @@ export class BiletAllBusService extends BiletAllService {
     };
 
     const xml = builder.buildObject(requestDocument);
-    if (creditCard) return xml;
+    if (bankCard) return xml;
 
     const res = await this.run<BusTicketSaleRequestResponse>(xml);
     return this.biletAllBusParserService.parseSaleRequest(res);

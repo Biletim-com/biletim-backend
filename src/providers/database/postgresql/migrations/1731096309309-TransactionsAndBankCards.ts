@@ -1,25 +1,25 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class TransactionsAndCreditCards1730918482451
+export class TransactionsAndBankCards1731096309309
   implements MigrationInterface
 {
-  name = 'TransactionsAndCreditCards1730918482451';
+  name = 'TransactionsAndBankCards1731096309309';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "credit_cards" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "name" character varying NOT NULL, "hash" character varying NOT NULL, "masked_pan" character varying NOT NULL, "pan_token" character varying NOT NULL, "expiry_date" date NOT NULL, "holder_name" character varying NOT NULL, "user_id" uuid, CONSTRAINT "PK_7749b596e358703bb3dd8b45b7c" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "credit_cards" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "name" character varying NOT NULL, "hash" character varying NOT NULL, "masked_pan" character varying NOT NULL, "vakif_pan_token" character varying NOT NULL, "garanti_pan_token" character varying NOT NULL, "ratehawk_pan_token" character varying NOT NULL, "expiry_date" date NOT NULL, "holder_name" character varying NOT NULL, "user_id" uuid, CONSTRAINT "PK_7749b596e358703bb3dd8b45b7c" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "wallets" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "balance" integer NOT NULL DEFAULT '0', "user_id" uuid, CONSTRAINT "REL_92558c08091598f7a4439586cd" UNIQUE ("user_id"), CONSTRAINT "PK_8402e5df5a30a229380e83e4f7e" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "bus_tickets" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "company_no" character varying NOT NULL, "ticket_number" character varying, "ticket_order" integer NOT NULL, "route_number" character varying NOT NULL, "trip_tracking_number" character varying NOT NULL, "seat_number" character varying NOT NULL, "first_name" character varying NOT NULL, "last_name" character varying NOT NULL, "gender" character varying NOT NULL, "travel_start_date_time" TIMESTAMPTZ NOT NULL, "is_turkish_citizen" boolean NOT NULL, "tc_number" character varying(11), "passport_country_code" character varying, "passport_number" character varying, "passport_expiration_date" date, "departure_terminal_id" uuid, "arrival_terminal_id" uuid, "order_id" uuid, CONSTRAINT "PK_6bd2b6ef285a5ddc4f6b9120c49" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "bus_tickets" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "company_no" character varying NOT NULL, "ticket_number" character varying, "ticket_order" integer NOT NULL, "route_number" character varying NOT NULL, "trip_tracking_number" character varying NOT NULL, "seat_number" character varying NOT NULL, "first_name" character varying NOT NULL, "last_name" character varying NOT NULL, "gender" character varying NOT NULL, "travel_start_date_time" character varying NOT NULL, "is_turkish_citizen" boolean NOT NULL, "tc_number" character varying(11), "passport_country_code" character varying, "passport_number" character varying, "passport_expiration_date" date, "departure_terminal_id" uuid, "arrival_terminal_id" uuid, "order_id" uuid, CONSTRAINT "PK_6bd2b6ef285a5ddc4f6b9120c49" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "orders" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "user_email" character varying NOT NULL, "user_phone_number" character varying NOT NULL, "pnr" character varying, "user_id" uuid, "transaction_id" uuid, CONSTRAINT "REL_4547f22852bd9778b54dafe30e" UNIQUE ("transaction_id"), CONSTRAINT "PK_710e2d4957aa5878dfe94e4ac2f" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "transactions" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "amount" numeric NOT NULL, "currency" character varying NOT NULL, "status" character varying NOT NULL, "transaction_type" character varying NOT NULL, "payment_method" character varying NOT NULL, "payment_provider" character varying, "error_message" character varying, "cardholder_name" character varying, "masked_pan" character varying, "credit_card_id" uuid, "wallet_id" uuid, CONSTRAINT "PK_a219afd8dd77ed80f5a862f1db9" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "transactions" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "amount" numeric NOT NULL, "currency" character varying NOT NULL, "status" character varying NOT NULL, "transaction_type" character varying NOT NULL, "payment_method" character varying NOT NULL, "payment_provider" character varying, "error_message" character varying, "cardholder_name" character varying, "masked_pan" character varying, "bank_card_id" uuid, "wallet_id" uuid, CONSTRAINT "PK_a219afd8dd77ed80f5a862f1db9" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `ALTER TABLE "passengers" DROP COLUMN "middle_name"`,
@@ -57,7 +57,7 @@ export class TransactionsAndCreditCards1730918482451
       `ALTER TABLE "orders" ADD CONSTRAINT "FK_4547f22852bd9778b54dafe30e5" FOREIGN KEY ("transaction_id") REFERENCES "transactions"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
-      `ALTER TABLE "transactions" ADD CONSTRAINT "FK_f0da938718eb2a8b26e2fcb4cbe" FOREIGN KEY ("credit_card_id") REFERENCES "credit_cards"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+      `ALTER TABLE "transactions" ADD CONSTRAINT "FK_f2270bbc11d52b77cad5469f534" FOREIGN KEY ("bank_card_id") REFERENCES "credit_cards"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "transactions" ADD CONSTRAINT "FK_0b171330be0cb621f8d73b87a9e" FOREIGN KEY ("wallet_id") REFERENCES "wallets"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
@@ -69,7 +69,7 @@ export class TransactionsAndCreditCards1730918482451
       `ALTER TABLE "transactions" DROP CONSTRAINT "FK_0b171330be0cb621f8d73b87a9e"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "transactions" DROP CONSTRAINT "FK_f0da938718eb2a8b26e2fcb4cbe"`,
+      `ALTER TABLE "transactions" DROP CONSTRAINT "FK_f2270bbc11d52b77cad5469f534"`,
     );
     await queryRunner.query(
       `ALTER TABLE "orders" DROP CONSTRAINT "FK_4547f22852bd9778b54dafe30e5"`,

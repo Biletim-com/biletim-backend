@@ -3,11 +3,11 @@ import { DataSource } from 'typeorm';
 
 import { AbstractRepository } from '@app/common/database/postgresql/abstract.repository';
 
-import { CreditCard } from './credit-card.entity';
+import { BankCard } from './bank-card.entity';
 
 @Injectable()
-export class CreditCardsRepository extends AbstractRepository<CreditCard> {
+export class BankCardsRepository extends AbstractRepository<BankCard> {
   constructor(private dataSource: DataSource) {
-    super(CreditCard, dataSource.createEntityManager());
+    super(BankCard, dataSource.createEntityManager());
   }
 }

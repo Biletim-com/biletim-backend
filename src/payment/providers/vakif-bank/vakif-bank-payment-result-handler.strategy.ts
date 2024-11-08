@@ -27,6 +27,7 @@ import { UUID } from '@app/common/types';
 // enums
 import { TransactionStatus } from '@app/common/enums';
 import { threeDSecureResponse } from './constants/3d-response.constant';
+import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 
 @Injectable()
 export class VakifBankPaymentResultHandlerStrategy
@@ -68,8 +69,6 @@ export class VakifBankPaymentResultHandlerStrategy
       throw new TransactionNotFoundError();
     }
 
-    console.log({ transaction: JSON.stringify(transaction, null, 2) });
-
     const actionsCompleted: Array<'PAYMENT' | 'TICKET_SALE'> = [];
 
     try {
@@ -80,23 +79,37 @@ export class VakifBankPaymentResultHandlerStrategy
         throw new BadRequestException(paymentResultDto.ErrorMessage);
       }
 
-      // /**
-      //  * check ticket validity against biletall
-      //  */
-      // const busSeatAvailabilityDto = new BusSeatAvailabilityRequestDto({
-      //   ...busTicketPurchaseDto,
-      //   departurePointId: departureTerminal.externalId,
-      //   arrivalPointId: arrivalTerminal.externalId,
-      //   seats: transaction.order.busTickets,
-      //   ip: '127.0.0.1',
-      // });
+      const {
+        companyNo,
+        routeNumber,
+        tripTrackingNumber,
+        departureTerminal,
+        arrivalTerminal,
+        travelStartDateTime,
+      } = transaction.order.busTickets[0];
 
-      // const busSeatAvailability =
-      //   await this.biletAllBusService.busSeatAvailability(busSeatAvailabilityDto);
+      /**
+       * check ticket validity against biletall
+       */
+      const busSeatAvailabilityDto = new BusSeatAvailabilityRequestDto({
+        companyNo,
+        routeNumber,
+        tripTrackingNumber,
+        departurePointId: String(departureTerminal.externalId),
+        arrivalPointId: String(arrivalTerminal.externalId),
+        travelStartDateTime,
+        seats: transaction.order.busTickets,
+      });
 
-      // if (!busSeatAvailability.isAvailable) {
-      //   throw new BadRequestException('Seat(s) are not available anymore');
-      // }
+      const busSeatAvailability =
+        await this.biletAllBusService.busSeatAvailability(
+          clientIp,
+          busSeatAvailabilityDto,
+        );
+
+      if (!busSeatAvailability.isAvailable) {
+        throw new BadRequestException('Seat(s) are not available anymore');
+      }
 
       // update transaction status
       await queryRunner.manager.update(Transaction, transaction.id, {
@@ -146,7 +159,8 @@ export class VakifBankPaymentResultHandlerStrategy
 
       return transaction;
     } catch (err) {
-      console.log({ err });
+      await queryRunner.rollbackTransaction();
+
       await this.transactionsRepository.update(transaction.id, {
         status: TransactionStatus.FAILED,
         errorMessage:
@@ -155,14 +169,9 @@ export class VakifBankPaymentResultHandlerStrategy
 
       // TODO: this should be sent to a queue
       if (actionsCompleted.includes('PAYMENT')) {
-        const cancelPayment = await this.vakifBankPaymentStrategy.cancelPayment(
-          clientIp,
-          transaction,
-        );
-        console.log({ cancelPayment });
+        this.vakifBankPaymentStrategy.cancelPayment(clientIp, transaction);
       }
 
-      await queryRunner.rollbackTransaction();
       throw err;
     } finally {
       await queryRunner.release();

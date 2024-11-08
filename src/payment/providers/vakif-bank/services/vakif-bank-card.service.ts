@@ -8,7 +8,7 @@ import { PaymentConfigService } from '@app/configs/payment';
 import { InjectPoxClient } from '@app/providers/pox-client/decorators';
 
 // dtos
-import { CreateCreditCardDto } from '@app/modules/credit-cards/dto/create-credit-card-request.dto';
+import { CreateBankCardDto } from '@app/modules/bank-cards/dto/create-bank-card-request.dto';
 
 // enums
 import { PaymentProvider } from '@app/common/enums';
@@ -85,15 +85,15 @@ export class VakifBankCardService {
 
   async createCustomerCard(
     userId: string,
-    creditCard: CreateCreditCardDto,
+    bankCard: CreateBankCardDto,
   ): Promise<CreateCustomerPanResponse> {
     const params = {
       CreateCustomerPanRequest: {
         ...this.authCredentials,
         CustomerNumber: userId,
-        Pan: creditCard.pan,
-        ExpireDate: dayjs(creditCard.expiryDate).format('YYYYMM'),
-        CardHolderName: creditCard.holderName,
+        Pan: bankCard.pan,
+        ExpireDate: dayjs(bankCard.expiryDate).format('YYYYMM'),
+        CardHolderName: bankCard.holderName,
       },
     };
     return this.sendRequest('/UIService/CreateCustomerPan.aspx', params);

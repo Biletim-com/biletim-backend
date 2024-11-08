@@ -11,7 +11,7 @@ import {
 import { DateISODate } from '@app/common/types';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateCreditCardDto {
+export class UpdateBankCardDto {
   @ApiProperty()
   @IsNotIn([null])
   @IsString()

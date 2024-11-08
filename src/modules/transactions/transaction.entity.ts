@@ -3,7 +3,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
 import { Wallet } from '../wallets/wallet.entity';
-import { CreditCard } from '../credit-cards/credit-card.entity';
+import { BankCard } from '../bank-cards/bank-card.entity';
 
 // utils
 import { normalizeDecimal } from '@app/common/utils';
@@ -59,8 +59,8 @@ export class Transaction extends AbstractEntity<Transaction> {
 
   // saved card
   @JoinColumn()
-  @ManyToOne(() => CreditCard, { nullable: true })
-  creditCard?: Nullable<CreditCard>;
+  @ManyToOne(() => BankCard, { nullable: true })
+  bankCard?: Nullable<BankCard>;
 
   // wallet
   @JoinColumn()
