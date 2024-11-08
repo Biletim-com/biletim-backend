@@ -38,7 +38,7 @@ export class BiletAllPaymentResultHandlerStrategy
 
   async handleSuccessfulPayment(
     _clientIp: string,
-    paymentResultDto: BiletAllPaymentResultDto,
+    { pnr, ticketNumbers, ...paymentResultDto }: BiletAllPaymentResultDto,
   ): Promise<Transaction> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -60,6 +60,8 @@ export class BiletAllPaymentResultHandlerStrategy
     if (!transaction) {
       throw new TransactionNotFoundError();
     }
+    // sort bus tickets based on order
+    transaction.order.busTickets.sort((a, b) => a.ticketOrder - b.ticketOrder);
 
     try {
       if (paymentResultDto.result === false) {
@@ -78,27 +80,35 @@ export class BiletAllPaymentResultHandlerStrategy
 
       // update order and ticket numbers
       await queryRunner.manager.update(Order, transaction.order.id, {
-        pnr: paymentResultDto.pnr,
+        pnr,
       });
+      // update tickets for the data to return
+      transaction.order.pnr = pnr;
+
       await Promise.all(
-        transaction.order.busTickets
-          .sort((a, b) => a.ticketOrder - b.ticketOrder)
-          .map((sortedBusTicket, index: number) =>
-            queryRunner.manager.update(BusTicket, sortedBusTicket.id, {
-              ticketNumber: paymentResultDto.ticketNumbers[index],
-            }),
-          ),
+        transaction.order.busTickets.map((sortedBusTicket, index: number) => {
+          const ticketNumber = ticketNumbers[index];
+          // update tickets for the data to return
+          sortedBusTicket.ticketNumber = ticketNumber;
+
+          return queryRunner.manager.update(BusTicket, sortedBusTicket.id, {
+            ticketNumber,
+          });
+        }),
       );
 
       // update transaction status
       await queryRunner.manager.update(Transaction, transaction.id, {
         status: TransactionStatus.COMPLETED,
       });
+      // udpate transaction for the data to return
+      transaction.status = TransactionStatus.COMPLETED;
 
       /** SEND EVENTS */
       // create invoice and ticket output
       // send email or SMS
 
+      await queryRunner.commitTransaction();
       return transaction;
     } catch (err) {
       await this.transactionsRepository.update(transaction.id, {

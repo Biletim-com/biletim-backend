@@ -136,27 +136,37 @@ export class VakifBankPaymentResultHandlerStrategy
       );
       actionsCompleted.push('TICKET_SALE');
 
-      // update order and ticket numbers
+      // update order
       await queryRunner.manager.update(Order, transaction.order.id, { pnr });
+      // update tickets for the data to return
+      transaction.order.pnr = pnr;
+
       await Promise.all(
         transaction.order.busTickets
           .sort((a, b) => a.ticketOrder - b.ticketOrder)
-          .map((sortedBusTicket, index: number) =>
-            queryRunner.manager.update(BusTicket, sortedBusTicket.id, {
-              ticketNumber: ticketNumbers[index],
-            }),
-          ),
+          .map((sortedBusTicket, index: number) => {
+            const ticketNumber = ticketNumbers[index];
+            // update tickets for the data to return
+            sortedBusTicket.ticketNumber = ticketNumber;
+
+            // update ticket numbers
+            return queryRunner.manager.update(BusTicket, sortedBusTicket.id, {
+              ticketNumber,
+            });
+          }),
       );
 
-      // update transaction status
       await queryRunner.manager.update(Transaction, transaction.id, {
         status: TransactionStatus.COMPLETED,
       });
+      // udpate transaction for the data to return
+      transaction.status = TransactionStatus.COMPLETED;
 
       /** SEND EVENTS */
       // create invoice and ticket output
       // send email or SMS
 
+      await queryRunner.commitTransaction();
       return transaction;
     } catch (err) {
       await queryRunner.rollbackTransaction();
@@ -171,7 +181,9 @@ export class VakifBankPaymentResultHandlerStrategy
       if (actionsCompleted.includes('PAYMENT')) {
         this.vakifBankPaymentStrategy.cancelPayment(clientIp, transaction);
       }
-
+      if (actionsCompleted.includes('TICKET_SALE')) {
+        console.log('cancel with PNR number');
+      }
       throw err;
     } finally {
       await queryRunner.release();

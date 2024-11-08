@@ -14,6 +14,7 @@ import {
 // enums
 import { Gender } from '@app/common/enums';
 import { DateISODate } from '@app/common/types';
+import { IsTCNumber } from '@app/common/decorators';
 
 export class BusPassengerInfoDto {
   @ApiProperty({
@@ -79,12 +80,9 @@ export class BusPassengerInfoDto {
     required: false,
   })
   @ValidateIf((o) => o.isTurkishCitizen === true)
+  @IsTCNumber()
   @IsNotEmpty({
     message: 'TR ID Number is mandatory for Turkish citizens',
-  })
-  @IsString()
-  @Length(11, 11, {
-    message: 'TR ID Number must be 11 characters length',
   })
   tcNumber?: string;
 

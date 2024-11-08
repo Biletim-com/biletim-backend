@@ -92,8 +92,8 @@ export class PaymentService {
     const paymentProviderType = transactionRules.includes(
       'INTERNAL_VIRTUAL_POS',
     )
-      ? PaymentProvider.BILET_ALL
-      : PaymentProvider.VAKIF_BANK;
+      ? PaymentProvider.VAKIF_BANK
+      : PaymentProvider.BILET_ALL;
 
     try {
       /**
