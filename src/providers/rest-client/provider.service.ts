@@ -5,11 +5,11 @@ import { AxiosError } from '@nestjs/terminus/dist/errors/axios.error';
 
 type Methods = 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH';
 
-interface RequestConfigs {
+export interface RequestConfigs {
   url: string;
   method: Methods;
   headers?: Record<string, string>;
-  data?: Record<string, string>;
+  data?: Record<string, any>;
   params?: Record<string, string>;
 }
 

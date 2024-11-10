@@ -27,6 +27,7 @@ import { ErrorInterceptor } from '@app/common/interceptors';
 import { JobsModule } from '@app/jobs/jobs.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EventEmitterModule } from '@nestjs/event-emitter/dist/event-emitter.module';
+import { InsuranceModule } from './modules/insurance/insurance.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter/dist/event-emitter.mod
     TicketsModule,
     BookingModule,
     PassengersModule,
+    InsuranceModule,
   ],
   providers: [
     {
