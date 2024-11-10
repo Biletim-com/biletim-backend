@@ -23,6 +23,7 @@ import { UUID } from '@app/common/types';
 import { VerificationService } from '@app/modules/users/verification/verification.service';
 import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
 import { VerificationDto } from '../dto/verification.dto';
+import { CreateUserDto } from '@app/modules/users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -197,12 +198,13 @@ export class AuthService {
 
     if (!user) {
       const password: string = uuidv4();
-      user = await this.usersService.create({
+      const createUserDto: CreateUserDto = {
         email: email,
         password: password,
         name: name,
         familyName: familyName,
-      });
+      };
+      user = await this.usersService.create(createUserDto);
     }
 
     this.login(user, response);
