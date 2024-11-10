@@ -346,7 +346,7 @@ export class BiletAllBusService extends BiletAllService {
         KalkisNoktaID: departureTerminal.externalId,
         VarisNoktaID: arrivalTerminal.externalId,
         Tarih: date,
-        Saat: '2024-11-15T10:30:00',
+        Saat: travelStartDateTime,
         HatNo: routeNumber,
         SeferNo: tripTrackingNumber,
         KalkisTerminalAdiSaatleri: '',

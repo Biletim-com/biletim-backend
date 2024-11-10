@@ -119,6 +119,8 @@ export class PaymentService {
        * Create Order
        */
       const order = new Order({
+        firstName: busTicketPurchaseDto.firstName,
+        lastName: busTicketPurchaseDto.lastName,
         userEmail: busTicketPurchaseDto.email,
         userPhoneNumber: busTicketPurchaseDto.phoneNumber,
         user: null,

@@ -14,10 +14,16 @@ import { BusTicket } from '../tickets/bus/entities/bus-ticket.entity';
 
 @Entity('orders')
 export class Order extends AbstractEntity<Order> {
-  @Column('varchar')
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
+
+  @Column()
   userEmail: string;
 
-  @Column('varchar')
+  @Column()
   userPhoneNumber: string;
 
   @Column('varchar', { nullable: true })

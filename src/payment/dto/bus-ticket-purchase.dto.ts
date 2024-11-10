@@ -8,6 +8,7 @@ import {
   IsString,
   IsUUID,
   Length,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
@@ -90,6 +91,24 @@ export class BusTicketPurchaseDto {
   totalTicketPrice: string;
 
   @ApiProperty({
+    description: 'First name of the customer.',
+    example: 'John',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  firstName: string;
+
+  @ApiProperty({
+    description: 'Last name of the customer.',
+    example: 'Doe',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+
+  @ApiProperty({
     description: 'Contact email address of the person booking the ticket',
     required: true,
   })
@@ -100,7 +119,6 @@ export class BusTicketPurchaseDto {
   @ApiProperty({
     description:
       'Contact phone number of the person booking the ticket. Must be 10 characters',
-    example: '5550240045',
     required: true,
   })
   @IsString()

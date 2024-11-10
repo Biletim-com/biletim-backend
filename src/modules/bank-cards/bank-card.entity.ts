@@ -6,7 +6,7 @@ import { User } from '../users/user.entity';
 
 import { DateISODate } from '@app/common/types';
 
-@Entity('credit_cards')
+@Entity('bank_cards')
 export class BankCard extends AbstractEntity<BankCard> {
   @Column()
   name: string;
