@@ -16,6 +16,9 @@ export class BusTicket extends AbstractEntity<BusTicket> {
   @Column()
   companyNo: string;
 
+  @Column()
+  companyName: string;
+
   @Column('varchar', { nullable: true })
   ticketNumber?: Nullable<string>;
 

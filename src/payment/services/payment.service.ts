@@ -54,6 +54,16 @@ export class PaymentService {
     }
 
     /**
+     * Validate Company via company number
+     */
+    const [company] = await this.biletAllBusService.company({
+      companyNo: busTicketPurchaseDto.companyNo,
+    });
+    if (!company) {
+      throw new BadRequestException('Company does not exist');
+    }
+
+    /**
      * check ticket validity against biletall
      */
     const busSeatAvailabilityDto = new BusSeatAvailabilityRequestDto({
@@ -152,6 +162,7 @@ export class PaymentService {
         ) =>
           new BusTicket({
             companyNo: busTicketPurchaseDto.companyNo,
+            companyName: company.companyName,
             ticketOrder: index + 1,
             routeNumber: busTicketPurchaseDto.routeNumber,
             tripTrackingNumber: busSeatAvailabilityDto.tripTrackingNumber,

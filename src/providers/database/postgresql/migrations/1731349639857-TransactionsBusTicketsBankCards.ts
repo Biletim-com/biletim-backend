@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class TransactionsBusTicketsBankCards1731344514918
+export class TransactionsBusTicketsBankCards1731349639857
   implements MigrationInterface
 {
-  name = 'TransactionsBusTicketsBankCards1731344514918';
+  name = 'TransactionsBusTicketsBankCards1731349639857';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -13,7 +13,7 @@ export class TransactionsBusTicketsBankCards1731344514918
       `CREATE TABLE "wallets" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "balance" integer NOT NULL DEFAULT '0', "user_id" uuid, CONSTRAINT "REL_92558c08091598f7a4439586cd" UNIQUE ("user_id"), CONSTRAINT "PK_8402e5df5a30a229380e83e4f7e" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "bus_tickets" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "company_no" character varying NOT NULL, "ticket_number" character varying, "ticket_order" integer NOT NULL, "route_number" character varying NOT NULL, "trip_tracking_number" character varying NOT NULL, "seat_number" character varying NOT NULL, "first_name" character varying NOT NULL, "last_name" character varying NOT NULL, "gender" character varying NOT NULL, "travel_start_date_time" character varying NOT NULL, "is_turkish_citizen" boolean NOT NULL, "tc_number" character varying(11), "passport_country_code" character varying, "passport_number" character varying, "passport_expiration_date" date, "departure_terminal_id" uuid, "arrival_terminal_id" uuid, "order_id" uuid, CONSTRAINT "PK_6bd2b6ef285a5ddc4f6b9120c49" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "bus_tickets" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "company_no" character varying NOT NULL, "company_name" character varying NOT NULL, "ticket_number" character varying, "ticket_order" integer NOT NULL, "route_number" character varying NOT NULL, "trip_tracking_number" character varying NOT NULL, "seat_number" character varying NOT NULL, "first_name" character varying NOT NULL, "last_name" character varying NOT NULL, "gender" character varying NOT NULL, "travel_start_date_time" character varying NOT NULL, "is_turkish_citizen" boolean NOT NULL, "tc_number" character varying(11), "passport_country_code" character varying, "passport_number" character varying, "passport_expiration_date" date, "departure_terminal_id" uuid, "arrival_terminal_id" uuid, "order_id" uuid, CONSTRAINT "PK_6bd2b6ef285a5ddc4f6b9120c49" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "orders" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "first_name" character varying NOT NULL, "last_name" character varying NOT NULL, "user_email" character varying NOT NULL, "user_phone_number" character varying NOT NULL, "status" character varying NOT NULL, "type" character varying NOT NULL, "pnr" character varying, "user_id" uuid, "transaction_id" uuid, CONSTRAINT "REL_4547f22852bd9778b54dafe30e" UNIQUE ("transaction_id"), CONSTRAINT "PK_710e2d4957aa5878dfe94e4ac2f" PRIMARY KEY ("id"))`,
@@ -21,11 +21,11 @@ export class TransactionsBusTicketsBankCards1731344514918
     await queryRunner.query(
       `CREATE TABLE "transactions" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "amount" numeric NOT NULL, "currency" character varying NOT NULL, "status" character varying NOT NULL, "transaction_type" character varying NOT NULL, "payment_method" character varying NOT NULL, "payment_provider" character varying, "error_message" character varying, "cardholder_name" character varying, "masked_pan" character varying, "bank_card_id" uuid, "wallet_id" uuid, CONSTRAINT "PK_a219afd8dd77ed80f5a862f1db9" PRIMARY KEY ("id"))`,
     );
-    await queryRunner.query(`ALTER TABLE "passengers" DROP COLUMN "phone"`);
-    await queryRunner.query(`ALTER TABLE "passengers" DROP COLUMN "email"`);
     await queryRunner.query(
       `ALTER TABLE "passengers" DROP COLUMN "middle_name"`,
     );
+    await queryRunner.query(`ALTER TABLE "passengers" DROP COLUMN "email"`);
+    await queryRunner.query(`ALTER TABLE "passengers" DROP COLUMN "phone"`);
     await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "middle_name"`);
     await queryRunner.query(
       `ALTER TABLE "passports" DROP COLUMN "expiration_date"`,
@@ -106,13 +106,13 @@ export class TransactionsBusTicketsBankCards1731344514918
       `ALTER TABLE "users" ADD "middle_name" character varying`,
     );
     await queryRunner.query(
-      `ALTER TABLE "passengers" ADD "middle_name" character varying`,
+      `ALTER TABLE "passengers" ADD "phone" character varying`,
     );
     await queryRunner.query(
       `ALTER TABLE "passengers" ADD "email" character varying`,
     );
     await queryRunner.query(
-      `ALTER TABLE "passengers" ADD "phone" character varying`,
+      `ALTER TABLE "passengers" ADD "middle_name" character varying`,
     );
     await queryRunner.query(`DROP TABLE "transactions"`);
     await queryRunner.query(`DROP TABLE "orders"`);
