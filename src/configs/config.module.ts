@@ -51,6 +51,11 @@ import notificationsConfiguration, {
   NotificationsEnvVarsValidation,
 } from './notifications';
 
+import paymentConfiguration, {
+  PaymentConfigService,
+  PaymentEnvVarsValidation,
+} from './payment';
+
 @Global()
 @Module({
   imports: [
@@ -66,6 +71,7 @@ import notificationsConfiguration, {
         loginWithGoogleConfiguration,
         loginWithFacebookConfiguration,
         notificationsConfiguration,
+        paymentConfiguration,
       ],
       validate: async (config) =>
         Promise.all([
@@ -84,6 +90,7 @@ import notificationsConfiguration, {
             OAuthLoginWithFacebookEnvVarsValidation,
             config,
           ),
+          ConfigValidator.validate(PaymentEnvVarsValidation, config),
         ]),
     }),
   ],
@@ -98,6 +105,7 @@ import notificationsConfiguration, {
     OAuthLoginWithGoogleConfigService,
     OAuthLoginWithFacebookConfigService,
     NotificationsConfigService,
+    PaymentConfigService,
   ],
   exports: [
     ConfigService,
@@ -110,6 +118,7 @@ import notificationsConfiguration, {
     OAuthLoginWithGoogleConfigService,
     OAuthLoginWithFacebookConfigService,
     NotificationsConfigService,
+    PaymentConfigService,
   ],
 })
 export class ConfigModule {}

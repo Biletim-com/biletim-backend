@@ -1,6 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { HttpModule } from '@nestjs/axios';
 
 import { UsersModule } from '@app/modules/users/users.module';
 import { PanelUsersModule } from '@app/modules/panel-users/panel-users.module';
@@ -31,7 +30,6 @@ import { EventEmitterService } from '@app/providers/event-emitter/provider.servi
 
 @Module({
   imports: [
-    HttpModule,
     PanelUsersModule,
     UsersModule,
     JwtModule.registerAsync({

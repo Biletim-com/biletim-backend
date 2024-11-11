@@ -4,6 +4,7 @@ import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity'
 
 import { Verification } from './verification/verification.entity';
 import { Passenger } from '../passengers/passenger.entity';
+import { BankCard } from '../bank-cards/bank-card.entity';
 
 @Entity('users')
 export class User extends AbstractEntity<User> {
@@ -44,4 +45,7 @@ export class User extends AbstractEntity<User> {
 
   @OneToMany(() => Passenger, (passenger) => passenger.user)
   passengers: Passenger[];
+
+  @OneToMany(() => BankCard, (bankCard) => bankCard.user)
+  bankCards: BankCard;
 }

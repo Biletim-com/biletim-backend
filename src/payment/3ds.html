@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>3D-Secure Processing Page</title>
+</head>
+
+<body>
+    <form name="paymentForm" action="https://3dsecuretest.vakifbank.com.tr/MPIAPI//Troy_ACS.aspx" method="POST">
+        <noscript>
+            <br>
+            <br>
+            <center>
+                <h1>Processing your 3-D Secure Transaction</h1>
+                <h2>
+                    JavaScript is currently disabled or is not supported by your browser.
+                    <br>
+                </h2>
+                <h3>Please click Submit to continue the processing of your 3-D Secure transaction. Enrolled Returns true
+                </h3>
+                <input type="submit" value="Submit">
+            </center>
+        </noscript>
+        <input type="hidden" name="PaReq" value="eJyNUk1TgzAQ/SsMd0igIKWzTadap+pMnY52dKa3FFaLQKghaPvv3dDWj5u5sG+zvN23LzDZ15XzgbotGjV2A5+7DqqsyQv1OnY78+IN3YmA1VYjzh4x6zQKWGDbyld0inzsch7E+JLEebgZeBseJ17E08gbpnzgJRhthgkGdImugOX0Ad8FnJoJ7vMBsDMiUp1tpTICZPZ+eXsv0iQNeQzsBKFGfTsTnBry/gSDmF8AO6ZByRrFo1SycpZNa5wZKqwRWJ+HrOmU0QdBlMDOADpdia0xu3bEWKNKeSiML3XRlF1V0dcvg9A3GpitA/Yz4LKzUUu8+yIXi/ldvF6V4fr5qVjM28989fQm5+syC6/HwGwF5NKgCHkYBXQcno7CZBST+D4PsrYDiYg0kdojgJ3tMf198zsDZIQmnw4ijVJSdEaA+12jkCpI53cM7Gfiqxu74Mz0q/yfddaC/gfLXtDiIh4EPb0FwCwlO5nLTm+Doj9v5gt94MWX">
+        <input type="hidden" name="TermUrl" value="https://3dsecuretest.vakifbank.com.tr/MPIAPI/MPI_PARes.aspx">
+        <input type="hidden" name="MD" value="00158c157f1b-316c-4023-8588-54f9da447db3#0015ef75d2b3-b057-4094-8903-7e4b87e15d2e#eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIwMDAxMDAwMDAwMTM1MDYiLCJ0aW1lb3V0U2Vjb25kcyI6NDMyMDAwMDAsInJvbGVzIjoiIiwiZXhwIjoxNzc0NTQ5NjcyfQ.EFZz73-MqKXU2FUAGkPUCj5MORKIA7vDsc5Y0Le5xFSg00E4VYksfgoHYlTFxtmFZnd9kSnCLTrYxT7NwLdHCw#https://testgoguvenliodeme.bkmtest.com.tr/troy/approve">
+    </form>
+    <script type="text/javascript">
+        document.paymentForm.submit();
+    </script>
+</body>
+
+</html>

@@ -18,6 +18,9 @@ services:
     volumes:
       - ./src:/app/src
       - ./test:/app/test
+      # - ./open-zst.script.ts:/app/open-zst.script.ts
+      # - ./feed_en_v3.json.zst:/app/feed_en_v3.json.zst
+      # - ./hotels.json:/app/hotels.json
 
   biletim-db:
     image: postgres:15

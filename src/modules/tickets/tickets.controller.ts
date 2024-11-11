@@ -1,10 +1,13 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { BiletAllPnrService } from './services/biletall/biletall-pnr.service';
+
+// dto
 import { PnrSearchRequestDto } from './dto/tickets-pnr-search.dto';
 import { PnrSearchBusDto } from './dto/tickets-pnr-search-bus.dto';
 import { PnrSearchDomesticFlightDto } from './dto/tickets-pnr-search-domestic-flight.dto';
 import { PnrSearchAbroadFlightDto } from './dto/tickets-pnr-search-abroad-flight.dto';
-import { BiletAllPnrService } from './services/biletall/biletall-pnr.service';
 import {
   OfficialHolidaysDto,
   OfficialHolidaysRequestDto,

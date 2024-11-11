@@ -7,13 +7,13 @@ import {
   Matches,
   ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
+
 import { FlightSegmentDto } from './plane-pull-price-flight.dto';
 import { Gender, PassengerType } from '@app/common/enums';
-import { turkishToEnglish } from '../../bus/dto/bus-passenger-info.dto';
-import { Transform, Type } from 'class-transformer';
 import { InvoiceDto } from './plane-ticket-purchase.dto';
 import { IsInEnumKeys } from '@app/common/decorators';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class PlanePassengerInfoConvertReservationDto {
   @ApiProperty({
@@ -23,7 +23,6 @@ export class PlanePassengerInfoConvertReservationDto {
   })
   @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => turkishToEnglish(value))
   firstName: string;
 
   @ApiProperty({
@@ -33,7 +32,6 @@ export class PlanePassengerInfoConvertReservationDto {
   })
   @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => turkishToEnglish(value))
   lastName: string;
 
   @ApiProperty({

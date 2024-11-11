@@ -1,18 +1,19 @@
 import {
   IsArray,
   IsDateString,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Gender } from '@app/common/enums';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import { IsInEnumKeys } from '@app/common/decorators';
+import { Type } from 'class-transformer';
 import { DateISODate, DateTime } from '@app/common/types';
 import * as dayjs from 'dayjs';
+
+import { Gender } from '@app/common/enums';
 
 class BusSeatDto {
   @ApiProperty({
@@ -25,12 +26,12 @@ class BusSeatDto {
   seatNumber: string;
 
   @ApiProperty({
-    description: 'Gender of the passenger: MALE or FEMALE.',
-    example: 'MALE',
+    description: 'Gender of the passenger',
     required: true,
+    enum: Gender,
   })
-  @IsInEnumKeys(Gender, {
-    message: 'Gender must be a valid key (FEMALE or MALE)',
+  @IsEnum(Gender, {
+    message: `Must be a valid value: ${Object.values(Gender)}`,
   })
   @IsNotEmpty()
   gender: Gender;
@@ -38,9 +39,15 @@ class BusSeatDto {
 
 // check wether the passenger can buy the requested ticket based on their gender
 export class BusSeatAvailabilityRequestDto {
+  constructor(
+    dtoClassProperties: Omit<BusSeatAvailabilityRequestDto, 'date' | 'time'>,
+  ) {
+    Object.assign(this, dtoClassProperties);
+  }
+
   @ApiProperty({
     description: 'Company number',
-    example: '17',
+    example: '37',
     required: true,
   })
   @IsString()
@@ -52,7 +59,7 @@ export class BusSeatAvailabilityRequestDto {
     example: '84',
     required: true,
   })
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
   departurePointId: string;
 
@@ -61,31 +68,18 @@ export class BusSeatAvailabilityRequestDto {
     example: '738',
     required: true,
   })
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
   arrivalPointId: string;
 
   @ApiProperty({
-    description: 'The travel date in the format "yyyy-MM-dd".',
-    example: '2024-10-15',
+    description: 'Date of the trip in the format YYYY-MM-ddTHH:mm.SS',
+    example: '2024-09-20T15:00.00',
     required: true,
   })
-  @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
+  @IsDateString()
   @IsNotEmpty()
-  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
-  date: DateISODate;
-
-  @ApiProperty({
-    description: 'The travel date and time in the format yyyy-MM-ddTHH:mm:ss.',
-    example: '2024-09-15T12:30:00',
-    required: true,
-  })
-  @IsDateString(
-    {},
-    { message: 'Date must be in the format yyyy-MM-ddTHH:mm:ss' },
-  )
-  @IsNotEmpty()
-  time: DateTime;
+  travelStartDateTime: DateTime;
 
   @ApiProperty({
     description: 'The route number for the bus, required field.',
@@ -95,10 +89,6 @@ export class BusSeatAvailabilityRequestDto {
   @IsString()
   @IsNotEmpty()
   routeNumber: string;
-
-  @IsInt()
-  @IsOptional()
-  operationType?: number;
 
   @ApiProperty({
     description: 'The trip tracking number.',
@@ -110,15 +100,6 @@ export class BusSeatAvailabilityRequestDto {
   tripTrackingNumber: string;
 
   @ApiProperty({
-    description: 'The IP address of the user making the request.',
-    example: '127.0.0.1',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  ip = '127.0.0.1';
-
-  @ApiProperty({
     description: 'List of seat information',
     type: [BusSeatDto],
     required: true,
@@ -128,6 +109,14 @@ export class BusSeatAvailabilityRequestDto {
   @Type(() => BusSeatDto)
   @IsNotEmpty()
   seats: BusSeatDto[];
+
+  get date(): DateISODate {
+    return dayjs(this.travelStartDateTime).format('YYYY-MM-DD') as DateISODate;
+  }
+
+  get time(): DateTime {
+    return this.travelStartDateTime as DateTime;
+  }
 }
 
 export class BusSeatAvailabilityDto {

@@ -1,6 +1,6 @@
-import { ForbiddenResourceError, NotFoundError } from './service.error';
+import { ForbiddenResourceError, EntityNotFoundError } from './service.error';
 
-export class UserNotFoundError extends NotFoundError {
+export class UserNotFoundError extends EntityNotFoundError {
   constructor() {
     super('User');
   }

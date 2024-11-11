@@ -1,9 +1,8 @@
-import { IsInEnumKeys } from '@app/common/decorators';
-import { Gender } from '@app/common/enums';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import {
   IsBoolean,
+  IsDateString,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -12,26 +11,10 @@ import {
   ValidateIf,
 } from 'class-validator';
 
-export const turkishToEnglish = (text: string): string => {
-  const turkishMap: { [key: string]: string } = {
-    Ç: 'C',
-    Ğ: 'G',
-    İ: 'I',
-    Ö: 'O',
-    Ş: 'S',
-    Ü: 'U',
-    ç: 'c',
-    ğ: 'g',
-    ı: 'i',
-    ö: 'o',
-    ş: 's',
-    ü: 'u',
-  };
-  return text
-    .split('')
-    .map((char) => turkishMap[char] || char)
-    .join('');
-};
+// enums
+import { Gender } from '@app/common/enums';
+import { DateISODate } from '@app/common/types';
+import { IsTCNumber } from '@app/common/decorators';
 
 export class BusPassengerInfoDto {
   @ApiProperty({
@@ -41,7 +24,7 @@ export class BusPassengerInfoDto {
   })
   @IsString()
   @IsNotEmpty()
-  seatNo: number;
+  seatNumber: string;
 
   @ApiProperty({
     description: 'First name of the passenger.',
@@ -50,7 +33,6 @@ export class BusPassengerInfoDto {
   })
   @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => turkishToEnglish(value))
   firstName: string;
 
   @ApiProperty({
@@ -60,7 +42,6 @@ export class BusPassengerInfoDto {
   })
   @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => turkishToEnglish(value))
   lastName: string;
 
   @ValidateIf((o) => o.firstName && o.lastName)
@@ -73,13 +54,13 @@ export class BusPassengerInfoDto {
   }
 
   @ApiProperty({
-    description: 'Gender of the passenger: MALE or FEMALE.',
-    example: 'MALE',
+    description: 'Gender of the passenger',
     required: true,
+    enum: Gender,
   })
   @IsNotEmpty()
-  @IsInEnumKeys(Gender, {
-    message: 'Gender must be a valid key (FEMALE or MALE)',
+  @IsEnum(Gender, {
+    message: `Must be a valid value: ${Object.values(Gender)}`,
   })
   gender: Gender;
 
@@ -89,8 +70,8 @@ export class BusPassengerInfoDto {
     required: false,
   })
   @IsBoolean()
-  @IsOptional()
-  isTurkishCitizen?: boolean;
+  @IsNotEmpty()
+  isTurkishCitizen: boolean;
 
   @ApiProperty({
     description:
@@ -99,14 +80,11 @@ export class BusPassengerInfoDto {
     required: false,
   })
   @ValidateIf((o) => o.isTurkishCitizen === true)
+  @IsTCNumber()
   @IsNotEmpty({
     message: 'TR ID Number is mandatory for Turkish citizens',
   })
-  @IsString()
-  @Length(11, 11, {
-    message: 'TR ID Number must be 11 characters length',
-  })
-  turkishIdNumber?: string;
+  tcNumber?: string;
 
   @ApiProperty({
     description:
@@ -131,32 +109,14 @@ export class BusPassengerInfoDto {
   passportNumber?: string;
 
   @ApiProperty({
-    description: 'Boarding location of the passenger.',
-    example: 'Istanbul Terminal',
+    description:
+      'Passport expiration date, mandatory if the passenger is not a Turkish citizen. (YYYY-MM-DD)',
+    example: '2030-01-01',
     required: false,
   })
-  @IsString()
-  @MaxLength(15)
+  @ValidateIf((o) => o.isTurkishCitizen === false)
   @IsOptional()
-  boardingLocation?: string;
-
-  @ApiProperty({
-    description: 'Service location for departure.',
-    example: 'Service Point A',
-    required: false,
-  })
-  @IsString()
-  @MaxLength(15)
-  @IsOptional()
-  departureServiceLocation?: string;
-
-  @ApiProperty({
-    description: 'Service location for arrival.',
-    example: 'Service Point B',
-    required: false,
-  })
-  @IsString()
-  @MaxLength(15)
-  @IsOptional()
-  arrivalServiceLocation?: string;
+  @IsDateString()
+  @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
+  passportExpirationDate?: DateISODate;
 }

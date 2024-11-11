@@ -1,8 +1,10 @@
-export * from './email-type.enum';
 export * from './app-environment.enum';
-export * from './gender.enum';
-export * from './plane-travel-type.enum';
-export * from './passanger-type.enum';
-export * from './plane-flight-class-type.enum';
-export * from './plane-invoice-type.enum';
-export * from './plane-ticket-operation-type.enum';
+export * from './email-type.enum';
+export * from './currency.enum';
+
+export * from './payment.enums';
+export * from './passanger.enums';
+export * from './bank-card.enums';
+export * from './transaction.enums';
+export * from './plane-ticket.enums';
+export * from './order.enums';

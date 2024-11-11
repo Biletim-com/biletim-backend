@@ -6,10 +6,11 @@ import {
   IsDateString,
   Length,
   IsNotIn,
+  MaxLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { DateTime } from '@app/common/types';
+import { DateISODate, DateTime } from '@app/common/types';
 import { Gender } from '@app/common/enums';
 
 export class UpdatePassengerDto {
@@ -19,21 +20,18 @@ export class UpdatePassengerDto {
   @IsString()
   name?: string;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  middleName?: Nullable<string>;
-
   @ApiProperty({ required: false, nullable: false })
   @IsNotIn([null])
   @IsOptional()
   @IsString()
   familyName?: string;
 
-  @ApiProperty({ required: false, nullable: false })
+  @ApiProperty({ required: false, nullable: false, enum: Gender })
   @IsNotIn([null])
   @IsOptional()
-  @IsEnum(Gender)
+  @IsEnum(Gender, {
+    message: `Must be a valid value: ${Object.values(Gender)}`,
+  })
   gender?: Gender;
 
   @ApiProperty({ required: false })
@@ -47,12 +45,13 @@ export class UpdatePassengerDto {
   phone?: Nullable<string>;
 
   @ApiProperty({
-    description: 'Birthday of passanger (ISO8601)',
+    description: 'Birthday of passanger (YYYY-MM-DD)',
     required: false,
   })
   @IsOptional()
   @IsDateString()
-  birthday?: Nullable<DateTime>;
+  @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
+  birthday?: Nullable<DateISODate>;
 
   @ApiProperty({
     required: false,

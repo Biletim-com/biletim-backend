@@ -11,7 +11,7 @@ import { CreatePassengerDto } from './dtos/create-passenger.dto';
 import { UpdatePassengerDto } from './dtos/update-passenger.dto';
 
 // errors
-import { PassengerNotFoundError, UserForbiddenError } from '@app/common/errors';
+import { PassengerNotFoundError } from '@app/common/errors';
 
 // types
 import { UUID } from '@app/common/types';
@@ -52,11 +52,9 @@ export class PassengersService {
   ): Promise<Passenger> {
     const existingPassenger = await this.passengersRepository.findOneBy({
       id: passengerId,
+      user: { id: ownerUserId },
     });
     if (!existingPassenger) throw new PassengerNotFoundError();
-
-    if (existingPassenger.user.id !== ownerUserId)
-      throw new UserForbiddenError('Passenger');
 
     const newPassengerData = new Passenger(updatePassengerDto);
     await this.passengersRepository.update(passengerId, newPassengerData);
@@ -69,11 +67,9 @@ export class PassengersService {
   ): Promise<boolean> {
     const existingPassenger = await this.passengersRepository.findOneBy({
       id: passengerId,
+      user: { id: ownerUserId },
     });
     if (!existingPassenger) throw new PassengerNotFoundError();
-
-    if (existingPassenger.user.id !== ownerUserId)
-      throw new UserForbiddenError('Passenger');
 
     const result = await this.passengersRepository.delete(passengerId);
     return !!result.affected;

@@ -1,0 +1,8 @@
+https://onlineodemetest.vakifbank.com.tr:4443/UIService/EditCustomerPan
+.aspx?prmstr=
+<EditCustomerPanRequest><MerchantCriteria><HostMerchantId>******</HostM
+erchantId><MerchantPassword>******</MerchantPassword></MerchantCriteria
+><CustomerNumber>müşteri1</CustomerNumber><PanCode>112314AASDFSAASDASDF
+A234</PanCode><Pan>4444333322221111</Pan><ExpireDate>202011</ExpireDate
+><CardHolderName>İLYAS
+KOVALAR</CardHolderName></EditCustomerPanRequest>

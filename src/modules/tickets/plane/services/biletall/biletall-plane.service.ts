@@ -48,6 +48,7 @@ import {
   PullAbroadFlightPricePackagesResponseDto,
 } from '../../dto/plane-pull-abroad-flight-price-packages.dto';
 import { pullAbroadFlightPricePackagesResponse } from './types/biletall-plane-pull-abroad-flight-price-packages.type';
+import { turkishToEnglish } from '@app/common/utils';
 
 @Injectable()
 export class BiletAllPlaneService extends BiletAllService {
@@ -230,8 +231,8 @@ export class BiletAllPlaneService extends BiletAllService {
         }, {}),
         ...requestDto.passengers.reduce((acc, passenger, index) => {
           acc[`Yolcu${index + 1}`] = {
-            Ad: passenger.firstName,
-            Soyad: passenger.lastName,
+            Ad: turkishToEnglish(passenger.firstName),
+            Soyad: turkishToEnglish(passenger.lastName),
             Cinsiyet: BiletAllGender[passenger.gender],
             YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
             TCKimlikNo: passenger.turkishIdNumber,
@@ -285,8 +286,8 @@ export class BiletAllPlaneService extends BiletAllService {
         }, {}),
         ...requestDto.passengers.reduce((acc, passenger, index) => {
           acc[`Yolcu${index + 1}`] = {
-            Ad: passenger.firstName,
-            Soyad: passenger.lastName,
+            Ad: turkishToEnglish(passenger.firstName),
+            Soyad: turkishToEnglish(passenger.lastName),
             Cinsiyet: BiletAllGender[passenger.gender],
             YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
             TCKimlikNo: passenger.turkishIdNumber,
@@ -379,8 +380,8 @@ export class BiletAllPlaneService extends BiletAllService {
         }, {}),
         ...requestDto.passengers.reduce((acc, passenger, index) => {
           acc[`Yolcu${index + 1}`] = {
-            Ad: passenger.firstName,
-            Soyad: passenger.lastName,
+            Ad: turkishToEnglish(passenger.firstName),
+            Soyad: turkishToEnglish(passenger.lastName),
             Cinsiyet: BiletAllGender[passenger.gender],
             YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
             ...(passenger.turkishIdNumber && {

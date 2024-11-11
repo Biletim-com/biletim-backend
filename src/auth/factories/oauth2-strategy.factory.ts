@@ -2,7 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 
 import { GoogleOAuth2Strategy } from '../strategies/google-auth2.strategy';
 import { FacebookOAuth2Strategy } from '../strategies/facebook-auth2.strategy';
-import { OAuth2Strategy } from '../strategies/oauth2-strategy.abstract';
+import { OAuth2Strategy } from '../abstract/oauth2-strategy.abstract';
 
 // types
 import { OAuth2Provider } from '@app/common/types';
