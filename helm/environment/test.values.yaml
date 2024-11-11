@@ -52,10 +52,10 @@ biletim_api:
     JWT_EXPIRATION: 172800
     BCRYPT_SALT_ROUNDS: 12
     RESET_PASSWORD_URL: https://timetracker.westerops.com/reset-password
-    BILETALL_BASE_URI: https://ws.biletall.com/Service.asmx
+    BILETALL_BASE_URI: http://94.55.20.137/WSTEST/Service.asmx
     BILETALL_3DSECURE_BASE_URI: http://94.55.20.137//WSTEST/3DSecure/SecurePay2.aspx
     BILETALL_WS_USERNAME: biletimcomWS
-    BILETALL_WS_PASSWORD: fd306d
+    BILETALL_WS_PASSWORD: aa8809
     HOTEL_API_BASE_URL: https://api.worldota.net/api/b2b/v3
     HOTEL_WS_USERNAME: 8175
     HOTEL_WS_PASSWORD: 88346326-e817-4e3f-8852-44185a44e606
