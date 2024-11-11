@@ -7,10 +7,26 @@ import {
   TravelHealthInsuranceRequestDto,
   TravelHealthInsuranceRequestDtoInTurkish,
 } from './dto/travel-health-insurance.dto';
+import { TamamliyoApiConfigService } from '@app/configs/tamamliyo-insurance';
 
 @Injectable()
 export class TravelHealthInsuranceService {
-  constructor(private readonly restClientService: RestClientService) {}
+  private readonly baseUrl: string;
+  constructor(
+    private readonly restClientService: RestClientService,
+    private readonly tamamliyoApiConfigService: TamamliyoApiConfigService,
+  ) {
+    this.baseUrl = this.tamamliyoApiConfigService.tamamliyoApiBaseUrl;
+  }
+
+  private getBasicAuthHeader() {
+    const { tamamliyoApiToken } = this.tamamliyoApiConfigService;
+
+    return {
+      'Content-Type': 'application/json',
+      token: tamamliyoApiToken,
+    };
+  }
 
   private translateToTurkish = (
     requestDto: TravelHealthInsuranceRequestDto,
@@ -34,18 +50,14 @@ export class TravelHealthInsuranceService {
   };
 
   async createOffer(requestDto: TravelHealthInsuranceRequestDto): Promise<any> {
-    const url =
-      'https://api.tamamliyo.com/partner/v3/seyahat-saglik-sigortasi/teklif-olustur';
+    const url = `${this.baseUrl}/v3/seyahat-saglik-sigortasi/teklif-olustur`;
     const requestDtoInTurkish = this.translateToTurkish(requestDto);
     console.log(requestDtoInTurkish.sigortali);
     const requestConfig: RequestConfigs = {
       url,
       method: 'POST',
       data: requestDtoInTurkish,
-      headers: {
-        'Content-Type': 'application/json',
-        token: 'b1bd655bcd0b061c32b2e8072f298769',
-      },
+      headers: this.getBasicAuthHeader(),
     };
     console.log(requestConfig);
     const response = await this.restClientService.request(requestConfig);
