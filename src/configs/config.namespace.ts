@@ -9,4 +9,5 @@ export default {
   LOGIN_WITH_GOOGLE: 'login_with_google',
   LOGIN_WITH_FACEBOOK: 'login_with_facebook',
   NOTIFICATIONS: 'notifications',
+  TAMAMLIYO_API: 'tamamliyo_api',
 };

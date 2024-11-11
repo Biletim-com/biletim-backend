@@ -50,6 +50,8 @@ import notificationsConfiguration, {
   NotificationsConfigService,
   NotificationsEnvVarsValidation,
 } from './notifications';
+import { TamamliyoApiConfigService } from './tamamliyo-insurance/config.service';
+import { TamamliyoApiEnvVarsValidation } from './tamamliyo-insurance';
 
 @Global()
 @Module({
@@ -84,6 +86,7 @@ import notificationsConfiguration, {
             OAuthLoginWithFacebookEnvVarsValidation,
             config,
           ),
+          ConfigValidator.validate(TamamliyoApiEnvVarsValidation, config),
         ]),
     }),
   ],
@@ -98,6 +101,7 @@ import notificationsConfiguration, {
     OAuthLoginWithGoogleConfigService,
     OAuthLoginWithFacebookConfigService,
     NotificationsConfigService,
+    TamamliyoApiConfigService,
   ],
   exports: [
     ConfigService,
@@ -110,6 +114,7 @@ import notificationsConfiguration, {
     OAuthLoginWithGoogleConfigService,
     OAuthLoginWithFacebookConfigService,
     NotificationsConfigService,
+    TamamliyoApiConfigService,
   ],
 })
 export class ConfigModule {}
