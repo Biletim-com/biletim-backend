@@ -187,6 +187,12 @@ export class UsersService {
     return user;
   }
 
+  async findByEmailWithoutThrowError(email: string): Promise<User | null> {
+    const user = await this.usersRepository.findOneBy({ email });
+
+    return user || null;
+  }
+
   async findAppUserById(id: UUID, findOptions?: FindOptionsRelations<User>) {
     const appUser = await this.usersRepository.findOne({
       where: { id },
