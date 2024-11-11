@@ -75,7 +75,7 @@ export class UsersService {
 
       // validation
       const email = createUserDto.email.toLowerCase();
-      const existUser = await this.findByEmail(email);
+      const existUser = await this.findByEmailWithoutThrowError(email);
       if (existUser) {
         throw new HttpException(
           'This email address is already in use',
