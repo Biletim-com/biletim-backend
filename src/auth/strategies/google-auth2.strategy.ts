@@ -28,7 +28,7 @@ export class GoogleOAuth2Strategy extends OAuth2Strategy {
     if (!decodedPayload || typeof decodedPayload === 'string')
       throw new BadRequestException('Invalid idToken');
 
-    const { sub, email, name, family_name } = decodedPayload;
+    const { sub, email, name, familyName } = decodedPayload;
 
     if (!sub || !name)
       throw new BadRequestException('Token does not contain expected fields');
@@ -37,7 +37,7 @@ export class GoogleOAuth2Strategy extends OAuth2Strategy {
       id: sub,
       email,
       name,
-      familyName: family_name,
+      familyName,
     };
   }
 
