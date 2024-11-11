@@ -47,6 +47,7 @@
     "cookie-parser": "^1.4.6",
     "csv-parse": "^5.5.2",
     "dayjs": "^1.11.12",
+    "handlebars": "^4.7.8",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "nestjs-pino": "^4.1.0",
