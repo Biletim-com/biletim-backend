@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
+  IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -232,10 +233,7 @@ export class FlightTicketPurchaseRequestDto {
     required: true,
   })
   @IsNotEmpty()
-  @IsString()
-  @Matches(
-    /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/,
-  )
+  @IsEmail()
   email: string;
 
   @ApiProperty({

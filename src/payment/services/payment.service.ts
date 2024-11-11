@@ -13,6 +13,8 @@ import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.enti
 // enums
 import {
   Currency,
+  OrderStatus,
+  OrderType,
   PaymentMethod,
   PaymentProvider,
   TransactionStatus,
@@ -123,6 +125,8 @@ export class PaymentService {
         lastName: busTicketPurchaseDto.lastName,
         userEmail: busTicketPurchaseDto.email,
         userPhoneNumber: busTicketPurchaseDto.phoneNumber,
+        type: OrderType.PURCHASE,
+        status: OrderStatus.PENDING,
         user: null,
         transaction,
       });

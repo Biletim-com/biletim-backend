@@ -12,6 +12,9 @@ import { User } from '../users/user.entity';
 import { Transaction } from '../transactions/transaction.entity';
 import { BusTicket } from '../tickets/bus/entities/bus-ticket.entity';
 
+// enums
+import { OrderStatus, OrderType } from '@app/common/enums';
+
 @Entity('orders')
 export class Order extends AbstractEntity<Order> {
   @Column()
@@ -25,6 +28,12 @@ export class Order extends AbstractEntity<Order> {
 
   @Column()
   userPhoneNumber: string;
+
+  @Column('varchar')
+  status: OrderStatus;
+
+  @Column('varchar')
+  type: OrderType;
 
   @Column('varchar', { nullable: true })
   pnr?: Nullable<string>;

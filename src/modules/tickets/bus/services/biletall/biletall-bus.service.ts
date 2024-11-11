@@ -287,7 +287,7 @@ export class BiletAllBusService extends BiletAllService {
       paymentRules.payment3DSecureActive ||
       paymentRules.payment3DSecureMandatory
     ) {
-      transactionRules.push('BILETALL_VIRTUAL_POS');
+      transactionRules.push('COMPANY_VIRTUAL_POS');
     }
 
     let canSellToForeigners = true;

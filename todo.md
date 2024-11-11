@@ -1,4 +1,4 @@
-[ ] Add up status columns for Order and Tickets (PUSCHASED, CANCELLED)  
+[x] Add up status columns for Order and Tickets (PUSCHASED, CANCELLED)  
 [ ] Write cancellation logic for Bus tickets with PNR  
 [ ] Cancel Bus Ticket is any case of failure in the code.  
 [ ] Decide on how to process with plane payments. Creating tickets, order and Transaction  

@@ -25,7 +25,7 @@ import { TransactionNotFoundError } from '@app/common/errors';
 import { UUID } from '@app/common/types';
 
 // enums
-import { TransactionStatus } from '@app/common/enums';
+import { OrderStatus, TransactionStatus } from '@app/common/enums';
 import { threeDSecureResponse } from './constants/3d-response.constant';
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 
@@ -68,6 +68,7 @@ export class VakifBankPaymentResultHandlerStrategy
     if (!transaction) {
       throw new TransactionNotFoundError();
     }
+    transaction.order.busTickets.sort((a, b) => a.ticketOrder - b.ticketOrder);
 
     const actionsCompleted: Array<'PAYMENT' | 'TICKET_SALE'> = [];
 
@@ -111,22 +112,31 @@ export class VakifBankPaymentResultHandlerStrategy
         throw new BadRequestException('Seat(s) are not available anymore');
       }
 
-      // update transaction status
-      await queryRunner.manager.update(Transaction, transaction.id, {
-        status: TransactionStatus.PROCESSING,
-      });
+      // update transaction and status
+      await Promise.all([
+        queryRunner.manager.update(Transaction, transaction.id, {
+          status: TransactionStatus.PROCESSING,
+        }),
+        queryRunner.manager.update(Order, transaction.order.id, {
+          status: OrderStatus.PAYMENT_INITIATED,
+        }),
+      ]);
 
       // finalize payment
       await this.vakifBankPaymentStrategy.finishPayment(
         clientIp,
         {
           ...paymentResultDto,
-          PurchAmount: String(transaction.amount),
+          PurchAmount: transaction.amount,
         },
         transaction.order.id,
       );
       actionsCompleted.push('PAYMENT');
 
+      // update order status
+      await queryRunner.manager.update(Order, transaction.order.id, {
+        status: OrderStatus.AWAITING,
+      });
       // send purchase request to biletall
       const { pnr, ticketNumbers } = await this.biletAllBusService.saleRequest(
         clientIp,
@@ -136,15 +146,9 @@ export class VakifBankPaymentResultHandlerStrategy
       );
       actionsCompleted.push('TICKET_SALE');
 
-      // update order
-      await queryRunner.manager.update(Order, transaction.order.id, { pnr });
-      // update tickets for the data to return
-      transaction.order.pnr = pnr;
-
-      await Promise.all(
-        transaction.order.busTickets
-          .sort((a, b) => a.ticketOrder - b.ticketOrder)
-          .map((sortedBusTicket, index: number) => {
+      await Promise.all([
+        ...transaction.order.busTickets.map(
+          (sortedBusTicket, index: number) => {
             const ticketNumber = ticketNumbers[index];
             // update tickets for the data to return
             sortedBusTicket.ticketNumber = ticketNumber;
@@ -153,14 +157,21 @@ export class VakifBankPaymentResultHandlerStrategy
             return queryRunner.manager.update(BusTicket, sortedBusTicket.id, {
               ticketNumber,
             });
-          }),
-      );
+          },
+        ),
+        queryRunner.manager.update(Transaction, transaction.id, {
+          status: TransactionStatus.COMPLETED,
+        }),
+        queryRunner.manager.update(Order, transaction.order.id, {
+          status: OrderStatus.COMPLETED,
+          pnr,
+        }),
+      ]);
 
-      await queryRunner.manager.update(Transaction, transaction.id, {
-        status: TransactionStatus.COMPLETED,
-      });
-      // udpate transaction for the data to return
+      // update transaction and order for the data to return
       transaction.status = TransactionStatus.COMPLETED;
+      transaction.order.status = OrderStatus.COMPLETED;
+      transaction.order.pnr = pnr;
 
       /** SEND EVENTS */
       // create invoice and ticket output

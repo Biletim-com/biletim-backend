@@ -1,8 +1,8 @@
 # BiletAll
 
-CardNo: 5218076007402834  
+CardNo: 4355093000315232  
 Exp: 11/40  
-CCV: 820  
+CCV: 471  
 3DSPassword: 123456
 
 # VakifBank

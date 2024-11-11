@@ -256,17 +256,6 @@ export class BiletAllBusParserService extends BiletAllParserService {
     const extractedResult = this.extractResult(response);
     const result = extractedResult['IslemSonuc'][0];
 
-    //   {
-    //    result: {
-    //      '$': { xmlns: '' },
-    //      Sonuc: [ 'true' ],
-    //      PNR: [ '7920037' ],
-    //      Mesaj: [ '' ],
-    //      SeferInternetTarihSaat: [ '2024-11-15T10:30:00' ],
-    //      Ebilet1: [ '037000004529' ]
-    //    }
-    //  }
-
     const saleResultParsed = Object.assign({});
     for (const [key, value] of Object.entries(result)) {
       if (Array.isArray(value)) {

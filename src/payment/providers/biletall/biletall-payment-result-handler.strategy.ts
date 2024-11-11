@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
+import { OrdersRepository } from '@app/modules/orders/orders.repository';
 
 // interfaces
 import { IPaymentResultHandler } from '@app/payment/interfaces/payment-result-handler.interface';
@@ -21,7 +22,7 @@ import { TransactionNotFoundError } from '@app/common/errors';
 import { UUID } from '@app/common/types';
 
 // enums
-import { TransactionStatus } from '@app/common/enums';
+import { OrderStatus, TransactionStatus } from '@app/common/enums';
 
 @Injectable()
 export class BiletAllPaymentResultHandlerStrategy
@@ -34,6 +35,7 @@ export class BiletAllPaymentResultHandlerStrategy
   constructor(
     private readonly dataSource: DataSource,
     private readonly transactionsRepository: TransactionsRepository,
+    private readonly ordersRepository: OrdersRepository,
   ) {}
 
   async handleSuccessfulPayment(
@@ -73,36 +75,33 @@ export class BiletAllPaymentResultHandlerStrategy
         );
       }
 
-      // update transaction status
-      await queryRunner.manager.update(Transaction, transaction.id, {
-        status: TransactionStatus.PROCESSING,
-      });
+      await Promise.all([
+        ...transaction.order.busTickets.map(
+          (sortedBusTicket, index: number) => {
+            const ticketNumber = ticketNumbers[index];
+            // update tickets for the data to return
+            sortedBusTicket.ticketNumber = ticketNumber;
 
-      // update order and ticket numbers
-      await queryRunner.manager.update(Order, transaction.order.id, {
-        pnr,
-      });
-      // update tickets for the data to return
-      transaction.order.pnr = pnr;
-
-      await Promise.all(
-        transaction.order.busTickets.map((sortedBusTicket, index: number) => {
-          const ticketNumber = ticketNumbers[index];
-          // update tickets for the data to return
-          sortedBusTicket.ticketNumber = ticketNumber;
-
-          return queryRunner.manager.update(BusTicket, sortedBusTicket.id, {
-            ticketNumber,
-          });
+            return queryRunner.manager.update(BusTicket, sortedBusTicket.id, {
+              ticketNumber,
+            });
+          },
+        ),
+        // update transaction status
+        queryRunner.manager.update(Transaction, transaction.id, {
+          status: TransactionStatus.COMPLETED,
         }),
-      );
+        // update order status
+        queryRunner.manager.update(Order, transaction.order.id, {
+          status: OrderStatus.COMPLETED,
+          pnr,
+        }),
+      ]);
 
-      // update transaction status
-      await queryRunner.manager.update(Transaction, transaction.id, {
-        status: TransactionStatus.COMPLETED,
-      });
-      // udpate transaction for the data to return
+      // update transaction and order for the data to return
       transaction.status = TransactionStatus.COMPLETED;
+      transaction.order.status = OrderStatus.COMPLETED;
+      transaction.order.pnr = pnr;
 
       /** SEND EVENTS */
       // create invoice and ticket output
@@ -111,11 +110,15 @@ export class BiletAllPaymentResultHandlerStrategy
       await queryRunner.commitTransaction();
       return transaction;
     } catch (err) {
-      await this.transactionsRepository.update(transaction.id, {
+      this.transactionsRepository.update(transaction.id, {
         status: TransactionStatus.FAILED,
         errorMessage:
           err.message || 'Something went wrong while processing payment',
       });
+      this.ordersRepository.update(transaction.order.id, {
+        status: OrderStatus.PAYMENT_FAILED,
+      });
+
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
@@ -130,18 +133,22 @@ export class BiletAllPaymentResultHandlerStrategy
         id: transactionId,
       },
       relations: {
-        order: {
-          busTickets: true,
-        },
+        order: true,
       },
     });
     if (!transaction) {
       throw new TransactionNotFoundError();
     }
 
-    await this.transactionsRepository.update(
-      { id: transactionId },
-      { status: TransactionStatus.FAILED, errorMessage },
-    );
+    Promise.all([
+      this.transactionsRepository.update(
+        { id: transactionId },
+        { status: TransactionStatus.FAILED, errorMessage },
+      ),
+      this.ordersRepository.update(
+        { id: transaction.order.id },
+        { status: OrderStatus.PAYMENT_FAILED },
+      ),
+    ]);
   }
 }

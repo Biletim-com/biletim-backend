@@ -7,3 +7,4 @@ export * from './passanger.enums';
 export * from './bank-card.enums';
 export * from './transaction.enums';
 export * from './plane-ticket.enums';
+export * from './order.enums';
