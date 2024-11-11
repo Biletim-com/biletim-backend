@@ -3,7 +3,11 @@ import { IsString, IsNotEmpty } from 'class-validator';
 export class BiletAllApiEnvVarsValidation {
   @IsString()
   @IsNotEmpty()
-  BILETALL_WSDL_URI: string;
+  BILETALL_BASE_URI: string;
+
+  @IsString()
+  @IsNotEmpty()
+  BILETALL_3DSECURE_BASE_URI: string;
 
   @IsString()
   @IsNotEmpty()

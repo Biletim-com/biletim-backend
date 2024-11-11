@@ -1,4 +1,4 @@
-import { UUID } from '@app/common/types';
+import { DateTime, UUID } from '@app/common/types';
 import { User } from '@app/modules/users/user.entity';
 
 export class UserWithoutPasswordDto {
@@ -12,8 +12,8 @@ export class UserWithoutPasswordDto {
   isDeleted: boolean;
   forgotPasswordCode?: Nullable<string>;
   isUsed: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: DateTime;
+  updatedAt: DateTime;
 
   constructor(user: User) {
     this.id = user.id;

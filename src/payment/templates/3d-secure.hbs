@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>3D-Secure Processing Page</title>
+</head>
+
+<body>
+    <form name="paymentForm" action="{{formAction}}" method="POST">
+        <noscript>
+            <br>
+            <br>
+            <center>
+                <h1>Processing your 3-D Secure Transaction</h1>
+                <h2>
+                    JavaScript is currently disabled or is not supported by your browser.
+                    <br>
+                </h2>
+                <h3>Please click Submit to continue the processing of your 3-D Secure transaction. Enrolled Returns true
+                </h3>
+                <input type="submit" value="Submit">
+            </center>
+        </noscript>
+        {{#each fields}}
+        <input type="hidden" name="{{this.name}}" value="{{this.value}}">
+        {{/each}}
+    </form>
+    <script type="text/javascript">
+        document.paymentForm.submit();
+    </script>
+</body>
+
+</html>

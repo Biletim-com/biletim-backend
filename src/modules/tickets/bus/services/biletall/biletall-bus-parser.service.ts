@@ -36,6 +36,10 @@ import {
   BoardingPoint,
   BoardingPointResponse,
 } from './types/biletall-boarding-point.type';
+import {
+  BusTicketSaleRequest,
+  BusTicketSaleRequestResponse,
+} from './types/biletall-sale-request.type';
 
 // dto
 import { BusRouteDetailDto } from '../../dto/bus-route.dto';
@@ -56,6 +60,7 @@ import {
   BusScheduleListParserDto,
 } from '../../dto/bus-schedule-list.dto';
 import { BusTerminalDto } from '../../dto/bus-terminal.dto';
+import { BusTicketSaleDto } from '../../dto/bus-ticket-sale.dto';
 
 @Injectable()
 export class BiletAllBusParserService extends BiletAllParserService {
@@ -155,12 +160,12 @@ export class BiletAllBusParserService extends BiletAllParserService {
     const extractedResult = this.extractResult(response);
     const bus = extractedResult['Otobus'][0];
 
-    const expeditionParsed: BusTrip = Object.assign({});
+    const busTripParsed: BusTrip = Object.assign({});
     for (const [key, [value]] of ObjectTyped.entries(bus['Sefer'][0])) {
-      expeditionParsed[key] = value;
+      busTripParsed[key] = value;
     }
 
-    const expedition = new BusTripDto(expeditionParsed);
+    const busTrip = new BusTripDto(busTripParsed);
 
     const seats = bus['Koltuk'].map((entry) => {
       const seatParsed: Seat = Object.assign({});
@@ -186,7 +191,7 @@ export class BiletAllBusParserService extends BiletAllParserService {
     }
     const paymentRules = new CompanyPaymentRulesDto(paymentRuleParsed);
 
-    return new BusDetailDto(expedition, seats, travelTypes, paymentRules);
+    return new BusDetailDto(busTrip, seats, travelTypes, paymentRules);
   };
 
   public parseBusSeatAvailability = (
@@ -243,5 +248,20 @@ export class BiletAllBusParserService extends BiletAllParserService {
       }
       return new BusRouteDetailDto(routeDetailParsed);
     });
+  };
+
+  public parseSaleRequest = (
+    response: BusTicketSaleRequestResponse,
+  ): BusTicketSaleDto => {
+    const extractedResult = this.extractResult(response);
+    const result = extractedResult['IslemSonuc'][0];
+
+    const saleResultParsed = Object.assign({});
+    for (const [key, value] of Object.entries(result)) {
+      if (Array.isArray(value)) {
+        saleResultParsed[key] = value[0];
+      }
+    }
+    return new BusTicketSaleDto(saleResultParsed);
   };
 }

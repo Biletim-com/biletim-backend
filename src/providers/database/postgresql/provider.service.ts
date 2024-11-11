@@ -18,6 +18,7 @@ export class PostgreSQLProviderService implements TypeOrmOptionsFactory {
       password: this.postgreSQLConfigService.password,
       database: this.postgreSQLConfigService.database,
       autoLoadEntities: true,
+      // synchronize: true,
       synchronize: false,
       logging: this.postgreSQLConfigService.logging,
       migrations: [`${__dirname}/./migrations/*{.ts,.js}`],

@@ -1,0 +1,10 @@
+https://onlineodemetest.vakifbank.com.tr:4443/UIService/EditCustomer.as
+px?prmstr=
+<EditCustomerRequest><MerchantCriteria><HostMerchantId>******</HostMerc
+hantId><MerchantPassword>******</MerchantPassword></MerchantCriteria><C
+ustomerNumber>müşteri1</CustomerNumber><Name>Serdar
+Metin</Name><FatherName>Baba
+Adı</FatherName><Address>Vakıfbank</Address><CityName>İstanbul</CityNam
+e><TownName>Türkiye</TownName><Phone>902124443322</Phone><MobilePhone>9
+05854443322</MobilePhone><EmailAddress>vpos724@vakifbank.com.tr</EmailA
+ddress></EditCustomerRequest>

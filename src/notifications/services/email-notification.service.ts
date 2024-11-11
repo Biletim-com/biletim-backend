@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { SendVerifyAccountEmailNotificationDto } from '@app/common/dtos/send-email-notification.dto';
-import {
-  OnEvent,
-  OnEvents,
-} from '@app/providers/event-emitter/decorators/on-event.decorator';
+import { OnEvent, OnEvents } from '@app/providers/event-emitter/decorators';
 
 import { EmailNotificationStrategy } from '../strategies/email-notification.strategy';
 import { AuthConfigService } from '@app/configs/auth';

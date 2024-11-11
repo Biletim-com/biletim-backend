@@ -13,6 +13,9 @@ export class BusService {
       .map((term) => `${term}:*`)
       .join(' & ');
 
+    console.log(new Date('2024-11-06 20:48:07.517672').toISOString());
+    console.log('NestJS Timezone:', new Date().toISOString());
+
     return this.busTerminalRepository
       .createQueryBuilder('bus_terminals')
       .where("bus_terminals.search_text @@ to_tsquery('simple', :name)")

@@ -3,19 +3,20 @@ import { JwtService } from '@nestjs/jwt';
 
 import { RestClientService } from '@app/providers/rest-client/provider.service';
 
-import { OAuth2Strategy } from './oauth2-strategy.abstract';
+import { OAuth2Strategy } from '../abstract/oauth2-strategy.abstract';
 import { OAuthLoginWithFacebookConfigService } from '@app/configs/oauth-facebook';
 
 @Injectable()
 export class FacebookOAuth2Strategy extends OAuth2Strategy {
   protected TOKEN_URL = 'https://graph.facebook.com/v20.0/oauth/access_token';
+  private readonly restClientService: RestClientService;
 
   constructor(
     private readonly jwtService: JwtService,
-    private readonly restClientService: RestClientService,
     private readonly oAuthLoginWithFacebookConfigService: OAuthLoginWithFacebookConfigService,
   ) {
     super();
+    this.restClientService = new RestClientService(this.TOKEN_URL);
   }
 
   protected extractUserCredentialsFromIdToken(idToken: string): {
@@ -50,7 +51,6 @@ export class FacebookOAuth2Strategy extends OAuth2Strategy {
         access_token: string;
         id_token: string;
       }>({
-        url: this.TOKEN_URL,
         method: 'GET',
         params: {
           client_id: this.oAuthLoginWithFacebookConfigService.clientId,

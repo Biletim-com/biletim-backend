@@ -1,0 +1,6 @@
+https://onlineodemetest.vakifbank.com.tr:4443/UIService/DeleteCustomerP
+an.aspx?prmstr=
+<DeleteCustomerPanRequest><MerchantCriteria><HostMerchantId>******</Hos
+tMerchantId><MerchantPassword>******</MerchantPassword></MerchantCriter
+ia><CustomerNumber>müşteri1</CustomerNumber><PanCode>112314AASDFSAASDAS
+DFA234</PanCode></DeleteCustomerPanRequest>
