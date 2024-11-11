@@ -34,18 +34,16 @@ export class TravelHealthInsuranceService {
   };
 
   async createOffer(requestDto: TravelHealthInsuranceRequestDto): Promise<any> {
-    // API URL'si
     const url =
       'https://api.tamamliyo.com/partner/v3/seyahat-saglik-sigortasi/teklif-olustur';
     const requestDtoInTurkish = this.translateToTurkish(requestDto);
     console.log(requestDtoInTurkish.sigortali);
-    // Request yapılandırması
     const requestConfig: RequestConfigs = {
       url,
-      method: 'POST', // HTTP methodu
-      data: requestDtoInTurkish, // Gönderilecek DTO
+      method: 'POST',
+      data: requestDtoInTurkish,
       headers: {
-        'Content-Type': 'application/json', // Eğer başlık gerekiyorsa
+        'Content-Type': 'application/json',
         token: 'b1bd655bcd0b061c32b2e8072f298769',
       },
     };

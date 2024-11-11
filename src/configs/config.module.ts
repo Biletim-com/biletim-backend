@@ -50,6 +50,8 @@ import notificationsConfiguration, {
   NotificationsConfigService,
   NotificationsEnvVarsValidation,
 } from './notifications';
+import { TamamliyoApiConfigService } from './tamamliyo-insurance/config.service';
+import { TamamliyoApiEnvVarsValidation } from './tamamliyo-insurance';
 
 import paymentConfiguration, {
   PaymentConfigService,
@@ -91,6 +93,7 @@ import paymentConfiguration, {
             config,
           ),
           ConfigValidator.validate(PaymentEnvVarsValidation, config),
+          ConfigValidator.validate(TamamliyoApiEnvVarsValidation, config),
         ]),
     }),
   ],
@@ -106,6 +109,7 @@ import paymentConfiguration, {
     OAuthLoginWithFacebookConfigService,
     NotificationsConfigService,
     PaymentConfigService,
+    TamamliyoApiConfigService,
   ],
   exports: [
     ConfigService,
@@ -119,6 +123,7 @@ import paymentConfiguration, {
     OAuthLoginWithFacebookConfigService,
     NotificationsConfigService,
     PaymentConfigService,
+    TamamliyoApiConfigService,
   ],
 })
 export class ConfigModule {}
