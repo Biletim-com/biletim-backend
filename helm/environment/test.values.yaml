@@ -66,6 +66,8 @@ biletim_api:
     GOOGLE_OAUTH_CLIENT_SECRET: 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
     FACEBOOK_OAUTH_CLIENT_ID: facebookClient12345
     FACEBOOK_OAUTH_CLIENT_SECRET: facebookClientSecret12345
+    TAMAMLIYO_API_BASE_URL: https://api.tamamliyo.com/partner
+    TAMAMLIYO_TOKEN: b1bd655bcd0b061c32b2e8072f298769
 
   volumeMounts:
     biletim-api: '/app/images'

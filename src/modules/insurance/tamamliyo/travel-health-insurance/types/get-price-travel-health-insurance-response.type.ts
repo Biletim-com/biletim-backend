@@ -69,7 +69,7 @@ export type InsuranceCompanyInfos = {
   };
 };
 
-export type CreateOfferResponse = {
+export type GetPriceResponse = {
   success: boolean;
   data: {
     urunBilgileri: ProductInfos;

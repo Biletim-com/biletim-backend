@@ -50,8 +50,11 @@ import notificationsConfiguration, {
   NotificationsConfigService,
   NotificationsEnvVarsValidation,
 } from './notifications';
-import { TamamliyoApiConfigService } from './tamamliyo-insurance/config.service';
-import { TamamliyoApiEnvVarsValidation } from './tamamliyo-insurance';
+
+import tamamliyoApiConfiguration, {
+  TamamliyoApiConfigService,
+  TamamliyoApiEnvVarsValidation,
+} from './tamamliyo-insurance';
 
 @Global()
 @Module({
@@ -68,6 +71,7 @@ import { TamamliyoApiEnvVarsValidation } from './tamamliyo-insurance';
         loginWithGoogleConfiguration,
         loginWithFacebookConfiguration,
         notificationsConfiguration,
+        tamamliyoApiConfiguration,
       ],
       validate: async (config) =>
         Promise.all([
