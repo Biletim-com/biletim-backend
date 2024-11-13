@@ -8,3 +8,5 @@ export * from './bank-card.enums';
 export * from './transaction.enums';
 export * from './plane-ticket.enums';
 export * from './order.enums';
+export * from './insurance-product-type.enum';
+export * from './insurance-ticket-type.enum';

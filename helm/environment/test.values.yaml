@@ -73,6 +73,8 @@ biletim_api:
     PAYMENT_MERCHANT_ID: '000100000013506'
     PAYMENT_MERCHANT_PASSWORD: '123456'
     PAYMENT_TERMINAL_NO: 'VP000579'
+    TAMAMLIYO_API_BASE_URL: https://api.tamamliyo.com/partner
+    TAMAMLIYO_TOKEN: b1bd655bcd0b061c32b2e8072f298769
 
   volumeMounts:
     biletim-api: '/app/images'

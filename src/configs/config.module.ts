@@ -50,8 +50,11 @@ import notificationsConfiguration, {
   NotificationsConfigService,
   NotificationsEnvVarsValidation,
 } from './notifications';
-import { TamamliyoApiConfigService } from './tamamliyo-insurance/config.service';
-import { TamamliyoApiEnvVarsValidation } from './tamamliyo-insurance';
+
+import tamamliyoApiConfiguration, {
+  TamamliyoApiConfigService,
+  TamamliyoApiEnvVarsValidation,
+} from './tamamliyo-insurance';
 
 import paymentConfiguration, {
   PaymentConfigService,
@@ -74,6 +77,7 @@ import paymentConfiguration, {
         loginWithFacebookConfiguration,
         notificationsConfiguration,
         paymentConfiguration,
+        tamamliyoApiConfiguration,
       ],
       validate: async (config) =>
         Promise.all([
