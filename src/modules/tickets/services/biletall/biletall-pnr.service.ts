@@ -7,10 +7,10 @@ import { BiletAllPnrParserService } from './biletall-pnr-parser.service';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 
 // dto
-import { PnrSearchDomesticFlightDto } from '../../dto/tickets-pnr-search-domestic-flight.dto';
-import { PnrSearchAbroadFlightDto } from '../../dto/tickets-pnr-search-abroad-flight.dto';
-import { PnrSearchBusDto } from '../../dto/tickets-pnr-search-bus.dto';
-import { PnrSearchRequestDto } from '../../dto/tickets-pnr-search.dto';
+import { PnrSearchDomesticFlightDto } from './dto/tickets-pnr-search-domestic-flight.dto';
+import { PnrSearchAbroadFlightDto } from './dto/tickets-pnr-search-abroad-flight.dto';
+import { PnrSearchRequestDto } from './dto/tickets-pnr-search.dto';
+import { PnrSearchBusDto } from './dto/tickets-pnr-search-bus.dto';
 
 // types
 import { PnrSearchResponse } from './type/tickets-pnr-search-union.type';

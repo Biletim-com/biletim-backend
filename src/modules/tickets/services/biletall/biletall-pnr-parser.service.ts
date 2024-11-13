@@ -15,7 +15,7 @@ import {
   PnrSearchAbroadFlightDto,
   SeatNumbersAbroadFlightDto,
   SegmentAbroadFlightDto,
-} from '../../dto/tickets-pnr-search-abroad-flight.dto';
+} from '../biletall/dto/tickets-pnr-search-abroad-flight.dto';
 import {
   AgencyPrepaymentDomesticFlightDto,
   CollectionDomesticFlightDto,
@@ -30,7 +30,7 @@ import {
   PnrTransactionDetailDomesticFlightDto,
   SeatNumbersDomesticFlightDto,
   SegmentDomesticFlightDto,
-} from '../../dto/tickets-pnr-search-domestic-flight.dto';
+} from '../biletall/dto/tickets-pnr-search-domestic-flight.dto';
 import {
   AgencyPrepaymentBus,
   CollectionBus,
@@ -45,7 +45,7 @@ import {
   PnrTransactionDetailBus,
   SeatNumbersBus,
   SegmentBus,
-} from '../../type/tickets-pnr-search-bus-response.type';
+} from '../biletall/type/tickets-pnr-search-bus-response.type';
 import {
   AgencyPrepaymentBusDto,
   CollectionBusDto,
@@ -60,7 +60,7 @@ import {
   PnrTransactionDetailBusDto,
   SeatNumbersBusDto,
   SegmentBusDto,
-} from '../../dto/tickets-pnr-search-bus.dto';
+} from '../biletall/dto/tickets-pnr-search-bus.dto';
 
 // types
 import { PnrSearchResponse } from './type/tickets-pnr-search-union.type';

@@ -4,8 +4,8 @@ import {
   Day,
   OfficialHolidaysResponse,
 } from './type/get-official-holidays.type';
-import { OfficialHolidaysDto } from '@app/modules/tickets/dto/get-official-holidays.dto';
 import { ObjectTyped } from '@app/common/utils/object-typed.util';
+import { OfficialHolidaysDto } from './dto/get-official-holidays.dto';
 
 @Injectable()
 export class BiletAllOfficialHolidaysParserService extends BiletAllParserService {

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { Day } from '../services/biletall/type/get-official-holidays.type';
+import { Day } from '../type/get-official-holidays.type';
 
 export class OfficialHolidaysRequestDto {
   @ApiProperty({
