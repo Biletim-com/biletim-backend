@@ -43,11 +43,13 @@ export class PaymentController {
     @ClientIp() clientIp: string,
     @Body() busTicketPurchaseDto: BusTicketPurchaseDto,
   ): Promise<{ transactionId: string; htmlContent: string }> {
-    const htmlContent = await this.paymentService.busTicketPurchase(
-      clientIp,
-      busTicketPurchaseDto,
-    );
-    return htmlContent;
+    const { transactionId, htmlContent } =
+      await this.paymentService.busTicketPurchase(
+        clientIp,
+        busTicketPurchaseDto,
+      );
+    const base64HtmlContent = Buffer.from(htmlContent).toString('base64');
+    return { transactionId, htmlContent: base64HtmlContent };
   }
 
   @Post('start-plane-ticket-payment')

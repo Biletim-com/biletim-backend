@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>3D-Secure Processing Page</title>
 </head>
-
 <body>
     <form name="paymentForm" action="{{formAction}}" method="POST">
         <noscript>
@@ -25,9 +23,6 @@
         <input type="hidden" name="{{this.name}}" value="{{this.value}}">
         {{/each}}
     </form>
-    <script type="text/javascript">
-        document.paymentForm.submit();
-    </script>
+    <script type="text/javascript">document.paymentForm.submit();</script>
 </body>
-
 </html>

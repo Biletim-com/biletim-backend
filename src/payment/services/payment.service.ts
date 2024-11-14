@@ -52,7 +52,7 @@ export class PaymentService {
 
     const [departureTerminal, arrivalTerminal] =
       await queryRunner.manager.findBy(BusTerminal, {
-        id: In([
+        externalId: In([
           busTicketPurchaseDto.departureTerminalId,
           busTicketPurchaseDto.arrivalTerminalId,
         ]),

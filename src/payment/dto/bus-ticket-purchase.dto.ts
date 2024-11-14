@@ -6,7 +6,6 @@ import {
   IsNotEmpty,
   IsNumberString,
   IsString,
-  IsUUID,
   Length,
   ValidateNested,
 } from 'class-validator';
@@ -18,7 +17,7 @@ import * as dayjs from 'dayjs';
 import { normalizeDecimal } from '@app/common/utils';
 
 // types
-import { DateISODate, DateTime, UUID } from '@app/common/types';
+import { DateISODate, DateTime } from '@app/common/types';
 
 // dtos
 import { BankCardDto } from '@app/common/dtos/credit-card.dto';
@@ -39,18 +38,18 @@ export class BusTicketPurchaseDto {
     example: 'fa975977-5dde-4eb3-81d4-135bfa832e55',
     required: true,
   })
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
-  departureTerminalId: UUID;
+  departureTerminalId: string;
 
   @ApiProperty({
     description: 'Arrival point ID for the bus trip',
     example: '8447bc12-49d3-4dec-8e30-eb2a6638bec6',
     required: true,
   })
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
-  arrivalTerminalId: UUID;
+  arrivalTerminalId: string;
 
   @ApiProperty({
     description: 'Date and Time of the trip in the format YYYY-MM-ddTHH:mm:SS',
