@@ -35,7 +35,7 @@ export class BusTicketPurchaseDto {
 
   @ApiProperty({
     description: 'Departure terminal ID for the bus trip',
-    example: 'fa975977-5dde-4eb3-81d4-135bfa832e55',
+    example: '84',
     required: true,
   })
   @IsString()
@@ -44,7 +44,7 @@ export class BusTicketPurchaseDto {
 
   @ApiProperty({
     description: 'Arrival point ID for the bus trip',
-    example: '8447bc12-49d3-4dec-8e30-eb2a6638bec6',
+    example: '738',
     required: true,
   })
   @IsString()
