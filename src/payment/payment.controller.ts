@@ -4,8 +4,8 @@ import {
   Post,
   Query,
   Req,
-  Res,
   BadRequestException,
+  Param,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -22,13 +22,13 @@ import { BiletAllPaymentResultDto } from './dto/biletall-payment-result.dto';
 import { ClientIp } from '@app/common/decorators';
 
 // types
-import type { Response } from 'express';
 import { UUID } from '@app/common/types';
 import { BusTicketSaleRequest } from '@app/modules/tickets/bus/services/biletall/types/biletall-sale-request.type';
 import { PaymentResultQueryParams } from './types/payment-result-query-params.type';
 
 // enums
 import { PaymentProvider } from '@app/common/enums';
+import { TransactionRequest } from './dto/get-transaction.dto';
 
 @ApiTags('Payment')
 @Controller('payment')
@@ -40,16 +40,13 @@ export class PaymentController {
 
   @Post('start-bus-ticket-payment')
   async startBusTicketPurchasePayment(
-    @Res() response: Response,
     @ClientIp() clientIp: string,
     @Body() busTicketPurchaseDto: BusTicketPurchaseDto,
-  ): Promise<string> {
+  ): Promise<{ transactionId: string; htmlContent: string }> {
     const htmlContent = await this.paymentService.busTicketPurchase(
       clientIp,
       busTicketPurchaseDto,
     );
-    response.setHeader('Content-Type', 'text/html');
-    response.send(htmlContent);
     return htmlContent;
   }
 
@@ -58,6 +55,13 @@ export class PaymentController {
 
   @Post('start-hotel-reservation-payment')
   startHotelReservationPayment() {}
+
+  @Post('transaction/:id')
+  getTransactionData(
+    @Param() { id }: TransactionRequest,
+  ): Promise<Transaction> {
+    return this.paymentService.getTransaction(id);
+  }
 
   @Post('success')
   successfulPaymentHandler(

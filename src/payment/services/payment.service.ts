@@ -1,8 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DataSource, In } from 'typeorm';
 
 import { PaymentProviderFactory } from '../factories/payment-provider.factory';
 import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
+import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 
 // entities
 import { Order } from '@app/modules/orders/order.entity';
@@ -25,18 +30,22 @@ import {
 import { BusTicketPurchaseDto } from '../dto/bus-ticket-purchase.dto';
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 
+// types
+import { UUID } from '@app/common/types';
+
 @Injectable()
 export class PaymentService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly paymentProviderFactory: PaymentProviderFactory,
     private readonly biletAllBusService: BiletAllBusService,
+    private readonly transactionsRepository: TransactionsRepository,
   ) {}
 
   async busTicketPurchase(
     clientIp: string,
     busTicketPurchaseDto: BusTicketPurchaseDto,
-  ): Promise<string> {
+  ): Promise<{ transactionId: UUID; htmlContent: string }> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -193,12 +202,30 @@ export class PaymentService {
         { ...transaction, order: { ...order, busTickets } },
       );
       await queryRunner.commitTransaction();
-      return htmlContent;
+      return { transactionId: transaction.id, htmlContent };
     } catch (err) {
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async getTransaction(transactionId: UUID): Promise<Transaction> {
+    const tranaction = await this.transactionsRepository.findOneBy({
+      id: transactionId,
+    });
+    if (!tranaction) {
+      throw new NotFoundException('Transaction is not found');
+    }
+
+    const minuteDifference =
+      (new Date().getTime() - new Date(tranaction?.createdAt).getTime()) /
+      (1000 * 60);
+
+    if (4 > minuteDifference) {
+      throw new BadRequestException('Transaction is expired');
+    }
+    return tranaction;
   }
 }
