@@ -65,7 +65,7 @@ export class FlightSegmentDto {
   })
   @IsString()
   @IsNotEmpty()
-  flightNo: string;
+  flightNumber: string;
 
   @ApiProperty({
     description: 'The airline code.',
@@ -83,7 +83,7 @@ export class FlightSegmentDto {
   })
   @IsString()
   @IsNotEmpty()
-  travelClass: string;
+  flightClass: string;
 
   @ApiProperty({
     description: 'Indicates whether this is a return segment.',
@@ -92,7 +92,7 @@ export class FlightSegmentDto {
   })
   @IsBoolean()
   @IsOptional()
-  isReturnSegment: boolean;
+  isReturnFlight: boolean;
 
   @ApiProperty({
     description: 'An optional code associated with the flight.',
@@ -113,7 +113,7 @@ export class PullPriceFlightRequestDto {
   })
   @IsString()
   @IsNotEmpty()
-  companyNo: string;
+  companyNumber: string;
 
   @ApiProperty({
     description: 'The list of flight segments.',
@@ -129,12 +129,13 @@ export class PullPriceFlightRequestDto {
     example: 1,
     required: false,
   })
+  @IsOptional()
   @IsInt()
   @Min(0)
-  adultCount: number;
+  adultCount?: number;
 
   @ApiProperty({
-    description: 'The number of childrens.',
+    description: 'The number of children.',
     example: 0,
     required: false,
   })
@@ -171,7 +172,7 @@ export class PullPriceFlightRequestDto {
   })
   @IsOptional()
   @IsInt()
-  seniorCount?: number;
+  elderlyCount?: number;
 
   @ApiProperty({
     description:

@@ -22,6 +22,8 @@ import { BiletAllPaymentResultHandlerStrategy } from './providers/biletall/bilet
 import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
 import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
 import { OrdersRepository } from '@app/modules/orders/orders.repository';
+import { BiletAllPlaneService } from '@app/modules/tickets/plane/services/biletall/biletall-plane.service';
+import { BiletAllPlaneParserService } from '@app/modules/tickets/plane/services/biletall/biletall-plane-parser.service';
 
 @Module({
   imports: [
@@ -55,6 +57,8 @@ import { OrdersRepository } from '@app/modules/orders/orders.repository';
     OrdersRepository,
     BiletAllBusService,
     BiletAllBusParserService,
+    BiletAllPlaneService,
+    BiletAllPlaneParserService,
   ],
   exports: [
     PaymentProviderFactory,

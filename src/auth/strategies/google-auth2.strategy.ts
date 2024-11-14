@@ -46,7 +46,6 @@ export class GoogleOAuth2Strategy extends OAuth2Strategy {
     code: string,
     redirectUri: string,
   ): Promise<{ accessToken: string; idToken: string }> {
-    console.log(this.oAuthLoginWithGoogleConfigService.clientId);
     try {
       const { access_token, id_token } = await this.restClientService.request<{
         access_token: string;

@@ -10,6 +10,7 @@ import {
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 import { User } from '../users/user.entity';
 import { Transaction } from '../transactions/transaction.entity';
+import { PlaneTicket } from '../tickets/plane/entities/plane-ticket.entity';
 import { BusTicket } from '../tickets/bus/entities/bus-ticket.entity';
 
 // enums
@@ -48,4 +49,7 @@ export class Order extends AbstractEntity<Order> {
 
   @OneToMany(() => BusTicket, (busTicket) => busTicket.order)
   busTickets: BusTicket[];
+
+  @OneToMany(() => BusTicket, (busTicket) => busTicket.order)
+  planeTicket: PlaneTicket[];
 }

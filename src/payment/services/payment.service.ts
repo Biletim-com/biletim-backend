@@ -14,6 +14,7 @@ import { Order } from '@app/modules/orders/order.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
 import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
+import { BiletAllPlaneService } from '@app/modules/tickets/plane/services/biletall/biletall-plane.service';
 
 // enums
 import {
@@ -29,6 +30,9 @@ import {
 // dtos
 import { BusTicketPurchaseDto } from '../dto/bus-ticket-purchase.dto';
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
+import { PlaneTicketPurchaseDto } from '../dto/plane-ticket-purchase.dto';
+import { PlaneTicketSegment } from '@app/modules/tickets/plane/entities/plane-ticket-segment.entity';
+import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
 
 // types
 import { UUID } from '@app/common/types';
@@ -40,6 +44,7 @@ export class PaymentService {
     private readonly paymentProviderFactory: PaymentProviderFactory,
     private readonly biletAllBusService: BiletAllBusService,
     private readonly transactionsRepository: TransactionsRepository,
+    private readonly biletAllPlaneService: BiletAllPlaneService,
   ) {}
 
   async busTicketPurchase(
@@ -203,6 +208,107 @@ export class PaymentService {
       );
       await queryRunner.commitTransaction();
       return { transactionId: transaction.id, htmlContent };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async planeTicketPurchase(
+    clientIp: string,
+    planeTicketPurchaseDto: PlaneTicketPurchaseDto,
+  ): Promise<string> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    /**
+     * Önemli Not : Fiyat Paketi görüntüleme akışı yalnızca yurtdışı uçuşlarda
+     * ve sefer yanıtında segment bilgisi içerisinde FiyatPaketTanimi ve FiyatPaketAnahtari
+     * alanlarının dolu gelmesi halinde yapılmalıdır. Eğer Sefer yanıtında bu 2 alandaki
+     * veri eksik veya bulunmuyorsa işlemlerinize UcusFiyat isteği ile devam etmelisiniz.
+     */
+    const priceList = await this.biletAllPlaneService.pullPriceOfFlight({
+      companyNumber: planeTicketPurchaseDto.companyNumber,
+      segments: planeTicketPurchaseDto.segments as any,
+      adultCount: 1,
+    });
+    if (!priceList) {
+      throw new BadRequestException(
+        'Could not fetch price infor regarding the segments',
+      );
+    }
+
+    try {
+      /**
+       * Init Transactions
+       */
+      const transaction = new Transaction({
+        amount: '',
+        currency: Currency.TL,
+        status: TransactionStatus.PENDING,
+        transactionType: TransactionType.PURCHASE,
+        paymentMethod: PaymentMethod.CREDIT_CARD,
+        paymentProvider: PaymentProvider.VAKIF_BANK,
+        // unregistered card
+        cardholderName: planeTicketPurchaseDto.bankCard.holderName,
+        maskedPan: planeTicketPurchaseDto.bankCard.maskedPan,
+
+        bankCard: null,
+        wallet: null,
+      });
+      await queryRunner.manager.insert(Transaction, transaction);
+
+      /**
+       * Create Order
+       */
+      const order = new Order({
+        firstName: '',
+        lastName: '',
+        userEmail: planeTicketPurchaseDto.email,
+        userPhoneNumber: planeTicketPurchaseDto.phoneNumber,
+        type: OrderType.PURCHASE,
+        status: OrderStatus.PENDING,
+        user: null,
+        transaction,
+      });
+      await queryRunner.manager.insert(Order, order);
+
+      /**
+       * Create Segments
+       */
+      const segments = planeTicketPurchaseDto.segments.map(
+        (segment) => new PlaneTicketSegment(segment),
+      );
+      await queryRunner.manager.insert(PlaneTicketSegment, segments);
+
+      /**
+       * Create Plane tickets and assign the order
+       */
+      const planeTickets = planeTicketPurchaseDto.passengers.map(
+        (passenger, index: number) =>
+          new PlaneTicket({
+            ticketOrder: index + 1,
+            segments,
+            order,
+          }),
+      );
+      await queryRunner.manager.insert(PlaneTicket, planeTickets);
+
+      // get strategy dynamically
+      const paymentProvider = this.paymentProviderFactory.getStrategy(
+        PaymentProvider.VAKIF_BANK,
+      );
+
+      const htmlContent = await paymentProvider.startPayment(
+        clientIp,
+        planeTicketPurchaseDto.bankCard,
+        transaction,
+      );
+      await queryRunner.commitTransaction();
+      return htmlContent;
     } catch (err) {
       await queryRunner.rollbackTransaction();
       throw err;

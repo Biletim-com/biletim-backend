@@ -18,6 +18,7 @@ import { PaymentResultHandlerProviderFactory } from './factories/payment-result-
 import { BusTicketPurchaseDto } from './dto/bus-ticket-purchase.dto';
 import { VakifBankPaymentResultDto } from './dto/vakif-bank-payment-result.dto';
 import { BiletAllPaymentResultDto } from './dto/biletall-payment-result.dto';
+import { PlaneTicketPurchaseDto } from './dto/plane-ticket-purchase.dto';
 
 // decorators
 import { ClientIp } from '@app/common/decorators';
@@ -54,7 +55,16 @@ export class PaymentController {
   }
 
   @Post('start-plane-ticket-payment')
-  startPlaneTicketPurchasePayment() {}
+  startPlaneTicketPurchasePayment(
+    @ClientIp() clientIp: string,
+    @Body() planeTicketPurchaseDto: PlaneTicketPurchaseDto,
+  ) {
+    const htmlContent = this.paymentService.planeTicketPurchase(
+      clientIp,
+      planeTicketPurchaseDto,
+    );
+    return htmlContent;
+  }
 
   @Post('start-hotel-reservation-payment')
   startHotelReservationPayment() {}

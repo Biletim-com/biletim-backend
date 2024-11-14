@@ -125,31 +125,31 @@ export class BiletAllPlaneService extends BiletAllService {
     requestDto: PullAbroadFlightPricePackagesRequestDto,
   ): Promise<PullAbroadFlightPricePackagesResponseDto> {
     const builder = new xml2js.Builder({ headless: true });
-    const segments = requestDto.segments.map((segment, index) => ({
-      [`Segment${index + 1}`]: {
-        Kalkis: segment.departure,
-        Varis: segment.arrival,
-        KalkisTarih: segment.departureDate,
-        VarisTarih: segment.arrivalDate,
-        UcusNo: segment.flightNumber,
-        FirmaKod: segment.companyCode,
-        Sinif: segment.flightClass,
-        DonusMu: segment.isReturnFlight,
-        SeferKod: segment.flightCode,
-      },
-    }));
     const requestDocument = {
       UcusFiyatPaket: {
         IslemId: requestDto.operationId,
         FirmaNo: 1100,
-        ...segments.reduce((acc, segment) => ({ ...acc, ...segment }), {}),
-        YetiskinSayi: requestDto.adultCount,
-        CocukSayi: requestDto.childCount,
-        BebekSayi: requestDto.babyCount,
-        OgrenciSayi: requestDto.studentCount,
-        YasliSayi: requestDto.olderCount,
-        AskerSayi: requestDto.militaryCount,
-        GencSayi: requestDto.youthCount,
+        ...requestDto.segments.reduce((acc, segment, index) => {
+          acc[`Segment${index + 1}`] = {
+            Kalkis: segment.departureAirport,
+            Varis: segment.arrivalAirport,
+            KalkisTarih: segment.departureDate,
+            VarisTarih: segment.arrivalDate,
+            UcusNo: segment.flightNumber,
+            FirmaKod: segment.airlineCode,
+            Sinif: segment.flightClass,
+            DonusMu: segment.isReturnFlight ? 1 : 0,
+            SeferKod: segment.flightCode,
+          };
+          return acc;
+        }, {}),
+        YetiskinSayi: requestDto.adultCount ?? 0,
+        CocukSayi: requestDto.childCount ?? 0,
+        BebekSayi: requestDto.babyCount ?? 0,
+        OgrenciSayi: requestDto.studentCount ?? 0,
+        YasliSayi: requestDto.elderlyCount ?? 0,
+        AskerSayi: requestDto.militaryCount ?? 0,
+        GencSayi: requestDto.youthCount ?? 0,
         CIP: 0,
       },
     };
@@ -167,17 +167,17 @@ export class BiletAllPlaneService extends BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       UcusFiyat: {
-        FirmaNo: requestDto.companyNo,
+        FirmaNo: requestDto.companyNumber,
         ...requestDto.segments.reduce((acc, segment, index) => {
           acc[`Segment${index + 1}`] = {
             Kalkis: segment.departureAirport,
             Varis: segment.arrivalAirport,
             KalkisTarih: segment.departureDate,
             VarisTarih: segment.arrivalDate,
-            UcusNo: segment.flightNo,
+            UcusNo: segment.flightNumber,
             FirmaKod: segment.airlineCode,
-            Sinif: segment.travelClass,
-            DonusMu: segment.isReturnSegment ? 1 : 0,
+            Sinif: segment.flightClass,
+            DonusMu: segment.isReturnFlight ? 1 : 0,
             ...(segment.flightCode && { SeferKod: segment.flightCode }),
           };
           return acc;
@@ -186,7 +186,7 @@ export class BiletAllPlaneService extends BiletAllService {
         CocukSayi: requestDto.childCount ?? 0,
         BebekSayi: requestDto.babyCount ?? 0,
         OgrenciSayi: requestDto.studentCount ?? 0,
-        YasliSayi: requestDto.seniorCount ?? 0,
+        YasliSayi: requestDto.elderlyCount ?? 0,
         AskerSayi: requestDto.militaryCount ?? 0,
         GencSayi: requestDto.youthCount ?? 0,
       },
@@ -221,10 +221,10 @@ export class BiletAllPlaneService extends BiletAllService {
             Varis: segment.arrivalAirport,
             KalkisTarih: segment.departureDate,
             VarisTarih: segment.arrivalDate,
-            UcusNo: segment.flightNo,
+            UcusNo: segment.flightNumber,
             FirmaKod: segment.airlineCode,
-            Sinif: segment.travelClass,
-            DonusMu: segment.isReturnSegment ? 1 : 0,
+            Sinif: segment.flightClass,
+            DonusMu: segment.isReturnFlight ? 1 : 0,
             ...(segment.flightCode && { SeferKod: segment.flightCode }),
           };
           return acc;
@@ -276,10 +276,10 @@ export class BiletAllPlaneService extends BiletAllService {
             Varis: segment.arrivalAirport,
             KalkisTarih: segment.departureDate,
             VarisTarih: segment.arrivalDate,
-            UcusNo: segment.flightNo,
+            UcusNo: segment.flightNumber,
             FirmaKod: segment.airlineCode,
-            Sinif: segment.travelClass,
-            DonusMu: segment.isReturnSegment ? 1 : 0,
+            Sinif: segment.flightClass,
+            DonusMu: segment.isReturnFlight ? 1 : 0,
             ...(segment.flightCode && { SeferKod: segment.flightCode }),
           };
           return acc;
@@ -294,6 +294,9 @@ export class BiletAllPlaneService extends BiletAllService {
             DogumTarih: passenger.birthday,
             ...(passenger.passportNumber && {
               PasaportNo: passenger.passportNumber,
+            }),
+            ...(passenger.passportNumber && {
+              PasaportUlkeKod: passenger.passportNumber,
             }),
             ...(passenger.passportExpiryDate && {
               PasaportGecerlilikTarihi: passenger.passportExpiryDate,
@@ -327,10 +330,8 @@ export class BiletAllPlaneService extends BiletAllService {
         }),
         WebYolcu: {
           Ip: requestDto.webPassenger.ip,
-          KartNo: requestDto.webPassenger.creditCardNumber,
-          KartSahibi: requestDto.webPassenger.creditCardHolderName,
-          SonKullanmaTarihi: requestDto.webPassenger.creditCardExpiryDate,
-          CCV2: requestDto.webPassenger.creditCardCCV2,
+          OnOdemeKullan: 1,
+          OnOdemeTutar: '',
           ...(requestDto.webPassenger.openTicketPnrCode && {
             AcikBiletPNR: requestDto.webPassenger.openTicketPnrCode,
           }),
@@ -370,10 +371,10 @@ export class BiletAllPlaneService extends BiletAllService {
             Varis: segment.arrivalAirport,
             KalkisTarih: segment.departureDate,
             VarisTarih: segment.arrivalDate,
-            UcusNo: segment.flightNo,
+            UcusNo: segment.flightNumber,
             FirmaKod: segment.airlineCode,
-            Sinif: segment.travelClass,
-            DonusMu: segment.isReturnSegment ? 1 : 0,
+            Sinif: segment.flightClass,
+            DonusMu: segment.isReturnFlight ? 1 : 0,
             ...(segment.flightCode && { SeferKod: segment.flightCode }),
           };
           return acc;
@@ -436,4 +437,101 @@ export class BiletAllPlaneService extends BiletAllService {
 
     return this.biletAllPlaneParserService.parseFlightTicketPurchase(res);
   }
+
+  // async processPlaneTicket(
+  //   requestDto: FlightTicketRequestDto,
+  //   operationType: BiletAllPlaneTicketOperationType,
+  // ): Promise<FlightTicketResponseDto> {
+  //   const builder = new xml2js.Builder({ headless: true });
+  //   const requestDocument = {
+  //     IslemUcak_2: {
+  //       IslemTip: operationType,
+  //       FirmaNo: requestDto.companyNo,
+  //       TelefonNo: requestDto.phoneNumber || undefined,
+  //       CepTelefonNo: requestDto.mobilePhoneNumber,
+  //       Email: requestDto.email,
+  //       HatirlaticiNot: '',
+  //       ...requestDto.segments.reduce((acc, segment, index) => {
+  //         acc[`Segment${index + 1}`] = {
+  //           Kalkis: segment.departureAirport,
+  //           Varis: segment.arrivalAirport,
+  //           KalkisTarih: segment.departureDate,
+  //           VarisTarih: segment.arrivalDate,
+  //           UcusNo: segment.flightNo,
+  //           FirmaKod: segment.airlineCode,
+  //           Sinif: segment.travelClass,
+  //           DonusMu: segment.isReturnSegment ? 1 : 0,
+  //           ...(segment.flightCode && { SeferKod: segment.flightCode }),
+  //         };
+  //         return acc;
+  //       }, {}),
+  //       ...requestDto.passengers.reduce((acc, passenger, index) => {
+  //         acc[`Yolcu${index + 1}`] = {
+  //           Ad: turkishToEnglish(passenger.firstName),
+  //           Soyad: turkishToEnglish(passenger.lastName),
+  //           Cinsiyet: BiletAllGender[passenger.gender],
+  //           YolcuTip: BiletAllPlanePassengerType[passenger.passengerType],
+  //           TCKimlikNo: passenger.turkishIdNumber,
+  //           DogumTarih: passenger.birthday,
+  //           ...(passenger.passportNumber && {
+  //             PasaportNo: passenger.passportNumber,
+  //           }),
+  //           ...(passenger.passportExpiryDate && {
+  //             PasaportGecerlilikTarihi: passenger.passportExpiryDate,
+  //           }),
+  //           MilNo: passenger.passportNumber || '',
+  //           NetFiyat: passenger.netPrice || 0,
+  //           Vergi: passenger.tax || 0,
+  //           ServisUcret: passenger.serviceFee || 0,
+  //         };
+  //         return acc;
+  //       }, {}),
+  //       ...(requestDto.invoice && {
+  //         Fatura: {
+  //           FaturaTip: BiletAllPlaneInvoiceType[requestDto.invoice.invoiceType],
+  //           ...(requestDto.invoice.invoiceType ===
+  //             PlaneInvoiceType.INDIVIDUAL && {
+  //             KisiAd: requestDto.invoice.individualFirstName,
+  //             KisiSoyad: requestDto.invoice.individualLastName,
+  //             KisiTCKimlikNo: requestDto.invoice.individualTurkishIdNumber,
+  //             KisiAdres: requestDto.invoice.individualAddress,
+  //           }),
+  //           ...(requestDto.invoice.invoiceType ===
+  //             PlaneInvoiceType.CORPORATE && {
+  //             FirmaAd: requestDto.invoice.companyName,
+  //             FirmaVergiNo: requestDto.invoice.companyTaxNumber,
+  //             FirmaVergiDairesi: requestDto.invoice.companyTaxOffice,
+  //             FirmaAdres: requestDto.invoice.companyAddress,
+  //           }),
+  //         },
+  //       }),
+  //       ...(operationType !== BiletAllPlaneTicketOperationType.reservation && {
+  //         WebYolcu: {
+  //           Ip: requestDto.webPassenger.ip,
+  //           OnOdemeKullan: 1,
+  //           OnOdemeTutar: '',
+  //           ...(requestDto.webPassenger.openTicketPnrCode && {
+  //             AcikBiletPNR: requestDto.webPassenger.openTicketPnrCode,
+  //           }),
+  //           ...(requestDto.webPassenger.openTicketSurname && {
+  //             AcikBiletSoyad: requestDto.webPassenger.openTicketSurname,
+  //           }),
+  //           ...(requestDto.webPassenger.openTicketAmount && {
+  //             AcikBiletMiktar: requestDto.webPassenger.openTicketAmount,
+  //           }),
+  //           ...(requestDto.webPassenger.reservationPnrCode && {
+  //             RezervasyonPNR: requestDto.webPassenger.reservationPnrCode,
+  //           }),
+  //         },
+  //       }),
+  //     },
+  //   };
+
+  //   const xml = builder.buildObject(requestDocument);
+  //   const res = await this.run<any>(xml);
+
+  //   return operationType === BiletAllPlaneTicketOperationType.reservation
+  //     ? this.biletAllPlaneParserService.parseFlightTicketReservation(res)
+  //     : this.biletAllPlaneParserService.parseFlightTicketPurchase(res);
+  // }
 }
