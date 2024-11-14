@@ -60,25 +60,14 @@ export class TravelHealthInsuranceService {
   ): Promise<GetPriceResponse> {
     const url = `${this.baseUrl}/v3/seyahat-saglik-sigortasi/fiyat-al`;
     const requestDtoInTurkish = this.getPriceTranslateToTurkish(requestDto);
-    console.log(requestDtoInTurkish);
     const requestConfig: RequestConfigs = {
       url,
       method: 'POST',
       data: requestDtoInTurkish,
       headers: this.getBasicAuthHeader(),
     };
-    return await this.restClientService.request(requestConfig);
-  }
-
-  async getCountries(): Promise<any> {
-    const url = `${this.baseUrl}/partner/v1/countries`;
-    const requestConfig: RequestConfigs = {
-      url,
-      method: 'GET',
-      headers: this.getBasicAuthHeader(),
-    };
-    const response = await this.restClientService.request(requestConfig);
-    console.log({ response });
-    return response;
+    return await this.restClientService.request<GetPriceResponse>(
+      requestConfig,
+    );
   }
 }

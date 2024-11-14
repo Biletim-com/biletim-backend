@@ -24,13 +24,12 @@ export type Guarantees = {
 export type ProductInfos = {
   urunId: number;
   fiyat: string;
+  fiyatEuro: string;
+  fiyatUsd: string;
   urunAdi: string;
   urunAdiMultiple: {
     tr: string;
     en: string;
-    ar: string;
-    ru: string;
-    de: string;
   };
   urunTanimi: string;
   urunKategoriBaslik: string;
@@ -38,21 +37,8 @@ export type ProductInfos = {
   urunKategoriMultiple: {
     tr: string;
     en: string;
-    ar: string;
-    ru: string;
-    de: string;
   };
   teminatlar: Guarantees;
-};
-
-export type PersonalInfos = {
-  ad: string;
-  soyad: string;
-  tcKimlikNo: string;
-  dogumTarihi: string;
-  cinsiyet: string;
-  gsmNo: string;
-  email: string;
 };
 
 export type InsuranceCompanyInfos = {
@@ -63,9 +49,6 @@ export type InsuranceCompanyInfos = {
   yayinciMultiple: {
     tr: string;
     en: string;
-    ar: string;
-    ru: string;
-    de: string;
   };
 };
 
@@ -73,7 +56,6 @@ export type GetPriceResponse = {
   success: boolean;
   data: {
     urunBilgileri: ProductInfos;
-    kisiselBilgiler: PersonalInfos;
     sigortaSirketiBilgileri: InsuranceCompanyInfos;
   };
 };

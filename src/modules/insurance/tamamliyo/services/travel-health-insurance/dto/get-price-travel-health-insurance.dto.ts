@@ -14,11 +14,12 @@ import { Type } from 'class-transformer';
 import { InsuranceProductType } from '@app/common/enums/insurance-product-type.enum';
 import { InsuranceTicketType } from '@app/common/enums/insurance-ticket-type.enum';
 import {
+  en,
   GetPriceResponse,
   Guarantees,
   InsuranceCompanyInfos,
-  PersonalInfos,
   ProductInfos,
+  tr,
 } from '../types/get-price-travel-health-insurance-response.type';
 
 export class InsuranceCustomerInfoDto {
@@ -170,76 +171,52 @@ export class GetPriceTravelHealthInsuranceRequestDtoInTurkish {
 }
 
 export class GuaranteesDto {
-  visa: string;
-  medicalTreatmentCoverage: string;
-  medicalTransferCoverage: string;
-  returnToPermanentResidenceAfterTreatment: string;
-  repatriationOfMortalRemains: string;
-  medicalInformationAndConsultation: string;
+  tr: tr;
+  en: en;
 
-  constructor(data: Guarantees['en']) {
-    this.visa = data.Visa;
-    this.medicalTreatmentCoverage = data['Medical Treatment Coverage'];
-    this.medicalTransferCoverage = data['Medical Transfer Coverage'];
-    this.returnToPermanentResidenceAfterTreatment =
-      data['Return to Permanent Residence after Treatment'];
-    this.repatriationOfMortalRemains = data['Repatriation of Mortal Remains'];
-    this.medicalInformationAndConsultation =
-      data['Medical Information and Consultation'];
+  constructor(data: Guarantees) {
+    this.tr = data.tr;
+    this.en = data.en;
   }
 }
 
 export class ProductInfosDto {
   productId: number;
   price: string;
+  priceEuro: string;
+  priceUsd: string;
   productName: string;
   productNameMultiple: {
+    tr: string;
     en: string;
-    ar: string;
-    ru: string;
-    de: string;
   };
   productDescription: string;
   productCategoryTitle: string;
   productCategoryDescription: string;
   productCategoryMultiple: {
+    tr: string;
     en: string;
-    ar: string;
-    ru: string;
-    de: string;
   };
   guarantees: GuaranteesDto;
 
   constructor(data: ProductInfos) {
     this.productId = data.urunId;
     this.price = data.fiyat;
+    this.priceEuro = data.fiyatEuro;
+    this.priceUsd = data.fiyatUsd;
     this.productName = data.urunAdi;
-    this.productNameMultiple = data.urunAdiMultiple;
+    this.productNameMultiple = {
+      tr: data.urunAdiMultiple.tr,
+      en: data.urunAdiMultiple.en,
+    };
     this.productDescription = data.urunTanimi;
     this.productCategoryTitle = data.urunKategoriBaslik;
     this.productCategoryDescription = data.urunKategoriAciklama;
-    this.productCategoryMultiple = data.urunKategoriMultiple;
-    this.guarantees = new GuaranteesDto(data.teminatlar.en);
-  }
-}
-
-export class PersonalInfosDto {
-  firstName: string;
-  lastName: string;
-  idNumber: string;
-  birthDate: string;
-  gender: string;
-  phoneNumber: string;
-  email: string;
-
-  constructor(data: PersonalInfos) {
-    this.firstName = data.ad;
-    this.lastName = data.soyad;
-    this.idNumber = data.tcKimlikNo;
-    this.birthDate = data.dogumTarihi;
-    this.gender = data.cinsiyet;
-    this.phoneNumber = data.gsmNo;
-    this.email = data.email;
+    this.productCategoryMultiple = {
+      tr: data.urunKategoriMultiple.tr,
+      en: data.urunAdiMultiple.en,
+    };
+    this.guarantees = new GuaranteesDto(data.teminatlar);
   }
 }
 
@@ -249,10 +226,8 @@ export class InsuranceCompanyInfosDto {
   fullName: string;
   publisher: string;
   publisherMultiple: {
+    tr: string;
     en: string;
-    ar: string;
-    ru: string;
-    de: string;
   };
 
   constructor(data: InsuranceCompanyInfos) {
@@ -260,7 +235,10 @@ export class InsuranceCompanyInfosDto {
     this.shortName = data.kisaAdi;
     this.fullName = data.tamAdi;
     this.publisher = data.yayinci;
-    this.publisherMultiple = data.yayinciMultiple;
+    this.publisherMultiple = {
+      tr: data.yayinciMultiple.tr,
+      en: data.yayinciMultiple.en,
+    };
   }
 }
 
@@ -268,15 +246,13 @@ export class GetPriceResponseDto {
   success: boolean;
   data: {
     productInfos: ProductInfosDto;
-    personalInfos: PersonalInfosDto;
     insuranceCompanyInfos: InsuranceCompanyInfosDto;
   };
 
   constructor(response: GetPriceResponse) {
     this.success = response.success;
     this.data = {
-      productInfos: new ProductInfosDto(response.data.urunBilgileri),
-      personalInfos: new PersonalInfosDto(response.data.kisiselBilgiler),
+      productInfos: new ProductInfosDto(response?.data?.urunBilgileri),
       insuranceCompanyInfos: new InsuranceCompanyInfosDto(
         response.data.sigortaSirketiBilgileri,
       ),
