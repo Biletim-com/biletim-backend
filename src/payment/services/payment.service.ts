@@ -223,7 +223,7 @@ export class PaymentService {
       (new Date().getTime() - new Date(tranaction?.createdAt).getTime()) /
       (1000 * 60);
 
-    if (4 > minuteDifference) {
+    if (minuteDifference > 3) {
       throw new BadRequestException('Transaction is expired');
     }
     return tranaction;
