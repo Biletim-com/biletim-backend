@@ -6,6 +6,7 @@ import {
   Req,
   BadRequestException,
   Param,
+  Get,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -58,7 +59,7 @@ export class PaymentController {
   @Post('start-hotel-reservation-payment')
   startHotelReservationPayment() {}
 
-  @Post('transaction/:id')
+  @Get('transaction/:id')
   getTransactionData(
     @Param() { id }: TransactionRequest,
   ): Promise<Transaction> {
