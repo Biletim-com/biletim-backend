@@ -219,7 +219,7 @@ export class PaymentService {
   async planeTicketPurchase(
     clientIp: string,
     planeTicketPurchaseDto: PlaneTicketPurchaseDto,
-  ): Promise<string> {
+  ): Promise<{ transactionId: string; htmlContent: string }> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -308,7 +308,7 @@ export class PaymentService {
         transaction,
       );
       await queryRunner.commitTransaction();
-      return htmlContent;
+      return { transactionId: transaction.id, htmlContent };
     } catch (err) {
       await queryRunner.rollbackTransaction();
       throw err;

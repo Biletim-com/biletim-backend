@@ -127,11 +127,11 @@ export type BaggageInfo = {
 };
 
 export type AdditionalServiceRule = {
-  EkHizmetKullan: string[];
-  KullanKoltuk: string[];
-  KullanBagaj: string[];
-  KullanYemek: string[];
-  KullanKabinBagaj: string[];
+  EkHizmetKullan: string;
+  KullanKoltuk: string;
+  KullanBagaj: string;
+  KullanYemek: string;
+  KullanKabinBagaj: string;
 };
 
 export type AdditionalServiceRules = {
@@ -149,7 +149,7 @@ export type PlanePullPriceDataSet = {
     [K in keyof BaggageInfo]: [string];
   }>;
   EkHizmetKurallar?: Array<{
-    [K in keyof AdditionalServiceRules]: AdditionalServiceRule[];
+    [K in keyof AdditionalServiceRules]: [string];
   }>;
 };
 

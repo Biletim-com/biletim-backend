@@ -55,15 +55,17 @@ export class PaymentController {
   }
 
   @Post('start-plane-ticket-payment')
-  startPlaneTicketPurchasePayment(
+  async startPlaneTicketPurchasePayment(
     @ClientIp() clientIp: string,
     @Body() planeTicketPurchaseDto: PlaneTicketPurchaseDto,
-  ) {
-    const htmlContent = this.paymentService.planeTicketPurchase(
-      clientIp,
-      planeTicketPurchaseDto,
-    );
-    return htmlContent;
+  ): Promise<{ transactionId: string; htmlContent: string }> {
+    const { transactionId, htmlContent } =
+      await this.paymentService.planeTicketPurchase(
+        clientIp,
+        planeTicketPurchaseDto,
+      );
+    const base64HtmlContent = Buffer.from(htmlContent).toString('base64');
+    return { transactionId, htmlContent: base64HtmlContent };
   }
 
   @Post('start-hotel-reservation-payment')
