@@ -65,16 +65,7 @@ export class FlightSegmentDto {
   })
   @IsString()
   @IsNotEmpty()
-  flightNumber: string;
-
-  @ApiProperty({
-    description: 'The airline code.',
-    example: 'A3',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  airlineCode: string;
+  flightNo: string;
 
   @ApiProperty({
     description: 'The travel class.',
@@ -86,15 +77,6 @@ export class FlightSegmentDto {
   flightClass: string;
 
   @ApiProperty({
-    description: 'Indicates whether this is a return segment.',
-    example: false,
-    required: false,
-  })
-  @IsBoolean()
-  @IsOptional()
-  isReturnFlight: boolean;
-
-  @ApiProperty({
     description: 'An optional code associated with the flight.',
     example:
       'VG5iNGNIVnFXREtBTFVsTEVBQUFBQT09LDAsQTMsOTk5LElTVCxBVEgsMjAyNC0wOS0xNVQwNTozMDowMC4wMDArMDM6MDAsMjAyNC0wOS0xNVQwNzowMDowMC4wMDArMDM6MDAsUCxQSEZMWFNELEEsRWNvbm9teSwwMDAzLDE1MTc0MTUsRkxFWA==',
@@ -103,6 +85,24 @@ export class FlightSegmentDto {
   @IsOptional()
   @IsString()
   flightCode?: string;
+
+  @ApiProperty({
+    description: 'The airline code.',
+    example: 'A3',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  airlineCode: string;
+
+  @ApiProperty({
+    description: 'Indicates whether this is a return segment.',
+    example: false,
+    required: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  isReturnFlight: boolean;
 }
 
 export class PullPriceFlightRequestDto {
@@ -113,7 +113,7 @@ export class PullPriceFlightRequestDto {
   })
   @IsString()
   @IsNotEmpty()
-  companyNumber: string;
+  companyNo: string;
 
   @ApiProperty({
     description: 'The list of flight segments.',
@@ -473,19 +473,11 @@ export class PlaneAdditionalServiceRuleDto {
   }
 }
 
-export class PlaneAdditionalServiceRulesDto {
-  additionalServiceRule: PlaneAdditionalServiceRuleDto[];
-
-  constructor(ekHizmetKural: PlaneAdditionalServiceRuleDto[]) {
-    this.additionalServiceRule = ekHizmetKural;
-  }
-}
-
 export class PlanePullPriceFlightDto {
   constructor(
     public priceList: PriceListDto,
     public paymentRules: PlanePaymentRulesDto,
     public baggageInfo?: PlaneBaggageInfoDto[],
-    public additionalServiceRules?: PlaneAdditionalServiceRulesDto[],
+    public additionalServiceRules?: PlaneAdditionalServiceRuleDto[],
   ) {}
 }

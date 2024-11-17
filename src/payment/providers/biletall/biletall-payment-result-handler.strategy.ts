@@ -23,6 +23,7 @@ import { UUID } from '@app/common/types';
 
 // enums
 import { OrderStatus, TransactionStatus } from '@app/common/enums';
+import { VakifBankPaymentResultDto } from '@app/payment/dto/vakif-bank-payment-result.dto';
 
 @Injectable()
 export class BiletAllPaymentResultHandlerStrategy
@@ -38,7 +39,7 @@ export class BiletAllPaymentResultHandlerStrategy
     private readonly ordersRepository: OrdersRepository,
   ) {}
 
-  async handleSuccessfulPayment(
+  async handleSuccessfulBusTicketPayment(
     _clientIp: string,
     { pnr, ticketNumbers, ...paymentResultDto }: BiletAllPaymentResultDto,
   ): Promise<Transaction> {
@@ -110,16 +111,20 @@ export class BiletAllPaymentResultHandlerStrategy
       await queryRunner.commitTransaction();
       return transaction;
     } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      const errorMessage =
+        err.message || 'Something went wrong while processing payment';
+
       this.transactionsRepository.update(transaction.id, {
         status: TransactionStatus.FAILED,
-        errorMessage:
-          err.message || 'Something went wrong while processing payment',
+        errorMessage,
       });
       this.ordersRepository.update(transaction.order.id, {
         status: OrderStatus.PAYMENT_FAILED,
       });
 
-      await queryRunner.rollbackTransaction();
+      err.message = errorMessage;
       throw err;
     } finally {
       await queryRunner.release();
@@ -150,5 +155,12 @@ export class BiletAllPaymentResultHandlerStrategy
         { status: OrderStatus.PAYMENT_FAILED },
       ),
     ]);
+  }
+
+  handleSuccessfulPlaneTicketPayment(
+    clientIp: string,
+    paymentResultDto: BiletAllPaymentResultDto | VakifBankPaymentResultDto,
+  ): Promise<Transaction> {
+    throw new Error('Method not implemented.');
   }
 }

@@ -9,6 +9,8 @@ import { PaymentController } from './payment.controller';
 // services
 import { HtmlTemplateService } from './services/html-template.service';
 import { PaymentService } from './services/payment.service';
+import { BusTicketPaymentService } from './services/bus-ticket-payment.service';
+import { PlaneTicketPaymentService } from './services/plane-ticket-payment.service';
 import { PaymentProviderFactory } from './factories/payment-provider.factory';
 import { PaymentResultHandlerProviderFactory } from './factories/payment-result-handler-provider.factory';
 import { VakifBankCardService } from './providers/vakif-bank/services/vakif-bank-card.service';
@@ -44,6 +46,8 @@ import { BiletAllPlaneParserService } from '@app/modules/tickets/plane/services/
   providers: [
     HtmlTemplateService,
     PaymentService,
+    BusTicketPaymentService,
+    PlaneTicketPaymentService,
     PaymentProviderFactory,
     PaymentResultHandlerProviderFactory,
     VakifBankCardService,

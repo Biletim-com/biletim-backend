@@ -1,4 +1,4 @@
-export const validateTCNumber = (tcNumber: string): boolean => {
+export const isValidTCNumber = (tcNumber: string): boolean => {
   if (tcNumber.length !== 11) {
     return false;
   }

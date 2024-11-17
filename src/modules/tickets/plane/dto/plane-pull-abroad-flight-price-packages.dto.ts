@@ -70,7 +70,7 @@ class PullAbroadFlightPricePackagesSegmentDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(100)
-  flightNumber: string;
+  flightNo: string;
 
   @ApiProperty({
     description: 'Company code for the airline.',
@@ -124,7 +124,7 @@ export class PullAbroadFlightPricePackagesRequestDto {
     example: '1100',
   })
   @IsNotEmpty()
-  companyNumber: string;
+  companyNo: string;
 
   @ApiProperty({
     description: 'Flight segment information for the flight.',
@@ -317,7 +317,7 @@ export class BrandSegmentInfoDto {
   departureTime: string;
   arrivalTime: string;
   cabinClass: string;
-  flightNumber: string;
+  flightNo: string;
   carrierCode: string;
   operatingCarrierCode: string;
   fareRuleKey: string;
@@ -337,7 +337,7 @@ export class BrandSegmentInfoDto {
     this.departureTime = data.DepartureTime;
     this.arrivalTime = data.ArrivalTime;
     this.cabinClass = data.CabinClass;
-    this.flightNumber = data.FlightNumber;
+    this.flightNo = data.FlightNumber;
     this.carrierCode = data.CarrierCode;
     this.operatingCarrierCode = data.OperatingCarrierCode;
     this.fareRuleKey = data.FareRuleKey;

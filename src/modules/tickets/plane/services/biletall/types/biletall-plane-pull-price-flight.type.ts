@@ -139,17 +139,19 @@ export type AdditionalServiceRules = {
 };
 
 export type PlanePullPriceDataSet = {
-  FiyatListesi: {
-    [K in keyof PlanePrices]: [string];
-  };
-  OdemeKurallari: {
-    [K in keyof PaymentRules]: [string];
-  };
-  BagajBilgiler?: Array<{
-    [K in keyof BaggageInfo]: [string];
-  }>;
-  EkHizmetKurallar?: Array<{
-    [K in keyof AdditionalServiceRules]: [string];
+  NewDataSet: Array<{
+    FiyatListesi: Array<{
+      [K in keyof PlanePrices]: [string];
+    }>;
+    OdemeKurallari: Array<{
+      [K in keyof PaymentRules]: [string];
+    }>;
+    BagajBilgiler?: Array<{
+      [K in keyof BaggageInfo]: [string];
+    }>;
+    EkHizmetKurallar?: Array<{
+      [K in keyof AdditionalServiceRules]: [AdditionalServiceRule];
+    }>;
   }>;
 };
 

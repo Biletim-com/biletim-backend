@@ -1,6 +1,7 @@
 export * from './app-environment.enum';
 export * from './email-type.enum';
 export * from './currency.enum';
+export * from './ticket-type.enum';
 
 export * from './payment.enums';
 export * from './passanger.enums';

@@ -4,15 +4,18 @@ import {
   Post,
   Query,
   Req,
-  BadRequestException,
   Param,
   Get,
+  Res,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { PaymentService } from './services/payment.service';
+import { BusTicketPaymentService } from './services/bus-ticket-payment.service';
+import { PlaneTicketPaymentService } from './services/plane-ticket-payment.service';
 import { PaymentResultHandlerProviderFactory } from './factories/payment-result-handler-provider.factory';
+import { HtmlTemplateService } from './services/html-template.service';
 
 // dtos
 import { BusTicketPurchaseDto } from './dto/bus-ticket-purchase.dto';
@@ -27,9 +30,10 @@ import { ClientIp } from '@app/common/decorators';
 import { UUID } from '@app/common/types';
 import { BusTicketSaleRequest } from '@app/modules/tickets/bus/services/biletall/types/biletall-sale-request.type';
 import { PaymentResultQueryParams } from './types/payment-result-query-params.type';
+import type { Response, Request } from 'express';
 
 // enums
-import { PaymentProvider } from '@app/common/enums';
+import { PaymentProvider, TicketType } from '@app/common/enums';
 import { TransactionRequest } from './dto/get-transaction.dto';
 
 @ApiTags('Payment')
@@ -37,7 +41,10 @@ import { TransactionRequest } from './dto/get-transaction.dto';
 export class PaymentController {
   constructor(
     private readonly paymentService: PaymentService,
+    private readonly busTicketPaymentService: BusTicketPaymentService,
+    private readonly planeTicketPaymentService: PlaneTicketPaymentService,
     private readonly paymentResponseHandlerProviderFactory: PaymentResultHandlerProviderFactory,
+    private readonly htmlTemplateService: HtmlTemplateService,
   ) {}
 
   @Post('start-bus-ticket-payment')
@@ -46,7 +53,7 @@ export class PaymentController {
     @Body() busTicketPurchaseDto: BusTicketPurchaseDto,
   ): Promise<{ transactionId: string; htmlContent: string }> {
     const { transactionId, htmlContent } =
-      await this.paymentService.busTicketPurchase(
+      await this.busTicketPaymentService.busTicketPurchase(
         clientIp,
         busTicketPurchaseDto,
       );
@@ -60,7 +67,7 @@ export class PaymentController {
     @Body() planeTicketPurchaseDto: PlaneTicketPurchaseDto,
   ): Promise<{ transactionId: string; htmlContent: string }> {
     const { transactionId, htmlContent } =
-      await this.paymentService.planeTicketPurchase(
+      await this.planeTicketPaymentService.startPlaneTicketPurchase(
         clientIp,
         planeTicketPurchaseDto,
       );
@@ -79,12 +86,13 @@ export class PaymentController {
   }
 
   @Post('success')
-  successfulPaymentHandler(
+  async successfulPaymentHandler(
     @Req() request: Request,
+    @Res() res: Response,
     @ClientIp() clientIp: string,
     @Query()
-    { provider, transactionId }: PaymentResultQueryParams,
-  ): Promise<Transaction> {
+    { provider, transactionId, ticketType }: PaymentResultQueryParams,
+  ): Promise<void> {
     const body = request.body as unknown as
       | VakifBankPaymentResultDto
       | BusTicketSaleRequest;
@@ -103,15 +111,44 @@ export class PaymentController {
     const paymentResultHandlerStrategy =
       this.paymentResponseHandlerProviderFactory.getStrategy(provider);
 
-    return paymentResultHandlerStrategy.handleSuccessfulPayment(clientIp, dto);
+    try {
+      // TODO: think about applying strategy pattern to this
+      if (ticketType === TicketType.BUS) {
+        await paymentResultHandlerStrategy.handleSuccessfulBusTicketPayment(
+          clientIp,
+          dto,
+        );
+      } else {
+        await paymentResultHandlerStrategy.handleSuccessfulPlaneTicketPayment(
+          clientIp,
+          dto,
+        );
+      }
+
+      const htmlString = await this.htmlTemplateService.renderTemplate(
+        'payment-response',
+        {},
+      );
+      res.setHeader('Content-Type', 'text/html');
+      res.send(htmlString);
+    } catch (err) {
+      const errorMessage = err.message || 'Something went wrong';
+      const htmlString = await this.htmlTemplateService.renderTemplate(
+        'payment-response',
+        { errorMessage },
+      );
+      res.setHeader('Content-Type', 'text/html');
+      res.send(htmlString);
+    }
   }
 
   @Post('failure')
   async failedPaymentHandler(
     @Req() request: Request,
+    @Res() res: Response,
     @Query()
     { provider, transactionId: transactionIdQuery }: PaymentResultQueryParams,
-  ) {
+  ): Promise<void> {
     let body = request.body as unknown as
       | VakifBankPaymentResultDto
       | BusTicketSaleRequest;
@@ -131,10 +168,16 @@ export class PaymentController {
 
     const paymentResultHandlerStrategy =
       this.paymentResponseHandlerProviderFactory.getStrategy(provider);
-    await paymentResultHandlerStrategy.handleFailedPayment(
+    paymentResultHandlerStrategy.handleFailedPayment(
       transactionId,
       errorMessage,
     );
-    throw new BadRequestException(errorMessage);
+
+    const htmlString = await this.htmlTemplateService.renderTemplate(
+      'payment-response',
+      { errorMessage },
+    );
+    res.setHeader('Content-Type', 'text/html');
+    res.send(htmlString);
   }
 }

@@ -19,9 +19,17 @@ import { Gender, PassengerType } from '@app/common/enums';
 
 // dtos
 import { BankCardDto } from '@app/common/dtos';
-import { DateISODate } from '@app/common/types';
-import { IsTCNumber, OnlyOneDefined } from '@app/common/decorators';
 import { FlightSegmentDto } from '@app/modules/tickets/plane/dto/plane-pull-price-flight.dto';
+
+// decoratos
+import {
+  IsTCNumber,
+  IsValidPlanePassengerType,
+  OnlyOneDefined,
+} from '@app/common/decorators';
+
+// types
+import { DateISODate } from '@app/common/types';
 
 class IndividualInvoiceDto {
   @ApiProperty({
@@ -101,7 +109,7 @@ class CompanyInvoiceDto {
   taxOffice?: string;
 }
 
-class Invoice1Dto {
+class InvoiceDto {
   @ApiProperty({
     description: 'Invoice issued for an individual',
     required: false,
@@ -154,7 +162,7 @@ class PassengerPassport {
   passportExpirationDate?: DateISODate;
 }
 
-class PassengerInfoDto {
+export class PlanePassengerInfoDto {
   @ApiProperty({
     description: 'The first name of the passenger.',
     example: 'John',
@@ -175,21 +183,11 @@ class PassengerInfoDto {
 
   @ApiProperty({
     description: 'Gender of the passenger.',
-    // type: Gender,
     required: true,
   })
   @IsEnum(Gender)
   @IsNotEmpty()
   gender: Gender;
-
-  @ApiProperty({
-    description: 'The type of the passenger.',
-    // type: PassengerType,
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsEnum(PassengerType)
-  passengerType: PassengerType;
 
   @ApiProperty({
     description: 'The birth date of the passenger in yyyy-MM-dd format.',
@@ -200,6 +198,15 @@ class PassengerInfoDto {
   @IsDateString()
   @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
   birthday: DateISODate;
+
+  @ApiProperty({
+    description: 'The type of the passenger.',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsEnum(PassengerType)
+  @IsValidPlanePassengerType()
+  passengerType: PassengerType;
 
   @ApiProperty({
     description:
@@ -221,7 +228,7 @@ class PassengerInfoDto {
   @ValidateNested()
   @ValidateIf((o) => !o.tcNumber)
   @Type(() => PassengerPassport)
-  passport: PassengerPassport;
+  passport?: PassengerPassport;
 
   @ApiProperty({
     description: 'The net price of the ticket for the passenger.',
@@ -259,7 +266,7 @@ export class PlaneTicketPurchaseDto {
   })
   @IsNotEmpty()
   @IsString()
-  companyNumber: string;
+  companyNo: string;
 
   @ApiProperty({
     description:
@@ -288,17 +295,17 @@ export class PlaneTicketPurchaseDto {
     required: false,
   })
   @ValidateNested({ each: true })
-  @Type(() => Invoice1Dto)
-  invoice: Invoice1Dto;
+  @Type(() => InvoiceDto)
+  invoice: InvoiceDto;
 
   @ApiProperty({
     description: 'The list of passengers for the ticket purchase.',
-    type: [PassengerInfoDto],
+    type: [PlanePassengerInfoDto],
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => PassengerInfoDto)
-  passengers: PassengerInfoDto[];
+  @Type(() => PlanePassengerInfoDto)
+  passengers: PlanePassengerInfoDto[];
 
   @ApiProperty({
     description: 'The list of flight segments.',

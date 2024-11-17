@@ -9,7 +9,12 @@ import { UUID } from '@app/common/types';
 type PaymentResultDto = VakifBankPaymentResultDto | BiletAllPaymentResultDto;
 
 export interface IPaymentResultHandler {
-  handleSuccessfulPayment(
+  handleSuccessfulBusTicketPayment(
+    clientIp: string,
+    paymentResultDto: PaymentResultDto,
+  ): Promise<Transaction>;
+
+  handleSuccessfulPlaneTicketPayment(
     clientIp: string,
     paymentResultDto: PaymentResultDto,
   ): Promise<Transaction>;

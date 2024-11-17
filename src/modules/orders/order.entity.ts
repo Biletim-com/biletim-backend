@@ -44,12 +44,12 @@ export class Order extends AbstractEntity<Order> {
   user?: Nullable<User>;
 
   @JoinColumn()
-  @OneToOne(() => Transaction)
+  @OneToOne(() => Transaction, (transaction) => transaction.order)
   transaction: Transaction;
 
   @OneToMany(() => BusTicket, (busTicket) => busTicket.order)
   busTickets: BusTicket[];
 
-  @OneToMany(() => BusTicket, (busTicket) => busTicket.order)
-  planeTicket: PlaneTicket[];
+  @OneToMany(() => PlaneTicket, (planeTicket) => planeTicket.order)
+  planeTickets: PlaneTicket[];
 }

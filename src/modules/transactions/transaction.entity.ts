@@ -54,7 +54,7 @@ export class Transaction extends AbstractEntity<Transaction> {
   @Column('varchar', { nullable: true })
   maskedPan?: Nullable<string>;
 
-  @OneToOne(() => Order, (busTicket) => busTicket.transaction)
+  @OneToOne(() => Order, (order) => order.transaction)
   order: Order;
 
   // saved card

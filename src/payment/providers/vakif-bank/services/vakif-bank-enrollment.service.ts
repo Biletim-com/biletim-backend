@@ -10,7 +10,7 @@ import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { InjectPoxClient } from '@app/providers/pox-client/decorators';
 
 // enums
-import { Currency, PaymentProvider } from '@app/common/enums';
+import { Currency, PaymentProvider, TicketType } from '@app/common/enums';
 
 // types
 import { EnrollmentResponse } from '../types/enrollment-response.type';
@@ -59,6 +59,7 @@ export class VakifBankEnrollmentService {
   }
 
   async checkCard3DsEligibility(
+    ticketType: TicketType,
     transaction: Transaction,
     creditCard: BankCardDto,
   ): Promise<ThreeDSecureEligibilityResponse> {
@@ -70,8 +71,8 @@ export class VakifBankEnrollmentService {
       PurchaseAmount: normalizeDecimal(transaction.amount),
       Currency: VakifBankCurrency[Currency.TL],
       BrandName: VakifBankBankCardBrand[creditCard.cardType],
-      SuccessUrl: `${this.applicationConfigService.backendUrl}/payment/success?provider=${PaymentProvider.VAKIF_BANK}`,
-      FailureUrl: `${this.applicationConfigService.backendUrl}/payment/failure?provider=${PaymentProvider.VAKIF_BANK}`,
+      SuccessUrl: `${this.applicationConfigService.backendUrl}/payment/success?provider=${PaymentProvider.VAKIF_BANK}&ticketType=${ticketType}`,
+      FailureUrl: `${this.applicationConfigService.backendUrl}/payment/failure?provider=${PaymentProvider.VAKIF_BANK}&ticketType=${ticketType}`,
     };
 
     const {

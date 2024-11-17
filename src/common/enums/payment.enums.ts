@@ -4,6 +4,6 @@ export enum PaymentProvider {
 }
 
 export enum PaymentMethod {
-  CREDIT_CARD = 'credit_card',
+  BANK_CARD = 'bank-card',
   WALLET = 'wallet',
 }

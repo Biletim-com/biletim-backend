@@ -5,13 +5,16 @@ import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity'
 @Entity('plane_ticket_segments')
 export class PlaneTicketSegment extends AbstractEntity<PlaneTicketSegment> {
   @Column()
+  segmentOrder: number;
+
+  @Column()
+  companyNo: string;
+
+  @Column()
   departureAirport: string;
 
   @Column()
   arrivalAirport: string;
-
-  @Column()
-  ticketOrder: number;
 
   @Column()
   departureDate: string;
@@ -23,14 +26,14 @@ export class PlaneTicketSegment extends AbstractEntity<PlaneTicketSegment> {
   flightNo: string;
 
   @Column()
+  flightCode: string;
+
+  @Column()
+  flightClass: string;
+
+  @Column()
   airlineCode: string;
 
   @Column()
-  travelClass: string;
-
-  @Column()
-  isReturnSegment: boolean;
-
-  @Column()
-  flightCode?: string;
+  isReturnFlight: boolean;
 }
