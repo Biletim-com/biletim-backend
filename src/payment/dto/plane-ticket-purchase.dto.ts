@@ -161,7 +161,6 @@ class PassengerPassport {
   @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
   passportExpirationDate?: DateISODate;
 }
-
 export class PlanePassengerInfoDto {
   @ApiProperty({
     description: 'The first name of the passenger.',
@@ -214,7 +213,7 @@ export class PlanePassengerInfoDto {
     example: '12345678901',
     required: false,
   })
-  @IsOptional()
+  @IsNotEmpty()
   @ValidateIf((o) => !o.passport)
   @IsTCNumber()
   tcNumber?: string;
@@ -224,7 +223,7 @@ export class PlanePassengerInfoDto {
     type: PassengerPassport,
     required: false,
   })
-  @IsOptional()
+  @IsNotEmpty()
   @ValidateNested()
   @ValidateIf((o) => !o.tcNumber)
   @Type(() => PassengerPassport)

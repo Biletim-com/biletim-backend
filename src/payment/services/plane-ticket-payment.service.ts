@@ -105,16 +105,9 @@ export class PlaneTicketPaymentService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    /**
-     * Önemli Not : Fiyat Paketi görüntüleme akışı yalnızca yurtdışı uçuşlarda
-     * ve sefer yanıtında segment bilgisi içerisinde FiyatPaketTanimi ve FiyatPaketAnahtari
-     * alanlarının dolu gelmesi halinde yapılmalıdır. Eğer Sefer yanıtında bu 2 alandaki
-     * veri eksik veya bulunmuyorsa işlemlerinize UcusFiyat isteği ile devam etmelisiniz.
-     */
     const passengerTypeCounts = this.composePlanePassengerType(
       planeTicketPurchaseDto.passengers,
     );
-
     const { priceList } = await this.biletAllPlaneService.pullPriceOfFlight({
       companyNo: planeTicketPurchaseDto.companyNo,
       segments: planeTicketPurchaseDto.segments,
