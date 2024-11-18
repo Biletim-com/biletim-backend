@@ -1,7 +1,7 @@
 import { Entity, Column } from 'typeorm';
 
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
-import { DateTime } from '@app/common/types';
+import { DateISODate } from '@app/common/types';
 
 @Entity('passports')
 export class Passport extends AbstractEntity<Passport> {
@@ -11,6 +11,6 @@ export class Passport extends AbstractEntity<Passport> {
   @Column()
   country: string;
 
-  @Column({ type: 'timestamp' })
-  expirationDate: DateTime;
+  @Column({ type: 'date' })
+  expirationDate: DateISODate;
 }

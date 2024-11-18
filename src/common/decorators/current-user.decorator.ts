@@ -1,17 +1,11 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { UUID } from '../types';
 
-export interface TCurrentUser {
-  id: UUID;
-  sub: string;
-  name: string;
-  familyName: string;
-  email: string;
-}
+import { User } from '@app/modules/users/user.entity';
+import { PanelUser } from '@app/modules/panel-users/panel-user.entity';
 
 export const CurrentUser = createParamDecorator(
   (data: never, context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest();
-    return request.user;
+    return request.user as User | PanelUser;
   },
 );

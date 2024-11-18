@@ -1,4 +1,4 @@
-import { UUID } from '@app/common/types';
+import { DateTime, UUID } from '@app/common/types';
 import { PanelUser } from '../panel-user.entity';
 
 export class PanelUserWithoutPasswordDto {
@@ -10,8 +10,8 @@ export class PanelUserWithoutPasswordDto {
   address?: Nullable<string>;
   isDeleted: boolean;
   isSuperAdmin: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: DateTime;
+  updatedAt: DateTime;
 
   constructor(user: PanelUser) {
     this.id = user.id;

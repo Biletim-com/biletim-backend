@@ -75,7 +75,7 @@ export class UsersService {
 
       // validation
       const email = createUserDto.email.toLowerCase();
-      const existUser = await this.findByEmail(email);
+      const existUser = await this.findByEmailWithoutThrowError(email);
       if (existUser) {
         throw new HttpException(
           'This email address is already in use',
@@ -94,7 +94,6 @@ export class UsersService {
             new Passenger({
               name,
               familyName,
-              email,
             }),
           ],
         }),
@@ -185,6 +184,12 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async findByEmailWithoutThrowError(email: string): Promise<User | null> {
+    const user = await this.usersRepository.findOneBy({ email });
+
+    return user || null;
   }
 
   async findAppUserById(id: UUID, findOptions?: FindOptionsRelations<User>) {

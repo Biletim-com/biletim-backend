@@ -22,6 +22,6 @@
     },
     "typeRoots": ["./node_modules/@types"],
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "global.d.ts", "ormconfig.ts"],
+  "include": ["src/**/*.ts", "test/**/*.ts", "global.d.ts", "ormconfig.ts", "open-zst.script.ts"],
   "exclude": ["node_modules", "dist"]
 }

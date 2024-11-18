@@ -1,13 +1,14 @@
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
-import {
-  OfficialHolidaysDto,
-  OfficialHolidaysRequestDto,
-} from '../../dto/get-official-holidays.dto';
+
 import { BiletAllService } from '@app/common/services';
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 import { OfficialHolidaysResponse } from './type/get-official-holidays.type';
-import { BiletAllOfficialHolidaysParserService } from './biletall-official-holidays.parser';
+import { BiletAllOfficialHolidaysParserService } from './biletall-official-holidays.parser.service';
+import {
+  OfficialHolidaysDto,
+  OfficialHolidaysRequestDto,
+} from './dto/get-official-holidays.dto';
 
 @Injectable()
 export class BiletAllOfficialHolidaysService extends BiletAllService {

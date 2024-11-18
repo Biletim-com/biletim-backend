@@ -1,3 +1,4 @@
+import { Test, TestingModule } from '@nestjs/testing';
 import { Gender } from '@app/common/enums';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { ConfigModule } from '@app/configs/config.module';
@@ -10,7 +11,6 @@ import { ServiceInformationRequestDto } from '@app/modules/tickets/bus/dto/bus-s
 import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
 import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
 import { BusService } from '@app/modules/tickets/bus/services/bus.service';
-import { Test, TestingModule } from '@nestjs/testing';
 import {
   boardingPointMockResponse,
   busCompanyMockResponse,
@@ -102,14 +102,15 @@ describe('BusController', () => {
         departurePointId: '84',
         arrivalPointId: '738',
         date: '2024-10-15',
-        ip: '127.0.0.1',
       };
+
+      const clientIp = '127.0.0.1';
 
       biletAllBusServiceMock.scheduleList.mockResolvedValueOnce(
         departureScheduleListMockResponse,
       );
 
-      const result = await controller.scheduleList(requestDto);
+      const result = await controller.scheduleList(clientIp, requestDto);
 
       expect(biletAllBusService.scheduleList).toBeCalledWith(requestDto);
       expect(result).toEqual(departureScheduleListMockResponse);
@@ -143,28 +144,29 @@ describe('BusController', () => {
 
   describe('busSeatAvailability method', () => {
     it('should return availability of the relevant seat', async () => {
-      const requestDto: BusSeatAvailabilityRequestDto = {
-        companyNo: '37',
-        departurePointId: '84',
-        arrivalPointId: '738',
-        date: '2024-09-20',
-        time: '1900-01-01T22:00:00.000Z',
-        routeNumber: '3',
-        tripTrackingNumber: '21202',
-        ip: '127.0.0.1',
-        seats: [
-          {
-            seatNumber: '1',
-            gender: Gender.MALE,
-          },
-        ],
-      };
+      const requestDto: BusSeatAvailabilityRequestDto =
+        new BusSeatAvailabilityRequestDto({
+          companyNo: '37',
+          departurePointId: '84',
+          arrivalPointId: '738',
+          travelStartDateTime: '2024-09-20T22:00:00.000Z',
+          routeNumber: '3',
+          tripTrackingNumber: '21202',
+          seats: [
+            {
+              seatNumber: '1',
+              gender: Gender.MALE,
+            },
+          ],
+        });
+
+      const clientIp = '127.0.0.1';
 
       biletAllBusServiceMock.busSeatAvailability.mockResolvedValueOnce(
         busSeatAvailabilityMockResponse,
       );
 
-      const result = await controller.busSeatAvailability(requestDto);
+      const result = await controller.busSeatAvailability(clientIp, requestDto);
 
       expect(biletAllBusService.busSeatAvailability).toBeCalledWith(requestDto);
       expect(result).toStrictEqual(busSeatAvailabilityMockResponse);

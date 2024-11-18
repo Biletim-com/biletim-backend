@@ -194,7 +194,9 @@ export class AuthService {
       );
     }
 
-    let user = (await this.usersService.findByEmail(email)) as User;
+    let user = (await this.usersService.findByEmailWithoutThrowError(
+      email,
+    )) as User;
 
     if (!user) {
       const password: string = uuidv4();

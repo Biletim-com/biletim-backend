@@ -4,10 +4,11 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  MaxLength,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
-import * as dayjs from 'dayjs';
 import { ApiProperty } from '@nestjs/swagger';
+import * as dayjs from 'dayjs';
+
 // types
 import { BusSchedule } from '../services/biletall/types/biletall-trip-search.type';
 import { DateISODate } from '@app/common/types';
@@ -16,6 +17,7 @@ import { DateISODate } from '@app/common/types';
 
 import { IsReturnDateGreaterDate } from '@app/common/decorators/is-return-date-greater-date.decorator';
 import { BusFeature } from '../services/biletall/types/biletall-bus-feature.type';
+import { Transform } from 'class-transformer';
 
 // request to be sent to get the available dates
 export class BusScheduleRequestDto {
@@ -46,9 +48,9 @@ export class BusScheduleRequestDto {
     example: '2024-10-15',
     required: true,
   })
-  @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
+  @IsDateString()
+  @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
   @IsNotEmpty()
-  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
   date: DateISODate;
 
   @ApiProperty({
@@ -67,19 +69,6 @@ export class BusScheduleRequestDto {
   @IsInt()
   @IsOptional()
   includeIntermediatePoints?: number;
-
-  @IsInt()
-  @IsOptional()
-  operationType?: number;
-
-  @ApiProperty({
-    description: 'The IP address of the user making the request.',
-    example: '127.0.0.1',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  ip = '127.0.0.1';
 }
 
 export class BusScheduleDto {

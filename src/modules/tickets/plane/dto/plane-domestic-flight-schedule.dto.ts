@@ -10,9 +10,10 @@ import {
   IsOptional,
   IsString,
   Length,
+  MaxLength,
   Min,
 } from 'class-validator';
-import * as dayjs from 'dayjs';
+
 import {
   FlightOption,
   FlightSegment,
@@ -50,8 +51,8 @@ export class PlaneDomesticFlightScheduleRequestDto {
     required: true,
   })
   @IsNotEmpty()
-  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
-  @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
+  @IsDateString()
+  @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
   departureDate: DateISODate;
 
   @ApiProperty({
@@ -60,15 +61,17 @@ export class PlaneDomesticFlightScheduleRequestDto {
     required: false,
   })
   @IsOptional()
-  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
-  @IsDateString({}, { message: 'Date must be in the format yyyy-MM-dd' })
+  @IsDateString()
+  @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
   returnDate: DateISODate;
 
   @Expose()
   @Transform(({ obj }) =>
     obj.returnDate ? PlaneTravelType.ROUNDTRIP : PlaneTravelType.ONEWAY,
   )
-  @IsEnum(PlaneTravelType)
+  @IsEnum(PlaneTravelType, {
+    message: `Must be a valid value: ${Object.values(PlaneTravelType)}`,
+  })
   travelType: PlaneTravelType;
 
   @ApiProperty({

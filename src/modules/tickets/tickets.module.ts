@@ -11,7 +11,9 @@ import { PlaneModule } from './plane/plane.module';
 import { BiletAllPnrService } from './services/biletall/biletall-pnr.service';
 import { BiletAllPnrParserService } from './services/biletall/biletall-pnr-parser.service';
 import { BiletAllOfficialHolidaysService } from './services/biletall/biletall-official-holidays.service';
-import { BiletAllOfficialHolidaysParserService } from './services/biletall/biletall-official-holidays.parser';
+import { BiletAllOfficialHolidaysParserService } from './services/biletall/biletall-official-holidays.parser.service';
+import { TravelCountryCodeService } from './services/biletall/biletall-travel-country-code.service';
+import { BiletAllTravelCountryCodeParserService } from './services/biletall/biletall-travel-country-code.parser.service';
 
 @Module({
   imports: [BusModule, PlaneModule],
@@ -21,6 +23,8 @@ import { BiletAllOfficialHolidaysParserService } from './services/biletall/bilet
     BiletAllPnrParserService,
     BiletAllOfficialHolidaysService,
     BiletAllOfficialHolidaysParserService,
+    TravelCountryCodeService,
+    BiletAllTravelCountryCodeParserService,
   ],
   controllers: [TicketsController],
 })

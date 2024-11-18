@@ -14,7 +14,7 @@ export type DateISODate = `${TYear}-${TMonth}-${TDay}`;
 /**
  * Represent a string like `14:42:34.678`
  */
-type DateISOTime = `${THours}:${TMinutes}:${TSeconds}.${TMilliseconds}`;
+export type DateISOTime = `${THours}:${TMinutes}:${TSeconds}.${TMilliseconds}`;
 
 /**
  * Represent a string like `2021-01-08T14:42:34.678Z` (format: ISO 8601).

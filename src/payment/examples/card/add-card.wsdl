@@ -1,0 +1,7 @@
+https://onlineodemetest.vakifbank.com.tr:4443/UIService/CreateCustomerP
+an.aspx?prmstr=
+<CreateCustomerPanRequest><MerchantCriteria><HostMerchantId>******</Hos
+tMerchantId><MerchantPassword>123456</MerchantPassword></MerchantCriter
+ia><CustomerNumber>müşteri1</CustomerNumber><Pan>4444333322221111</Pan>
+<ExpireDate>202012</ExpireDate><CardHolderName>İLYAS
+KOVALAR</CardHolderName></CreateCustomerPanRequest>

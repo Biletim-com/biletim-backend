@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 
 // errors
-import { NotFoundError } from '@app/common/errors';
+import { EntityNotFoundError } from '@app/common/errors';
 import { AbstractEntity } from './abstract.entity';
 
 export class AbstractRepository<
@@ -19,7 +19,7 @@ export class AbstractRepository<
     if (typeof entityRecordOrEntityRecordId === 'string') {
       // @ts-expect-error Typeorm cant differentiate the types
       const data = await this.findOneBy({ id: entityRecordOrEntityRecordId });
-      if (!data) throw new NotFoundError(this.metadata.name);
+      if (!data) throw new EntityNotFoundError(this.metadata.name);
       return data;
     }
     return entityRecordOrEntityRecordId;

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VposRequest>
+<MerchantId>******</MerchantId>
+<Password>******</Password>
+<TerminalNo>******</TerminalNo>
+<TransactionType>Sale</TransactionType>
+<TransactionId> b2d71cc5-d242-4b01-8479-d56eb8f74d7c</TransactionId> // opsiyonel
+<CurrencyAmount>90.50</CurrencyAmount>
+<CurrencyCode>949</CurrencyCode>
+<PanCode>112314AASDFSAASDASDFA234</PanCode>
+<OrderId>z2d71cc5-d242-4b01-8479-d56eb8f74d7c</OrderId> // opsiyonel
+<ClientIp>190.20.13.12</ClientIp>
+<CustomerNumber>FTAVPOSVKF1388</CustomerNumber>
+<CustomItems> // opsiyonel
+<Item name="İsim" value="A" />
+<Item name="Soyisim" value="B" />
+<Item name="Açıklama" value="Online Bilet Satışı" />
+</CustomItems>
+<TransactionDeviceSource>0</TransactionDeviceSource> // ECommerce
+</VposRequest>

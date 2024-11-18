@@ -3,10 +3,12 @@ type Nullable<T> = T | null;
 declare namespace NodeJS {
   interface ProcessEnv {
     NODE_ENV: 'development' | 'production' | 'test';
+    BACKEND_URL: string;
     LOG_LEVEL: 'log' | 'error' | 'warn' | 'debug' | 'verbose' | 'fatal';
     JWT_SECRET: string;
     RESET_PASSWORD_URL: string;
-    BILETALL_WSDL_URI: string;
+    BILETALL_BASE_URI: string;
+    BILETALL_3DSECURE_BASE_URI: string;
     BILETALL_WS_USERNAME: string;
     BILETALL_WS_PASSWORD: string;
     HOTEL_API_BASE_URL: string;
@@ -24,5 +26,10 @@ declare namespace NodeJS {
     EMAIL_PASSWORD: string;
     EMAIL_PORT: string;
     EMAIL_HOST: string;
+    PAYMENT_VPOS_BASE_URI: string;
+    PAYMENT_3DSECURE_BASE_URI: string;
+    PAYMENT_MERCHANT_ID: string;
+    PAYMENT_TERMINAL_NO: string;
+    PAYMENT_MERCHANT_PASSWORD: string;
   }
 }

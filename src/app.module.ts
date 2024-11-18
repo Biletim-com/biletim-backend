@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@app/configs/config.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
@@ -16,9 +15,14 @@ import { PanelUsersModule } from '@app/modules/panel-users/panel-users.module';
 import { HotelModule } from '@app/modules/booking/hotel/hotel.module';
 import { BookingModule } from '@app/modules/booking/booking.module';
 import { PassengersModule } from '@app/modules/passengers/passengers.module';
+import { BankCardsModule } from '@app/modules/bank-cards/bank-cards.module';
+import { TransactionsModule } from '@app/modules/transactions/transactions.module';
+import { WalletsModule } from '@app/modules/wallets/wallets.module';
 
 // Providers
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
+import { RestClientModule } from '@app/providers/rest-client/provider.module';
+import { PoxClientModule } from '@app/providers/pox-client/provider.module';
 
 // Interceptors
 import { ErrorInterceptor } from '@app/common/interceptors';
@@ -31,20 +35,24 @@ import { InsuranceModule } from './modules/insurance/insurance.module';
 
 @Module({
   imports: [
-    AuthModule,
-    HttpModule,
-    LoggerModule,
     ConfigModule,
+    EventEmitterModule.forRoot(),
+    RestClientModule,
+    PoxClientModule,
+    LoggerModule,
     PostgreSQLProviderModule,
     JobsModule,
+    NotificationsModule,
+    AuthModule,
     UsersModule,
     PanelUsersModule,
-    NotificationsModule,
-    EventEmitterModule.forRoot(),
     HotelModule,
     TicketsModule,
     BookingModule,
     PassengersModule,
+    BankCardsModule,
+    TransactionsModule,
+    WalletsModule,
     InsuranceModule,
   ],
   providers: [

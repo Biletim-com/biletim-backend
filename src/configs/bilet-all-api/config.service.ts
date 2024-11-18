@@ -18,6 +18,12 @@ export class BiletAllApiConfigService {
     ).biletAllApiBaseUrl;
   }
 
+  get biletAll3DSBaseUrl(): string {
+    return this.configService.getOrThrow<TBiletAllApiConfiguration>(
+      this.configurationNamespace,
+    ).biletAll3DSBaseUrl;
+  }
+
   get biletAllApiUsername(): string {
     return this.configService.getOrThrow<TBiletAllApiConfiguration>(
       this.configurationNamespace,

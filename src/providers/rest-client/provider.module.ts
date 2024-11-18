@@ -1,10 +1,9 @@
-import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
+import { Global, Module } from '@nestjs/common';
 
 import { RestClientService } from './provider.service';
 
+@Global()
 @Module({
-  imports: [HttpModule],
   providers: [RestClientService],
   exports: [RestClientService],
 })

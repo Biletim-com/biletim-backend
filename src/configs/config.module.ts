@@ -56,6 +56,11 @@ import tamamliyoApiConfiguration, {
   TamamliyoApiEnvVarsValidation,
 } from './tamamliyo-insurance';
 
+import paymentConfiguration, {
+  PaymentConfigService,
+  PaymentEnvVarsValidation,
+} from './payment';
+
 @Global()
 @Module({
   imports: [
@@ -71,6 +76,7 @@ import tamamliyoApiConfiguration, {
         loginWithGoogleConfiguration,
         loginWithFacebookConfiguration,
         notificationsConfiguration,
+        paymentConfiguration,
         tamamliyoApiConfiguration,
       ],
       validate: async (config) =>
@@ -90,6 +96,7 @@ import tamamliyoApiConfiguration, {
             OAuthLoginWithFacebookEnvVarsValidation,
             config,
           ),
+          ConfigValidator.validate(PaymentEnvVarsValidation, config),
           ConfigValidator.validate(TamamliyoApiEnvVarsValidation, config),
         ]),
     }),
@@ -105,6 +112,7 @@ import tamamliyoApiConfiguration, {
     OAuthLoginWithGoogleConfigService,
     OAuthLoginWithFacebookConfigService,
     NotificationsConfigService,
+    PaymentConfigService,
     TamamliyoApiConfigService,
   ],
   exports: [
@@ -118,6 +126,7 @@ import tamamliyoApiConfiguration, {
     OAuthLoginWithGoogleConfigService,
     OAuthLoginWithFacebookConfigService,
     NotificationsConfigService,
+    PaymentConfigService,
     TamamliyoApiConfigService,
   ],
 })

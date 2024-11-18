@@ -14,15 +14,17 @@ import { EmailNotificationStrategy } from './strategies/email-notification.strat
     MailerModule.forRootAsync({
       useFactory: (notificationsConfigService: NotificationsConfigService) => ({
         transport: {
+          name: notificationsConfigService.emailHost,
           host: notificationsConfigService.emailHost,
           port: notificationsConfigService.emailPort,
+          secure: false,
           auth: {
             user: notificationsConfigService.emailUsername,
             pass: notificationsConfigService.emailPassword,
           },
         },
         defaults: {
-          from: `"Biletim Team" <${notificationsConfigService.emailHost}>`,
+          from: `"Biletim Team" <${notificationsConfigService.emailUsername}>`,
         },
         template: {
           dir: `${__dirname}/templates`,

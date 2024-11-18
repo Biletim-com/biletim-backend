@@ -1,4 +1,4 @@
-import { Min, Max, IsNumber, IsEnum } from 'class-validator';
+import { Min, Max, IsNumber, IsEnum, IsUrl, IsNotEmpty } from 'class-validator';
 import { AppEnvironment } from '@app/common/enums';
 
 export class AppEnvVarsValidation {
@@ -9,4 +9,8 @@ export class AppEnvVarsValidation {
   @Min(0)
   @Max(65535)
   APP_PORT: number;
+
+  @IsUrl({ require_tld: false })
+  @IsNotEmpty()
+  BACKEND_URL: string;
 }

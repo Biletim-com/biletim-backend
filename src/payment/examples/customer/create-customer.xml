@@ -1,0 +1,11 @@
+https://onlineodemetest.vakifbank.com.tr:4443/UIService/CreateCustomer.
+aspx?prmstr=
+<CreateCustomerRequest><MerchantCriteria><HostMerchantId>******</HostMe
+rchantId><MerchantPassword>******</MerchantPassword></MerchantCriteria>
+<CustomerNumber>müşteri1</CustomerNumber><Name>İLYAS
+KOVALAR</Name><FatherName>Baba Adı</FatherName><Address>Saray Mahallesi
+Dr. Adnan Büyükdeniz
+Caddesi</Address><CityName>İstanbul</CityName><TownName>Türkiye</TownNa
+me><Phone>902124443322</Phone><MobilePhone>905554443322</MobilePhone><E
+mailAddress>vpos724@vakifbank.com.tr</EmailAddress></CreateCustomerRequ
+est>

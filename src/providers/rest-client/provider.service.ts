@@ -1,48 +1,53 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
+import { HttpException, Logger } from '@nestjs/common';
 import { isAxiosError } from '@nestjs/terminus/dist/utils';
 import { AxiosError } from '@nestjs/terminus/dist/errors/axios.error';
+import axios, { AxiosInstance } from 'axios';
 
 type Methods = 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH';
 
 export interface RequestConfigs {
   url: string;
   method: Methods;
+  path?: string;
   headers?: Record<string, string>;
   data?: Record<string, any>;
   params?: Record<string, string>;
 }
 
-@Injectable()
 export class RestClientService {
+  private readonly axiosInstance: AxiosInstance;
   private readonly logger = new Logger(RestClientService.name);
 
-  constructor(private readonly httpService: HttpService) {}
+  constructor(baseURL: string) {
+    this.axiosInstance = axios.create({ baseURL });
+  }
 
   private getErrorMessage(
     error: AxiosError,
     method: Methods,
-    url: string,
+    path?: string,
   ): string {
     return (
       error.response?.data?.error?.message ||
       error.response?.data?.error ||
       error.message ||
-      `${method} request failed to ${url}`
+      `${method} request failed to ${path}`
     );
   }
 
   async request<T>(config: RequestConfigs): Promise<T> {
     try {
-      const response = await this.httpService.axiosRef.request<T>(config);
+      const response = await this.axiosInstance.request<T>({
+        ...config,
+        url: config.path,
+      });
       return response.data;
     } catch (error) {
-      this.logger.error(error);
       if (isAxiosError(error)) {
         const errorMessage = this.getErrorMessage(
           error,
           config.method,
-          config.url,
+          config.path,
         );
         const statusCode = Number(error.status || error.response.status);
 

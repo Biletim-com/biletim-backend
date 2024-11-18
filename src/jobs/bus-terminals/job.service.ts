@@ -19,7 +19,7 @@ export class BusTerminalsCronJobService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    // this.saveBusTerminalsToDb();
+    this.saveBusTerminalsToDb();
   }
 
   private splitIntoChunks = (array: BusTerminalDto[]): BusTerminalDto[][] => {
