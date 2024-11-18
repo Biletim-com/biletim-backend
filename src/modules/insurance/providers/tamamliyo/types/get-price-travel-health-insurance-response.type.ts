@@ -52,7 +52,7 @@ export type InsuranceCompanyInfos = {
   };
 };
 
-export type GetPriceResponse = {
+export type GetPriceTravelHealthInsuranceResponse = {
   success: boolean;
   data: {
     urunBilgileri: ProductInfos;
