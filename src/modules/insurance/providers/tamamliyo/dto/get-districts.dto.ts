@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsNumberString } from 'class-validator';
 import { District, GetDistrictsResponse } from '../types/get-districts.type';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -8,7 +8,7 @@ export class DistrictsRequestDto {
     example: 34,
     required: true,
   })
-  @IsInt()
+  @IsNumberString()
   @IsNotEmpty()
   cityId: number;
 }

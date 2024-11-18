@@ -5,8 +5,7 @@ import axios, { AxiosInstance } from 'axios';
 
 type Methods = 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH';
 
-export interface RequestConfigs {
-  url: string;
+interface RequestConfigs {
   method: Methods;
   path?: string;
   headers?: Record<string, string>;

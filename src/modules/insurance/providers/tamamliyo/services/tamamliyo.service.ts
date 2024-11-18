@@ -1,8 +1,5 @@
 import { TamamliyoApiConfigService } from '@app/configs/tamamliyo-insurance';
-import {
-  RequestConfigs,
-  RestClientService,
-} from '@app/providers/rest-client/provider.service';
+import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { Injectable } from '@nestjs/common';
 import { Countries } from '../types/get-countries-type';
 import { GetCitiesResponse } from '../types/get-cities.type';
@@ -11,12 +8,14 @@ import { DistrictsRequestDto } from '../dto/get-districts.dto';
 
 @Injectable()
 export class TamamliyoService {
-  private readonly baseUrl: string;
+  private readonly restClientService: RestClientService;
+
   constructor(
-    private readonly restClientService: RestClientService,
     private readonly tamamliyoApiConfigService: TamamliyoApiConfigService,
   ) {
-    this.baseUrl = this.tamamliyoApiConfigService.tamamliyoApiBaseUrl;
+    this.restClientService = new RestClientService(
+      tamamliyoApiConfigService.tamamliyoApiBaseUrl,
+    );
   }
 
   private getBasicAuthHeader() {
@@ -29,40 +28,30 @@ export class TamamliyoService {
   }
 
   async getCountries(): Promise<Countries[]> {
-    const url = `${this.baseUrl}/v1/countries`;
-    const requestConfig: RequestConfigs = {
-      url,
+    return this.restClientService.request<Countries[]>({
+      path: '/v1/countries',
       method: 'GET',
       headers: this.getBasicAuthHeader(),
-    };
-    return await this.restClientService.request<Countries[]>(requestConfig);
+    });
   }
 
   async getCities(): Promise<GetCitiesResponse> {
-    const url = `${this.baseUrl}/v1/iller`;
-    const requestConfig: RequestConfigs = {
-      url,
+    return this.restClientService.request<GetCitiesResponse>({
+      path: '/v1/iller',
       method: 'GET',
       data: { ulkeId: 1 },
       headers: this.getBasicAuthHeader(),
-    };
-    return await this.restClientService.request<GetCitiesResponse>(
-      requestConfig,
-    );
+    });
   }
 
   async getDistricts(
     requestDto: DistrictsRequestDto,
   ): Promise<GetDistrictsResponse> {
-    const url = `${this.baseUrl}/v1/ilceler`;
-    const requestConfig: RequestConfigs = {
-      url,
+    return this.restClientService.request<GetDistrictsResponse>({
+      path: '/v1/ilceler',
       method: 'POST',
       data: { ilId: requestDto },
       headers: this.getBasicAuthHeader(),
-    };
-    return await this.restClientService.request<GetDistrictsResponse>(
-      requestConfig,
-    );
+    });
   }
 }

@@ -52,7 +52,6 @@ export class FacebookOAuth2Strategy extends OAuth2Strategy {
         id_token: string;
       }>({
         method: 'GET',
-        url: this.TOKEN_URL,
         params: {
           client_id: this.oAuthLoginWithFacebookConfigService.clientId,
           client_secret: this.oAuthLoginWithFacebookConfigService.clientSecret,

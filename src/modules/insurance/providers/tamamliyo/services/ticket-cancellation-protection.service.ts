@@ -1,8 +1,5 @@
 import { TamamliyoApiConfigService } from '@app/configs/tamamliyo-insurance';
-import {
-  RequestConfigs,
-  RestClientService,
-} from '@app/providers/rest-client/provider.service';
+import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { Injectable } from '@nestjs/common';
 import {
   GetPriceTicketCancellationProtectionInsuranceDtoInTurkish,
@@ -22,12 +19,14 @@ import {
 
 @Injectable()
 export class TicketCancellationProtectionInsuranceService {
-  private readonly baseUrl: string;
+  private readonly restClientService: RestClientService;
+
   constructor(
-    private readonly restClientService: RestClientService,
     private readonly tamamliyoApiConfigService: TamamliyoApiConfigService,
   ) {
-    this.baseUrl = this.tamamliyoApiConfigService.tamamliyoApiBaseUrl;
+    this.restClientService = new RestClientService(
+      tamamliyoApiConfigService.tamamliyoApiBaseUrl,
+    );
   }
 
   private getBasicAuthHeader() {
@@ -65,20 +64,17 @@ export class TicketCancellationProtectionInsuranceService {
   async getPriceTicketCancellationProtectionInsurance(
     requestDto: GetPriceTicketCancellationProtectionInsuranceRequestDto,
   ): Promise<GetPriceTicketCancellationProtectionInsuranceResponse> {
-    const url = `${this.baseUrl}/v1/bilet-iptal-sigortasi/fiyat-al`;
     const requestDtoInTurkish =
       this.getPriceTicketCancellationProtectionInsuranceTranslateToTurkish(
         requestDto,
       );
-    const requestConfig: RequestConfigs = {
-      url,
-      method: 'POST',
-      data: requestDtoInTurkish,
-      headers: this.getBasicAuthHeader(),
-    };
-
-    return await this.restClientService.request<GetPriceTicketCancellationProtectionInsuranceResponse>(
-      requestConfig,
+    return this.restClientService.request<GetPriceTicketCancellationProtectionInsuranceResponse>(
+      {
+        path: '/v1/bilet-iptal-sigortasi/fiyat-al',
+        method: 'POST',
+        data: requestDtoInTurkish,
+        headers: this.getBasicAuthHeader(),
+      },
     );
   }
 
@@ -103,20 +99,17 @@ export class TicketCancellationProtectionInsuranceService {
   async createOfferTicketCancellationProtectionInsurance(
     requestDto: CreateOfferTicketCancellationProtectionInsuranceRequestDto,
   ): Promise<CreateOfferTicketCancellationProtectionInsuranceeResponse> {
-    const url = `${this.baseUrl}/v1/bilet-iptal-sigortasi/teklif-olustur`;
     const requestDtoTurkish =
       this.createOfferTicketCancellationProtectionInsuranceTranslateToTurkish(
         requestDto,
       );
-    const requestConfig: RequestConfigs = {
-      url,
-      method: 'POST',
-      data: requestDtoTurkish,
-      headers: this.getBasicAuthHeader(),
-    };
-
-    return await this.restClientService.request<CreateOfferTicketCancellationProtectionInsuranceeResponse>(
-      requestConfig,
+    return this.restClientService.request<CreateOfferTicketCancellationProtectionInsuranceeResponse>(
+      {
+        path: '/v1/bilet-iptal-sigortasi/teklif-olustur',
+        method: 'POST',
+        data: requestDtoTurkish,
+        headers: this.getBasicAuthHeader(),
+      },
     );
   }
 
@@ -149,17 +142,15 @@ export class TicketCancellationProtectionInsuranceService {
   async makePaymentTicketCancellationProtectionInsurance(
     requestDto: MakePaymentTicketCancellationProtectionInsuranceRequestDto,
   ): Promise<any> {
-    const url = `${this.baseUrl}/v1/bilet-iptal-sigortasi/odeme-yap`;
     const requestDtoTurkish =
       this.makePaymentTicketCancellationProtectionInsuranceTranslateToTurkish(
         requestDto,
       );
-    const requestConfig: RequestConfigs = {
-      url,
+    return this.restClientService.request<any>({
+      path: '/v1/bilet-iptal-sigortasi/odeme-yap',
       method: 'POST',
       data: requestDtoTurkish,
       headers: this.getBasicAuthHeader(),
-    };
-    return await this.restClientService.request<any>(requestConfig);
+    });
   }
 }

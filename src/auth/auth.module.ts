@@ -10,7 +10,6 @@ import { AuthService } from './services/auth.service';
 import { PasswordService } from './services/password.service';
 import { TokenService } from './services/token.service';
 import { CookieService } from './services/cookie.service';
-import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { OAuth2StrategyFactory } from './factories/oauth2-strategy.factory';
 
 // strategies
@@ -55,7 +54,6 @@ import { EventEmitterService } from '@app/providers/event-emitter/provider.servi
     GoogleOAuth2Strategy,
     FacebookOAuth2Strategy,
     OAuth2StrategyFactory,
-    RestClientService,
     OAuthLoginWithGoogleConfigService,
     OAuthLoginWithFacebookConfigService,
     EventEmitterService,

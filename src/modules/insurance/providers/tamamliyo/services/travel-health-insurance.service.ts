@@ -1,7 +1,4 @@
-import {
-  RequestConfigs,
-  RestClientService,
-} from '@app/providers/rest-client/provider.service';
+import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { Injectable } from '@nestjs/common';
 
 import { TamamliyoApiConfigService } from '@app/configs/tamamliyo-insurance';
@@ -25,12 +22,14 @@ import {
 
 @Injectable()
 export class TravelHealthInsuranceService {
-  private readonly baseUrl: string;
+  private readonly restClientService: RestClientService;
+
   constructor(
-    private readonly restClientService: RestClientService,
     private readonly tamamliyoApiConfigService: TamamliyoApiConfigService,
   ) {
-    this.baseUrl = this.tamamliyoApiConfigService.tamamliyoApiBaseUrl;
+    this.restClientService = new RestClientService(
+      tamamliyoApiConfigService.tamamliyoApiBaseUrl,
+    );
   }
 
   private getBasicAuthHeader() {
@@ -69,17 +68,15 @@ export class TravelHealthInsuranceService {
   async getPriceTravelHealthInsurance(
     requestDto: GetPriceTravelHealthInsuranceRequestDto,
   ): Promise<GetPriceTravelHealthInsuranceResponse> {
-    const url = `${this.baseUrl}/v3/seyahat-saglik-sigortasi/fiyat-al`;
     const requestDtoInTurkish =
       this.getPriceTravelHealthInsuranceTranslateToTurkish(requestDto);
-    const requestConfig: RequestConfigs = {
-      url,
-      method: 'POST',
-      data: requestDtoInTurkish,
-      headers: this.getBasicAuthHeader(),
-    };
-    return await this.restClientService.request<GetPriceTravelHealthInsuranceResponse>(
-      requestConfig,
+    return this.restClientService.request<GetPriceTravelHealthInsuranceResponse>(
+      {
+        path: '/v3/seyahat-saglik-sigortasi/fiyat-al',
+        method: 'POST',
+        data: requestDtoInTurkish,
+        headers: this.getBasicAuthHeader(),
+      },
     );
   }
 
@@ -114,17 +111,15 @@ export class TravelHealthInsuranceService {
   async createOfferTravelHealthInsurance(
     requestDto: CreateOfferTravelHealthInsuranceRequestDto,
   ): Promise<CreateOfferTravelHealthInsuranceResponse> {
-    const url = `${this.baseUrl}/v3/seyahat-saglik-sigortasi/teklif-olustur`;
     const requestDtoTurkish =
       this.createOfferTravelHealthInsuranceTranslateToTurkish(requestDto);
-    const requestConfig: RequestConfigs = {
-      url,
-      method: 'POST',
-      data: requestDtoTurkish,
-      headers: this.getBasicAuthHeader(),
-    };
-    return await this.restClientService.request<CreateOfferTravelHealthInsuranceResponse>(
-      requestConfig,
+    return this.restClientService.request<CreateOfferTravelHealthInsuranceResponse>(
+      {
+        path: '/v3/seyahat-saglik-sigortasi/teklif-olustur',
+        method: 'POST',
+        data: requestDtoTurkish,
+        headers: this.getBasicAuthHeader(),
+      },
     );
   }
 
@@ -164,15 +159,14 @@ export class TravelHealthInsuranceService {
   async makePaymentTravelHealthInsurance(
     requestDto: MakePaymentTravelHealthInsuranceRequestDto,
   ): Promise<any> {
-    const url = `${this.baseUrl}/v3/seyahat-saglik-sigortasi/odeme-yap`;
     const requestDtoTurkish =
       this.makePaymentTravelHealthInsuranceTranslateToTurkish(requestDto);
-    const requestConfig: RequestConfigs = {
-      url,
+
+    return await this.restClientService.request<any>({
+      path: '/v3/seyahat-saglik-sigortasi/odeme-yap',
       method: 'POST',
       data: requestDtoTurkish,
       headers: this.getBasicAuthHeader(),
-    };
-    return await this.restClientService.request<any>(requestConfig);
+    });
   }
 }
