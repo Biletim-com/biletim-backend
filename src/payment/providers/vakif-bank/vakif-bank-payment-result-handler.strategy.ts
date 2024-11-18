@@ -88,7 +88,7 @@ export class VakifBankPaymentResultHandlerStrategy
 
     try {
       const {
-        companyNo,
+        companyNumber,
         routeNumber,
         tripTrackingNumber,
         departureTerminal,
@@ -100,7 +100,7 @@ export class VakifBankPaymentResultHandlerStrategy
        * check ticket validity against biletall
        */
       const busSeatAvailabilityDto = new BusSeatAvailabilityRequestDto({
-        companyNo,
+        companyNumber,
         routeNumber,
         tripTrackingNumber,
         departurePointId: String(departureTerminal.externalId),

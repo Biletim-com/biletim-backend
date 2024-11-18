@@ -628,14 +628,14 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
 
       return brandSegmentInfos.map((segmentInfo) => {
         const segmentInfoData: BrandSegmentInfoDto = {
-          companyNo: segmentInfo.CompanyNo?.[0] || '',
+          companyNumber: segmentInfo.CompanyNo?.[0] || '',
           origin: segmentInfo.Origin?.[0] || '',
           destination: segmentInfo.Destination?.[0] || '',
           classOfService: segmentInfo.ClassOfService?.[0] || '',
           departureTime: segmentInfo.DepartureTime?.[0] || '',
           arrivalTime: segmentInfo.ArrivalTime?.[0] || '',
           cabinClass: segmentInfo.CabinClass?.[0] || '',
-          flightNo: segmentInfo.FlightNumber?.[0] || '',
+          flightNumber: segmentInfo.FlightNumber?.[0] || '',
           carrierCode: segmentInfo.CarrierCode?.[0] || '',
           operatingCarrierCode: segmentInfo.OperatingCarrierCode?.[0] || '',
           fareRuleKey: segmentInfo.FareRuleKey?.[0] || '',

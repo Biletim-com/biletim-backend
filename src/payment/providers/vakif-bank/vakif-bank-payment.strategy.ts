@@ -79,7 +79,7 @@ export class VakifBankPaymentStrategy implements IPayment {
     return {
       MerchantId: this.paymentConfigService.merchantId,
       Password: this.paymentConfigService.merchantPassword,
-      TerminalNo: this.paymentConfigService.terminalNo,
+      TerminalNo: this.paymentConfigService.terminalNumber,
     };
   }
 

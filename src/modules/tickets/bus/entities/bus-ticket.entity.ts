@@ -14,7 +14,7 @@ import { Order } from '@app/modules/orders/order.entity';
 @Entity('bus_tickets')
 export class BusTicket extends AbstractEntity<BusTicket> {
   @Column()
-  companyNo: string;
+  companyNumber: string;
 
   @Column()
   companyName: string;

@@ -8,7 +8,7 @@ export class PlaneTicketSegment extends AbstractEntity<PlaneTicketSegment> {
   segmentOrder: number;
 
   @Column()
-  companyNo: string;
+  companyNumber: string;
 
   @Column()
   departureAirport: string;
@@ -23,7 +23,7 @@ export class PlaneTicketSegment extends AbstractEntity<PlaneTicketSegment> {
   arrivalDate: string;
 
   @Column()
-  flightNo: string;
+  flightNumber: string;
 
   @Column()
   flightCode: string;

@@ -23,7 +23,7 @@ import { Transform } from 'class-transformer';
 export class BusScheduleRequestDto {
   @IsString()
   @IsOptional()
-  companyNo?: string;
+  companyNumber?: string;
 
   @ApiProperty({
     description: 'The departure point ID, which is a required field.',

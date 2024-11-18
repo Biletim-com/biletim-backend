@@ -13,7 +13,6 @@ export const isValidTCNumber = (tcNumber: string): boolean => {
     return false;
   }
 
-  // Calculate control digit from the first 10 digits.
   const tcNumberArray = tcNumber.split('').map(Number);
   const sumFirstTenDigits = tcNumberArray
     .slice(0, 10)

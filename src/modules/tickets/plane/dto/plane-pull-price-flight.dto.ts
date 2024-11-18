@@ -65,7 +65,7 @@ export class FlightSegmentDto {
   })
   @IsString()
   @IsNotEmpty()
-  flightNo: string;
+  flightNumber: string;
 
   @ApiProperty({
     description: 'The travel class.',
@@ -113,7 +113,7 @@ export class PullPriceFlightRequestDto {
   })
   @IsString()
   @IsNotEmpty()
-  companyNo: string;
+  companyNumber: string;
 
   @ApiProperty({
     description: 'The list of flight segments.',

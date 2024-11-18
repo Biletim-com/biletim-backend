@@ -153,14 +153,14 @@ export class BrandImportantNoteDto {
 }
 
 export class BrandSegmentInfoDto {
-  companyNo: string;
+  companyNumber: string;
   origin: string;
   destination: string;
   classOfService: string;
   departureTime: string;
   arrivalTime: string;
   cabinClass: string;
-  flightNo: string;
+  flightNumber: string;
   carrierCode: string;
   operatingCarrierCode: string;
   fareRuleKey: string;
@@ -173,14 +173,14 @@ export class BrandSegmentInfoDto {
   group: string;
 
   constructor(data: BrandSegmentInfo) {
-    this.companyNo = data.CompanyNo;
+    this.companyNumber = data.CompanyNo;
     this.origin = data.Origin;
     this.destination = data.Destination;
     this.classOfService = data.ClassOfService;
     this.departureTime = data.DepartureTime;
     this.arrivalTime = data.ArrivalTime;
     this.cabinClass = data.CabinClass;
-    this.flightNo = data.FlightNumber;
+    this.flightNumber = data.FlightNumber;
     this.carrierCode = data.CarrierCode;
     this.operatingCarrierCode = data.OperatingCarrierCode;
     this.fareRuleKey = data.FareRuleKey;

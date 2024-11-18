@@ -109,7 +109,7 @@ export class PlaneTicketPaymentService {
       planeTicketPurchaseDto.passengers,
     );
     const { priceList } = await this.biletAllPlaneService.pullPriceOfFlight({
-      companyNo: planeTicketPurchaseDto.companyNo,
+      companyNumber: planeTicketPurchaseDto.companyNumber,
       segments: planeTicketPurchaseDto.segments,
       ...passengerTypeCounts,
     });
@@ -161,7 +161,7 @@ export class PlaneTicketPaymentService {
         (segment, index) =>
           new PlaneTicketSegment({
             ...segment,
-            companyNo: planeTicketPurchaseDto.companyNo,
+            companyNumber: planeTicketPurchaseDto.companyNumber,
             segmentOrder: index + 1,
           }),
       );
@@ -179,10 +179,9 @@ export class PlaneTicketPaymentService {
             passengerType: passengerDto.passengerType,
             birthday: passengerDto.birthday,
             tcNumber: passengerDto.tcNumber,
-            passportCountryCode: passengerDto.passport?.passportCountryCode,
-            passportNumber: passengerDto.passport?.passportNumber,
-            passportExpirationDate:
-              passengerDto.passport?.passportExpirationDate,
+            passportCountryCode: passengerDto.passport?.countryCode,
+            passportNumber: passengerDto.passport?.number,
+            passportExpirationDate: passengerDto.passport?.expirationDate,
           });
 
           return new PlaneTicket({

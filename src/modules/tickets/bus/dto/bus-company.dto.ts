@@ -10,7 +10,7 @@ export class BusCompanyRequestDto {
   })
   @IsString()
   @IsOptional()
-  companyNo?: string;
+  companyNumber?: string;
 }
 
 export class BusCompanyDto {

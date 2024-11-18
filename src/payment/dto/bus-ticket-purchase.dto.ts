@@ -1,12 +1,15 @@
 import {
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsDateString,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsNumberString,
   IsString,
   Length,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
@@ -21,7 +24,94 @@ import { DateISODate, DateTime } from '@app/common/types';
 
 // dtos
 import { BankCardDto } from '@app/common/dtos/credit-card.dto';
-import { BusPassengerInfoDto } from '@app/modules/tickets/bus/dto/bus-passenger-info.dto';
+import { PassportDto } from '@app/common/dtos';
+
+// enums
+import { Gender } from '@app/common/enums';
+
+// decorators
+import { IsTCNumber } from '@app/common/decorators';
+
+export class BusPassengerInfoDto {
+  @ApiProperty({
+    description: 'Seat number assigned to the passenger.',
+    example: '2',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  seatNumber: string;
+
+  @ApiProperty({
+    description: 'First name of the passenger.',
+    example: 'John',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  firstName: string;
+
+  @ApiProperty({
+    description: 'Last name of the passenger.',
+    example: 'Doe',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+
+  @ValidateIf((o) => o.firstName && o.lastName)
+  @Length(0, 20, {
+    message:
+      'The full name (combination of firstName and lastName) is longer than 20.',
+  })
+  get fullName() {
+    return `${this.firstName}${this.lastName}`;
+  }
+
+  @ApiProperty({
+    description: 'Gender of the passenger',
+    required: true,
+    enum: Gender,
+  })
+  @IsNotEmpty()
+  @IsEnum(Gender, {
+    message: `Must be a valid value: ${Object.values(Gender)}`,
+  })
+  gender: Gender;
+
+  @ApiProperty({
+    description: 'Indicates whether the passenger is a Turkish citizen.',
+    example: true,
+    required: false,
+  })
+  @IsBoolean()
+  @IsNotEmpty()
+  isTurkishCitizen: boolean;
+
+  @ApiProperty({
+    description:
+      'TR ID Number of the passenger, mandatory for Turkish citizens.',
+    example: '12345678901',
+    required: false,
+  })
+  @ValidateIf((o) => o.isTurkishCitizen === true)
+  @IsTCNumber()
+  @IsNotEmpty({
+    message: 'TR ID Number is mandatory for Turkish citizens',
+  })
+  tcNumber?: string;
+
+  @ApiProperty({
+    description: 'The passport of the passenger.',
+    required: false,
+  })
+  @IsNotEmpty()
+  @ValidateNested()
+  @ValidateIf((o) => o.isTurkishCitizen === false)
+  @Type(() => PassportDto)
+  passport?: PassportDto;
+}
 
 // purchase
 export class BusTicketPurchaseDto {
@@ -31,7 +121,7 @@ export class BusTicketPurchaseDto {
     required: false,
   })
   @IsString()
-  companyNo: string;
+  companyNumber: string;
 
   @ApiProperty({
     description: 'Departure terminal ID for the bus trip',

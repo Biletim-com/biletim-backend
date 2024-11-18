@@ -4,3 +4,4 @@ export * from './client-ip.decorator';
 export * from './is-tc-number.decorator';
 export * from './only-one-defined.decorator';
 export * from './is-valid-plane-passenger-type.decorator';
+export * from './is-not-in-past.decorator';

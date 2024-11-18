@@ -62,7 +62,7 @@ export class AbroadFlightOptionDto {
   minServiceFee: string;
   isReservable: string;
   isCharterFlight: string;
-  companyNo: string;
+  companyNumber: string;
   provider: string;
 
   constructor(option: AbroadFlightOption) {
@@ -83,7 +83,7 @@ export class AbroadFlightOptionDto {
     this.minServiceFee = option.MinServisUcreti;
     this.isReservable = option.RezervasyonYapilabilirMi;
     this.isCharterFlight = option.CharterSeferMi;
-    this.companyNo = option.FirmaNo;
+    this.companyNumber = option.FirmaNo;
     this.provider = option.Saglayici;
   }
 }
@@ -94,7 +94,7 @@ export class AbroadFlightSegmentDto {
   flightId: string;
   transfer: string;
   companyLogo: string;
-  flightNo: string;
+  flightNumber: string;
   flightCode: string;
   airline: string;
   airlineCode: string;
@@ -131,7 +131,7 @@ export class AbroadFlightSegmentDto {
     this.flightId = segment.UcusID;
     this.transfer = segment.Aktarma;
     this.companyLogo = `https://ws.biletall.com/HavaYoluLogo/orta/${segment.HavaYoluKod}.png`;
-    this.flightNo = segment.SeferNo;
+    this.flightNumber = segment.SeferNo;
     this.flightCode = segment.SeferKod;
     this.airline = segment.HavaYolu;
     this.airlineCode = segment.HavaYoluKod;

@@ -138,7 +138,7 @@ export class BiletAllPlaneService extends BiletAllService {
             Varis: segment.arrivalAirport,
             KalkisTarih: segment.departureDate,
             VarisTarih: segment.arrivalDate,
-            UcusNo: segment.flightNo,
+            UcusNo: segment.flightNumber,
             FirmaKod: segment.airlineCode,
             Sinif: segment.flightClass,
             DonusMu: segment.isReturnFlight ? 1 : 0,
@@ -170,14 +170,14 @@ export class BiletAllPlaneService extends BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       UcusFiyat: {
-        FirmaNo: requestDto.companyNo,
+        FirmaNo: requestDto.companyNumber,
         ...requestDto.segments.reduce((acc, segment, index) => {
           acc[`Segment${index + 1}`] = {
             Kalkis: segment.departureAirport,
             Varis: segment.arrivalAirport,
             KalkisTarih: segment.departureDate,
             VarisTarih: segment.arrivalDate,
-            UcusNo: segment.flightNo,
+            UcusNo: segment.flightNumber,
             FirmaKod: segment.airlineCode,
             Sinif: segment.flightClass,
             DonusMu: segment.isReturnFlight ? 1 : 0,
@@ -239,7 +239,7 @@ export class BiletAllPlaneService extends BiletAllService {
     const requestDocument = {
       IslemUcak_2: {
         IslemTip: BiletAllPlaneTicketOperationType[operationType],
-        FirmaNo: segments[0].companyNo,
+        FirmaNo: segments[0].companyNumber,
         TelefonNo: order.userPhoneNumber,
         CepTelefonNo: order.userPhoneNumber,
         Email: order.userEmail,
@@ -250,7 +250,7 @@ export class BiletAllPlaneService extends BiletAllService {
             Varis: segment.arrivalAirport,
             KalkisTarih: segment.departureDate,
             VarisTarih: segment.arrivalDate,
-            UcusNo: segment.flightNo,
+            UcusNo: segment.flightNumber,
             FirmaKod: segment.airlineCode,
             Sinif: segment.flightClass,
             DonusMu: segment.isReturnFlight ? 1 : 0,
@@ -282,26 +282,6 @@ export class BiletAllPlaneService extends BiletAllService {
           };
           return acc;
         }, {}),
-        // ...(requestDto.invoice && {
-        //   Fatura: {
-        //     FaturaTip: BiletAllPlaneInvoiceType[requestDto.invoice.invoiceType],
-
-        //     ...(requestDto.invoice.invoiceType ===
-        //       PlaneInvoiceType.INDIVIDUAL && {
-        //       KisiAd: requestDto.invoice.individualFirstName,
-        //       KisiSoyad: requestDto.invoice.individualLastName,
-        //       KisiTCKimlikNo: requestDto.invoice.individualTurkishIdNumber,
-        //       KisiAdres: requestDto.invoice.individualAddress,
-        //     }),
-        //     ...(requestDto.invoice.invoiceType ===
-        //       PlaneInvoiceType.CORPORATE && {
-        //       FirmaAd: requestDto.invoice.companyName,
-        //       FirmaVergiNo: requestDto.invoice.companyTaxNumber,
-        //       FirmaVergiDairesi: requestDto.invoice.companyTaxOffice,
-        //       FirmaAdres: requestDto.invoice.companyAddress,
-        //     }),
-        //   },
-        // }),
         ...(operationType === PlaneTicketOperationType.PURCHASE && {
           WebYolcu: {
             Ip: clientIp,

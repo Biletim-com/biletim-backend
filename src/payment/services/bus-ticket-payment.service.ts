@@ -64,7 +64,7 @@ export class BusTicketPaymentService {
      * Validate Company via company number
      */
     const [company] = await this.biletAllBusService.company({
-      companyNo: busTicketPurchaseDto.companyNo,
+      companyNumber: busTicketPurchaseDto.companyNumber,
     });
     if (!company) {
       throw new ServiceError('Company does not exist');
@@ -159,14 +159,12 @@ export class BusTicketPaymentService {
             gender,
             isTurkishCitizen,
             tcNumber,
-            passportCountryCode,
-            passportNumber,
-            passportExpirationDate,
+            passport,
           },
           index: number,
         ) =>
           new BusTicket({
-            companyNo: busTicketPurchaseDto.companyNo,
+            companyNumber: busTicketPurchaseDto.companyNumber,
             companyName: company.companyName,
             ticketOrder: index + 1,
             routeNumber: busTicketPurchaseDto.routeNumber,
@@ -178,9 +176,9 @@ export class BusTicketPaymentService {
             travelStartDateTime: busTicketPurchaseDto.travelStartDateTime,
             isTurkishCitizen,
             tcNumber,
-            passportCountryCode,
-            passportNumber,
-            passportExpirationDate,
+            passportCountryCode: passport?.countryCode,
+            passportNumber: passport?.number,
+            passportExpirationDate: passport?.expirationDate,
             departureTerminal,
             arrivalTerminal,
             order,

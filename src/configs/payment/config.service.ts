@@ -35,9 +35,9 @@ export class PaymentConfigService {
     ).merchantPassword;
   }
 
-  get terminalNo(): string {
+  get terminalNumber(): string {
     return this.configService.getOrThrow<TPaymentConfiguration>(
       this.configurationNamespace,
-    ).terminalNo;
+    ).terminalNumber;
   }
 }
