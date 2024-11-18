@@ -5,7 +5,6 @@ import {
   GetPriceTicketCancellationProtectionInsuranceDtoInTurkish,
   GetPriceTicketCancellationProtectionInsuranceRequestDto,
 } from '../dto/get-price-ticket-cancellation-protection-insurance.dto';
-import { InsuranceTicketType } from '@app/common/enums';
 import { GetPriceTicketCancellationProtectionInsuranceResponse } from '../types/get-price-ticket-cancellation-protection-insurance.type';
 import {
   CreateOfferTicketCancellationProtectionInsuranceRequestDto,
@@ -16,6 +15,7 @@ import {
   MakePaymentTicketCancellationProtectionInsuranceRequestDto,
   MakePaymentTicketCancellationProtectionInsuranceRequestDtoInTurkish,
 } from '../dto/make-payment-ticket-cancellation-protection-insurance.dto';
+import { TamamliyoInsuranceTicketType } from '../helpers/insurance-ticket-type.helper';
 
 @Injectable()
 export class TicketCancellationProtectionInsuranceService {
@@ -45,7 +45,7 @@ export class TicketCancellationProtectionInsuranceService {
       sigortaliSayisi: requestDto.insuredPersonCount,
       parameters: {
         ticketType:
-          requestDto.parameters.ticketType === InsuranceTicketType.BUS ? 0 : 1,
+          TamamliyoInsuranceTicketType[requestDto.parameters.ticketType],
         ticketPrice: requestDto.parameters.ticketPrice,
         company: requestDto.parameters.company,
         departureLocation: requestDto.parameters.departureLocation,
@@ -83,11 +83,11 @@ export class TicketCancellationProtectionInsuranceService {
   ): CreateOfferTicketCancellationProtectionInsuranceRequestDtoInTurkish => {
     return {
       sigortaEttiren: {
-        tcKimlikNo: requestDto.policyholder.nationalIdentityNumber,
+        tcKimlikNo: requestDto.policyholder.tcNumber,
         dogumTarihi: requestDto.policyholder.birthDate,
       },
       sigortali: requestDto.insuredPersons.map((customer) => ({
-        tcKimlikNo: customer.nationalIdentityNumber,
+        tcKimlikNo: customer.tcNumber,
         dogumTarihi: customer.birthDate,
       })),
       email: requestDto.email,

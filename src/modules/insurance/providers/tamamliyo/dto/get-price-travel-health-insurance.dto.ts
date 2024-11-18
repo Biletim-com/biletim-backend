@@ -40,7 +40,7 @@ export class InsuranceCustomerInfoDto {
   })
   @IsString()
   @IsNotEmpty()
-  nationalIdentityNumber: string;
+  tcNumber: string;
 
   @ApiProperty({
     description: 'Birthdate of the insured person in YYYY-MM-DD format.',
@@ -58,7 +58,7 @@ export class InsuranceCustomerInfoDto {
   })
   @IsString()
   @IsNotEmpty()
-  gsmNo: string;
+  gsmNumber: string;
 
   @ApiProperty({
     description: 'Email address of the insured person.',
@@ -118,11 +118,11 @@ export class GetPriceTravelHealthInsuranceRequestDto {
 
   @ApiProperty({
     description: 'Type of product (e.g., international travel insurance).',
-    example: 'yurtdisi-seyahat',
+    example: 'domestic-travel',
     required: true,
   })
   @IsEnum(InsuranceProductType, {
-    message: 'Product type must be either yurtici-seyahat or yurtdisi-seyahat',
+    message: 'Product type must be either domestic-travel or abroad-travel',
   })
   @IsNotEmpty()
   productType: InsuranceProductType;

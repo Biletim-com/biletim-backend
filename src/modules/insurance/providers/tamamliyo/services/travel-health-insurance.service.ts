@@ -18,6 +18,8 @@ import {
   MakePaymentTravelHealthInsuranceRequestDto,
   MakePaymentTravelHealthInsuranceRequestDtoInTurkish,
 } from '../dto/make-payment-travel-health-insurance.dto';
+import { TamamliyoInsuranceProductType } from '../helpers/insurance-product-type.helper';
+import { TamamliyoInsuranceTicketType } from '../helpers/insurance-ticket-type.helper';
 
 @Injectable()
 export class TravelHealthInsuranceService {
@@ -47,16 +49,18 @@ export class TravelHealthInsuranceService {
       sigortaliSayisi: requestDto.insuredPersonCount,
       baslangicTarihi: requestDto.startDate,
       bitisTarihi: requestDto.endDate,
-      urun: requestDto.productType,
+      urun: TamamliyoInsuranceProductType[requestDto.productType],
       ulkeKodu:
-        requestDto.productType === InsuranceProductType.ABROAD_TRAVEL
+        TamamliyoInsuranceProductType[requestDto.productType] ===
+        TamamliyoInsuranceProductType[InsuranceProductType.ABROAD_TRAVEL]
           ? requestDto.countryCode
           : undefined,
       customerInfo: requestDto.customerInfo.map((customer) => ({
-        ticketType: customer.ticketType === InsuranceTicketType.BUS ? '0' : '1',
-        tcKimlikNo: customer.nationalIdentityNumber,
+        ticketType:
+          TamamliyoInsuranceTicketType[customer.ticketType].toString(),
+        tcKimlikNo: customer.tcNumber,
         dogumTarihi: customer.birthDate,
-        gsm_no: customer.gsmNo,
+        gsm_no: customer.gsmNumber,
         email: customer.email,
         ad: customer.firstName,
         soyad: customer.lastName,
@@ -84,24 +88,26 @@ export class TravelHealthInsuranceService {
   ): CreateOfferTravelHealthInsuranceRequestDtoInTurkish => {
     return {
       sigortaEttiren: {
-        tcKimlikNo: requestDto.policyholder.nationalIdentityNumber,
+        tcKimlikNo: requestDto.policyholder.tcNumber,
         dogumTarihi: requestDto.policyholder.birthDate,
       },
       sigortali: requestDto.insuredPersons.map((customer) => ({
-        tcKimlikNo: customer.nationalIdentityNumber,
+        tcKimlikNo: customer.tcNumber,
         dogumTarihi: customer.birthDate,
       })),
       baslangicTarihi: requestDto.startDate,
       bitisTarihi: requestDto.endDate,
       email: requestDto.email,
       gsmNo: requestDto.phoneNumber,
-      urun: requestDto.productType,
+      urun: TamamliyoInsuranceProductType[requestDto.productType],
       ulkeKodu:
-        requestDto.productType === InsuranceProductType.ABROAD_TRAVEL
+        TamamliyoInsuranceProductType[requestDto.productType] ===
+        TamamliyoInsuranceProductType[InsuranceProductType.ABROAD_TRAVEL]
           ? requestDto.countryCode
           : undefined,
       ilKodu:
-        requestDto.productType === InsuranceProductType.DOMESTIC_TRAVEL
+        TamamliyoInsuranceProductType[requestDto.productType] ===
+        TamamliyoInsuranceProductType[InsuranceProductType.DOMESTIC_TRAVEL]
           ? requestDto.cityCode
           : undefined,
     };
@@ -128,9 +134,9 @@ export class TravelHealthInsuranceService {
     return {
       parameters: {
         ticketType:
-          requestDto.parameters.ticketType === InsuranceTicketType.BUS
-            ? '0'
-            : '1',
+          TamamliyoInsuranceTicketType[
+            requestDto.parameters.ticketType
+          ].toString(),
         pnrNo: requestDto.parameters.pnrNo,
         ...(requestDto.parameters.flightNumber && {
           flightNumber: requestDto.parameters.flightNumber,

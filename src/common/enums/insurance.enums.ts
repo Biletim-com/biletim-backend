@@ -4,6 +4,6 @@ export enum InsuranceTicketType {
 }
 
 export enum InsuranceProductType {
-  DOMESTIC_TRAVEL = 'yurtici-seyahat',
-  ABROAD_TRAVEL = 'yurtdisi-seyahat',
+  DOMESTIC_TRAVEL = 'domestic-travel',
+  ABROAD_TRAVEL = 'abroad-travel',
 }

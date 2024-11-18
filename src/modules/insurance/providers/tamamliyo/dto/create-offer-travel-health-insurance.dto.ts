@@ -30,7 +30,7 @@ export class InsuredPersonDto {
   })
   @IsString()
   @IsNotEmpty()
-  nationalIdentityNumber: string;
+  tcNumber: string;
 
   @ApiProperty({
     description: 'The birth date of the insured person.',
@@ -97,13 +97,12 @@ export class CreateOfferTravelHealthInsuranceRequestDto {
 
   @ApiProperty({
     description:
-      'The type of the insurance product (e.g., domestic or international travel insurance).',
-    example: 'yurtdisi-seyahat',
+      'The type of the insurance product (e.g., domestic or abroad travel insurance).',
+    example: 'domestic-travel',
     enum: InsuranceProductType,
   })
   @IsEnum(InsuranceProductType, {
-    message:
-      'Product type must be either domestic-travel or international-travel',
+    message: 'Product type must be either domestic-travel or abroad-travel',
   })
   @IsNotEmpty()
   productType: InsuranceProductType;
