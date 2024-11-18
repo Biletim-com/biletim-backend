@@ -136,7 +136,6 @@ export class RatehawkHotelService {
     resultDto: SearchReservationsHotelsRequestDto,
   ): Promise<any> {
     const url = `${this.baseUrl}/search/serp/hotels/`;
-    console.log(resultDto);
     const headers = this.getBasicAuthHeader;
 
     try {

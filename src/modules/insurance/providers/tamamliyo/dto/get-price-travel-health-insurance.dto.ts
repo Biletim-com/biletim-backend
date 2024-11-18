@@ -15,7 +15,7 @@ import { InsuranceProductType } from '@app/common/enums/insurance-product-type.e
 import { InsuranceTicketType } from '@app/common/enums/insurance-ticket-type.enum';
 import {
   en,
-  GetPriceResponse,
+  GetPriceTravelHealthInsuranceResponse,
   Guarantees,
   InsuranceCompanyInfos,
   ProductInfos,
@@ -41,7 +41,7 @@ export class InsuranceCustomerInfoDto {
   })
   @IsString()
   @IsNotEmpty()
-  tcKimlikNo: string;
+  nationalIdentityNumber: string;
 
   @ApiProperty({
     description: 'Birthdate of the insured person in YYYY-MM-DD format.',
@@ -89,7 +89,7 @@ export class InsuranceCustomerInfoDto {
   lastName: string;
 }
 
-export class GetPriceTravelInsuranceRequestDto {
+export class GetPriceTravelHealthInsuranceRequestDto {
   @ApiProperty({
     description: 'Number of insured persons.',
     example: 1,
@@ -242,14 +242,14 @@ export class InsuranceCompanyInfosDto {
   }
 }
 
-export class GetPriceResponseDto {
+export class GetPriceTravelHealthInsuranceResponseDto {
   success: boolean;
   data: {
     productInfos: ProductInfosDto;
     insuranceCompanyInfos: InsuranceCompanyInfosDto;
   };
 
-  constructor(response: GetPriceResponse) {
+  constructor(response: GetPriceTravelHealthInsuranceResponse) {
     this.success = response.success;
     this.data = {
       productInfos: new ProductInfosDto(response?.data?.urunBilgileri),
