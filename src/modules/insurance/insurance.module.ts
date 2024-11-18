@@ -4,7 +4,7 @@ import { InsuranceService } from './services/insurance.service';
 import { TravelHealthInsuranceService } from './providers/tamamliyo/services/travel-health-insurance.service';
 import { TamamliyoService } from './providers/tamamliyo/services/tamamliyo.service';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
-import { HttpModule } from '@nestjs/axios/dist';
+import { HttpModule } from '@nestjs/axios';
 import { TicketCancellationProtectionInsuranceService } from './providers/tamamliyo/services/ticket-cancellation-protection.service';
 
 @Module({

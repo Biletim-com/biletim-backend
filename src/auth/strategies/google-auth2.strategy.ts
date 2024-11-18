@@ -52,6 +52,7 @@ export class GoogleOAuth2Strategy extends OAuth2Strategy {
         id_token: string;
       }>({
         method: 'POST',
+        url: this.TOKEN_URL,
         data: {
           client_id: this.oAuthLoginWithGoogleConfigService.clientId,
           client_secret: this.oAuthLoginWithGoogleConfigService.clientSecret,
