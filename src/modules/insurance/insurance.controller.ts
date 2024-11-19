@@ -1,13 +1,8 @@
-import { Body, Controller, Get, Logger, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TravelHealthInsuranceService } from './providers/tamamliyo/services/travel-health-insurance.service';
 import { TamamliyoService } from './providers/tamamliyo/services/tamamliyo.service';
 import { GetCountriesResponseDto } from './providers/tamamliyo/dto/get-countries.dto';
-import { GetCitiesResponseDto } from './providers/tamamliyo/dto/get-cities.dto';
-import {
-  DistrictsRequestDto,
-  GetDistrictsResponseDto,
-} from './providers/tamamliyo/dto/get-districts.dto';
 import {
   GetPriceTravelHealthInsuranceRequestDto,
   GetPriceTravelHealthInsuranceResponseDto,
@@ -41,21 +36,6 @@ export class InsuranceController {
   async getCountries(): Promise<GetCountriesResponseDto> {
     const response = await this.tamamliyoService.getCountries();
     return new GetCountriesResponseDto(response);
-  }
-
-  @ApiOperation({ summary: 'Get Cities' })
-  @Get('/get-cities')
-  async getCities(): Promise<GetCitiesResponseDto> {
-    const response = await this.tamamliyoService.getCities();
-    return new GetCitiesResponseDto(response);
-  }
-  @ApiOperation({ summary: 'Get Districts' })
-  @Get('/get-districts')
-  async getDistricts(
-    @Query() requestDto: DistrictsRequestDto,
-  ): Promise<GetDistrictsResponseDto> {
-    const response = await this.tamamliyoService.getDistricts(requestDto);
-    return new GetDistrictsResponseDto(response);
   }
 
   @ApiOperation({ summary: 'Get Price For Travel Health Insurance' })
