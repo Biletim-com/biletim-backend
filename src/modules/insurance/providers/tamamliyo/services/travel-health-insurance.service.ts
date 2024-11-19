@@ -13,7 +13,7 @@ import {
 } from '../dto/create-offer-travel-health-insurance.dto';
 
 import { CreateOfferTravelHealthInsuranceResponse } from '../types/create-offer-travel-health-insurance.type';
-import { GetPriceTravelHealthInsuranceResponse } from '../types/get-price-travel-health-insurance-response.type';
+import { GetPriceTravelHealthInsuranceResponse } from '../types/get-price-travel-health-insurance.type';
 import {
   MakePaymentTravelHealthInsuranceRequestDto,
   MakePaymentTravelHealthInsuranceRequestDtoInTurkish,
@@ -103,12 +103,12 @@ export class TravelHealthInsuranceService {
       ulkeKodu:
         TamamliyoInsuranceProductType[requestDto.productType] ===
         TamamliyoInsuranceProductType[InsuranceProductType.ABROAD_TRAVEL]
-          ? requestDto.countryCode
+          ? 998
           : undefined,
       ilKodu:
         TamamliyoInsuranceProductType[requestDto.productType] ===
         TamamliyoInsuranceProductType[InsuranceProductType.DOMESTIC_TRAVEL]
-          ? requestDto.cityCode
+          ? 34
           : undefined,
     };
   };
@@ -153,10 +153,9 @@ export class TravelHealthInsuranceService {
       krediKartiBitisTarihi: requestDto.creditCardExpiryDate,
       krediKartiAd: requestDto.creditCardHolderFirstName,
       krediKartiSoyad: requestDto.creditCardHolderLastName,
-      ...(requestDto.countryId && {
-        ulkeKodu: requestDto.countryId,
-      }),
-      adres: requestDto.address,
+      ilId: 34,
+      ilceId: '10',
+      adres: ' KILIÇDEDE MAH. ÜLKEM SOK. NO:8A/11 İLKADIM/SAMSUN',
       donusUrl: null,
     };
   };

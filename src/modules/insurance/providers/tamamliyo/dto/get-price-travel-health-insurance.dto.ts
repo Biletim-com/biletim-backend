@@ -13,13 +13,12 @@ import {
 import { Type } from 'class-transformer';
 import { InsuranceProductType, InsuranceTicketType } from '@app/common/enums';
 import {
-  en,
   GetPriceTravelHealthInsuranceResponse,
-  Guarantees,
   InsuranceCompanyInfos,
   ProductInfos,
-  tr,
-} from '../types/get-price-travel-health-insurance-response.type';
+} from '../types/get-price-travel-health-insurance.type';
+import { IsTCNumber } from '@app/common/decorators';
+import { Guarantees } from '../types/create-offer-travel-health-insurance.type';
 
 export class InsuranceCustomerInfoDto {
   @ApiProperty({
@@ -40,6 +39,7 @@ export class InsuranceCustomerInfoDto {
   })
   @IsString()
   @IsNotEmpty()
+  @IsTCNumber()
   tcNumber: string;
 
   @ApiProperty({
@@ -170,8 +170,8 @@ export class GetPriceTravelHealthInsuranceRequestDtoInTurkish {
 }
 
 export class GuaranteesDto {
-  tr: tr;
-  en: en;
+  tr: Record<string, any>;
+  en: Record<string, any>;
 
   constructor(data: Guarantees) {
     this.tr = data.tr;

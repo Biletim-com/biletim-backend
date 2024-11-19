@@ -6,20 +6,17 @@ import {
   IsArray,
   ValidateNested,
   IsEnum,
-  IsInt,
-  IsOptional,
-  ValidateIf,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { InsuranceProductType } from '@app/common/enums';
 import {
   CreateOfferTravelHealthInsuranceResponse,
-  En,
+  Guarantees,
   PersonalInfo,
   ProductInfos,
-  Tr,
 } from '../types/create-offer-travel-health-insurance.type';
-import { InsuranceCompanyInfos } from '../types/get-price-travel-health-insurance-response.type';
+import { InsuranceCompanyInfos } from '../types/get-price-travel-health-insurance.type';
+import { IsTCNumber } from '@app/common/decorators';
 
 // DTO for the insured person information
 export class InsuredPersonDto {
@@ -30,6 +27,7 @@ export class InsuredPersonDto {
   })
   @IsString()
   @IsNotEmpty()
+  @IsTCNumber()
   tcNumber: string;
 
   @ApiProperty({
@@ -65,7 +63,7 @@ export class CreateOfferTravelHealthInsuranceRequestDto {
 
   @ApiProperty({
     description: 'Start date of the insurance policy.',
-    example: '2023-09-10',
+    example: '2024-12-10',
   })
   @IsDateString({}, { message: 'Start date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
@@ -73,7 +71,7 @@ export class CreateOfferTravelHealthInsuranceRequestDto {
 
   @ApiProperty({
     description: 'End date of the insurance policy.',
-    example: '2023-09-29',
+    example: '2024-12-14',
   })
   @IsDateString({}, { message: 'End date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
@@ -106,33 +104,6 @@ export class CreateOfferTravelHealthInsuranceRequestDto {
   })
   @IsNotEmpty()
   productType: InsuranceProductType;
-
-  @ApiProperty({
-    description:
-      'Country code for international travel insurance (if applicable).',
-    example: 276,
-    required: false,
-  })
-  @IsInt()
-  @ValidateIf((o) => o.productType === InsuranceProductType.ABROAD_TRAVEL)
-  @IsNotEmpty({
-    message: 'Country code is required for International travel insurance',
-  })
-  @IsOptional()
-  countryCode?: number;
-
-  @ApiProperty({
-    description: 'The departure city code for domestic travel insurance.',
-    example: 34,
-    required: false,
-  })
-  @IsInt()
-  @ValidateIf((o) => o.productType === InsuranceProductType.DOMESTIC_TRAVEL)
-  @IsNotEmpty({
-    message: 'City code is required for Domestic travel insurance',
-  })
-  @IsOptional()
-  cityCode?: number;
 }
 
 export class CreateOfferTravelHealthInsuranceRequestDtoInTurkish {
@@ -154,10 +125,10 @@ export class CreateOfferTravelHealthInsuranceRequestDtoInTurkish {
 }
 
 class GuaranteesDTO {
-  tr?: Tr;
-  en?: En;
+  tr: Record<string, any>;
+  en: Record<string, any>;
 
-  constructor(data: { tr?: Tr; en?: En }) {
+  constructor(data: Guarantees) {
     this.tr = data.tr;
     this.en = data.en;
   }

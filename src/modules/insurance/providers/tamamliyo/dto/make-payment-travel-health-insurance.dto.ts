@@ -7,7 +7,6 @@ import {
   IsEnum,
   ValidateNested,
   IsNotEmpty,
-  IsInt,
 } from 'class-validator';
 
 export class MakePaymentParametersTravelHealthInsuranceDto {
@@ -57,13 +56,6 @@ export class MakePaymentTravelHealthInsuranceRequestDto {
 
   @IsString()
   creditCardHolderLastName: string;
-
-  @IsString()
-  address: string;
-
-  @IsOptional()
-  @IsInt()
-  countryId: number;
 }
 
 export class MakePaymentTravelHealthInsuranceRequestDtoInTurkish {
@@ -83,7 +75,8 @@ export class MakePaymentTravelHealthInsuranceRequestDtoInTurkish {
   krediKartiBitisTarihi: string;
   krediKartiAd: string;
   krediKartiSoyad: string;
-  ulkeKodu?: number;
+  ilId: number;
+  ilceId: string;
   adres: string;
   donusUrl: null;
 }

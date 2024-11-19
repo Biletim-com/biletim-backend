@@ -46,13 +46,6 @@ export class MakePaymentTicketCancellationProtectionInsuranceRequestDto {
 
   @IsString()
   creditCardHolderLastName: string;
-
-  @IsOptional()
-  @IsInt()
-  countryId?: number;
-
-  @IsString()
-  address: string;
 }
 
 export class MakePaymentTicketCancellationProtectionInsuranceRequestDtoInTurkish {
@@ -69,6 +62,7 @@ export class MakePaymentTicketCancellationProtectionInsuranceRequestDtoInTurkish
   krediKartiBitisTarihi: string;
   krediKartiAd: string;
   krediKartiSoyad: string;
-  ulkeKodu?: number;
+  ilId: number;
+  ilceId: string;
   adres: string;
 }

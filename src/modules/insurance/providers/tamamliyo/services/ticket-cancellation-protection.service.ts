@@ -132,10 +132,9 @@ export class TicketCancellationProtectionInsuranceService {
       krediKartiBitisTarihi: requestDto.creditCardExpiryDate,
       krediKartiAd: requestDto.creditCardHolderFirstName,
       krediKartiSoyad: requestDto.creditCardHolderLastName,
-      ...(requestDto.countryId && {
-        ulkeKodu: requestDto.countryId,
-      }),
-      adres: requestDto.address,
+      ilId: 34,
+      ilceId: '10',
+      adres: ' KILIÇDEDE MAH. ÜLKEM SOK. NO:8A/11 İLKADIM/SAMSUN',
     };
   };
 

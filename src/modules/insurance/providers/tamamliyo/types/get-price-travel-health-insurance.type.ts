@@ -1,25 +1,4 @@
-export type tr = {
-  VIZE: string;
-  'TIBBİ TEDAVİ TEMİNATI': string;
-  'TIBBİ NAKİL TEMİNATI': string;
-  'TEDAVİ S. İKAMETGAHA DÖNÜŞ': string;
-  'CENAZE NAKLİ': string;
-  'TIBBİ BİLGİ VE DANIŞMA': string;
-};
-
-export type en = {
-  Visa: string;
-  'Medical Treatment Coverage': string;
-  'Medical Transfer Coverage': string;
-  'Return to Permanent Residence after Treatment': string;
-  'Repatriation of Mortal Remains': string;
-  'Medical Information and Consultation': string;
-};
-
-export type Guarantees = {
-  tr: tr;
-  en: en;
-};
+import { Guarantees } from './create-offer-travel-health-insurance.type';
 
 export type ProductInfos = {
   urunId: number;
