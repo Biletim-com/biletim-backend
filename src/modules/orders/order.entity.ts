@@ -10,6 +10,7 @@ import {
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 import { User } from '../users/user.entity';
 import { Transaction } from '../transactions/transaction.entity';
+import { PlaneTicket } from '../tickets/plane/entities/plane-ticket.entity';
 import { BusTicket } from '../tickets/bus/entities/bus-ticket.entity';
 
 // enums
@@ -17,12 +18,6 @@ import { OrderStatus, OrderType } from '@app/common/enums';
 
 @Entity('orders')
 export class Order extends AbstractEntity<Order> {
-  @Column()
-  firstName: string;
-
-  @Column()
-  lastName: string;
-
   @Column()
   userEmail: string;
 
@@ -43,9 +38,12 @@ export class Order extends AbstractEntity<Order> {
   user?: Nullable<User>;
 
   @JoinColumn()
-  @OneToOne(() => Transaction)
+  @OneToOne(() => Transaction, (transaction) => transaction.order)
   transaction: Transaction;
 
   @OneToMany(() => BusTicket, (busTicket) => busTicket.order)
   busTickets: BusTicket[];
+
+  @OneToMany(() => PlaneTicket, (planeTicket) => planeTicket.order)
+  planeTickets: PlaneTicket[];
 }

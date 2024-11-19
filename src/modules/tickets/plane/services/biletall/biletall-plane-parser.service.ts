@@ -628,7 +628,7 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
 
       return brandSegmentInfos.map((segmentInfo) => {
         const segmentInfoData: BrandSegmentInfoDto = {
-          companyNo: segmentInfo.CompanyNo?.[0] || '',
+          companyNumber: segmentInfo.CompanyNo?.[0] || '',
           origin: segmentInfo.Origin?.[0] || '',
           destination: segmentInfo.Destination?.[0] || '',
           classOfService: segmentInfo.ClassOfService?.[0] || '',
@@ -684,26 +684,23 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
   ): PlanePullPriceFlightDto => {
     const extractedResult = this.extractResult(response);
     const newDataSet = extractedResult['NewDataSet'][0];
+    const priceListDataSet = newDataSet['FiyatListesi'][0];
+    const paymentRulesDataSet = newDataSet['OdemeKurallari'][0];
+    const baggageInfoDataSet = newDataSet['BagajBilgiler'] || [];
+    const additionalServiceRulesDataSet = newDataSet['EkHizmetKurallar'] || [];
 
-    const priceListDataSet = newDataSet['FiyatListesi'] ?? [];
-    const PriceList = priceListDataSet.map((entry) => {
-      const priceListParsed: PlanePrices = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        priceListParsed[key] = value;
-      }
-      return new PriceListDto(priceListParsed);
-    });
+    const priceListParsed: PlanePrices = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(priceListDataSet)) {
+      priceListParsed[key] = value;
+    }
+    const priceList = new PriceListDto(priceListParsed);
 
-    const paymentRulesDataSet = newDataSet['OdemeKurallari'] ?? [];
-    const paymentRules = paymentRulesDataSet.map((entry) => {
-      const paymentRuleParsed: PaymentRules = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        paymentRuleParsed[key] = value;
-      }
-      return new PlanePaymentRulesDto(paymentRuleParsed);
-    });
+    const paymentRuleParsed: PaymentRules = Object.assign({});
+    for (const [key, [value]] of ObjectTyped.entries(paymentRulesDataSet)) {
+      paymentRuleParsed[key] = value;
+    }
+    const paymentRules = new PlanePaymentRulesDto(paymentRuleParsed);
 
-    const baggageInfoDataSet = newDataSet['BagajBilgiler'] ?? [];
     const baggageInfo = baggageInfoDataSet.map((entry) => {
       const baggageInfoParsed: BaggageInfo = Object.assign({});
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
@@ -712,22 +709,22 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       return new PlaneBaggageInfoDto(baggageInfoParsed);
     });
 
-    const additionalServiceRulesDataSet = newDataSet['EkHizmetKurallar'][0];
-    const additionalServiceRuleDataSet =
-      additionalServiceRulesDataSet['EkHizmetKural'];
-    const additionalServiceRules = additionalServiceRuleDataSet.map((entry) => {
-      const additionalServiceRuleParsed: AdditionalServiceRule = Object.assign(
-        {},
-      );
-      for (const [key, value] of ObjectTyped.entries(entry)) {
-        additionalServiceRuleParsed[key] = value;
-      }
-
-      return new PlaneAdditionalServiceRuleDto(additionalServiceRuleParsed);
-    });
+    const additionalServiceRules = additionalServiceRulesDataSet.map(
+      (entry) => {
+        const additionalServiceRuleDataSet = entry['EkHizmetKural'][0];
+        const additionalServiceRuleParsed: AdditionalServiceRule =
+          Object.assign({});
+        for (const [key, value] of ObjectTyped.entries(
+          additionalServiceRuleDataSet,
+        )) {
+          additionalServiceRuleParsed[key] = value[0];
+        }
+        return new PlaneAdditionalServiceRuleDto(additionalServiceRuleParsed);
+      },
+    );
 
     return new PlanePullPriceFlightDto(
-      PriceList,
+      priceList,
       paymentRules,
       baggageInfo,
       additionalServiceRules,
@@ -755,20 +752,14 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
     response: PlaneTicketReservationResponse,
   ): FlightTicketReservationDto => {
     const extractedResult = this.extractResult(response);
-    const ticketResult = extractedResult['IslemSonuc'];
+    const ticketResult = extractedResult['IslemSonuc'][0];
 
-    if (!Array.isArray(ticketResult) || ticketResult.length === 0) {
-      throw new Error('No ticket results found.');
+    const reservationParsed: FlightTicketReservationResult = Object.assign({});
+    for (const [key, value] of Object.entries(ticketResult)) {
+      if (Array.isArray(value)) {
+        reservationParsed[key] = value[0];
+      }
     }
-    const entry = ticketResult[0];
-
-    const reservationParsed: FlightTicketReservationResult = {
-      Sonuc: entry.Sonuc ? entry.Sonuc[0] : null,
-      PNR: entry.PNR ? entry.PNR[0] : null,
-      RezervasyonOpsiyon: entry.RezervasyonOpsiyon
-        ? entry.RezervasyonOpsiyon[0]
-        : null,
-    };
 
     return new FlightTicketReservationDto(reservationParsed);
   };
@@ -777,19 +768,15 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
     response: PlaneTicketPurchaseResponse,
   ): FlightTicketPurchaseDto => {
     const extractedResult = this.extractResult(response);
-    const ticketResult = extractedResult['IslemSonuc'];
+    const ticketResult = extractedResult['IslemSonuc'][0];
 
-    if (!Array.isArray(ticketResult) || ticketResult.length === 0) {
-      throw new Error('No ticket results found.');
+    const saleResultParsed: FlightTicketPurchaseResult = Object.assign({});
+    for (const [key, value] of Object.entries(ticketResult)) {
+      if (Array.isArray(value)) {
+        saleResultParsed[key] = value[0];
+      }
     }
-    const entry = ticketResult[0];
 
-    const purchaseParsed: FlightTicketPurchaseResult = {
-      Sonuc: entry.Sonuc || [],
-      PNR: entry.PNR || [],
-      EBilet: entry.EBilet || {},
-    };
-
-    return new FlightTicketPurchaseDto(purchaseParsed);
+    return new FlightTicketPurchaseDto(saleResultParsed);
   };
 }

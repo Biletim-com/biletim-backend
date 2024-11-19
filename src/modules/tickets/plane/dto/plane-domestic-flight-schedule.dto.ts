@@ -141,7 +141,7 @@ export class FlightOptionDto {
   luggageB: string;
   time: string;
   id2: string;
-  companyNo: string;
+  companyNumber: string;
 
   constructor(option: FlightOption) {
     this.id = option.ID;
@@ -159,7 +159,7 @@ export class FlightOptionDto {
     this.luggageB = option.BagajB;
     this.time = option.Vakit;
     this.id2 = option.ID2;
-    this.companyNo = option.FirmaNo;
+    this.companyNumber = option.FirmaNo;
   }
 }
 
@@ -169,8 +169,8 @@ export class DomesticFlightSegmentDto {
   companyId: string;
   airlineCode: string;
   airline: string;
-  flightNo: string;
-  companyFlightNo: string;
+  flightNumber: string;
+  companyFlightNumber: string;
   flightCode: string;
   departureAirport: string;
   arrivalAirport: string;
@@ -194,7 +194,7 @@ export class DomesticFlightSegmentDto {
   luggageP: string;
   luggageE: string;
   luggageB: string;
-  routeNo: string;
+  routeNumber: string;
   companyCampaignDescription: string;
   isSeatCountFromService: string;
   isMealPaid: string;
@@ -211,8 +211,8 @@ export class DomesticFlightSegmentDto {
     this.companyLogo = `https://ws.biletall.com/HavaYoluLogo/orta/${segment.Firma}.png`;
     this.airlineCode = segment.Firma;
     this.airline = segment.FirmaAd;
-    this.flightNo = segment.SeferNo;
-    this.companyFlightNo = segment.FirmaSeferNo;
+    this.flightNumber = segment.SeferNo;
+    this.companyFlightNumber = segment.FirmaSeferNo;
     this.flightCode = segment.SeferKod;
     this.departureAirport = segment.Kalkis;
     this.arrivalAirport = segment.Varis;
@@ -236,7 +236,7 @@ export class DomesticFlightSegmentDto {
     this.luggageP = segment.BagajP;
     this.luggageE = segment.BagajE;
     this.luggageB = segment.BagajB;
-    this.routeNo = segment.RotaNo;
+    this.routeNumber = segment.RotaNo;
     this.companyCampaignDescription = segment.FirmaKampanyaAciklama;
     this.isSeatCountFromService = segment.KalanKoltukSayisiServistenMiGeliyor;
     this.isMealPaid = segment.YemekUcretliMi;

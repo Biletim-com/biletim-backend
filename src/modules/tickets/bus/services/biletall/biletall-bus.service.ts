@@ -72,7 +72,7 @@ export class BiletAllBusService extends BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Otobus: {
-        FirmaNo: dto.companyNo,
+        FirmaNo: dto.companyNumber,
         KalkisNoktaID: dto.departurePointId,
         VarisNoktaID: dto.arrivalPointId,
         Tarih: dto.date,
@@ -90,7 +90,7 @@ export class BiletAllBusService extends BiletAllService {
 
   async company(requestDto: BusCompanyRequestDto): Promise<BusCompanyDto[]> {
     const companiesXml = `<Firmalar><FirmaNo>${
-      requestDto.companyNo ?? 0
+      requestDto.companyNumber ?? 0
     }</FirmaNo></Firmalar>`;
     const res = await this.run<BiletAllCompanyResponse>(companiesXml);
     return this.biletAllBusParserService.parseCompany(res);
@@ -110,7 +110,7 @@ export class BiletAllBusService extends BiletAllService {
 
     const requestDocument = {
       Sefer: {
-        FirmaNo: requestDto.companyNo ?? '0',
+        FirmaNo: requestDto.companyNumber ?? '0',
         KalkisNoktaID: requestDto.departurePointId,
         VarisNoktaID: requestDto.arrivalPointId,
         Tarih: dayjs(requestDto.date).format('YYYY-MM-DD'),
@@ -132,7 +132,7 @@ export class BiletAllBusService extends BiletAllService {
     if (requestDto.returnDate) {
       const returnRequestDocument = {
         Sefer: {
-          FirmaNo: requestDto.companyNo ?? '0',
+          FirmaNo: requestDto.companyNumber ?? '0',
           KalkisNoktaID: requestDto.arrivalPointId,
           VarisNoktaID: requestDto.departurePointId,
           Tarih: requestDto.returnDate,
@@ -172,7 +172,7 @@ export class BiletAllBusService extends BiletAllService {
     const routeBuilder = new xml2js.Builder({ headless: true });
     const routeRequestDocument = {
       Hat: {
-        FirmaNo: requestDto.companyNo,
+        FirmaNo: requestDto.companyNumber,
         HatNo: requestDto.routeNumber,
         KalkisNoktaID: requestDto.departurePointId,
         VarisNoktaID: requestDto.arrivalPointId,
@@ -203,7 +203,7 @@ export class BiletAllBusService extends BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       OtobusKoltukKontrol: {
-        FirmaNo: requestDto.companyNo,
+        FirmaNo: requestDto.companyNumber,
         KalkisNoktaID: requestDto.departurePointId,
         VarisNoktaID: requestDto.arrivalPointId,
         Tarih: requestDto.date,
@@ -231,7 +231,7 @@ export class BiletAllBusService extends BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       BinecegiYer: {
-        FirmaNo: requestDto.companyNo,
+        FirmaNo: requestDto.companyNumber,
         KalkisNoktaID: requestDto.departurePointID,
         YerelSaat: requestDto.localTime,
         HatNo: requestDto.routeNumber,
@@ -248,7 +248,7 @@ export class BiletAllBusService extends BiletAllService {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {
       Servis_2: {
-        FirmaNo: requestDto.companyNo,
+        FirmaNo: requestDto.companyNumber,
         KalkisNoktaID: requestDto.departurePointID,
         YerelSaat: requestDto.localTime,
         HatNo: requestDto.routeNumber,
@@ -331,7 +331,7 @@ export class BiletAllBusService extends BiletAllService {
       renderOpts: { pretty: false },
     });
     const {
-      companyNo,
+      companyNumber,
       routeNumber,
       tripTrackingNumber,
       departureTerminal,
@@ -342,7 +342,7 @@ export class BiletAllBusService extends BiletAllService {
 
     const requestDocument = {
       IslemSatis: {
-        FirmaNo: companyNo,
+        FirmaNo: companyNumber,
         KalkisNoktaID: departureTerminal.externalId,
         VarisNoktaID: arrivalTerminal.externalId,
         Tarih: date,
@@ -350,18 +350,21 @@ export class BiletAllBusService extends BiletAllService {
         HatNo: routeNumber,
         SeferNo: tripTrackingNumber,
         KalkisTerminalAdiSaatleri: '',
-        ...tickets.reduce((acc, passenger, index) => {
-          acc[`KoltukNo${index + 1}`] = passenger.seatNumber;
-          acc[`Adi${index + 1}`] = turkishToEnglish(passenger.firstName);
-          acc[`Soyadi${index + 1}`] = turkishToEnglish(passenger.lastName);
-          acc[`Cinsiyet${index + 1}`] = BiletAllGender[passenger.gender];
-          acc[`TcVatandasiMi${index + 1}`] = passenger.isTurkishCitizen ? 1 : 0;
+        ...tickets.reduce((acc, ticket, index) => {
+          acc[`KoltukNo${index + 1}`] = ticket.seatNumber;
+          acc[`Adi${index + 1}`] = turkishToEnglish(ticket.passenger.firstName);
+          acc[`Soyadi${index + 1}`] = turkishToEnglish(
+            ticket.passenger.lastName,
+          );
+          acc[`Cinsiyet${index + 1}`] = BiletAllGender[ticket.passenger.gender];
+          acc[`TcVatandasiMi${index + 1}`] = ticket.passenger.tcNumber ? 1 : 0;
 
-          if (passenger.isTurkishCitizen) {
-            acc[`TcKimlikNo${index + 1}`] = passenger.tcNumber;
+          if (ticket.passenger.tcNumber) {
+            acc[`TcKimlikNo${index + 1}`] = ticket.passenger.tcNumber;
           } else {
-            acc[`PasaportUlkeKod${index + 1}`] = passenger.passportCountryCode;
-            acc[`PasaportNo${index + 1}`] = passenger.passportNumber;
+            acc[`PasaportUlkeKod${index + 1}`] =
+              ticket.passenger.passportCountryCode;
+            acc[`PasaportNo${index + 1}`] = ticket.passenger.passportNumber;
           }
           return acc;
         }, {}),

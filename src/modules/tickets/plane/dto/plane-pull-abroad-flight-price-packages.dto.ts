@@ -1,15 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsDateString,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import {
   BaggageAllowance,
   BrandFareInfo,
@@ -23,164 +14,32 @@ import {
   PriceOfPiece,
   SeatBaggage,
 } from '../services/biletall/types/biletall-plane-pull-abroad-flight-price-packages.type';
+import {
+  FlightSegmentDto,
+  PullPriceFlightRequestDto,
+} from './plane-pull-price-flight.dto';
 
-export class pullAbroadFlightPricePackagesSegmentDto {
-  @ApiProperty({
-    description: 'Departure airport code.',
-    example: 'SAW',
-  })
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(3)
-  @MaxLength(3)
-  departure: string;
-
-  @ApiProperty({
-    description: 'Arrival airport code.',
-    example: 'MUC',
-  })
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(3)
-  @MaxLength(3)
-  arrival: string;
-
-  @ApiProperty({
-    description: 'Flight departure time (ISO format).',
-    example: '2024-09-30T10:10:00',
-  })
-  @IsNotEmpty()
-  @IsDateString()
-  departureDate: string;
-
-  @ApiProperty({
-    description: 'Flight arrival time (ISO format).',
-    example: '2024-09-30T12:05:00',
-  })
-  @IsNotEmpty()
-  @IsDateString()
-  arrivalDate: string;
-
-  @ApiProperty({
-    description: 'Flight number.',
-    example: '41',
-  })
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(100)
-  flightNumber: string;
-
-  @ApiProperty({
-    description: 'Company code for the airline.',
-    example: 'VF',
-  })
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(1)
-  @MaxLength(10)
-  companyCode: string;
-
-  @ApiProperty({
-    description: 'Class of the flight.',
-    example: 'V',
-  })
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(1)
-  @MaxLength(10)
-  flightClass: string;
-
-  @ApiProperty({
-    description:
-      'Indicates if this segment is a return flight (1 for return, 0 for one-way).',
-    example: '0',
-  })
-  @IsNotEmpty()
-  isReturnFlight: string;
-
+class PullAbroadFlightPricePackagesSegmentDto extends FlightSegmentDto {
   @ApiProperty({
     description: 'Flight segment code (SeferKod).',
     example:
       'UHNIcU5GSkV1REtBVmFEN210QUFBQT09LDAsVkYsNDEsU0FXLE1VQywyMDI0LTA5LTMwVDEwOjEwOjAwLjAwMCswMzowMCwyMDI0LTA5LTMwVDEyOjA1OjAwLjAwMCswMjowMCxWLFZIVFNBSlJPLEEsRWNvbm9teSwwMDAxLDE1MTM3MTIsQkFTSUM=',
+    required: true,
   })
   @IsString()
   @IsOptional()
   flightCode: string;
 }
 
-export class PullAbroadFlightPricePackagesRequestDto {
-  @ApiProperty({
-    description: 'Unique operation ID for the request.',
-    example: '62062f6a-3140-4843-bbdd-8161579842f6',
-  })
-  @IsNotEmpty()
-  @IsString()
-  operationId: string;
-
-  @ApiProperty({
-    description: 'Company number providing the flight.',
-    example: '1100',
-  })
-  @IsNotEmpty()
-  companyNumber: string;
-
+export class PullAbroadFlightPricePackagesRequestDto extends PullPriceFlightRequestDto {
   @ApiProperty({
     description: 'Flight segment information for the flight.',
-    type: [pullAbroadFlightPricePackagesSegmentDto],
+    type: [PullAbroadFlightPricePackagesSegmentDto],
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => pullAbroadFlightPricePackagesSegmentDto)
-  segments: pullAbroadFlightPricePackagesSegmentDto[];
-
-  @ApiProperty({
-    description: 'Number of adult passengers.',
-    example: '1',
-  })
-  @IsNotEmpty()
-  adultCount: string;
-
-  @ApiPropertyOptional({
-    description: 'Number of child passengers (optional).',
-    example: '0',
-  })
-  @IsOptional()
-  childCount?: string;
-
-  @ApiPropertyOptional({
-    description: 'Number of infant passengers (optional).',
-    example: '0',
-  })
-  @IsOptional()
-  babyCount?: string;
-
-  @ApiPropertyOptional({
-    description: 'Number of student passengers (optional).',
-    example: '0',
-  })
-  @IsOptional()
-  studentCount?: string;
-
-  @ApiPropertyOptional({
-    description: 'Number of senior passengers (optional).',
-    example: '0',
-  })
-  @IsOptional()
-  olderCount?: string;
-
-  @ApiPropertyOptional({
-    description: 'Number of military passengers (optional).',
-    example: '0',
-  })
-  @IsOptional()
-  militaryCount?: string;
-
-  @ApiPropertyOptional({
-    description: 'Number of youth passengers (optional).',
-    example: '0',
-  })
-  @IsOptional()
-  youthCount?: string;
+  @Type(() => PullAbroadFlightPricePackagesSegmentDto)
+  segments: PullAbroadFlightPricePackagesSegmentDto[];
 }
 
 export class PriceOfPieceDto {
@@ -294,7 +153,7 @@ export class BrandImportantNoteDto {
 }
 
 export class BrandSegmentInfoDto {
-  companyNo: string;
+  companyNumber: string;
   origin: string;
   destination: string;
   classOfService: string;
@@ -314,7 +173,7 @@ export class BrandSegmentInfoDto {
   group: string;
 
   constructor(data: BrandSegmentInfo) {
-    this.companyNo = data.CompanyNo;
+    this.companyNumber = data.CompanyNo;
     this.origin = data.Origin;
     this.destination = data.Destination;
     this.classOfService = data.ClassOfService;

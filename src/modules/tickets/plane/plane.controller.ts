@@ -7,15 +7,7 @@ import {
   PullPriceFlightRequestDto,
 } from './dto/plane-pull-price-flight.dto';
 import { PlanePassengerAgeRuleDto } from './dto/plane-company-passenger-age-rule.dto';
-import {
-  FlightReservationRequestDto,
-  FlightTicketReservationDto,
-} from './dto/plane-ticket-reservation.dto';
-import {
-  FlightTicketPurchaseDto,
-  FlightTicketPurchaseRequestDto,
-} from './dto/plane-ticket-purchase.dto';
-import { FlightConvertReservationToSaleRequestDto } from './dto/plane-convert-reservation-to-sale.dto';
+
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Airport } from './entities/airport.entity';
 import { PlaneService } from './services/plane.service';
@@ -96,29 +88,5 @@ export class PlaneController {
   @Get('passenger-age-rules')
   async planePassengerAgeRules(): Promise<PlanePassengerAgeRuleDto[]> {
     return this.biletAllPlaneService.planePassengerAgeRules();
-  }
-
-  @ApiOperation({ summary: 'Reservation Flight Ticket' })
-  // @Post('ticket-reservation')
-  async planeTicketReservation(
-    @Body() requestDto: FlightReservationRequestDto,
-  ): Promise<FlightTicketReservationDto> {
-    return this.biletAllPlaneService.planeTicketReservation(requestDto);
-  }
-
-  @ApiOperation({ summary: 'Purchase Flight Ticket' })
-  // @Post('ticket-purchase')
-  async planeTicketPurchase(
-    @Body() requestDto: FlightTicketPurchaseRequestDto,
-  ): Promise<FlightTicketPurchaseDto> {
-    return this.biletAllPlaneService.planeTicketPurchase(requestDto);
-  }
-
-  @ApiOperation({ summary: 'Convert Reservation To Sale' })
-  // @Post('convert-reservation-to-sale')
-  async planeConvertReservationToSale(
-    @Body() requestDto: FlightConvertReservationToSaleRequestDto,
-  ): Promise<any> {
-    return this.biletAllPlaneService.planeConvertReservationToSale(requestDto);
   }
 }

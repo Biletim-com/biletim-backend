@@ -14,7 +14,7 @@ import { IPayment } from '../../interfaces/payment.interface';
 import { InjectPoxClient } from '@app/providers/pox-client/decorators';
 
 // enums
-import { PaymentProvider } from '@app/common/enums';
+import { PaymentProvider, TicketType } from '@app/common/enums';
 
 // dtos
 import { BankCardDto } from '@app/common/dtos';
@@ -79,17 +79,19 @@ export class VakifBankPaymentStrategy implements IPayment {
     return {
       MerchantId: this.paymentConfigService.merchantId,
       Password: this.paymentConfigService.merchantPassword,
-      TerminalNo: this.paymentConfigService.terminalNo,
+      TerminalNo: this.paymentConfigService.terminalNumber,
     };
   }
 
   async startPayment(
     _clientIp: string,
+    ticketType: TicketType,
     bankCard: BankCardDto,
     transaction: Transaction,
   ): Promise<string> {
     const card3DsEligibility =
       await this.vakifBankEnrollmentService.checkCard3DsEligibility(
+        ticketType,
         transaction,
         bankCard,
       );

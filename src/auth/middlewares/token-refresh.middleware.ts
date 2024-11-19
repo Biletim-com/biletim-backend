@@ -46,7 +46,6 @@ export class TokenRefreshMiddleware implements NestMiddleware {
       }
       try {
         const decodedRefreshToken = this.jwtService.verify(refreshToken);
-        console.log({ decodedAccessToken });
         if (Date.now() >= decodedRefreshToken.exp * 1000) {
           throw new UnauthorizedException('Refresh token expired');
         }

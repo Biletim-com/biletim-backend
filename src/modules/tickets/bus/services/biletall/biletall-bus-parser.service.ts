@@ -36,10 +36,7 @@ import {
   BoardingPoint,
   BoardingPointResponse,
 } from './types/biletall-boarding-point.type';
-import {
-  BusTicketSaleRequest,
-  BusTicketSaleRequestResponse,
-} from './types/biletall-sale-request.type';
+import { BusTicketSaleRequestResponse } from './types/biletall-sale-request.type';
 
 // dto
 import { BusRouteDetailDto } from '../../dto/bus-route.dto';

@@ -77,7 +77,7 @@ describe('BiletAllBusService', () => {
 
   describe('company method', () => {
     it('should return informations of relevant company', async () => {
-      const requestDto: BusCompanyRequestDto = { companyNo: '0' };
+      const requestDto: BusCompanyRequestDto = { companyNumber: '0' };
       const mockXmlResponse = fs.readFileSync(
         path.resolve(
           __dirname,
@@ -93,7 +93,7 @@ describe('BiletAllBusService', () => {
       const result = await service.company(requestDto);
 
       expect(runSpy).toHaveBeenCalledWith(
-        `<Firmalar><FirmaNo>${requestDto.companyNo}</FirmaNo></Firmalar>`,
+        `<Firmalar><FirmaNo>${requestDto.companyNumber}</FirmaNo></Firmalar>`,
       );
       expect(mockParser.parseCompany).toHaveBeenCalledWith(mockXmlResponse);
       expect(result).toStrictEqual(busCompanyMockResponse);
@@ -140,7 +140,7 @@ describe('BiletAllBusService', () => {
 
     it('should return schedule list and feature of flight', async () => {
       const requestDto: BusScheduleRequestDto = {
-        companyNo: '37',
+        companyNumber: '37',
         departurePointId: '84',
         arrivalPointId: '738',
         date: '2024-10-15',
@@ -169,7 +169,7 @@ describe('BiletAllBusService', () => {
 
       const expectedXml =
         `<Sefer>\n` +
-        `  <FirmaNo>${requestDto.companyNo}</FirmaNo>\n` +
+        `  <FirmaNo>${requestDto.companyNumber}</FirmaNo>\n` +
         `  <KalkisNoktaID>${requestDto.departurePointId}</KalkisNoktaID>\n` +
         `  <VarisNoktaID>${requestDto.arrivalPointId}</VarisNoktaID>\n` +
         `  <Tarih>${requestDto.date}</Tarih>\n` +
@@ -192,7 +192,7 @@ describe('BiletAllBusService', () => {
 
     it('should return schedule list and feature of flight for two requests', async () => {
       const requestDto: BusScheduleRequestDto = {
-        companyNo: '37',
+        companyNumber: '37',
         departurePointId: '84',
         arrivalPointId: '738',
         date: '2024-10-15',
@@ -241,7 +241,7 @@ describe('BiletAllBusService', () => {
       const result2 = await service.scheduleList(clientIp, requestDto2);
       const expectedXml =
         `<Sefer>\n` +
-        `  <FirmaNo>${requestDto.companyNo}</FirmaNo>\n` +
+        `  <FirmaNo>${requestDto.companyNumber}</FirmaNo>\n` +
         `  <KalkisNoktaID>${requestDto.departurePointId}</KalkisNoktaID>\n` +
         `  <VarisNoktaID>${requestDto.arrivalPointId}</VarisNoktaID>\n` +
         `  <Tarih>${requestDto.date}</Tarih>\n` +
@@ -253,7 +253,7 @@ describe('BiletAllBusService', () => {
 
       const expectedXml2 =
         `<Sefer>\n` +
-        `  <FirmaNo>${requestDto2.companyNo}</FirmaNo>\n` +
+        `  <FirmaNo>${requestDto2.companyNumber}</FirmaNo>\n` +
         `  <KalkisNoktaID>${requestDto2.departurePointId}</KalkisNoktaID>\n` +
         `  <VarisNoktaID>${requestDto2.arrivalPointId}</VarisNoktaID>\n` +
         `  <Tarih>${requestDto2.date}</Tarih>\n` +
@@ -284,7 +284,7 @@ describe('BiletAllBusService', () => {
   // describe('BusSearch method', () => {
   //   it('should return seats situation and features of the relevant bus company', async () => {
   //     const requestDto: BusSearchRequestDto = {
-  //       companyNo: '37',
+  //       companyNumber: '37',
   //       departurePointId: '84',
   //       arrivalPointId: '738',
   //       date: '2024-09-15',
@@ -313,7 +313,7 @@ describe('BiletAllBusService', () => {
   //     const result = await service.busSearch(requestDto);
   //     const expectedXml =
   //       `<Otobus>\n` +
-  //       `  <FirmaNo>${requestDto.companyNo}</FirmaNo>\n` +
+  //       `  <FirmaNo>${requestDto.companyNumber}</FirmaNo>\n` +
   //       `  <KalkisNoktaID>${requestDto.departurePointId}</KalkisNoktaID>\n` +
   //       `  <VarisNoktaID>${requestDto.arrivalPointId}</VarisNoktaID>\n` +
   //       `  <Tarih>${requestDto.date}</Tarih>\n` +
@@ -335,7 +335,7 @@ describe('BiletAllBusService', () => {
     it('should return status of the company seat', async () => {
       const requestDto: BusSeatAvailabilityRequestDto =
         new BusSeatAvailabilityRequestDto({
-          companyNo: '37',
+          companyNumber: '37',
           departurePointId: '84',
           arrivalPointId: '738',
           travelStartDateTime: '2024-09-20T22:00:00.000Z',
@@ -369,7 +369,7 @@ describe('BiletAllBusService', () => {
       const result = await service.busSeatAvailability(clientIp, requestDto);
       const expectedXml =
         `<OtobusKoltukKontrol>\n` +
-        `  <FirmaNo>${requestDto.companyNo}</FirmaNo>\n` +
+        `  <FirmaNo>${requestDto.companyNumber}</FirmaNo>\n` +
         `  <KalkisNoktaID>${requestDto.departurePointId}</KalkisNoktaID>\n` +
         `  <VarisNoktaID>${requestDto.arrivalPointId}</VarisNoktaID>\n` +
         `  <Tarih>${requestDto.date}</Tarih>\n` +
@@ -402,7 +402,7 @@ describe('BiletAllBusService', () => {
   describe('boardingPoint method', () => {
     it('should return boarding point and time of the relevant expedition', async () => {
       const requestDto: BoardingPointRequestDto = {
-        companyNo: '37',
+        companyNumber: '37',
         departurePointID: '738',
         localTime: '2024-09-25T03:00:00.000Z',
         routeNumber: '3',
@@ -425,7 +425,7 @@ describe('BiletAllBusService', () => {
       const result = await service.boardingPoint(requestDto);
       const expectedXml =
         `<BinecegiYer>\n` +
-        `  <FirmaNo>${requestDto.companyNo}</FirmaNo>\n` +
+        `  <FirmaNo>${requestDto.companyNumber}</FirmaNo>\n` +
         `  <KalkisNoktaID>${requestDto.departurePointID}</KalkisNoktaID>\n` +
         `  <YerelSaat>${requestDto.localTime}</YerelSaat>\n` +
         `  <HatNo>${requestDto.routeNumber}</HatNo>\n` +
@@ -440,7 +440,7 @@ describe('BiletAllBusService', () => {
   describe('serviceInformation method', () => {
     it('should return service information of the relevant expedition', async () => {
       const requestDto: ServiceInformationRequestDto = {
-        companyNo: '37',
+        companyNumber: '37',
         departurePointID: '738',
         localTime: '2024-09-25T03:00:00.000Z',
         routeNumber: '3',
@@ -463,7 +463,7 @@ describe('BiletAllBusService', () => {
       const result = await service.serviceInformation(requestDto);
       const expectedXml =
         `<Servis_2>\n` +
-        `  <FirmaNo>${requestDto.companyNo}</FirmaNo>\n` +
+        `  <FirmaNo>${requestDto.companyNumber}</FirmaNo>\n` +
         `  <KalkisNoktaID>${requestDto.departurePointID}</KalkisNoktaID>\n` +
         `  <YerelSaat>${requestDto.localTime}</YerelSaat>\n` +
         `  <HatNo>${requestDto.routeNumber}</HatNo>\n` +
@@ -482,7 +482,7 @@ describe('BiletAllBusService', () => {
   // describe('saleRequest  method', () => {
   //   it('should return ticket purchase transaction result', async () => {
   //     const requestDto: BusPurchaseDto = {
-  //       companyNo: '37',
+  //       companyNumber: '37',
   //       departurePointId: 84,
   //       arrivalPointId: 738,
   //       date: '2024-08-06',
@@ -528,7 +528,7 @@ describe('BiletAllBusService', () => {
   //     const result = await service.saleRequest(requestDto);
   //     const expectedXml = `
   // <IslemSatis>
-  //   <FirmaNo>${requestDto.companyNo}</FirmaNo>
+  //   <FirmaNo>${requestDto.companyNumber}</FirmaNo>
   //   <KalkisNoktaID>${requestDto.departurePointId}</KalkisNoktaID>
   //   <VarisNoktaID>${requestDto.arrivalPointId}</VarisNoktaID>
   //   <Tarih>${requestDto.date}</Tarih>
@@ -572,7 +572,7 @@ describe('BiletAllBusService', () => {
   // </IslemSatis>`;
 
   //     expect(mockTransactionRules).toHaveBeenCalledWith({
-  //       companyNo: '37',
+  //       companyNumber: '37',
   //       departurePointId: '84',
   //       arrivalPointId: '738',
   //       date: '2024-08-06',
@@ -596,7 +596,7 @@ describe('BiletAllBusService', () => {
   //   describe('saleRequest  method', () => {
   //     it('should return ticket purchase transaction result', async () => {
   //       const requestDto: BusTicketPurchaseDto = {
-  //         companyNo: '37',
+  //         companyNumber: '37',
   //         departurePointId: 84,
   //         arrivalPointId: 738,
   //         date: '2024-08-06',
@@ -642,7 +642,7 @@ describe('BiletAllBusService', () => {
   //       const result = await service.saleRequest(requestDto);
   //       const expectedXml = `
   // <IslemSatis>
-  //   <FirmaNo>${requestDto.companyNo}</FirmaNo>
+  //   <FirmaNo>${requestDto.companyNumber}</FirmaNo>
   //   <KalkisNoktaID>${requestDto.departurePointId}</KalkisNoktaID>
   //   <VarisNoktaID>${requestDto.arrivalPointId}</VarisNoktaID>
   //   <Tarih>${requestDto.date}</Tarih>
@@ -682,7 +682,7 @@ describe('BiletAllBusService', () => {
   // </IslemSatis>`;
 
   //       expect(mockTransactionRules).toHaveBeenCalledWith({
-  //         companyNo: '37',
+  //         companyNumber: '37',
   //         departurePointId: '84',
   //         arrivalPointId: '738',
   //         date: '2024-08-06',

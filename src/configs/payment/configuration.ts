@@ -10,6 +10,6 @@ export default registerAs(
     threeDSecureBaseUrl: process.env.PAYMENT_3DSECURE_BASE_URI,
     merchantId: process.env.PAYMENT_MERCHANT_ID,
     merchantPassword: process.env.PAYMENT_MERCHANT_PASSWORD,
-    terminalNo: process.env.PAYMENT_TERMINAL_NO,
+    terminalNumber: process.env.PAYMENT_TERMINAL_NO,
   }),
 );

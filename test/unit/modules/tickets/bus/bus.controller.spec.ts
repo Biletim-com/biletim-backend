@@ -68,7 +68,7 @@ describe('BusController', () => {
 
   describe('company method', () => {
     it('should return expected company data', async () => {
-      const requestDto: BusCompanyRequestDto = { companyNo: '2' };
+      const requestDto: BusCompanyRequestDto = { companyNumber: '2' };
 
       biletAllBusServiceMock.company.mockResolvedValueOnce(
         busCompanyMockResponse,
@@ -98,7 +98,7 @@ describe('BusController', () => {
   describe('scheduleList method', () => {
     it('should return schedule list and feature of flight', async () => {
       const requestDto: BusScheduleRequestDto = {
-        companyNo: '37',
+        companyNumber: '37',
         departurePointId: '84',
         arrivalPointId: '738',
         date: '2024-10-15',
@@ -120,7 +120,7 @@ describe('BusController', () => {
   // describe('busSearch method', () => {
   //   it('should return relevant bus schedules and information', async () => {
   //     const requestDto: BusSearchRequestDto = {
-  //       companyNo: '37',
+  //       companyNumber: '37',
   //       departurePointId: '84',
   //       arrivalPointId: '738',
   //       date: '2024-09-15',
@@ -146,7 +146,7 @@ describe('BusController', () => {
     it('should return availability of the relevant seat', async () => {
       const requestDto: BusSeatAvailabilityRequestDto =
         new BusSeatAvailabilityRequestDto({
-          companyNo: '37',
+          companyNumber: '37',
           departurePointId: '84',
           arrivalPointId: '738',
           travelStartDateTime: '2024-09-20T22:00:00.000Z',
@@ -176,7 +176,7 @@ describe('BusController', () => {
   describe('boardingPoint method', () => {
     it('should return boarding location information of the relevant expedition', async () => {
       const requestDto: BoardingPointRequestDto = {
-        companyNo: '37',
+        companyNumber: '37',
         departurePointID: '738',
         localTime: '2024-09-25T03:00:00+03:00',
         routeNumber: '6',
@@ -196,7 +196,7 @@ describe('BusController', () => {
   describe('serviceInformation method', () => {
     it('should return service location  and time of the relevant expedition', async () => {
       const requestDto: ServiceInformationRequestDto = {
-        companyNo: '37',
+        companyNumber: '37',
         departurePointID: '84',
         localTime: '2018-12-10T02:30:00',
         routeNumber: '1',
@@ -218,7 +218,7 @@ describe('BusController', () => {
   // describe('saleRequest method', () => {
   //   it('should return route of the relevant expedition', async () => {
   //     const requestDto: BusPurchaseDto = {
-  //       companyNo: '37',
+  //       companyNumber: '37',
   //       departurePointId: 84,
   //       arrivalPointId: 738,
   //       date: '2024-08-06',

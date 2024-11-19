@@ -15,7 +15,7 @@ export class BoardingPointRequestDto {
   })
   @IsString()
   @IsOptional()
-  companyNo?: string;
+  companyNumber?: string;
 
   @ApiProperty({
     description: 'ID of the departure point',

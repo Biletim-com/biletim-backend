@@ -5,12 +5,12 @@ import {
   registerDecorator,
 } from 'class-validator';
 
-import { validateTCNumber } from '../utils';
+import { isValidTCNumber } from '../utils';
 
 @ValidatorConstraint({ async: false })
 class IsTCNumberConstraint implements ValidatorConstraintInterface {
   validate(tcNumber: string): boolean {
-    return validateTCNumber(tcNumber);
+    return isValidTCNumber(tcNumber);
   }
 
   defaultMessage(): string {

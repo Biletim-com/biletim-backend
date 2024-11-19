@@ -17,7 +17,7 @@ import { IPayment } from '@app/payment/interfaces/payment.interface';
 import { BankCardDto } from '@app/common/dtos';
 
 // enums
-import { PaymentProvider } from '@app/common/enums';
+import { PaymentProvider, TicketType } from '@app/common/enums';
 
 @Injectable()
 export class BiletAllPaymentStrategy implements IPayment {
@@ -36,6 +36,7 @@ export class BiletAllPaymentStrategy implements IPayment {
 
   async startPayment(
     clientIp: string,
+    ticketType: TicketType,
     bankCard: BankCardDto,
     transaction: Transaction,
   ): Promise<string> {
@@ -62,13 +63,13 @@ export class BiletAllPaymentStrategy implements IPayment {
         {
           name: 'successURL',
           value: encode(
-            `${this.applicationConfigService.backendUrl}/payment/success?provider=${PaymentProvider.BILET_ALL}&transactionId=${transaction.id}`,
+            `${this.applicationConfigService.backendUrl}/payment/success?provider=${PaymentProvider.BILET_ALL}&transactionId=${transaction.id}&ticketType=${ticketType}`,
           ),
         },
         {
           name: 'failURL',
           value: encode(
-            `${this.applicationConfigService.backendUrl}/payment/failure?provider=${PaymentProvider.BILET_ALL}&transactionId=${transaction.id}`,
+            `${this.applicationConfigService.backendUrl}/payment/failure?provider=${PaymentProvider.BILET_ALL}&transactionId=${transaction.id}&ticketType=${ticketType}`,
           ),
         },
       ],

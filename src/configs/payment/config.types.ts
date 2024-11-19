@@ -3,5 +3,5 @@ export type TPaymentConfiguration = {
   threeDSecureBaseUrl: string;
   merchantId: string;
   merchantPassword: string;
-  terminalNo: string;
+  terminalNumber: string;
 };
