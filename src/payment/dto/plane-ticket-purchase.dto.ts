@@ -156,8 +156,9 @@ export class PlaneTicketPurchaseDto {
 
   @ApiProperty({
     description: 'The invoice details for the ticket purchase.',
-    required: false,
+    required: true,
   })
+  @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => InvoiceDto)
   invoice: InvoiceDto;

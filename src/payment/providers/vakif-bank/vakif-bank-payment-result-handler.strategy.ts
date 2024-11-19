@@ -71,6 +71,7 @@ export class VakifBankPaymentResultHandlerStrategy
           busTickets: {
             departureTerminal: true,
             arrivalTerminal: true,
+            passenger: true,
           },
         },
       },
@@ -106,7 +107,10 @@ export class VakifBankPaymentResultHandlerStrategy
         departurePointId: String(departureTerminal.externalId),
         arrivalPointId: String(arrivalTerminal.externalId),
         travelStartDateTime,
-        seats: transaction.order.busTickets,
+        seats: transaction.order.busTickets.map((busTicket) => ({
+          gender: busTicket.passenger.gender,
+          seatNumber: busTicket.seatNumber,
+        })),
       });
 
       const busSeatAvailability =

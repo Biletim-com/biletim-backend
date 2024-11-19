@@ -1,12 +1,11 @@
 import {
   ArrayMinSize,
   IsArray,
-  IsBoolean,
   IsDateString,
   IsEmail,
-  IsEnum,
   IsNotEmpty,
   IsNumberString,
+  IsOptional,
   IsString,
   Length,
   ValidateIf,
@@ -24,15 +23,12 @@ import { DateISODate, DateTime } from '@app/common/types';
 
 // dtos
 import { BankCardDto } from '@app/common/dtos/credit-card.dto';
-import { PassportDto } from '@app/common/dtos';
+import { PassengerInfoDto } from '@app/common/dtos';
 
-// enums
-import { Gender } from '@app/common/enums';
+// dtos
+import { InvoiceDto } from '@app/common/dtos/invoice.dto';
 
-// decorators
-import { IsTCNumber } from '@app/common/decorators';
-
-export class BusPassengerInfoDto {
+class BusPassengerInfoDto extends PassengerInfoDto {
   @ApiProperty({
     description: 'Seat number assigned to the passenger.',
     example: '2',
@@ -42,24 +38,6 @@ export class BusPassengerInfoDto {
   @IsNotEmpty()
   seatNumber: string;
 
-  @ApiProperty({
-    description: 'First name of the passenger.',
-    example: 'John',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  firstName: string;
-
-  @ApiProperty({
-    description: 'Last name of the passenger.',
-    example: 'Doe',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  lastName: string;
-
   @ValidateIf((o) => o.firstName && o.lastName)
   @Length(0, 20, {
     message:
@@ -68,53 +46,9 @@ export class BusPassengerInfoDto {
   get fullName() {
     return `${this.firstName}${this.lastName}`;
   }
-
-  @ApiProperty({
-    description: 'Gender of the passenger',
-    required: true,
-    enum: Gender,
-  })
-  @IsNotEmpty()
-  @IsEnum(Gender, {
-    message: `Must be a valid value: ${Object.values(Gender)}`,
-  })
-  gender: Gender;
-
-  @ApiProperty({
-    description: 'Indicates whether the passenger is a Turkish citizen.',
-    example: true,
-    required: false,
-  })
-  @IsBoolean()
-  @IsNotEmpty()
-  isTurkishCitizen: boolean;
-
-  @ApiProperty({
-    description:
-      'TR ID Number of the passenger, mandatory for Turkish citizens.',
-    example: '12345678901',
-    required: false,
-  })
-  @ValidateIf((o) => o.isTurkishCitizen === true)
-  @IsTCNumber()
-  @IsNotEmpty({
-    message: 'TR ID Number is mandatory for Turkish citizens',
-  })
-  tcNumber?: string;
-
-  @ApiProperty({
-    description: 'The passport of the passenger.',
-    required: false,
-  })
-  @IsNotEmpty()
-  @ValidateNested()
-  @ValidateIf((o) => o.isTurkishCitizen === false)
-  @Type(() => PassportDto)
-  passport?: PassportDto;
 }
 
-// purchase
-export class BusTicketPurchaseDto {
+class BusTicketPurchaseTripDto {
   @ApiProperty({
     description: 'Company number identifying the bus company',
     example: '37',
@@ -152,7 +86,7 @@ export class BusTicketPurchaseDto {
 
   @ApiProperty({
     description: 'Route number for the bus trip',
-    example: '1',
+    example: '3',
     required: true,
   })
   @IsNumberString()
@@ -161,40 +95,24 @@ export class BusTicketPurchaseDto {
 
   @ApiProperty({
     description: 'Tracking number for the trip',
-    example: '20470',
+    example: '22566',
     required: true,
   })
   @IsNumberString()
   @IsNotEmpty()
   tripTrackingNumber: string;
+}
 
+export class BusTicketPurchaseDto {
   @ApiProperty({
     description: 'Total price of the tickets',
-    example: '150.00',
+    example: '40',
     required: true,
   })
   @IsNumberString()
   @IsNotEmpty()
   @Transform(({ value }) => normalizeDecimal(value))
   totalTicketPrice: string;
-
-  @ApiProperty({
-    description: 'First name of the customer.',
-    example: 'John',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  firstName: string;
-
-  @ApiProperty({
-    description: 'Last name of the customer.',
-    example: 'Doe',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  lastName: string;
 
   @ApiProperty({
     description: 'Contact email address of the person booking the ticket',
@@ -217,6 +135,23 @@ export class BusTicketPurchaseDto {
   phoneNumber: string;
 
   @ApiProperty({
+    description: 'The invoice details for the ticket purchase.',
+    required: false,
+  })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => InvoiceDto)
+  invoice?: InvoiceDto;
+
+  @ApiProperty({
+    description: 'The trip details for the ticket purchase.',
+    required: false,
+  })
+  @ValidateNested({ each: true })
+  @Type(() => BusTicketPurchaseTripDto)
+  trip: BusTicketPurchaseTripDto;
+
+  @ApiProperty({
     description: 'List of passenger information',
     type: [BusPassengerInfoDto],
     required: true,
@@ -237,17 +172,19 @@ export class BusTicketPurchaseDto {
   bankCard: BankCardDto;
 
   get date(): DateISODate {
-    return dayjs(this.travelStartDateTime).format('YYYY-MM-DD') as DateISODate;
+    return dayjs(this.trip.travelStartDateTime).format(
+      'YYYY-MM-DD',
+    ) as DateISODate;
   }
 
   get time(): DateTime {
-    return this.travelStartDateTime as DateTime;
+    return this.trip.travelStartDateTime as DateTime;
   }
 
-  get foreignPassengerExists(): boolean {
-    const turkishCitizens = this.passengers.filter(
-      (passenger) => passenger.isTurkishCitizen,
+  get passengersWithoutTcNumberExists(): boolean {
+    const passengersWithTcNumber = this.passengers.filter(
+      (passenger) => !!passenger.tcNumber,
     );
-    return turkishCitizens.length !== this.passengers.length;
+    return passengersWithTcNumber.length !== this.passengers.length;
   }
 }

@@ -19,12 +19,6 @@ import { OrderStatus, OrderType } from '@app/common/enums';
 @Entity('orders')
 export class Order extends AbstractEntity<Order> {
   @Column()
-  firstName: string;
-
-  @Column()
-  lastName: string;
-
-  @Column()
   userEmail: string;
 
   @Column()

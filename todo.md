@@ -18,3 +18,5 @@
 [ ] Integrate Biletim Guvende API - **Emre**  
 [ ] Integrate Seyahet Sigortasi API - **Emre**
 [ ] Analyze Hotel dump data to identify which data is usefull in our case - **Emre**
+
+[ ] Unique ticket check - Sayın acentemiz, otobüs seferleri için "SeferTakipNo" (trip tracking number), uçak seferleri için "SeferNo" (flightNumber) parametrelerini kullanabilirsiniz. Yolcu bilgilerinden; TC kimlik numarası, TC kimlik numarası mevcut değilse Pasaport numarası ve Ad-Soyad (Tam Ad) değerleri için kontrol sağlayabilirsiniz. İyi çalışmalar dileriz.

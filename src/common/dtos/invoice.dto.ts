@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 
 import { IsTCNumber, OnlyOneDefined } from '../decorators';
 
@@ -87,6 +92,7 @@ export class InvoiceDto {
     description: 'Invoice issued for an individual',
     required: false,
   })
+  @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => IndividualInvoiceDto)
   individual: IndividualInvoiceDto;
@@ -96,6 +102,7 @@ export class InvoiceDto {
     required: false,
   })
   @IsOptional()
+  @ValidateNested({ each: true })
   @Type(() => CompanyInvoiceDto)
   company: CompanyInvoiceDto;
 

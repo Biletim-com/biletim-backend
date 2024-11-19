@@ -350,18 +350,21 @@ export class BiletAllBusService extends BiletAllService {
         HatNo: routeNumber,
         SeferNo: tripTrackingNumber,
         KalkisTerminalAdiSaatleri: '',
-        ...tickets.reduce((acc, passenger, index) => {
-          acc[`KoltukNo${index + 1}`] = passenger.seatNumber;
-          acc[`Adi${index + 1}`] = turkishToEnglish(passenger.firstName);
-          acc[`Soyadi${index + 1}`] = turkishToEnglish(passenger.lastName);
-          acc[`Cinsiyet${index + 1}`] = BiletAllGender[passenger.gender];
-          acc[`TcVatandasiMi${index + 1}`] = passenger.isTurkishCitizen ? 1 : 0;
+        ...tickets.reduce((acc, ticket, index) => {
+          acc[`KoltukNo${index + 1}`] = ticket.seatNumber;
+          acc[`Adi${index + 1}`] = turkishToEnglish(ticket.passenger.firstName);
+          acc[`Soyadi${index + 1}`] = turkishToEnglish(
+            ticket.passenger.lastName,
+          );
+          acc[`Cinsiyet${index + 1}`] = BiletAllGender[ticket.passenger.gender];
+          acc[`TcVatandasiMi${index + 1}`] = ticket.passenger.tcNumber ? 1 : 0;
 
-          if (passenger.isTurkishCitizen) {
-            acc[`TcKimlikNo${index + 1}`] = passenger.tcNumber;
+          if (ticket.passenger.tcNumber) {
+            acc[`TcKimlikNo${index + 1}`] = ticket.passenger.tcNumber;
           } else {
-            acc[`PasaportUlkeKod${index + 1}`] = passenger.passportCountryCode;
-            acc[`PasaportNo${index + 1}`] = passenger.passportNumber;
+            acc[`PasaportUlkeKod${index + 1}`] =
+              ticket.passenger.passportCountryCode;
+            acc[`PasaportNo${index + 1}`] = ticket.passenger.passportNumber;
           }
           return acc;
         }, {}),

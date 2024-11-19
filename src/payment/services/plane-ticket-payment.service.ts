@@ -143,8 +143,6 @@ export class PlaneTicketPaymentService {
        * Create Order
        */
       const order = new Order({
-        firstName: '',
-        lastName: '',
         userEmail: planeTicketPurchaseDto.email,
         userPhoneNumber: planeTicketPurchaseDto.phoneNumber,
         type: OrderType.PURCHASE,

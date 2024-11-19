@@ -9,6 +9,7 @@ import { Order } from '@app/modules/orders/order.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
 import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
+import { BusTicketPassenger } from '@app/modules/tickets/bus/entities/bus-ticket-passenger.entity';
 
 // enums
 import {
@@ -48,12 +49,11 @@ export class BusTicketPaymentService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
+    const trip = busTicketPurchaseDto.trip;
+
     const [departureTerminal, arrivalTerminal] =
       await queryRunner.manager.findBy(BusTerminal, {
-        externalId: In([
-          busTicketPurchaseDto.departureTerminalId,
-          busTicketPurchaseDto.arrivalTerminalId,
-        ]),
+        externalId: In([trip.departureTerminalId, trip.arrivalTerminalId]),
       });
 
     if (!departureTerminal || !arrivalTerminal) {
@@ -64,7 +64,7 @@ export class BusTicketPaymentService {
      * Validate Company via company number
      */
     const [company] = await this.biletAllBusService.company({
-      companyNumber: busTicketPurchaseDto.companyNumber,
+      companyNumber: trip.companyNumber,
     });
     if (!company) {
       throw new ServiceError('Company does not exist');
@@ -74,7 +74,10 @@ export class BusTicketPaymentService {
      * check ticket validity against biletall
      */
     const busSeatAvailabilityDto = new BusSeatAvailabilityRequestDto({
-      ...busTicketPurchaseDto,
+      companyNumber: trip.companyNumber,
+      routeNumber: trip.routeNumber,
+      travelStartDateTime: trip.travelStartDateTime,
+      tripTrackingNumber: trip.tripTrackingNumber,
       departurePointId: String(departureTerminal.externalId),
       arrivalPointId: String(arrivalTerminal.externalId),
       seats: busTicketPurchaseDto.passengers,
@@ -96,9 +99,12 @@ export class BusTicketPaymentService {
         busSeatAvailabilityDto,
       );
 
-    if (!canSellToForeigners && busTicketPurchaseDto.foreignPassengerExists) {
+    if (
+      !canSellToForeigners &&
+      busTicketPurchaseDto.passengersWithoutTcNumberExists
+    ) {
       throw new ServiceError(
-        'This company does not sell tickets to foreigners',
+        'This company does not sell tickets to passengers without TC number',
       );
     }
 
@@ -136,8 +142,6 @@ export class BusTicketPaymentService {
        * Create Order
        */
       const order = new Order({
-        firstName: busTicketPurchaseDto.firstName,
-        lastName: busTicketPurchaseDto.lastName,
         userEmail: busTicketPurchaseDto.email,
         userPhoneNumber: busTicketPurchaseDto.phoneNumber,
         type: OrderType.PURCHASE,
@@ -152,39 +156,32 @@ export class BusTicketPaymentService {
        */
       const busTickets = busTicketPurchaseDto.passengers.map(
         (
-          {
-            seatNumber,
-            firstName,
-            lastName,
-            gender,
-            isTurkishCitizen,
-            tcNumber,
-            passport,
-          },
+          { seatNumber, firstName, lastName, gender, tcNumber, passport },
           index: number,
         ) =>
           new BusTicket({
-            companyNumber: busTicketPurchaseDto.companyNumber,
+            companyNumber: trip.companyNumber,
             companyName: company.companyName,
             ticketOrder: index + 1,
-            routeNumber: busTicketPurchaseDto.routeNumber,
+            routeNumber: trip.routeNumber,
             tripTrackingNumber: busSeatAvailabilityDto.tripTrackingNumber,
+            travelStartDateTime: trip.travelStartDateTime,
             seatNumber,
-            firstName,
-            lastName,
-            gender,
-            travelStartDateTime: busTicketPurchaseDto.travelStartDateTime,
-            isTurkishCitizen,
-            tcNumber,
-            passportCountryCode: passport?.countryCode,
-            passportNumber: passport?.number,
-            passportExpirationDate: passport?.expirationDate,
+            passenger: new BusTicketPassenger({
+              firstName,
+              lastName,
+              gender,
+              tcNumber,
+              passportCountryCode: passport?.countryCode,
+              passportNumber: passport?.number,
+              passportExpirationDate: passport?.expirationDate,
+            }),
             departureTerminal,
             arrivalTerminal,
             order,
           }),
       );
-      await queryRunner.manager.insert(BusTicket, busTickets);
+      await queryRunner.manager.save(BusTicket, busTickets);
 
       // get strategy dynamically
       const paymentProvider =
