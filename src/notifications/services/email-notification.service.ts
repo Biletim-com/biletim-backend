@@ -3,17 +3,17 @@ import { Injectable } from '@nestjs/common';
 import { SendVerifyAccountEmailNotificationDto } from '@app/common/dtos/send-email-notification.dto';
 import { OnEvent, OnEvents } from '@app/providers/event-emitter/decorators';
 
-import { EmailNotificationStrategy } from '../strategies/email-notification.strategy';
+// import { EmailNotificationStrategy } from '../strategies/email-notification.strategy';
 import { AuthConfigService } from '@app/configs/auth';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class EmailNotificationService {
   constructor(
-    private readonly notification: EmailNotificationStrategy,
+    // private readonly notification: EmailNotificationStrategy,
     private readonly authConfigService: AuthConfigService,
-    @InjectQueue('queue') private readonly queue: Queue
+    @InjectQueue('emailQueue') private readonly queue: Queue
   ) { }
 
   @OnEvents(['user.created', 'user.email.updated'])

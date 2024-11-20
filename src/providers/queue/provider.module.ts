@@ -1,19 +1,20 @@
-import { Module, Global } from '@nestjs/common';
-import { BullModule } from '@nestjs/bullmq';
+import { Module } from '@nestjs/common';
+import { BullModule } from '@nestjs/bull';
+import { QueueConfigService } from '@app/configs/queue';
 import { QueueProviderService } from './provider.service';
-import { QueueConfigService } from '@app/configs/queue'; 
+import { EmailProcessor } from '@app/notifications/strategies/email-notification.strategy';
 
-@Global()
 @Module({
   imports: [
     BullModule.forRootAsync({
-      useClass: QueueProviderService,
+      inject: [QueueProviderService],
+      useFactory: (queueProviderService: QueueProviderService) =>
+        queueProviderService.createBullOptions(),
     }),
     BullModule.registerQueue({
-      name: 'queue',
+      name: 'emailQueue',
     }),
   ],
-  providers: [QueueProviderService, QueueConfigService],
+  providers: [QueueProviderService, QueueConfigService, EmailProcessor],
 })
-
-export class QueueProviderModule {}
+export class AppModule {}

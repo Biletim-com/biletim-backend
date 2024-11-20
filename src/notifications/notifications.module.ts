@@ -7,7 +7,7 @@ import { AuthConfigService } from '@app/configs/auth';
 
 import { EmailNotificationService } from './services/email-notification.service';
 
-import { EmailNotificationStrategy } from './strategies/email-notification.strategy';
+// import { EmailNotificationStrategy } from './strategies/email-notification.strategy';
 
 @Module({
   imports: [
@@ -36,7 +36,7 @@ import { EmailNotificationStrategy } from './strategies/email-notification.strat
   ],
   providers: [
     EmailNotificationService,
-    EmailNotificationStrategy,
+    // EmailNotificationStrategy,
     AuthConfigService,
   ],
 })
