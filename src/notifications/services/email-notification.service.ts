@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { SendVerifyAccountEmailNotificationDto } from '@app/common/dtos/send-email-notification.dto';
 import { OnEvent, OnEvents } from '@app/providers/event-emitter/decorators';
 
-// import { EmailNotificationStrategy } from '../strategies/email-notification.strategy';
 import { AuthConfigService } from '@app/configs/auth';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
@@ -11,7 +10,6 @@ import { Queue } from 'bull';
 @Injectable()
 export class EmailNotificationService {
   constructor(
-    // private readonly notification: EmailNotificationStrategy,
     private readonly authConfigService: AuthConfigService,
     @InjectQueue('emailQueue') private readonly queue: Queue
   ) { }
@@ -21,7 +19,7 @@ export class EmailNotificationService {
     recipient,
     verificationCode,
   }: SendVerifyAccountEmailNotificationDto): Promise<void> {
-    await this.queue.add('verifyEmail', {
+    await this.queue.add({
       recipient: recipient, subject: 'Email Verification', options: {
         template: 'verify-email',
         context: {
@@ -31,22 +29,15 @@ export class EmailNotificationService {
         },
       }
     });
-    // await this.notification.send(recipient, 'Email Verification', {
-    //   template: 'verify-email',
-    //   context: {
-    //     header: 'Email Verification',
-    //     content: 'Verification code',
-    //     verificationCode,
-    //   },
-    // });
   }
+
 
   @OnEvent('user.password.reset')
   async sendResetPasswordEmail({
     recipient,
     forgotPasswordCode,
   }: SendVerifyAccountEmailNotificationDto): Promise<void> {
-    await this.queue.add('resetPassword', {recipient: recipient, subject:'Password reset', options: {
+    await this.queue.add({recipient: recipient, subject:'Password reset', options: {
       template: 'reset-password',
       context: {
         header: 'Password reset',
@@ -54,13 +45,5 @@ export class EmailNotificationService {
         url: `${this.authConfigService.resetPasswordUrl}?verificationCode=${forgotPasswordCode}`,
       },
     }});
-    // await this.notification.send(recipient, 'Password reset', {
-    //   template: 'reset-password',
-    //   context: {
-    //     header: 'Password reset',
-    //     content: 'Click the button below to reset your password.',
-    //     url: `${this.authConfigService.resetPasswordUrl}?verificationCode=${forgotPasswordCode}`,
-    //   },
-    // });
   }
 }
