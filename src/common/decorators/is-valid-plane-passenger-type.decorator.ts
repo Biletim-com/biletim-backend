@@ -15,12 +15,13 @@ class IsValidPlanePassengerTypeConstraint
 {
   validate(passengerType: PassengerType, args: ValidationArguments) {
     const birthday = (args.object as any).birthday;
+    const companyNumber = (args.object as any).companyNumber;
 
     if (!birthday) {
       throw new Error('[birthday] field does not exist in the DTO');
     }
 
-    return isValidPlanePassengerType(birthday, passengerType);
+    return isValidPlanePassengerType(birthday, passengerType, companyNumber);
   }
 
   defaultMessage(): string {
