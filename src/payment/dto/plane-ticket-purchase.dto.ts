@@ -10,7 +10,7 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 // enums
@@ -28,6 +28,14 @@ import { DateISODate } from '@app/common/types';
 import { InvoiceDto } from '@app/common/dtos/invoice.dto';
 
 export class PlanePassengerInfoDto {
+  constructor(passengerInfo: PlanePassengerInfoDto) {
+    Object.assign(this, passengerInfo);
+  }
+
+  @IsNotEmpty()
+  @IsString()
+  private readonly companyNumber: string;
+
   @ApiProperty({
     description: 'The first name of the passenger.',
     example: 'John',
@@ -170,6 +178,15 @@ export class PlaneTicketPurchaseDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PlanePassengerInfoDto)
+  @Transform(({ value, obj }) =>
+    value.map(
+      (passanger) =>
+        new PlanePassengerInfoDto({
+          ...passanger,
+          companyNumber: obj.companyNumber,
+        }),
+    ),
+  )
   passengers: PlanePassengerInfoDto[];
 
   @ApiProperty({
