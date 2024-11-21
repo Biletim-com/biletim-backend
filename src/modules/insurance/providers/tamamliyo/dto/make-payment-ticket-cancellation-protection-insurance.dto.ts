@@ -5,7 +5,6 @@ import {
   IsOptional,
   ValidateNested,
   IsNotEmpty,
-  IsInt,
 } from 'class-validator';
 
 export class MakePaymentParametersTicketCancellationProtectionInsuranceDto {
@@ -29,9 +28,6 @@ export class MakePaymentTicketCancellationProtectionInsuranceRequestDto {
   @IsNumber()
   offerId: string;
 
-  @IsInt()
-  installmentCount: number;
-
   @IsString()
   creditCardCvv: string;
 
@@ -39,13 +35,10 @@ export class MakePaymentTicketCancellationProtectionInsuranceRequestDto {
   creditCardNumber: string;
 
   @IsString()
-  creditCardExpiryDate: string; // Expiry date of the credit card "2023-04-01"
+  creditCardExpiryDate: string; // Expiry date of the credit card "2023-04"
 
   @IsString()
-  creditCardHolderFirstName: string;
-
-  @IsString()
-  creditCardHolderLastName: string;
+  creditCardHolder: string;
 }
 
 export class MakePaymentTicketCancellationProtectionInsuranceRequestDtoInTurkish {
@@ -58,10 +51,9 @@ export class MakePaymentTicketCancellationProtectionInsuranceRequestDtoInTurkish
   teklifId: string;
   taksitSayisi: number;
   krediKartiCvv: string;
-  krediKartiNo: string;
-  krediKartiBitisTarihi: string;
-  krediKartiAd: string;
-  krediKartiSoyad: string;
+  kartNo: string;
+  kartSonKullanmaTarihi: string;
+  kartSahibi: string;
   ilId: number;
   ilceId: string;
   adres: string;

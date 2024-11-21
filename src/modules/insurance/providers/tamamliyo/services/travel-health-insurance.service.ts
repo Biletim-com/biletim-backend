@@ -1,3 +1,4 @@
+// import { TamamliyoInsuranceTicketType } from '../helpers/insurance-ticket-type.helper';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { Injectable } from '@nestjs/common';
 
@@ -19,7 +20,7 @@ import {
   MakePaymentTravelHealthInsuranceRequestDtoInTurkish,
 } from '../dto/make-payment-travel-health-insurance.dto';
 import { TamamliyoInsuranceProductType } from '../helpers/insurance-product-type.helper';
-import { TamamliyoInsuranceTicketType } from '../helpers/insurance-ticket-type.helper';
+import { InsuranceMakePaymentResultResponse } from '../types/make-payment-response.type';
 
 @Injectable()
 export class TravelHealthInsuranceService {
@@ -56,8 +57,8 @@ export class TravelHealthInsuranceService {
           ? requestDto.countryCode
           : undefined,
       customerInfo: requestDto.customerInfo.map((customer) => ({
-        ticketType:
-          TamamliyoInsuranceTicketType[customer.ticketType].toString(),
+        ticketType: '1',
+        // TamamliyoInsuranceTicketType[customer.ticketType].toString(),
         tcKimlikNo: customer.tcNumber,
         dogumTarihi: customer.birthDate,
         gsm_no: customer.gsmNumber,
@@ -75,7 +76,7 @@ export class TravelHealthInsuranceService {
       this.getPriceTravelHealthInsuranceTranslateToTurkish(requestDto);
     return this.restClientService.request<GetPriceTravelHealthInsuranceResponse>(
       {
-        path: '/v3/seyahat-saglik-sigortasi/fiyat-al',
+        path: '/partner/v3/seyahat-saglik-sigortasi/fiyat-al',
         method: 'POST',
         data: requestDtoInTurkish,
         headers: this.getBasicAuthHeader(),
@@ -101,13 +102,11 @@ export class TravelHealthInsuranceService {
       gsmNo: requestDto.phoneNumber,
       urun: TamamliyoInsuranceProductType[requestDto.productType],
       ulkeKodu:
-        TamamliyoInsuranceProductType[requestDto.productType] ===
-        TamamliyoInsuranceProductType[InsuranceProductType.ABROAD_TRAVEL]
+        requestDto.productType === InsuranceProductType.ABROAD_TRAVEL
           ? 998
           : undefined,
       ilKodu:
-        TamamliyoInsuranceProductType[requestDto.productType] ===
-        TamamliyoInsuranceProductType[InsuranceProductType.DOMESTIC_TRAVEL]
+        requestDto.productType === InsuranceProductType.DOMESTIC_TRAVEL
           ? 34
           : undefined,
     };
@@ -118,9 +117,10 @@ export class TravelHealthInsuranceService {
   ): Promise<CreateOfferTravelHealthInsuranceResponse> {
     const requestDtoTurkish =
       this.createOfferTravelHealthInsuranceTranslateToTurkish(requestDto);
+    console.log(requestDtoTurkish);
     return this.restClientService.request<CreateOfferTravelHealthInsuranceResponse>(
       {
-        path: '/v3/seyahat-saglik-sigortasi/teklif-olustur',
+        path: '/partner/v3/seyahat-saglik-sigortasi/teklif-olustur',
         method: 'POST',
         data: requestDtoTurkish,
         headers: this.getBasicAuthHeader(),
@@ -133,10 +133,10 @@ export class TravelHealthInsuranceService {
   ): MakePaymentTravelHealthInsuranceRequestDtoInTurkish => {
     return {
       parameters: {
-        ticketType:
-          TamamliyoInsuranceTicketType[
-            requestDto.parameters.ticketType
-          ].toString(),
+        ticketType: '1',
+        // TamamliyoInsuranceTicketType[
+        //   requestDto.parameters.ticketType
+        // ].toString(),
         pnrNo: requestDto.parameters.pnrNo,
         ...(requestDto.parameters.flightNumber && {
           flightNumber: requestDto.parameters.flightNumber,
@@ -162,15 +162,17 @@ export class TravelHealthInsuranceService {
 
   async makePaymentTravelHealthInsurance(
     requestDto: MakePaymentTravelHealthInsuranceRequestDto,
-  ): Promise<any> {
+  ): Promise<InsuranceMakePaymentResultResponse> {
     const requestDtoTurkish =
       this.makePaymentTravelHealthInsuranceTranslateToTurkish(requestDto);
 
-    return await this.restClientService.request<any>({
-      path: '/v3/seyahat-saglik-sigortasi/odeme-yap',
-      method: 'POST',
-      data: requestDtoTurkish,
-      headers: this.getBasicAuthHeader(),
-    });
+    return await this.restClientService.request<InsuranceMakePaymentResultResponse>(
+      {
+        path: '/partner/v3/seyahat-saglik-sigortasi/odeme-yap',
+        method: 'POST',
+        data: requestDtoTurkish,
+        headers: this.getBasicAuthHeader(),
+      },
+    );
   }
 }

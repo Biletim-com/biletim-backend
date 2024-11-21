@@ -1,7 +1,7 @@
-import { InsuranceTicketType } from '@app/common/enums';
+// import { InsuranceTicketType } from '@app/common/enums';
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsEnum,
+  // IsEnum,
   IsInt,
   IsNotEmpty,
   IsString,
@@ -18,16 +18,16 @@ import {
 import { Guarantees } from '../types/create-offer-travel-health-insurance.type';
 
 export class TicketCancellationProtectionParameters {
-  @ApiProperty({
-    description: 'Ticket type (bus or plane).',
-    example: 'bus',
-    required: true,
-  })
-  @IsEnum(InsuranceTicketType, {
-    message: 'Ticket type must be either bus or plane.',
-  })
-  @IsNotEmpty()
-  ticketType: InsuranceTicketType;
+  // @ApiProperty({
+  //   description: 'Ticket type (bus or plane).',
+  //   example: 'bus',
+  //   required: true,
+  // })
+  // @IsEnum(InsuranceTicketType, {
+  //   message: 'Ticket type must be either bus or plane.',
+  // })
+  // @IsNotEmpty()
+  // ticketType: InsuranceTicketType;
 
   @ApiProperty({
     description: 'Ticket price (e.g., "1050.90")',

@@ -8,6 +8,7 @@ import {
   IsInt,
   IsNotEmpty,
   IsString,
+  Matches,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -50,6 +51,10 @@ export class CreateOfferTicketCancellationProtectionInsuranceRequestDto {
   @ApiProperty({
     description: 'The mobile phone number of the policyholder.',
     example: '535xxxxxx',
+  })
+  @Matches(/^[1-9]\d{2}\d{3}\d{4}$/, {
+    message:
+      'Phone number must be a 10-digit number starting with a non-zero digit.',
   })
   @IsString()
   @IsNotEmpty()

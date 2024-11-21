@@ -1,3 +1,4 @@
+// import { TamamliyoInsuranceTicketType } from '../helpers/insurance-ticket-type.helper';
 import { TamamliyoApiConfigService } from '@app/configs/tamamliyo-insurance';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { Injectable } from '@nestjs/common';
@@ -15,7 +16,7 @@ import {
   MakePaymentTicketCancellationProtectionInsuranceRequestDto,
   MakePaymentTicketCancellationProtectionInsuranceRequestDtoInTurkish,
 } from '../dto/make-payment-ticket-cancellation-protection-insurance.dto';
-import { TamamliyoInsuranceTicketType } from '../helpers/insurance-ticket-type.helper';
+import { InsuranceMakePaymentResultResponse } from '../types/make-payment-response.type';
 
 @Injectable()
 export class TicketCancellationProtectionInsuranceService {
@@ -44,8 +45,8 @@ export class TicketCancellationProtectionInsuranceService {
     return {
       sigortaliSayisi: requestDto.insuredPersonCount,
       parameters: {
-        ticketType:
-          TamamliyoInsuranceTicketType[requestDto.parameters.ticketType],
+        ticketType: 1,
+        // TamamliyoInsuranceTicketType[requestDto.parameters.ticketType],
         ticketPrice: requestDto.parameters.ticketPrice,
         company: requestDto.parameters.company,
         departureLocation: requestDto.parameters.departureLocation,
@@ -70,7 +71,7 @@ export class TicketCancellationProtectionInsuranceService {
       );
     return this.restClientService.request<GetPriceTicketCancellationProtectionInsuranceResponse>(
       {
-        path: '/v1/bilet-iptal-sigortasi/fiyat-al',
+        path: '/partner/v1/bilet-iptal-sigortasi/fiyat-al',
         method: 'POST',
         data: requestDtoInTurkish,
         headers: this.getBasicAuthHeader(),
@@ -105,7 +106,7 @@ export class TicketCancellationProtectionInsuranceService {
       );
     return this.restClientService.request<CreateOfferTicketCancellationProtectionInsuranceeResponse>(
       {
-        path: '/v1/bilet-iptal-sigortasi/teklif-olustur',
+        path: '/partner/v1/bilet-iptal-sigortasi/teklif-olustur',
         method: 'POST',
         data: requestDtoTurkish,
         headers: this.getBasicAuthHeader(),
@@ -124,14 +125,13 @@ export class TicketCancellationProtectionInsuranceService {
         }),
         ticketNumber: requestDto.parameters.ticketNumber,
       },
-      odemeTipi: '2',
+      odemeTipi: '1',
       teklifId: requestDto.offerId,
-      taksitSayisi: requestDto.installmentCount,
+      taksitSayisi: 1,
       krediKartiCvv: requestDto.creditCardCvv,
-      krediKartiNo: requestDto.creditCardNumber,
-      krediKartiBitisTarihi: requestDto.creditCardExpiryDate,
-      krediKartiAd: requestDto.creditCardHolderFirstName,
-      krediKartiSoyad: requestDto.creditCardHolderLastName,
+      kartNo: requestDto.creditCardNumber,
+      kartSonKullanmaTarihi: requestDto.creditCardExpiryDate,
+      kartSahibi: requestDto.creditCardHolder,
       ilId: 34,
       ilceId: '10',
       adres: ' KILIÇDEDE MAH. ÜLKEM SOK. NO:8A/11 İLKADIM/SAMSUN',
@@ -140,13 +140,13 @@ export class TicketCancellationProtectionInsuranceService {
 
   async makePaymentTicketCancellationProtectionInsurance(
     requestDto: MakePaymentTicketCancellationProtectionInsuranceRequestDto,
-  ): Promise<any> {
+  ): Promise<InsuranceMakePaymentResultResponse> {
     const requestDtoTurkish =
       this.makePaymentTicketCancellationProtectionInsuranceTranslateToTurkish(
         requestDto,
       );
-    return this.restClientService.request<any>({
-      path: '/v1/bilet-iptal-sigortasi/odeme-yap',
+    return this.restClientService.request<InsuranceMakePaymentResultResponse>({
+      path: '/partner/v1/bilet-iptal-sigortasi/odeme-yap',
       method: 'POST',
       data: requestDtoTurkish,
       headers: this.getBasicAuthHeader(),

@@ -6,6 +6,7 @@ import {
   IsArray,
   ValidateNested,
   IsEnum,
+  Matches,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { InsuranceProductType } from '@app/common/enums';
@@ -88,6 +89,10 @@ export class CreateOfferTravelHealthInsuranceRequestDto {
   @ApiProperty({
     description: 'The mobile phone number of the policyholder.',
     example: '535xxxxxx',
+  })
+  @Matches(/^[1-9]\d{2}\d{3}\d{4}$/, {
+    message:
+      'Phone number must be a 10-digit number starting with a non-zero digit.',
   })
   @IsString()
   @IsNotEmpty()

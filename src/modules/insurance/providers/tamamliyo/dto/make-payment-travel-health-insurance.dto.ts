@@ -1,17 +1,17 @@
-import { InsuranceTicketType } from '@app/common/enums';
+// import { InsuranceTicketType } from '@app/common/enums';
 import { Type } from 'class-transformer';
 import {
   IsString,
   IsNumber,
   IsOptional,
-  IsEnum,
+  // IsEnum,
   ValidateNested,
   IsNotEmpty,
 } from 'class-validator';
 
 export class MakePaymentParametersTravelHealthInsuranceDto {
-  @IsEnum(InsuranceTicketType)
-  ticketType: InsuranceTicketType;
+  // @IsEnum(InsuranceTicketType)
+  // ticketType: InsuranceTicketType;
 
   @IsString()
   pnrNo: string;

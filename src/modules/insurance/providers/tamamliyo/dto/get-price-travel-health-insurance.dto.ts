@@ -1,3 +1,4 @@
+// import { InsuranceTicketType } from '@app/common/enums/insurance-ticket-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
@@ -9,6 +10,7 @@ import {
   IsOptional,
   IsEnum,
   ValidateIf,
+  Matches,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { InsuranceProductType, InsuranceTicketType } from '@app/common/enums';
@@ -21,16 +23,16 @@ import { IsTCNumber } from '@app/common/decorators';
 import { Guarantees } from '../types/create-offer-travel-health-insurance.type';
 
 export class InsuranceCustomerInfoDto {
-  @ApiProperty({
-    description: 'Ticket type (bus or plane).',
-    example: 'bus',
-    required: true,
-  })
-  @IsEnum(InsuranceTicketType, {
-    message: 'Ticket type must be either bus or plane.',
-  })
-  @IsNotEmpty()
-  ticketType: InsuranceTicketType;
+  // @ApiProperty({
+  //   description: 'Ticket type (bus or plane).',
+  //   example: 'bus',
+  //   required: true,
+  // })
+  // @IsEnum(InsuranceTicketType, {
+  //   message: 'Ticket type must be either bus or plane.',
+  // })
+  // @IsNotEmpty()
+  // ticketType: InsuranceTicketType;
 
   @ApiProperty({
     description: 'TC identification number of the insured person.',
@@ -55,6 +57,10 @@ export class InsuranceCustomerInfoDto {
     description: 'Mobile phone number of the insured person.',
     example: '537XXXXX',
     required: true,
+  })
+  @Matches(/^[1-9]\d{2}\d{3}\d{4}$/, {
+    message:
+      'Phone number must be a 10-digit number starting with a non-zero digit.',
   })
   @IsString()
   @IsNotEmpty()

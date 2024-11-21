@@ -73,7 +73,7 @@ biletim_api:
     PAYMENT_MERCHANT_ID: '000100000013506'
     PAYMENT_MERCHANT_PASSWORD: '123456'
     PAYMENT_TERMINAL_NO: 'VP000579'
-    TAMAMLIYO_API_BASE_URL: https://api-test.tamamliyo.com/partner
+    TAMAMLIYO_API_BASE_URL: https://api-test.tamamliyo.com
     TAMAMLIYO_TOKEN: b1bd655bcd0b061c32b2e8072f298769
     REDIS_HOST: biletim-redis
     REDIS_PORT: 6379
