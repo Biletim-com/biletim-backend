@@ -4,7 +4,7 @@ import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { VakifBankEnrollmentService } from './services/vakif-bank-enrollment.service';
 import { PoxClientService } from '@app/providers/pox-client/provider.service';
 import { PaymentConfigService } from '@app/configs/payment';
-import { HtmlTemplateService } from '@app/payment/services/html-template.service';
+import { HtmlTemplateService } from '@app/providers/html-template/provider.service';
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 
 // interfaces

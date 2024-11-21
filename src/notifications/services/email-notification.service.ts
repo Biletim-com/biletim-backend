@@ -1,12 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 import { SendVerifyAccountEmailNotificationDto } from '@app/common/dtos/send-email-notification.dto';
-import { OnEvent, OnEvents } from '@app/providers/event-emitter/decorators';
 
-import { AuthConfigService } from '@app/configs/auth';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { QueueEnum } from '@app/common/enums';
+
+import { OnEvent, OnEvents } from '@app/providers/event-emitter/decorators';
+import { AuthConfigService } from '@app/configs/auth';
+
+// types
+import {
+  SendResetPasswordEmailNotification,
+  SendTicketPurchaseEmailNotication,
+  SendVerifyAccountEmailNotification,
+} from '@app/common/types';
 
 @Injectable()
 export class EmailNotificationService {

@@ -53,12 +53,25 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
  
 
+  biletim-redis:
+    image: redis:6
+    container_name: biletim-redis
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - biletim-network
+    volumes:
+      - biletim-redis-vol:/data
+    command: ["redis-server", "--appendonly", "yes"]
+
 volumes:
   biletim-vol:
     name: biletim-vol
   biletim-redis-vol:
     name: biletim-redis-vol
- 
+
+
 networks:
   biletim-network:
     name: biletim-network

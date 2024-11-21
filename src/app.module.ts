@@ -26,6 +26,8 @@ import { PoxClientModule } from '@app/providers/pox-client/provider.module';
 import { EventEmitterModule } from '@app/providers/event-emitter/provider.module';
 import { QueueProviderModule } from './providers/queue/provider.module';
 import { NetGsmModule } from './providers/sms/netgsm/provider.module';
+import { PdfMakerModule } from '@app/providers/pdf-maker/provider.module';
+import { HtmlTemplateModule } from '@app/providers/html-template/provider.module';
 
 // Interceptors
 import { ErrorInterceptor } from '@app/common/interceptors';
@@ -35,13 +37,14 @@ import { JobsModule } from '@app/jobs/jobs.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { InsuranceModule } from './modules/insurance/insurance.module';
 
-
 @Module({
   imports: [
     ConfigModule,
     EventEmitterModule,
     RestClientModule,
     PoxClientModule,
+    PdfMakerModule,
+    HtmlTemplateModule,
     LoggerModule,
     PostgreSQLProviderModule,
     JobsModule,
@@ -58,7 +61,7 @@ import { InsuranceModule } from './modules/insurance/insurance.module';
     WalletsModule,
     InsuranceModule,
     QueueProviderModule,
-    NetGsmModule
+    NetGsmModule,
   ],
   providers: [
     {

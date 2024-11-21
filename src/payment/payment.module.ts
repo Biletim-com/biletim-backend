@@ -7,7 +7,7 @@ import { PoxClientModule } from '@app/providers/pox-client/provider.module';
 import { PaymentController } from './payment.controller';
 
 // services
-import { HtmlTemplateService } from './services/html-template.service';
+import { HtmlTemplateService } from '../providers/html-template/provider.service';
 import { PaymentService } from './services/payment.service';
 import { BusTicketPaymentService } from './services/bus-ticket-payment.service';
 import { PlaneTicketPaymentService } from './services/plane-ticket-payment.service';
