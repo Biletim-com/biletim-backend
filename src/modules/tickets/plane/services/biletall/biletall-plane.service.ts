@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
-import { v4 as uuidV4 } from 'uuid';
 
 // services
 import { BiletAllService } from '@app/common/services/biletall.service';
@@ -127,10 +126,9 @@ export class BiletAllPlaneService extends BiletAllService {
     requestDto: PullAbroadFlightPricePackagesRequestDto,
   ): Promise<PullAbroadFlightPricePackagesResponseDto> {
     const builder = new xml2js.Builder({ headless: true });
-    const operationId = uuidV4();
     const requestDocument = {
       UcusFiyatPaket: {
-        IslemId: operationId,
+        IslemId: requestDto.operationId,
         FirmaNo: 1100,
         ...requestDto.segments.reduce((acc, segment, index) => {
           acc[`Segment${index + 1}`] = {

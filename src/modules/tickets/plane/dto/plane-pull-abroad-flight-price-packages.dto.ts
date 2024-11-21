@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import {
   BaggageAllowance,
   BrandFareInfo,
@@ -32,6 +38,14 @@ class PullAbroadFlightPricePackagesSegmentDto extends FlightSegmentDto {
 }
 
 export class PullAbroadFlightPricePackagesRequestDto extends PullPriceFlightRequestDto {
+  @ApiProperty({
+    description: 'Unique operation ID for the request.',
+    example: '62062f6a-3140-4843-bbdd-8161579842f6',
+  })
+  @IsNotEmpty()
+  @IsString()
+  operationId: string;
+
   @ApiProperty({
     description: 'Flight segment information for the flight.',
     type: [PullAbroadFlightPricePackagesSegmentDto],
