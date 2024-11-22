@@ -19,7 +19,6 @@ services:
     volumes:
       - ./src:/app/src
       - ./test:/app/test
-      # Uncomment these lines if needed
       # - ./open-zst.script.ts:/app/open-zst.script.ts
       # - ./feed_en_v3.json.zst:/app/feed_en_v3.json.zst
       # - ./hotels.json:/app/hotels.json
@@ -59,6 +58,8 @@ services:
     restart: always
     ports:
       - 6379:6379
+    env_file:
+      - .env
     networks:
       - biletim-network
     volumes:

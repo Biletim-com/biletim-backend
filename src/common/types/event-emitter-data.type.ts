@@ -1,4 +1,8 @@
-import { Order } from '@app/modules/orders/order.entity';
+type Attachment = {
+  filename: 'ticket.pdf';
+  content: Uint8Array;
+  contentType: 'application/pdf';
+};
 
 export type SendVerifyAccountEmailNotification = {
   recipient: string;
@@ -11,7 +15,7 @@ export type SendResetPasswordEmailNotification = {
   forgotPasswordCode: string;
 };
 
-export type SendTicketPurchaseEmailNotication = {
+export type SendTicketGeneratedEmailNotication = {
   recipient: string;
-  order: Order;
+  attachments: Attachment[];
 };

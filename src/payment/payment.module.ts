@@ -7,7 +7,6 @@ import { PoxClientModule } from '@app/providers/pox-client/provider.module';
 import { PaymentController } from './payment.controller';
 
 // services
-import { HtmlTemplateService } from '../providers/html-template/provider.service';
 import { PaymentService } from './services/payment.service';
 import { BusTicketPaymentService } from './services/bus-ticket-payment.service';
 import { PlaneTicketPaymentService } from './services/plane-ticket-payment.service';
@@ -44,7 +43,6 @@ import { BiletAllPlaneParserService } from '@app/modules/tickets/plane/services/
   ],
   controllers: [PaymentController],
   providers: [
-    HtmlTemplateService,
     PaymentService,
     BusTicketPaymentService,
     PlaneTicketPaymentService,

@@ -8,7 +8,6 @@ export class HtmlTemplateService {
   async renderTemplate(templateName: string, data: any): Promise<string> {
     const templatePath = path.join(
       __dirname,
-      '..',
       'templates',
       `${templateName}.hbs`,
     );

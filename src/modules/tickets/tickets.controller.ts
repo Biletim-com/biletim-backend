@@ -3,6 +3,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { BiletAllPnrService } from './services/biletall/biletall-pnr.service';
 import { BiletAllOfficialHolidaysService } from './services/biletall/biletall-official-holidays.service';
+import { TravelCountryCodeService } from './services/biletall/biletall-travel-country-code.service';
+
 // dto
 import { PnrSearchRequestDto } from './services/biletall/dto/tickets-pnr-search.dto';
 import { PnrSearchDomesticFlightDto } from './services/biletall/dto/tickets-pnr-search-domestic-flight.dto';
@@ -12,8 +14,12 @@ import {
   OfficialHolidaysDto,
   OfficialHolidaysRequestDto,
 } from './services/biletall/dto/get-official-holidays.dto';
-import { TravelCountryCodeService } from './services/biletall/biletall-travel-country-code.service';
 import { CountryDto } from './services/biletall/dto/travel-country-code.dto';
+
+// service
+import { TicketsService } from './services/tickets.service';
+import { Order } from '../orders/order.entity';
+import { BusTicket } from './bus/entities/bus-ticket.entity';
 
 @ApiTags('Tickets')
 @Controller()
@@ -22,6 +28,7 @@ export class TicketsController {
     private readonly biletAllPnrService: BiletAllPnrService,
     private readonly biletAllOfficialHolidaysService: BiletAllOfficialHolidaysService,
     private readonly travelCountryCodeService: TravelCountryCodeService,
+    private readonly ticketService: TicketsService,
   ) {}
 
   @Post('tickets/pnr-search')
@@ -31,6 +38,12 @@ export class TicketsController {
   ): Promise<
     PnrSearchBusDto | PnrSearchDomesticFlightDto | PnrSearchAbroadFlightDto
   > {
+    this.ticketService.handleBusTicketOutputGeneration(
+      new Order({
+        userEmail: 'bahyaddin.nuri@westerops.com',
+        busTickets: [new BusTicket({})],
+      }),
+    );
     return this.biletAllPnrService.pnrSearch(requestDto);
   }
 

@@ -3,22 +3,29 @@ import puppeteer, { Browser } from 'puppeteer';
 
 @Injectable()
 export class PdfMakerService {
-  private browser: Browser | undefined;
-
+  private browser: Promise<Browser>;
   private options = {
     format: 'a4' as const,
     scale: 0.78,
   };
 
-  public async createPdf(html: string): Promise<Uint8Array> {
+  constructor() {
     if (!this.browser) {
-      this.browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: 'chromium-browser',
+      console.log('BROWSER DOES NOT EXIST');
+      this.browser = puppeteer.launch({
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+        ],
         pipe: true,
       });
     }
-    const page = await this.browser.newPage();
+  }
+
+  public async createPdf(html: string): Promise<Uint8Array> {
+    const page = await (await this.browser).newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
     const pdf = await page.pdf(this.options);

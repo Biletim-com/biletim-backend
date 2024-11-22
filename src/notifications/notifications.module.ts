@@ -38,7 +38,7 @@ import { SMSNotificationService } from './services/sms-notification.service';
           from: `"Biletim Team" <${notificationsConfigService.emailUsername}>`,
         },
         template: {
-          dir: `${__dirname}/templates`,
+          dir: `${__dirname}/../providers/html-template/templates`,
           adapter: new HandlebarsAdapter(),
         },
       }),

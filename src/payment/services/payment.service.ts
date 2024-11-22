@@ -3,10 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DataSource } from 'typeorm';
 
-import { PaymentProviderFactory } from '../factories/payment-provider.factory';
-import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 
 // entities
@@ -18,9 +15,6 @@ import { UUID } from '@app/common/types';
 @Injectable()
 export class PaymentService {
   constructor(
-    private readonly dataSource: DataSource,
-    private readonly paymentProviderFactory: PaymentProviderFactory,
-    private readonly biletAllBusService: BiletAllBusService,
     private readonly transactionsRepository: TransactionsRepository,
   ) {}
 

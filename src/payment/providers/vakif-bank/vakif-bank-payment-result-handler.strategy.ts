@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 import { VakifBankPaymentStrategy } from './vakif-bank-payment.strategy';
 import { BiletAllPlaneService } from '@app/modules/tickets/plane/services/biletall/biletall-plane.service';
+import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
 
 // interfaces
 import { IPaymentResultHandler } from '@app/payment/interfaces/payment-result-handler.interface';
@@ -32,7 +33,11 @@ import {
   PlaneTicketOperationType,
   TransactionStatus,
 } from '@app/common/enums';
+
+// constants
 import { threeDSecureResponse } from './constants/3d-response.constant';
+
+// dto
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 
 @Injectable()
@@ -49,6 +54,7 @@ export class VakifBankPaymentResultHandlerStrategy
     private readonly vakifBankPaymentStrategy: VakifBankPaymentStrategy,
     private readonly biletAllBusService: BiletAllBusService,
     private readonly biletAllPlaneService: BiletAllPlaneService,
+    private readonly eventEmitterService: EventEmitterService,
   ) {}
 
   async handleSuccessfulBusTicketPayment(
@@ -173,6 +179,10 @@ export class VakifBankPaymentResultHandlerStrategy
       /** SEND EVENTS */
       // create invoice and ticket output
       // send email or SMS
+      this.eventEmitterService.emitEvent(
+        'ticket.bus.purchased',
+        transaction.order,
+      );
 
       await queryRunner.commitTransaction();
       return transaction;

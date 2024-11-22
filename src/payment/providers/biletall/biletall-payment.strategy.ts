@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { AppConfigService } from '@app/configs/app';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { BiletAllEncryptorService } from './services/biletall-encryptor.service';
-import { HtmlTemplateService } from '../../../providers/html-template/provider.service';
+import { HtmlTemplateService } from '@app/providers/html-template/provider.service';
 import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
 
 // entites

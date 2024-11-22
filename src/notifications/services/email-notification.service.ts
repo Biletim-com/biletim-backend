@@ -12,7 +12,7 @@ import { AuthConfigService } from '@app/configs/auth';
 // types
 import {
   SendResetPasswordEmailNotification,
-  SendTicketPurchaseEmailNotication,
+  SendTicketGeneratedEmailNotication,
   SendVerifyAccountEmailNotification,
 } from '@app/common/types';
 
