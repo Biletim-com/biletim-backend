@@ -3,10 +3,11 @@ import { INotificationProccessor } from '../interfaces/notification.interface';
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
 import { NotificationsOptions } from '../types/send-notifications-options.type';
+import { QueueEnum } from '@app/common/enums';
 
 
 
-@Processor('emailQueue')
+@Processor(QueueEnum.EMAIL_QUEUE)
 export class EmailNotificationProcessor implements INotificationProccessor{
   constructor(private readonly mailerService: MailerService) {}
   

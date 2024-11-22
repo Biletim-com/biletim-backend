@@ -10,18 +10,20 @@ services:
       - ${APP_PORT}:${APP_PORT}
     depends_on:
       - biletim-db
-    env_file:
-      - .env
+      - biletim-redis
     networks:
       - biletim-network
+    env_file:
+      - .env
     restart: unless-stopped
     volumes:
       - ./src:/app/src
       - ./test:/app/test
+      # Uncomment these lines if needed
       # - ./open-zst.script.ts:/app/open-zst.script.ts
       # - ./feed_en_v3.json.zst:/app/feed_en_v3.json.zst
       # - ./hotels.json:/app/hotels.json
-
+ 
   biletim-db:
     image: postgres:15
     container_name: biletim-db
@@ -34,10 +36,29 @@ services:
       - biletim-vol:/var/lib/postgresql/data
     networks:
       - biletim-network
+ 
+  biletim-redis:
+    image: redis:6
+    container_name: biletim-redis
+    restart: always
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD=my-password
+      - REDIS_PORT=6379
+    networks:
+      - biletim-network
+    volumes:
+      - biletim-redis-vol:/data
+    command: ["redis-server", "--appendonly", "yes"]
+ 
 
 volumes:
   biletim-vol:
     name: biletim-vol
+  biletim-redis-vol:
+    name: biletim-redis-vol
+ 
 networks:
   biletim-network:
     name: biletim-network
