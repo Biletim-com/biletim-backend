@@ -5,11 +5,45 @@ import {
   IsString,
   IsOptional,
   ValidateNested,
+  IsEmail,
+  Length,
 } from 'class-validator';
 
 import { IsTCNumber, OnlyOneDefined } from '../decorators';
 
-class IndividualInvoiceDto {
+class InvoiceContactDetails {
+  @ApiProperty({
+    description: 'Email address of the invoice owner',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({
+    description:
+      'The phone number of the invoice owner. Must be 10 characters length.',
+    example: '5555555555',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Length(10, 10, {
+    message: 'phone Number must be 10 characters length',
+  })
+  phoneNumber: string;
+
+  @ApiProperty({
+    description: 'Address of the individual for the invoice (if applicable).',
+    example: '123 Main Street, Istanbul',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  address: string;
+}
+
+class IndividualInvoiceDto extends InvoiceContactDetails {
   @ApiProperty({
     description:
       'First name of the individual for the invoice (if applicable).',
@@ -38,18 +72,9 @@ class IndividualInvoiceDto {
   @IsNotEmpty()
   @IsTCNumber()
   tcNumber: string;
-
-  @ApiProperty({
-    description: 'Address of the individual for the invoice (if applicable).',
-    example: '123 Main Street, Istanbul',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  address: string;
 }
 
-class CompanyInvoiceDto {
+class CompanyInvoiceDto extends InvoiceContactDetails {
   @ApiProperty({
     description: 'Name of the company for the invoice (if applicable).',
     example: 'Westerops',
@@ -58,15 +83,6 @@ class CompanyInvoiceDto {
   @IsNotEmpty()
   @IsString()
   name: string;
-
-  @ApiProperty({
-    description: 'Address of the company for the invoice (if applicable).',
-    example: '456 Business Park, Ankara',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  address: string;
 
   @ApiProperty({
     description: 'Tax number of the company for the invoice (if applicable).',

@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
+import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
+
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 import { OrdersRepository } from '@app/modules/orders/orders.repository';
 
@@ -37,6 +39,7 @@ export class BiletAllPaymentResultHandlerStrategy
     private readonly dataSource: DataSource,
     private readonly transactionsRepository: TransactionsRepository,
     private readonly ordersRepository: OrdersRepository,
+    private readonly eventEmitterService: EventEmitterService,
   ) {}
 
   async handleSuccessfulBusTicketPayment(
@@ -105,7 +108,10 @@ export class BiletAllPaymentResultHandlerStrategy
       transaction.order.pnr = pnr;
 
       /** SEND EVENTS */
-      // create invoice and ticket output
+      this.eventEmitterService.emitEvent(
+        'ticket.bus.purchased',
+        transaction.order,
+      );
       // send email or SMS
 
       await queryRunner.commitTransaction();

@@ -1,37 +1,7 @@
 # Development
-FROM node:18-slim AS development
+FROM node:18-alpine AS development
 
 WORKDIR /app
-
-# Install necessary tools and dependencies in a single layer
-RUN apt-get update -qq && apt-get install -y \
-    # Essentials for building native modules and handling zstd
-    build-essential \
-    python3 \
-    zstd \
-    # Chromium dependencies
-    wget \
-    gnupg \
-    ca-certificates \
-    fonts-liberation \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libnss3 \
-    libxcomposite1 \
-    libxrandr2 \
-    xdg-utils \
-    # Install Chromium browser
-    chromium \
-    --no-install-recommends && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Set Puppeteer environment variables
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Copy project files
 COPY ./src ./src
@@ -43,6 +13,25 @@ COPY nest-cli.json ./
 COPY global.d.ts ./
 COPY ormconfig.ts ./
 COPY open-zst.script.ts ./
+
+RUN apk add --no-cache \
+    # Install Chromium browser
+    chromium \
+    # Chromium dependencies
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    # Essentials for building native modules and handling zstd
+    build-base \
+    python3 \
+    zstd
+
+
+# Set Puppeteer environment variables
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Install PNPM and dependencies
 RUN npm install -g pnpm
@@ -56,39 +45,9 @@ RUN pnpm install && \
 RUN pnpm run build
 
 # Production
-FROM node:18-slim AS production
+FROM node:18-alpine AS production
 
 WORKDIR /app
-
-# Install necessary tools and dependencies in a single layer
-RUN apt-get update -qq && apt-get install -y \
-    # Essentials for building native modules and handling zstd
-    build-essential \
-    python3 \
-    zstd \
-    # Chromium dependencies
-    wget \
-    gnupg \
-    ca-certificates \
-    fonts-liberation \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libnss3 \
-    libxcomposite1 \
-    libxrandr2 \
-    xdg-utils \
-    # Install Chromium browser
-    chromium \
-    --no-install-recommends && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Set Puppeteer environment variables
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 COPY --from=development /app/dist ./dist
 COPY package.json ./
@@ -97,6 +56,25 @@ COPY global.d.ts ./
 COPY ormconfig.ts ./
 COPY open-zst.script.ts ./
 COPY docker-entrypoint.sh ./
+
+RUN apk add --no-cache \
+    # Install Chromium browser
+    chromium \
+    # Chromium dependencies
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    # Essentials for building native modules and handling zstd
+    build-base \
+    python3 \
+    zstd && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set Puppeteer environment variables
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 RUN npm install -g pnpm
 RUN pnpm install --prod && \

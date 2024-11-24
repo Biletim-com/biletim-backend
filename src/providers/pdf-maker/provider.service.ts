@@ -1,31 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import puppeteer, { Browser } from 'puppeteer';
 
 @Injectable()
-export class PdfMakerService {
-  private browser: Promise<Browser>;
+export class PdfMakerService implements OnModuleInit {
+  private browser: Browser;
+  private logger = new Logger(PdfMakerService.name);
   private options = {
     format: 'a4' as const,
     scale: 0.78,
   };
 
-  constructor() {
-    if (!this.browser) {
-      console.log('BROWSER DOES NOT EXIST');
-      this.browser = puppeteer.launch({
-        headless: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-        ],
-        pipe: true,
-      });
-    }
+  async onModuleInit() {
+    this.browser = await puppeteer.launch({
+      headless: true,
+      executablePath: '/usr/bin/chromium-browser',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      pipe: true,
+    });
+    this.logger.log('Puppeteer browser is initialized');
   }
 
   public async createPdf(html: string): Promise<Uint8Array> {
-    const page = await (await this.browser).newPage();
+    const page = await this.browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
     const pdf = await page.pdf(this.options);

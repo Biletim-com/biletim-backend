@@ -8,6 +8,11 @@
         "include": "**/templates/*",
         "outDir": "dist/src",
         "watchAssets": true
+      },
+      {
+        "include": "**/public/*",
+        "outDir": "dist/src",
+        "watchAssets": true
       }
     ],
     "deleteOutDir": true

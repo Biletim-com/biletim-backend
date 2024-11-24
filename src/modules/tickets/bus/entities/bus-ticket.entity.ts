@@ -9,10 +9,19 @@ import { DateTime } from '@app/common/types';
 import { Order } from '@app/modules/orders/order.entity';
 import { BusTicketPassenger } from './bus-ticket-passenger.entity';
 
+// enums
+import { Currency } from '@app/common/enums';
+
 @Entity('bus_tickets')
 export class BusTicket extends AbstractEntity<BusTicket> {
   @Column()
   ticketOrder: number;
+
+  @Column()
+  ticketPrice: string;
+
+  @Column('varchar')
+  currency: Currency;
 
   @Column('varchar', { nullable: true })
   ticketNumber?: Nullable<string>;

@@ -177,12 +177,11 @@ export class VakifBankPaymentResultHandlerStrategy
       transaction.order.pnr = pnr;
 
       /** SEND EVENTS */
-      // create invoice and ticket output
-      // send email or SMS
       this.eventEmitterService.emitEvent(
         'ticket.bus.purchased',
         transaction.order,
       );
+      // send email or SMS
 
       await queryRunner.commitTransaction();
       return transaction;
@@ -233,7 +232,10 @@ export class VakifBankPaymentResultHandlerStrategy
         order: {
           planeTickets: {
             passenger: true,
-            segments: true,
+            segments: {
+              departureAirport: true,
+              arrivalAirport: true,
+            },
           },
         },
       },
@@ -311,7 +313,10 @@ export class VakifBankPaymentResultHandlerStrategy
       transaction.order.pnr = pnr;
 
       /** SEND EVENTS */
-      // create invoice and ticket output
+      this.eventEmitterService.emitEvent(
+        'ticket.plane.purchased',
+        transaction.order,
+      );
       // send email or SMS
 
       await queryRunner.commitTransaction();

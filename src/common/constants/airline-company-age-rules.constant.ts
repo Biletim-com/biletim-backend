@@ -15,7 +15,7 @@ export type AirlineCompanyAgeRules = {
 
 export const airlineCompaniesAgeRules: AirlineCompanyAgeRules = {
   '1000': {
-    companyName: 'Thy',
+    companyName: 'Türk Hava Yolları',
     [PassengerType.ADULT]: {
       minAge: 12,
       maxAge: 120,

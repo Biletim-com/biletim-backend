@@ -10,10 +10,13 @@ import { BiletAllPlaneService } from '@app/modules/tickets/plane/services/bileta
 import { PlaneTicketPassenger } from '@app/modules/tickets/plane/entities/plane-ticket-passenger.entity';
 import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
 import { PlaneTicketSegment } from '@app/modules/tickets/plane/entities/plane-ticket-segment.entity';
+import { Airport } from '@app/modules/tickets/plane/entities/airport.entity';
+import { Invoice } from '@app/modules/invoices/invoice.entity';
 
 // enums
 import {
   Currency,
+  InvoiceType,
   OrderStatus,
   OrderType,
   PassengerType,
@@ -29,6 +32,7 @@ import {
   PlanePassengerInfoDto,
   PlaneTicketPurchaseDto,
 } from '../dto/plane-ticket-purchase.dto';
+import { InvoiceDto } from '@app/common/dtos';
 
 // utils
 import { normalizeDecimal } from '@app/common/utils';
@@ -46,7 +50,7 @@ export class PlaneTicketPaymentService {
     private readonly biletAllPlaneService: BiletAllPlaneService,
   ) {}
 
-  private composePlanePassengerType(
+  private composePlanePassengerTypeCount(
     passengers: {
       passengerType: PassengerType;
     }[],
@@ -80,6 +84,27 @@ export class PlaneTicketPaymentService {
     return data;
   }
 
+  private composeOrderInvoice(invoiceDto: InvoiceDto): Invoice {
+    const invoiceType: InvoiceType = invoiceDto.individual
+      ? InvoiceType.INDIVIDUAL
+      : InvoiceType.CORPORATE;
+    const invoice = {
+      ...(invoiceDto.individual || {}),
+      ...(invoiceDto.company || {}),
+    };
+
+    return new Invoice({
+      type: invoiceType,
+      pnr: null,
+      recipientName: `${invoice.firstName} ${invoice.lastName}` || invoice.name,
+      identifier: invoice.tcNumber || invoice.taxNumber,
+      address: invoice.address,
+      taxOffice: invoice.taxOffice,
+      phoneNumber: invoice.phoneNumber,
+      email: invoice.email,
+    });
+  }
+
   private validateTicketsPrice(
     passengers: PlanePassengerInfoDto[],
     totalPrice: string,
@@ -105,13 +130,13 @@ export class PlaneTicketPaymentService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    const passengerTypeCounts = this.composePlanePassengerType(
+    const passengerTypeCount = this.composePlanePassengerTypeCount(
       planeTicketPurchaseDto.passengers,
     );
     const { priceList } = await this.biletAllPlaneService.pullPriceOfFlight({
       companyNumber: planeTicketPurchaseDto.companyNumber,
       segments: planeTicketPurchaseDto.segments,
-      ...passengerTypeCounts,
+      ...passengerTypeCount,
     });
 
     this.validateTicketsPrice(
@@ -140,6 +165,11 @@ export class PlaneTicketPaymentService {
       await queryRunner.manager.insert(Transaction, transaction);
 
       /**
+       * Compose Invoice fields
+       */
+      const invoice = this.composeOrderInvoice(planeTicketPurchaseDto.invoice);
+
+      /**
        * Create Order
        */
       const order = new Order({
@@ -147,10 +177,11 @@ export class PlaneTicketPaymentService {
         userPhoneNumber: planeTicketPurchaseDto.phoneNumber,
         type: OrderType.PURCHASE,
         status: OrderStatus.PENDING,
+        invoice,
         transaction,
         user: null,
       });
-      await queryRunner.manager.insert(Order, order);
+      await queryRunner.manager.save(Order, order);
 
       /**
        * Create Segments
@@ -159,6 +190,12 @@ export class PlaneTicketPaymentService {
         (segment, index) =>
           new PlaneTicketSegment({
             ...segment,
+            departureAirport: new Airport({
+              airportCode: segment.departureAirport,
+            }),
+            arrivalAirport: new Airport({
+              airportCode: segment.arrivalAirport,
+            }),
             companyNumber: planeTicketPurchaseDto.companyNumber,
             segmentOrder: index + 1,
           }),

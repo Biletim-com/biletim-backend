@@ -15,6 +15,7 @@ import { BusTicket } from '../tickets/bus/entities/bus-ticket.entity';
 
 // enums
 import { OrderStatus, OrderType } from '@app/common/enums';
+import { Invoice } from '../invoices/invoice.entity';
 
 @Entity('orders')
 export class Order extends AbstractEntity<Order> {
@@ -46,4 +47,11 @@ export class Order extends AbstractEntity<Order> {
 
   @OneToMany(() => PlaneTicket, (planeTicket) => planeTicket.order)
   planeTickets: PlaneTicket[];
+
+  @JoinColumn()
+  @OneToOne(() => Invoice, (invoice) => invoice.order, {
+    nullable: true,
+    cascade: ['insert'],
+  })
+  invoice?: Nullable<Invoice>;
 }

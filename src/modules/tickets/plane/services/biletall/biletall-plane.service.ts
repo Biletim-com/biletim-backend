@@ -134,11 +134,11 @@ export class BiletAllPlaneService extends BiletAllService {
           acc[`Segment${index + 1}`] = {
             Kalkis: segment.departureAirport,
             Varis: segment.arrivalAirport,
-            KalkisTarih: segment.departureDate,
-            VarisTarih: segment.arrivalDate,
+            KalkisTarih: segment.departureDateTime,
+            VarisTarih: segment.arrivalDateTime,
             UcusNo: segment.flightNumber,
             FirmaKod: segment.airlineCode,
-            Sinif: segment.flightClass,
+            Sinif: segment.flightClassCode,
             DonusMu: segment.isReturnFlight ? 1 : 0,
             SeferKod: segment.flightCode,
           };
@@ -173,11 +173,11 @@ export class BiletAllPlaneService extends BiletAllService {
           acc[`Segment${index + 1}`] = {
             Kalkis: segment.departureAirport,
             Varis: segment.arrivalAirport,
-            KalkisTarih: segment.departureDate,
-            VarisTarih: segment.arrivalDate,
+            KalkisTarih: segment.departureDateTime,
+            VarisTarih: segment.arrivalDateTime,
             UcusNo: segment.flightNumber,
             FirmaKod: segment.airlineCode,
-            Sinif: segment.flightClass,
+            Sinif: segment.flightClassCode,
             DonusMu: segment.isReturnFlight ? 1 : 0,
             ...(segment.flightCode && { SeferKod: segment.flightCode }),
           };
@@ -244,13 +244,13 @@ export class BiletAllPlaneService extends BiletAllService {
         HatirlaticiNot: '',
         ...segments.reduce((acc, segment, index) => {
           acc[`Segment${index + 1}`] = {
-            Kalkis: segment.departureAirport,
-            Varis: segment.arrivalAirport,
-            KalkisTarih: segment.departureDate,
-            VarisTarih: segment.arrivalDate,
+            Kalkis: segment.departureAirport.airportCode,
+            Varis: segment.arrivalAirport.airportCode,
+            KalkisTarih: segment.departureDateTime,
+            VarisTarih: segment.arrivalDateTime,
             UcusNo: segment.flightNumber,
             FirmaKod: segment.airlineCode,
-            Sinif: segment.flightClass,
+            Sinif: segment.flightClassCode,
             DonusMu: segment.isReturnFlight ? 1 : 0,
             ...(segment.flightCode && { SeferKod: segment.flightCode }),
           };

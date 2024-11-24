@@ -18,8 +18,10 @@ import { CountryDto } from './services/biletall/dto/travel-country-code.dto';
 
 // service
 import { TicketsService } from './services/tickets.service';
+
+// entities
 import { Order } from '../orders/order.entity';
-import { BusTicket } from './bus/entities/bus-ticket.entity';
+import { PlaneTicket } from './plane/entities/plane-ticket.entity';
 
 @ApiTags('Tickets')
 @Controller()
@@ -38,12 +40,12 @@ export class TicketsController {
   ): Promise<
     PnrSearchBusDto | PnrSearchDomesticFlightDto | PnrSearchAbroadFlightDto
   > {
-    this.ticketService.handleBusTicketOutputGeneration(
-      new Order({
-        userEmail: 'bahyaddin.nuri@westerops.com',
-        busTickets: [new BusTicket({})],
-      }),
-    );
+    // this.ticketService.handlePlaneTicketOutputGeneration(
+    //   new Order({
+    //     userEmail: 'bahyeddin@gmail.com',
+    //     planeTickets: [new PlaneTicket({})],
+    //   }),
+    // );
     return this.biletAllPnrService.pnrSearch(requestDto);
   }
 
