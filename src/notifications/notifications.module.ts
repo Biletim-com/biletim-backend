@@ -6,11 +6,19 @@ import { NotificationsConfigService } from '@app/configs/notifications';
 import { AuthConfigService } from '@app/configs/auth';
 
 import { EmailNotificationService } from './services/email-notification.service';
-
-import { EmailNotificationStrategy } from './strategies/email-notification.strategy';
+import { EmailNotificationProcessor} from './proccessors/email-notification.proccessor';
+import { QueueProviderModule } from '@app/providers/queue/provider.module';
+import { QueueEnum } from '@app/common/enums';
 
 @Module({
   imports: [
+    QueueProviderModule.registerQueue(
+      [
+        {
+          name: QueueEnum.EMAIL_QUEUE
+        }
+      ]
+    ),
     MailerModule.forRootAsync({
       useFactory: (notificationsConfigService: NotificationsConfigService) => ({
         transport: {
@@ -36,7 +44,7 @@ import { EmailNotificationStrategy } from './strategies/email-notification.strat
   ],
   providers: [
     EmailNotificationService,
-    EmailNotificationStrategy,
+    EmailNotificationProcessor,
     AuthConfigService,
   ],
 })

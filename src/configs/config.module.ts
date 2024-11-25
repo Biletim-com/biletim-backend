@@ -61,6 +61,11 @@ import paymentConfiguration, {
   PaymentEnvVarsValidation,
 } from './payment';
 
+import queueConfiguration, {
+  QueueConfigService,
+  QueueEnvVarsValidation,
+} from './queue';
+
 @Global()
 @Module({
   imports: [
@@ -78,6 +83,7 @@ import paymentConfiguration, {
         notificationsConfiguration,
         paymentConfiguration,
         tamamliyoApiConfiguration,
+        queueConfiguration
       ],
       validate: async (config) =>
         Promise.all([
@@ -88,6 +94,7 @@ import paymentConfiguration, {
           ConfigValidator.validate(HotelApiEnvVarsValidation, config),
           ConfigValidator.validate(SuperAdminEnvVarsValidation, config),
           ConfigValidator.validate(NotificationsEnvVarsValidation, config),
+          ConfigValidator.validate(QueueEnvVarsValidation, config),
           ConfigValidator.validate(
             OAuthLoginWithGoogleEnvVarsValidation,
             config,
@@ -114,6 +121,7 @@ import paymentConfiguration, {
     NotificationsConfigService,
     PaymentConfigService,
     TamamliyoApiConfigService,
+    QueueConfigService
   ],
   exports: [
     ConfigService,
@@ -128,6 +136,7 @@ import paymentConfiguration, {
     NotificationsConfigService,
     PaymentConfigService,
     TamamliyoApiConfigService,
+    QueueConfigService
   ],
 })
 export class ConfigModule {}

@@ -23,6 +23,8 @@ import { WalletsModule } from '@app/modules/wallets/wallets.module';
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
 import { RestClientModule } from '@app/providers/rest-client/provider.module';
 import { PoxClientModule } from '@app/providers/pox-client/provider.module';
+import { EventEmitterModule } from '@app/providers/event-emitter/provider.module';
+import { QueueProviderModule } from './providers/queue/provider.module';
 
 // Interceptors
 import { ErrorInterceptor } from '@app/common/interceptors';
@@ -30,13 +32,13 @@ import { ErrorInterceptor } from '@app/common/interceptors';
 // Jobs
 import { JobsModule } from '@app/jobs/jobs.module';
 import { NotificationsModule } from './notifications/notifications.module';
-import { EventEmitterModule } from '@nestjs/event-emitter/dist/event-emitter.module';
 import { InsuranceModule } from './modules/insurance/insurance.module';
+
 
 @Module({
   imports: [
     ConfigModule,
-    EventEmitterModule.forRoot(),
+    EventEmitterModule,
     RestClientModule,
     PoxClientModule,
     LoggerModule,
@@ -54,6 +56,7 @@ import { InsuranceModule } from './modules/insurance/insurance.module';
     TransactionsModule,
     WalletsModule,
     InsuranceModule,
+    QueueProviderModule
   ],
   providers: [
     {

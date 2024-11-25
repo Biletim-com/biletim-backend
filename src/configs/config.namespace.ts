@@ -5,6 +5,7 @@ export default {
   SUPER_ADMIN: 'super_admin',
   BILET_ALL_API: 'bilet_all_api',
   HOTEL_API: 'hotel_api',
+  QUEUE: 'queue',
   SWAGGER: 'swagger',
   LOGIN_WITH_GOOGLE: 'login_with_google',
   LOGIN_WITH_FACEBOOK: 'login_with_facebook',
