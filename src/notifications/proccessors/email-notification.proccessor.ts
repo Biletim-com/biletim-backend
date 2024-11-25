@@ -20,17 +20,11 @@ export class EmailNotificationProcessor implements INotificationProccessor {
 
   @Process()
   async send(job: Job<NotificationsOptions>) {
-    this.logger.log(`send email is called: ${job.data}`);
-
-    try {
-      const { recipient, subject, options } = job.data;
-      await this.mailerService.sendMail({
-        to: recipient,
-        subject,
-        ...options,
-      });
-    } catch (err) {
-      this.logger.log(`send email is ERRORED: ${err}`);
-    }
+    const { recipient, subject, options } = job.data;
+    await this.mailerService.sendMail({
+      to: recipient,
+      subject,
+      ...options,
+    });
   }
 }

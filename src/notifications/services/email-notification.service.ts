@@ -22,23 +22,18 @@ export class EmailNotificationService {
     recipient,
     verificationCode,
   }: SendVerifyAccountEmailNotificationDto): Promise<void> {
-    this.logger.log(`sendSetupProfileEmail is called with ${verificationCode}`);
-    try {
-      await this.queue.add({
-        recipient: recipient,
-        subject: 'Email Verification',
-        options: {
-          template: 'verify-email',
-          context: {
-            header: 'Email Verification',
-            content: 'Verification code',
-            verificationCode,
-          },
+    await this.queue.add({
+      recipient: recipient,
+      subject: 'Email Verification',
+      options: {
+        template: 'verify-email',
+        context: {
+          header: 'Email Verification',
+          content: 'Verification code',
+          verificationCode,
         },
-      });
-    } catch (err) {
-      this.logger.log(`sendSetupProfileEmail is ERRORED: ${err}`);
-    }
+      },
+    });
   }
 
   @OnEvent('user.password.reset')
@@ -46,24 +41,17 @@ export class EmailNotificationService {
     recipient,
     forgotPasswordCode,
   }: SendVerifyAccountEmailNotificationDto): Promise<void> {
-    this.logger.log(
-      `sendResetPasswordEmail is called with ${forgotPasswordCode}`,
-    );
-    try {
-      await this.queue.add({
-        recipient: recipient,
-        subject: 'Password reset',
-        options: {
-          template: 'reset-password',
-          context: {
-            header: 'Password reset',
-            content: 'Click the button below to reset your password.',
-            url: `${this.authConfigService.resetPasswordUrl}?verificationCode=${forgotPasswordCode}`,
-          },
+    await this.queue.add({
+      recipient: recipient,
+      subject: 'Password reset',
+      options: {
+        template: 'reset-password',
+        context: {
+          header: 'Password reset',
+          content: 'Click the button below to reset your password.',
+          url: `${this.authConfigService.resetPasswordUrl}?verificationCode=${forgotPasswordCode}`,
         },
-      });
-    } catch (err) {
-      this.logger.log(`sendResetPasswordEmail is ERRORED: ${err}`);
-    }
+      },
+    });
   }
 }
