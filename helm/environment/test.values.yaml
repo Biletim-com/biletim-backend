@@ -75,6 +75,9 @@ biletim_api:
     PAYMENT_TERMINAL_NO: 'VP000579'
     TAMAMLIYO_API_BASE_URL: https://api-test.tamamliyo.com/partner
     TAMAMLIYO_TOKEN: b1bd655bcd0b061c32b2e8072f298769
+    REDIS_HOST: biletim-redis
+    REDIS_PORT: 6379
+    REDIS_PASSWORD: 'my-password'
 
   volumeMounts:
     biletim-api: '/app/images'
