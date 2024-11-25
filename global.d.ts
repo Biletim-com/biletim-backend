@@ -31,5 +31,8 @@ declare namespace NodeJS {
     PAYMENT_MERCHANT_ID: string;
     PAYMENT_TERMINAL_NO: string;
     PAYMENT_MERCHANT_PASSWORD: string;
+    REDIS_HOST: string;
+    REDIS_PORT: string;
+    REDIS_PASSWORD: string;
   }
 }
