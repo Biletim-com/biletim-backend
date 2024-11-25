@@ -1,6 +1,6 @@
-import { InsuranceTicketType } from '@app/common/enums';
+import { TicketType } from '@app/common/enums';
 
 export const TamamliyoInsuranceTicketType = {
-  [InsuranceTicketType.BUS]: 0,
-  [InsuranceTicketType.PLANE]: 1,
+  [TicketType.BUS]: 0,
+  [TicketType.PLANE]: 1,
 };
