@@ -11,3 +11,8 @@ export type NotificationsOptions = {
   subject: string,
   options: SendNotificationsOptions
 }
+
+export type SMSNotificationsOptions ={
+  messsage: string;
+  gsmno: string;
+}

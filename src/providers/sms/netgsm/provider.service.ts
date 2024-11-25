@@ -1,18 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { BullModuleOptions, BullOptionsFactory } from '@nestjs/bull';
-import { QueueConfigService } from '@app/configs/queue';
+import { NetGsmConfigService } from '@app/configs/netgsm';
+import { RestClientService } from '@app/providers/rest-client/provider.service';
 
 @Injectable()
 export class NetGsmProviderService {
-  constructor(private readonly queueConfigService: QueueConfigService) {}
+  constructor(
+    private readonly netGsmConfigService: NetGsmConfigService,
+    private readonly restClientService: RestClientService
+  ) {}
 
-  createBullOptions(): BullModuleOptions {
-    return {
-      redis: {
-        host: this.queueConfigService.redisHost,
-        port: Number(this.queueConfigService.redisPort),
-        password: this.queueConfigService.redisPassword,
-      },
-    };
+  sendSMS(
+    messsage: string,
+    gsmno: string
+  ): any {
+    const formData = new URLSearchParams();
+    formData.append('usercode', this.netGsmConfigService.netGsmUsername);
+    formData.append('password', this.netGsmConfigService.netGsmPassword);
+    formData.append('gsmno', gsmno);
+    formData.append('message', messsage);
+    formData.append('msgheader', 'Biletim.com');
+    formData.append('filter', '0');
+    formData.append('startdate', '230520221650');
+    formData.append('stopdate', '230520221830');
+    formData.append('appkey', this.netGsmConfigService.netGsmAppKey);
+    return this.restClientService.request(
+      {
+        method: "POST",
+        path: "/sms/send/get",
+        headers: {
+          'Accept': '*/*'
+        },
+        data: formData
+      }
+    )
   }
 }

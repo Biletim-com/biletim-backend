@@ -25,6 +25,7 @@ import { RestClientModule } from '@app/providers/rest-client/provider.module';
 import { PoxClientModule } from '@app/providers/pox-client/provider.module';
 import { EventEmitterModule } from '@app/providers/event-emitter/provider.module';
 import { QueueProviderModule } from './providers/queue/provider.module';
+import { NetGsmModule } from './providers/sms/netgsm/provider.module';
 
 // Interceptors
 import { ErrorInterceptor } from '@app/common/interceptors';
@@ -56,7 +57,8 @@ import { InsuranceModule } from './modules/insurance/insurance.module';
     TransactionsModule,
     WalletsModule,
     InsuranceModule,
-    QueueProviderModule
+    QueueProviderModule,
+    NetGsmModule
   ],
   providers: [
     {

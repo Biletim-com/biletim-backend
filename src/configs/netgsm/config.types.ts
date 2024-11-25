@@ -1,5 +1,6 @@
-export type TQueueConfiguration = {
-  redisHost: string;
-  redisPort: string;
-  redisPassword: string;
+export type TNetGsmConfiguration = {
+  netGsmBaseURL: string;
+  netGsmUsername: string;
+  netGsmPassword: string;
+  netGsmAppKey: string;
 };

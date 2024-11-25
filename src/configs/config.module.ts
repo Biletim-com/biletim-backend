@@ -66,6 +66,11 @@ import queueConfiguration, {
   QueueEnvVarsValidation,
 } from './queue';
 
+import netGsmConfiguration, { 
+  NetGsmConfigService, 
+  NetGsmEnvVarsValidation 
+} from './netgsm';
+
 @Global()
 @Module({
   imports: [
@@ -83,7 +88,8 @@ import queueConfiguration, {
         notificationsConfiguration,
         paymentConfiguration,
         tamamliyoApiConfiguration,
-        queueConfiguration
+        queueConfiguration,
+        netGsmConfiguration
       ],
       validate: async (config) =>
         Promise.all([
@@ -95,6 +101,7 @@ import queueConfiguration, {
           ConfigValidator.validate(SuperAdminEnvVarsValidation, config),
           ConfigValidator.validate(NotificationsEnvVarsValidation, config),
           ConfigValidator.validate(QueueEnvVarsValidation, config),
+          ConfigValidator.validate(NetGsmEnvVarsValidation, config),
           ConfigValidator.validate(
             OAuthLoginWithGoogleEnvVarsValidation,
             config,
@@ -121,7 +128,8 @@ import queueConfiguration, {
     NotificationsConfigService,
     PaymentConfigService,
     TamamliyoApiConfigService,
-    QueueConfigService
+    QueueConfigService,
+    NetGsmConfigService
   ],
   exports: [
     ConfigService,
@@ -136,7 +144,8 @@ import queueConfiguration, {
     NotificationsConfigService,
     PaymentConfigService,
     TamamliyoApiConfigService,
-    QueueConfigService
+    QueueConfigService,
+    NetGsmConfigService
   ],
 })
 export class ConfigModule {}

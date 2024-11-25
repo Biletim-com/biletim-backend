@@ -3,13 +3,17 @@ import { IsString, IsNotEmpty } from 'class-validator';
 export class NetGsmEnvVarsValidation {
   @IsString()
   @IsNotEmpty()
-  REDIS_HOST: string;
+  NETGSM_BASE_URL: string;
 
   @IsString()
   @IsNotEmpty()
-  REDIS_PORT: string;
+  NETGSM_USERNAME: string;
 
   @IsString()
   @IsNotEmpty()
-  REDIS_PASSWORD: string;
+  NETGSM_PASSWORD: string;
+
+  @IsString()
+  @IsNotEmpty()
+  NETGSM_APP_KEY: string;
 }

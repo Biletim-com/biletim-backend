@@ -3,3 +3,8 @@ export class SendVerifyAccountEmailNotificationDto {
   verificationCode?: number;
   forgotPasswordCode?: string;
 }
+
+export class SendSmsNotificationDto {
+  messsage: string;
+  gsmno: string;
+}

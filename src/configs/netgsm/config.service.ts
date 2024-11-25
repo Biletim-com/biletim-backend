@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import ConfigurationNamespaces from '../config.namespace';
 
-import { TQueueConfiguration } from './config.types';
+import { TNetGsmConfiguration } from './config.types';
 
 @Injectable()
 export class NetGsmConfigService {
@@ -11,21 +11,27 @@ export class NetGsmConfigService {
 
   constructor(private configService: ConfigService) {}
 
-  get redisHost(): string {
-    return this.configService.getOrThrow<TQueueConfiguration>(
+  get netGsmBaseURL(): string {
+    return this.configService.getOrThrow<TNetGsmConfiguration>(
       this.configurationNamespace,
-    ).redisHost;
+    ).netGsmBaseURL;
   }
 
-  get redisPort(): string {
-    return this.configService.getOrThrow<TQueueConfiguration>(
+  get netGsmUsername(): string {
+    return this.configService.getOrThrow<TNetGsmConfiguration>(
       this.configurationNamespace,
-    ).redisPort;
+    ).netGsmUsername;
   }
 
-  get redisPassword(): string {
-    return this.configService.getOrThrow<TQueueConfiguration>(
+  get netGsmPassword(): string {
+    return this.configService.getOrThrow<TNetGsmConfiguration>(
       this.configurationNamespace,
-    ).redisPassword;
+    ).netGsmPassword;
+  }
+
+  get netGsmAppKey(): string {
+    return this.configService.getOrThrow<TNetGsmConfiguration>(
+      this.configurationNamespace,
+    ).netGsmAppKey;
   }
 }
