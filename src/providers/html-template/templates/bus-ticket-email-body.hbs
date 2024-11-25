@@ -1,77 +1,134 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+    <meta charset='UTF-8' />
     <title>Otobus Bileti Detayları</title>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-    <div style="width: 90%; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9;">
-        <h1 style="color: #0044cc;">Merhaba {{passengers.0.passengerFullName}},</h1>
+
+<body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+    <div
+        style='width: 90%; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9;'>
+        <img src='https://biletimlanding.westerops.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon.fee63e71.png&w=1920&q=75'
+            alt='Biletim.com' style='width: 30%; height: auto; display: block; margin: auto' />
+        <h1 style='color: #37C1F0;'>Merhaba
+            {{passengers.0.passengerFullName}},</h1>
         <p>Otobus biletinizi başarıyla satın aldınız!</p>
-        <p>Seyahatinizle ilgili uçuş bilgilerinizi aşağıdaki detaylarda ve ekte ilettiğimiz <strong>Elektronik Yolcu Seyahat Belgesi</strong> PDF dokümanında görebilirsiniz.</p>
-
-        <p><strong>{{trip.busCompany}}</strong> biletiniz için PNR kodunuz: <strong>{{pnrNumber}}</strong></p>
-
-        <p><strong>Biletim.com</strong>’a gösterdiğiniz ilgi ve güven için teşekkür ederiz. Almış olduğunuz bilet(ler)in detaylarına aşağıdan ulaşabilirsiniz.</p>
-        <p><strong>Değişiklik ya da iptal işlemleri</strong> için <a href="tel:+908502442586" style="color: #0044cc; text-decoration: none;">+90 850 244 2586</a> numaralı telefonumuzdan bize 7 gün 24 saat ulaşabilirsiniz.</p>
-
+        <p>Seyahatinizle ilgili uçuş bilgilerinizi aşağıdaki detaylarda ve ekte
+            ilettiğimiz
+            <strong>Elektronik Yolcu Seyahat Belgesi</strong>
+            PDF dokümanında görebilirsiniz.
+        </p>
+        <p><strong>{{trip.busCompany}}</strong>
+            biletiniz için PNR kodunuz:
+            <strong>{{pnrNumber}}</strong>
+        </p>
+        <p><strong>Biletim.com</strong>’a gösterdiğiniz ilgi ve güven için
+            teşekkür ederiz. Almış olduğunuz bilet(ler)in detaylarına aşağıdan
+            ulaşabilirsiniz.</p>
+        <p><strong>Değişiklik ya da iptal işlemleri</strong>
+            için
+            <a href='tel:+908502442586' style='color: #37C1F0; text-decoration: none;'>+90 850 244 2586</a>
+            numaralı telefonumuzdan bize 7 gün 24 saat ulaşabilirsiniz.
+        </p>
         <p>Şimdiden iyi yolculuklar dileriz!</p>
         <p><strong>BILETIM.COM Ekibi</strong></p>
-
-        <h2 style="color: #0044cc;">Sefer Bilgileri</h2>
-        <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+        <h2 style='background-color: #37C1F0; color: black; text-align: center'>Sefer Bilgileri</h2>
+        <table style='width: 100%; margin-top: 20px; border-collapse: collapse;'>
             <tr>
-                <th style="padding: 10px; border: 1px solid #ddd; background-color: #0044cc; color: #fff; text-align: left;">FİRMA</th>
-                <td style="padding: 10px; border: 1px solid #ddd;">{{trip.busCompany}}</td>
+                <th
+                    style='padding: 10px; border: 1px solid #ddd; background-color: #37C1F0; color: #fff; text-align: left;'>
+                    FİRMA </th>
+                <td style='padding: 10px; border: 1px solid #ddd;'>{{trip.busCompany}}</td>
             </tr>
             <tr>
-                <th style="padding: 10px; border: 1px solid #ddd; background-color: #0044cc; color: #fff; text-align: left;">Kalkış</th>
-                <td style="padding: 10px; border: 1px solid #ddd;">{{trip.departureTerminal}}</td>
+                <th
+                    style='padding: 10px; border: 1px solid #ddd; background-color: #37C1F0; color: #fff; text-align: left;'>
+                    Kalkış </th>
+                <td style='padding: 10px; border: 1px solid #ddd;'>{{trip.departureTerminal}}</td>
             </tr>
             <tr>
-                <th style="padding: 10px; border: 1px solid #ddd; background-color: #0044cc; color: #fff; text-align: left;">Varış</th>
-                <td style="padding: 10px; border: 1px solid #ddd;">{{trip.arrivalTerminal}}</td>
+                <th
+                    style='padding: 10px; border: 1px solid #ddd; background-color: #37C1F0; color: #fff; text-align: left;'>
+                    Varış </th>
+                <td style='padding: 10px; border: 1px solid #ddd;'>{{trip.arrivalTerminal}}</td>
             </tr>
             <tr>
-                <th style="padding: 10px; border: 1px solid #ddd; background-color: #0044cc; color: #fff; text-align: left;">Tarih</th>
-                <td style="padding: 10px; border: 1px solid #ddd;">{{trip.departureDate}}</td>
+                <th
+                    style='padding: 10px; border: 1px solid #ddd; background-color: #37C1F0; color: #fff; text-align: left;'>
+                    Tarih </th>
+                <td style='padding: 10px; border: 1px solid #ddd;'>{{trip.departureDate}}</td>
             </tr>
             <tr>
-                <th style="padding: 10px; border: 1px solid #ddd; background-color: #0044cc; color: #fff; text-align: left;">Saat</th>
-                <td style="padding: 10px; border: 1px solid #ddd;">{{trip.departureTime}}</td>
+                <th
+                    style='padding: 10px; border: 1px solid #ddd; background-color: #37C1F0; color: #fff; text-align: left;'>
+                    Saat </th>
+                <td style='padding: 10px; border: 1px solid #ddd;'>{{trip.departureTime}}</td>
             </tr>
         </table>
-
-        <p><em>Bilet bastırmanıza gerek olmadan otobüse binebilirsiniz.</em> <a href="#" style="color: #0044cc; text-decoration: none;">Mobil biletinizi görmek için tıklayın!</a></p>
-
-        <h2 style="color: #0044cc;">Yolcu Bilgileri</h2>
+        <p><em>Bilet bastırmanıza gerek olmadan otobüse binebilirsiniz.</em>
+            <a href='#' style='color: #37C1F0; text-decoration: none;'>Mobil
+                biletinizi görmek için tıklayın!</a>
+        </p>
+        <h2 style='color: #37C1F0;'>Yolcu Bilgileri</h2>
         {{#each passengers}}
-            <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
-                <tr>
-                    <th style="padding: 10px; border: 1px solid #ddd; background-color: #0044cc; color: #fff; text-align: left;">Ad Soyad</th>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{this.passengerFullName}}</td>
-                </tr>
-                <tr>
-                    <th style="padding: 10px; border: 1px solid #ddd; background-color: #0044cc; color: #fff; text-align: left;">Koltuk</th>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{this.seatNumber}}</td>
-                </tr>
-                <tr>
-                    <th style="padding: 10px; border: 1px solid #ddd; background-color: #0044cc; color: #fff; text-align: left;">Fiyat</th>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{this.amount}} TRY</td>
-                </tr>
-                <tr>
-                    <th style="padding: 10px; border: 1px solid #ddd; background-color: #0044cc; color: #fff; text-align: left;">PNR</th>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{this.pnrNumber}}</td>
-                </tr>
-                <tr>
-                    <th style="padding: 10px; border: 1px solid #ddd; background-color: #0044cc; color: #fff; text-align: left;">Cinsiyet</th>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{this.gender}}</td>
-                </tr>
-                <tr>
-                    <th style="padding: 10px; border: 1px solid #ddd; background-color: #0044cc; color: #fff; text-align: left;">TCKN</th>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{this.tcNumber}}</td>
-                </tr>
-            </table>
+        <table style='width: 100%; margin-top: 20px; border-collapse: collapse;'>
+            <tr>
+                <th
+                    style='padding: 10px; border: 1px solid #ddd; background-color: #37C1F0; color: #fff; text-align: left;'>
+                    Ad Soyad </th>
+                <td style='padding: 10px; border: 1px solid #ddd;'>{{this.passengerFullName}}</td>
+            </tr>
+            <tr>
+                <th
+                    style='padding: 10px; border: 1px solid #ddd; background-color: #37C1F0; color: #fff; text-align: left;'>
+                    Koltuk </th>
+                <td style='padding: 10px; border: 1px solid #ddd;'>{{this.seatNumber}}</td>
+            </tr>
+            <tr>
+                <th
+                    style='padding: 10px; border: 1px solid #ddd; background-color: #37C1F0; color: #fff; text-align: left;'>
+                    Fiyat </th>
+                <td style='padding: 10px; border: 1px solid #ddd;'>{{this.amount}}
+                    TRY</td>
+            </tr>
+            <tr>
+                <th
+                    style='padding: 10px; border: 1px solid #ddd; background-color: #37C1F0; color: #fff; text-align: left;'>
+                    PNR </th>
+                <td style='padding: 10px; border: 1px solid #ddd;'>{{this.pnrNumber}}</td>
+            </tr>
+            <tr>
+                <th
+                    style='padding: 10px; border: 1px solid #ddd; background-color: #37C1F0; color: #fff; text-align: left;'>
+                    Cinsiyet </th>
+                <td style='padding: 10px; border: 1px solid #ddd;'>{{this.gender}}</td>
+            </tr>
+            <tr>
+                <th
+                    style='padding: 10px; border: 1px solid #ddd; background-color: #37C1F0; color: #fff; text-align: left;'>
+                    TCKN </th>
+                <td style='padding: 10px; border: 1px solid #ddd;'>{{this.tcNumber}}</td>
+            </tr>
+        </table>
         {{/each}}
     </div>
+    <div
+        style='background-color: #A6B2B9; width: 60%; margin: auto;  text-align: center; padding: 4px 0; margin-top: 32px'>
+        <h3>Bilet İptali/Erteleme Şartları</h3>
+        <p><strong>İptal Koşulları</strong> Son 1 saate kadar online iptal</p>
+        <p>
+            <strong>İptal ve değişiklik</strong>
+            işlemleriniz için 7 gün 24 saat Canlı Destek birimimize veya 0850244
+            2586 numaralı telefondan çağrı merkezimize ulaşabilirsiniz.
+        </p>
+        <div style='background-color: #5A686F ; color: white; padding: 8px'>
+            <p>İlgi ve güveniniz için teşekkür eder, bir sonraki yolculuğunuz için
+                de hizmet vermek isteriz
+            </p>
+            <a href='https://biletim.com' style='color:#37C1F0 '>Biletim.com</a>
+        </div>
+    </div>
 </body>
+
 </html>

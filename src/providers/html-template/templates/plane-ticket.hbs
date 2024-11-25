@@ -1,0 +1,540 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Birleştirilmiş Şablon</title>
+    <style>
+      @page { size: A4; margin: 32px; border: 1.8px solid #37C1F0; } body {
+      width: 210mm; height: 297mm; margin: 0; padding: 0; box-sizing:
+      border-box; display: flex; flex-direction: column; }
+    </style>
+  </head>
+  <body>
+
+    <!-- Template 1 -->
+    <div id="template1">
+      <header
+        style="padding:16px; width: 100%; border-bottom:1px solid #37C1F0 ; display: flex; flex-direction: row; align-items: center; justify-content: space-between; background-color: #e1f3f0;"
+      >
+        <img
+          src="https://biletimlanding.westerops.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon.fee63e71.png&w=1920&q=75%22"
+          alt="biletim-logo"
+          height="32px"
+        />
+        <div
+          style="display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 4px;"
+        >
+          <strong style="font-size: 16px; color: #333;">IB GROUP</strong>
+          <a
+            href="mailto:info@biletim.com"
+            style="color: #007BFF; text-decoration: none; font-size: 14px;"
+          >info@biletim.com</a>
+          <a
+            href="tel:+903624400303"
+            style="color: #007BFF; text-decoration: none; font-size: 14px;"
+          >0362 440 03 03</a>
+          <span
+            style="font-size: 14px; color: #555; width: 100%; max-width: 400px;"
+          >Kılıçdede Mah. Ülkem Sok. Borkonut Niş İş Merkezi No.8A/11 İlkadım /
+            SAMSUN</span>
+        </div>
+      </header>
+      <div
+        class="content"
+        style="flex: 1; display: flex; flex-direction: column; align-items: start; justify-content: center; padding:32px;"
+      >
+        <h3>Merhaba, {{passengerFullName}}</h3>
+        <h2 style="font-style: italic; font-size: 32px;">Yeni keşifler için
+          hazırsın!</h2>
+        <p>Uçak biletinizi Biletim.com'dan online alarak bizimle birlikte yeni
+          bir keşfe çıkıyorsunuz.
+          <br />
+          Teşekkürler
+        </p>
+
+        <div style="height: 200px; width: 400px;">biletim illustration</div>
+
+        <p>
+          <strong>Bilet detaylarını sonraki sayfalarda bulabilirsiniz. </strong>
+          İyi uçuşlar!
+        </p>
+
+      </div>
+    </div>
+
+    <!-- Template 2 -->
+    <div id="template2" style="page-break-before: always;">
+      <header
+        style="padding:16px; width: 100%; border-bottom:1px solid #37C1F0 ; display: flex; flex-direction: row; align-items: center; justify-content: space-between; background-color: #e1f3f0;"
+      >
+        <img
+          src="https://biletimlanding.westerops.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon.fee63e71.png&w=1920&q=75%22"
+          alt="biletim-logo"
+          height="32px"
+        />
+        <div
+          style="display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 4px;"
+        >
+          <strong style="font-size: 16px; color: #333;">IB GROUP</strong>
+          <a
+            href="mailto:info@biletim.com"
+            style="color: #007BFF; text-decoration: none; font-size: 14px;"
+          >info@biletim.com</a>
+          <a
+            href="tel:+903624400303"
+            style="color: #007BFF; text-decoration: none; font-size: 14px;"
+          >0362 440 03 03</a>
+          <span
+            style="font-size: 14px; color: #555; width: 100%; max-width: 400px;"
+          >Kılıçdede Mah. Ülkem Sok. Borkonut Niş İş Merkezi No.8A/11 İlkadım /
+            SAMSUN</span>
+        </div>
+      </header>
+      <!-- İçerik Template 2 -->
+      <div
+        class="content"
+        style="flex: 1; display: flex; flex-direction: column; align-items: start; justify-content: center; padding:32px;"
+      >
+
+        <!-- Başlık -->
+        <h1
+          style="font-size: 20px; font-weight: bold; text-transform: uppercase; margin-bottom: 20px;"
+        >
+          Elektronik Yolcu Seyahat Belgesi
+        </h1>
+
+        <!-- Yolcu Bilgileri -->
+        <h2
+          style="font-size: 16px; font-weight: bold; margin-bottom: 10px;"
+        >Yolcu Bilgileri</h2>
+        {{#each passengers}}
+          <h2 style="font-size: 16px; font-weight: bold; margin-top: 20px;">
+            Yolcu
+            {{@index}}</h2>
+          <table
+            style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1.5px solid #04B1EC"
+          >
+            <thead>
+              <tr>
+                <th
+                  style="text-align: left; padding: 8px; font-size: 14px;"
+                >Bilet No</th>
+                <th
+                  style="text-align: left; padding: 8px; font-size: 14px;"
+                >Rezervasyon No (PNR)</th>
+                <th
+                  style="text-align: left; padding: 8px; font-size: 14px;"
+                >Yolcu Adı</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">T.C
+                  Kimlik No</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td
+                  style="padding: 8px; font-size: 14px;"
+                >{{this.ticketNumber}}</td>
+                <td
+                  style="padding: 8px; font-size: 14px; font-weight: bold;"
+                >{{this.pnrNumber}}</td>
+                <td
+                  style="padding: 8px; font-size: 14px; font-weight: bold;"
+                >{{this.passengerFullName}}</td>
+                <td
+                  style="padding: 8px; font-size: 14px;"
+                >{{this.pnrNumber}}</td>
+              </tr>
+            </tbody>
+          </table>
+        {{/each}}
+
+        <!-- Uçuş Detayları -->
+        <h2
+          style="font-size: 16px; font-weight: bold; margin-bottom: 10px; "
+        >Uçuş Detayları</h2>
+
+        <h3
+          style="font-size: 14px; font-weight: bold; margin-bottom: 5px;"
+        >Gidiş</h3>
+        <p style="margin: 0 0 5px;">{{departureFlights.0.departureAirport}}</p>
+
+        <p style="margin: 0 0 5px;">{{departureFlights.0.arrivalAirport}}</p>
+
+        <table
+          style="width: 100%; border-collapse: collapse; margin-bottom: 20px; "
+        >
+          <thead>
+            <tr>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Havayolu</th>
+              <th style="text-align: left; padding: 8px; font-size: 14px;">Uçuş
+                Kodu</th>
+              <th style="text-align: left; padding: 8px; font-size: 14px;">Uçuş
+                Sınıfı</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td
+                style="padding: 8px; font-size: 14px;"
+              >{{departureFlights.0.airlineCompany}}</td>
+              <td
+                style="padding: 8px; font-size: 14px;"
+              >{{departureFlights.0.flightCode}}</td>
+              <td
+                style="padding: 8px; font-size: 14px;"
+              >{{departureFlights.0.flightClass}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table
+          style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1.5px solid #04B1EC"
+        >
+          <thead>
+            <tr>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Kalkış</th>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Varış</th>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Tarih</th>
+              <th style="text-align: left; padding: 8px; font-size: 14px;">Bagaj
+                Hakkı</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td
+                style="padding: 8px; font-size: 14px; font-weight: bold;"
+              >{{departureFlights.0.departureDateTime}}</td>
+              <td
+                style="padding: 8px; font-size: 14px; "
+              >{{departureFlights.0.arrivalDateTime}}</td>
+              <td
+                style="padding: 8px; font-size: 14px; font-weight: bold;"
+              >{{departureFlights.0.arrivalDateTime}}</td>
+              <td
+                style="padding: 8px; font-size: 14px;"
+              >{{departureFlights.0.luggageAllowance}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3
+          style="font-size: 14px; font-weight: bold; margin-bottom: 5px;"
+        >Dönüş</h3>
+        <p style="margin: 0 0 5px;">{{returnFlights.0.departureAirport}}</p>
+        <p style="margin: 0 0 5px;">{{returnFlights.0.arrivalAirport}}</p>
+
+        <table
+          style="width: 100%; border-collapse: collapse; margin-bottom: 20px; "
+        >
+          <thead>
+            <tr>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Havayolu</th>
+              <th style="text-align: left; padding: 8px; font-size: 14px;">Uçuş
+                Kodu</th>
+              <th style="text-align: left; padding: 8px; font-size: 14px;">Uçuş
+                Sınıfı</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td
+                style="padding: 8px; font-size: 14px;"
+              >{{returnFlights.0.airlineCompany}}</td>
+              <td
+                style="padding: 8px; font-size: 14px;"
+              >{{returnFlights.0.flightCode}}</td>
+              <td
+                style="padding: 8px; font-size: 14px;"
+              >{{returnFlights.0.flightClass}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table
+          style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1.5px solid #04B1EC"
+        >
+          <thead>
+            <tr>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Kalkış</th>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Varış</th>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Tarih</th>
+              <th style="text-align: left; padding: 8px; font-size: 14px;">Bagaj
+                Hakkı</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td
+                style="padding: 8px; font-size: 14px; font-weight: bold;"
+              >{{returnFlights.0.departureDateTime}}</td>
+              <td
+                style="padding: 8px; font-size: 14px; font-weight: bold;"
+              >{{returnFlights.0.arrivalDateTime}}</td>
+              <td
+                style="padding: 8px; font-size: 14px;"
+              >{{returnFlights.0.arrivalDateTime}}</td>
+              <td
+                style="padding: 8px; font-size: 14px;"
+              >{{returnFlights.0.luggageAllowance}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Fatura ve Ödeme Bilgileri -->
+        <h2
+          style="font-size: 16px; font-weight: bold; margin-bottom: 10px;"
+        >Fatura ve Ödeme Bilgileri</h2>
+        <p style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">Ayça
+          Karaduman</p>
+
+        <table
+          style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1.5px solid #04B1EC"
+        >
+          <thead>
+            <tr>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Ödeme</th>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Fiyat</th>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Vergi</th>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Hizmet Bedeli</th>
+              <th
+                style="text-align: left; padding: 8px; font-size: 14px;"
+              >Toplam</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 8px; font-size: 14px;">Kredi Kartı</td>
+              <td style="padding: 8px; font-size: 14px;">2.867,90 ₺</td>
+              <td style="padding: 8px; font-size: 14px;">408,31 ₺</td>
+              <td style="padding: 8px; font-size: 14px;">22,00 ₺</td>
+              <td
+                style="padding: 8px; font-size: 14px; font-weight: bold;"
+              >2.867,90 ₺</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Not -->
+        <p style="font-size: 12px; color: #555; margin-top: 20px;">
+          Bu bilet fatura yerine geçmez. E-arşiv faturanız 7 gün içerisinde
+          e-posta ile gönderilecektir.
+        </p>
+        <p style="font-size: 12px; color: #555;">
+          E-fatura mükellefi iseniz efaturanız hem e-posta ile gönderilecek hem
+          de e-fatura portalınıza otomatik olarak düşecektir.
+        </p>
+
+      </div>
+    </div>
+
+    <!-- Template 3 -->
+    <div id="template3" style="page-break-before: always;">
+      <header
+        style="padding:16px; width: 100%; border-bottom:1px solid #37C1F0 ; display: flex; flex-direction: row; align-items: center; justify-content: space-between; background-color: #e1f3f0;"
+      >
+        <img
+          src="https://biletimlanding.westerops.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon.fee63e71.png&w=1920&q=75%22"
+          alt="biletim-logo"
+          height="32px"
+        />
+        <div
+          style="display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 4px;"
+        >
+          <strong style="font-size: 16px; color: #333;">IB GROUP</strong>
+          <a
+            href="mailto:info@biletim.com"
+            style="color: #007BFF; text-decoration: none; font-size: 14px;"
+          >info@biletim.com</a>
+          <a
+            href="tel:+903624400303"
+            style="color: #007BFF; text-decoration: none; font-size: 14px;"
+          >0362 440 03 03</a>
+          <span
+            style="font-size: 14px; color: #555; width: 100%; max-width: 400px;"
+          >Kılıçdede Mah. Ülkem Sok. Borkonut Niş İş Merkezi No.8A/11 İlkadım /
+            SAMSUN</span>
+        </div>
+      </header>
+      <!-- İçerik Template 3 -->
+      <div
+        class="content"
+        style="flex: 1; display: flex; flex-direction: column; align-items: start; justify-content: center; padding:16px; font-size: 10px;"
+      >
+        <div style="padding: 20px; max-width: 800px; margin: auto;">
+
+          <!-- Türkçe Başlık -->
+          <h1 style=" font-weight: bold; margin-bottom: 20px;">İptal, İade ve
+            Değişiklik Şartları</h1>
+
+          <p style=" margin-bottom: 10px;">1- Bazı biletler değişikliğe ve/veya
+            iadeye uygun değildir. Kullanıcılar biletleriyle ilgili ek şartların
+            mevcut olabileceğine özellikle dikkat etmelidir.</p>
+          <p style=" margin-bottom: 10px;">2- Kullanıcı, satın aldığı biletin
+            ait olduğu sınıfa özel iptal/iade kurallarına dikkat etmelidir.
+            İptal/iade edilebilir biletlerde uçuş saatine 12 saatten az kalması
+            durumunda iptal/iade işlemlerinde kullanıcı, ilgili Havayolu
+            Şirketi'nin kendi prensipleri doğrultusunda belirlediği uygulamaları
+            yerine getirmekle yükümlüdür.</p>
+          <p style=" margin-bottom: 10px;">3- Havayolu Şirketleri tarafından
+            belirlenmiş koşullar dahilinde, promosyon biletlerde değişiklik,
+            iptal ve iade yapılamaz.</p>
+          <p style=" margin-bottom: 10px;">4- Kullanıcı, iptal/iade veya
+            değişiklik işlemlerini doğrudan ilgili Havayolu Şirketi üzerinden
+            gerçekleştirirse devamındaki bütün süreçleri yine Havayolu Şirketi
+            ile sürdürmesi gerekmektedir. Kullanıcı, iptal/iade veya değişiklik
+            işlemlerini doğrudan ilgili Havayolu Şirketi ile gerçekleştirdiği
+            takdirde Biletim.com'un kullanıcıyı bilgilendirme sorumluluğunun
+            olmadığını kabul eder.</p>
+          <p style=" margin-bottom: 10px;">5- Biletim.com’dan almış olduğunuz
+            biletlerde, işle yaptığınız havayolu şirketlerinin iptal, iade ve
+            değişiklik kuralları geçerlidir. Bu kurallar havayolu şirketlerine
+            ve bilet alım sınıf farklılıklarına bağlı olarak değişiklik
+            gösterebilir. Havayolu şirketinden, iptal / iade kurallarıyla ilgili
+            bilgi alabilirsiniz. Her koşulda, satın aldığınız biletleme servis
+            ücreti iade edilmez.</p>
+
+          <!-- Check-in İşlemleri -->
+          <h2
+            style=" font-weight: bold; margin-top: 20px; margin-bottom: 10px;"
+          >Check-in İşlemleri</h2>
+
+          <p style=" margin-bottom: 10px;">1- Biletim.com bazı Havayolu
+            Şirketi’nin belirlenen koşullar dahilinde check-in, koltuk seçimi,
+            bagaj, sefer esnasında yemek servisi gibi hizmetler için ekstra
+            ücret talep etmesi halinde doğabilecek ek maliyetlerden sorumlu
+            değildir. Kullanıcı bu tür hizmetler için Havayolu Şirketi ile
+            iletişimde olmalıdır.</p>
+          <p style=" margin-bottom: 10px;">2- Yolcular dış-hat uçuşları için
+            uçuşlarından minimum 120 dakika önce, iç-hat uçuşları için
+            uçuşlarından minimum 90 dakika önce havalimanında olmalıdır.
+            Belirtilen sürelerin daha belli dönemlerde veya kalıcı olarak daha
+            uzun sürelerle uygulanması Havayolu Şirketi’nin takdirinde olup,
+            güncel kural ve uygulamaların takibi Kullanıcı’nın ve yolcunun
+            sorumluluğundadır. Kullanıcıların sefer veya havalimanına geç
+            kalmaları halinde doğabilecek herhangi bir aksaklıktan Biletim.com
+            sorumlu değildir.</p>
+          <p style=" margin-bottom: 10px;">3- Bazı Havayolu Şirketleri dönüş
+            uçuşunu teyit etmek isteyebilir. Yolcular tarafından Havayolu
+            Şirketi’ne bildirilmemeyen teyitler biletin iptaline ve yolcunun
+            sefere alınmamasına sebep olabilir. Bu tarz durumlarda Kullanıcı
+            Biletim.com sorumlu olmadığını kabul ve taahhüt eder.</p>
+
+          <!-- Vize Bilgisi -->
+          <h2
+            style=" font-weight: bold; margin-top: 20px; margin-bottom: 10px;"
+          >Vize Bilgisi</h2>
+
+          <p style=" margin-bottom: 10px;">Lütfen dış hat uçuşlarında
+            gideceğiniz ülkenin gereksinim duyduğu geçerli bir vizeye sahip
+            olduğunuzdan emin olun. Aktarmalı uçuşlar için ise gerekli olan
+            transit vizeyi edinmelisiniz. Vize gereksinimleri hakkında ayrıntılı
+            bilgi almak için ilgili ülkelerin konsolosluklarına başvurmanız
+            gerekmektedir. Vize eksikliği nedeniyle seyahatinizin
+            gerçekleşememesi durumunda Biletim.com sorumluluk taşımamaktadır.</p>
+
+          <p style=" font-style: italic; margin-top: 10px;">* Bu bilet fatura
+            yerine geçmez. E-arşiv faturanız 7 gün içinde e-posta ile size
+            gönderilecektir. Eğer e-fatura mükellefiyseniz, e-faturanız hem
+            e-posta ile gönderilecek hem de e-fatura portalınıza otomatik olarak
+            düşecektir.</p>
+
+          <!-- English Section -->
+          <h1
+            style=" font-weight: bold; margin-top: 30px; margin-bottom: 20px;"
+          >Cancellation, Refund and Change Conditions</h1>
+
+          <p style=" margin-bottom: 10px;">1- Some tickets are not eligible for
+            change and/or refund. Users should pay special attention to the fact
+            that additional terms and conditions may apply to their tickets.</p>
+          <p style=" margin-bottom: 10px;">2- The user should pay attention to
+            the cancellation/refund rules specific to the class to which the
+            purchased ticket belongs. For cancelable/refundable tickets, if
+            there is less than 12 hours before the flight time, the user is
+            obliged to fulfill the practices determined by the Airline Company
+            in accordance with its own principles in cancellation/refund
+            transactions.</p>
+          <p style=" margin-bottom: 10px;">3- Within the conditions determined
+            by the Airline Companies, promotional tickets cannot be changed,
+            canceled and refunded.</p>
+          <p style=" margin-bottom: 10px;">4- If the user performs the
+            cancellation/refund or change transactions directly through the
+            relevant Airline Company, he/she must continue all subsequent
+            processes with the Airline Company. The user accepts that
+            Biletim.com has no responsibility to inform the user.</p>
+          <p style=" margin-bottom: 10px;">5- Tickets you have purchased from
+            Biletim.com are subject to the cancellation, refund and change rules
+            of the airline companies you have made transactions with. These
+            rules may vary depending on airline companies and class differences.
+            You can get information about the cancellation / refund rules from
+            the airline company. Under all circumstances, the ticketing service
+            fee you have purchased is non-refundable.</p>
+
+          <!-- Check-in Procedures -->
+          <h2
+            style="font-weight: bold; margin-top: 20px; margin-bottom: 10px;"
+          >Check-in Procedures</h2>
+
+          <p style=" margin-bottom: 10px;">1- Biletim.com is not responsible for
+            additional costs that may arise if some Airline Company charges
+            extra fees for services such as check-in, seat selection, baggage,
+            meal service during the flight within the specified conditions. The
+            user should contact the Airline Company for such services.</p>
+          <p style=" margin-bottom: 10px;">2- Passengers must be at the airport
+            at least 120 minutes before their flight for international flights
+            and at least 90 minutes before their flight for domestic flights. It
+            is at the discretion of the Airline Company to apply the specified
+            periods in certain periods or permanently for longer periods, and it
+            is the responsibility of the User and the passenger to follow the
+            current rules and practices. Biletim.com is not responsible for any
+            inconvenience that may arise in case the Users are late for the
+            flight or airport. Some Airline Companies may want to confirm the
+            return flight. Confirmations not notified to the Airline Company by
+            the passengers may cause the ticket to be canceled or the passenger
+            not to be taken on the flight. In such cases, the User accepts and
+            undertakes that Biletim.com is not responsible.</p>
+
+          <!-- Visa Information -->
+          <h2
+            style=" font-weight: bold; margin-top: 20px; margin-bottom: 10px;"
+          >Visa Information</h2>
+
+          <p style=" margin-bottom: 10px;">Please make sure that you have a
+            valid visa required by your destination country for international
+            flights. For connecting flights, you must obtain the necessary
+            transit visas. For detailed information about visa requirements, you
+            should contact the consulates of the relevant countries. Biletim.com
+            does not bear any responsibility in case your trip cannot be
+            realized due to lack of visa.</p>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
