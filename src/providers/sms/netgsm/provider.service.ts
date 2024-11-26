@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NetGsmConfigService } from '@app/configs/netgsm';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
+import * as dayjs from "dayjs";
 
 @Injectable()
 export class NetGsmProviderService {
@@ -20,9 +21,9 @@ export class NetGsmProviderService {
     formData.append('message', messsage);
     formData.append('msgheader', 'Biletim.com');
     formData.append('filter', '0');
-    formData.append('startdate', '230520221650');
-    formData.append('stopdate', '230520221830');
-    formData.append('appkey', this.netGsmConfigService.netGsmAppKey);
+    // formData.append('startdate', dayjs(Date.now()).format("ddMMyyyyHHmm"));
+    // formData.append('stopdate', '');
+    // formData.append('appkey', this.netGsmConfigService.netGsmAppKey);
     return this.restClientService.request(
       {
         method: "POST",
