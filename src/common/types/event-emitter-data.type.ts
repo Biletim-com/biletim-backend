@@ -6,32 +6,40 @@ type Attachment = {
 
 type PlanePassenger = {
   passengerFullName: string;
+  tcNumber: string;
   ticketNumber: string;
   pnrNumber: string;
 };
 
 type BusPassenger = {
   passengerFullName: string;
+  tcNumber: string;
+  pnrNumber: string;
   seatNumber: string;
   amount: string;
-  pnrNumber: string;
-  gender: string;
-  tcNumber: string;
+  gender: 'Erkek' | 'Kadın';
 };
 
 type Flight = {
   airlineCompany: string;
-  departureAirport: string;
-  arrivalAirport: string;
+  departureAirportCode: string;
+  departureAirportName: string;
+  departureAirportCity: string;
+  arrivalAirportCode: string;
+  arrivalAirportName: string;
+  arrivalAirportCity: string;
   flightNumber: string;
+  flightClass: string;
   flightClassType: string;
   flightClassName: string;
+  flightDuration: string;
   luggageAllowance?: Nullable<string>;
   cabinLuggageAllowance?: Nullable<string>;
   luggageAllowanceDetails: string;
-  departureDateTime: string;
-  arrivalDateTime: string;
-  flightDuration: string;
+  departureDate: string;
+  departureTime: string;
+  arrivalDate: string;
+  arrivalTime: string;
   pnrNumber: string;
 };
 
@@ -45,6 +53,7 @@ type BusTrip = {
 
 export type BusTicketEmailTemplateData = {
   pnrNumber: string;
+  companyLogo: string;
   trip: BusTrip;
   passengers: BusPassenger[];
 };
@@ -67,12 +76,6 @@ export type SendVerifyAccountEmailNotification = {
 export type SendResetPasswordEmailNotification = {
   recipient: string;
   forgotPasswordCode: string;
-};
-
-export type SendBusTicketGeneratedEmailNotication = {
-  recipient: string;
-  ticketTemplateData: BusTicketEmailTemplateData;
-  attachments: Attachment[];
 };
 
 export type SendPlaneTicketGeneratedEmailNotication = {

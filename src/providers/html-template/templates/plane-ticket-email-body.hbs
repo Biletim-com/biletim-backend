@@ -87,49 +87,67 @@
     
     {{#each departureFlights}}
         <p><strong>{{this.airlineCompany}}</strong></p>
-        <p>{{this.departureAirport}} → {{this.arrivalAirport}}   {{this.flightNumber}}  Sınıf: {{this.flightClassType}}</p>
-        <p><strong>{{this.flightClassName}}</strong></p> {{!-- Eko or Busines --}}
-        <p>{{this.cabinLuggageAllowance}} · {{this.luggageAllowance}}</p>
+        <p>{{this.departureAirportCode}} → {{this.arrivalAirportCode}}   {{this.flightNumber}}  Sınıf: {{this.flightClassType}}</p>
+        <p style="margin: 0;" ><strong>{{this.flightClassName}}</strong></p> {{!-- Eko or Busines --}}
+        <p style="margin: 0;" >{{this.cabinLuggageAllowance}} · {{this.luggageAllowance}}</p>
 
-        <table style="width: 100%; border-spacing: 0; border-collapse: collapse; margin-top: 10px;">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
             <tr>
-                <td style="width: 20px; vertical-align: middle;">
+                <td style="width: 20px;">
                     <img src="https://biletimlanding.westerops.com/icons/ic_flight_takeoff_48px.png" style="width: 20px; height: 20px;">
                 </td>
                 <td style="vertical-align: middle; padding-left: 5px;">
-                    <p style="margin: 0;"><strong>Kalkış:</strong> {{this.departureDateTime}} - {{this.departureAirport}}</p>
+                    <p style="margin: 0;"><strong>Kalkış:</strong></p>
+                    <p style="margin: 0;">{{this.departureDate}} {{this.departureTime}} - {{this.departureAirportCity}} ({{this.departureAirportName}})</p>
                 </td>
             </tr>
             <tr>
-                <td style="width: 20px; vertical-align: middle;">
+                <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="width: 20px; vertical-align: top;">
                     <img src="https://biletimlanding.westerops.com/icons/ic_flight_land_48px.png" style="width: 20px; height: 20px;">
                 </td>
                 <td style="vertical-align: middle; padding-left: 5px;">
-                    <p style="margin: 0;"><strong>Varış:</strong> {{this.arrivalDateTime}} - {{this.arrivalAirport}}</p>
+                    <p style="margin: 0;"><strong>Varış:</strong></p>
+                    <p style="margin: 0;">{{this.arrivalDate}} {{this.arrivalTime}} - {{this.arrivalAirportCity}} ({{this.arrivalAirportName}})</p>
                 </td>
             </tr>
             <tr>
-                <td style="width: 20px; vertical-align: middle;">
+                <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="width: 20px; vertical-align: top;">
                     <img src="https://biletimlanding.westerops.com/icons/ic_clock.png" style="width: 20px; height: 20px;">
                 </td>
                 <td style="vertical-align: middle; padding-left: 5px;">
-                    <p style="margin: 0;"><strong>Toplam Seyahat Süresi:</strong> {{this.flightDuration}}</p>
+                    <p style="margin: 0;"><strong>Toplam Seyahat Süresi:</strong></p>
+                    <p style="margin: 0;">{{this.flightDuration}}</p>
                 </td>
             </tr>
             <tr>
-                <td style="width: 20px; vertical-align: middle;">
+                <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="width: 20px; vertical-align: top;">
                     <img src="https://biletimlanding.westerops.com/icons/ic_luggage.png" style="width: 20px; height: 20px;">
                 </td>
                 <td style="vertical-align: middle; padding-left: 5px;">
-                    <p style="margin: 0;"><strong>Bagaj Hakkı:</strong> {{this.luggageAllowanceDetails}}</p>
+                    <p style="margin: 0;"><strong>Bagaj Hakkı:</strong></p>
+                    <p style="margin: 0;" >{{this.luggageAllowance}}</p>
+                    <p style="margin: 0;" >{{this.cabinLuggageAllowance}}</p>
                 </td>
             </tr>
             <tr>
-                <td style="width: 20px; vertical-align: middle;">
+                <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="width: 20px; vertical-align: top;">
                     <img src="https://biletimlanding.westerops.com/icons/ic_receipt_48px.png" style="width: 20px; height: 20px;">
                 </td>
                 <td style="vertical-align: middle; padding-left: 5px;">
-                    <p style="margin: 0;"><strong>PNR (Rezervasyon Numarası):</strong> {{pnrNumber}}</p>
+                    <p style="margin: 0;"><strong>PNR (Rezervasyon Numarası):</strong> </p>
+                    <p style="margin: 0;" >{{this.pnrNumber}}</p>
                 </td>
             </tr>
         </table>
@@ -149,49 +167,67 @@
         </table>
             {{#each returnFlights}}
                 <p><strong>{{this.airlineCompany}}</strong></p>
-                <p>{{this.departureAirport}} → {{this.arrivalAirport}}   {{this.flightNumber}}  Sınıf: {{this.flightClassType}}</p>
-                <p><strong>{{this.flightClassName}}</strong></p> {{!-- Eko or Business --}}
-                <p>{{this.cabinLuggageAllowance}} · {{this.luggageAllowance}}</p>
+                <p>{{this.departureAirportCode}} → {{this.arrivalAirportCode}}   {{this.flightNumber}}  Sınıf: {{this.flightClassType}}</p>
+                <p style="margin: 0;" ><strong>{{this.flightClassName}}</strong></p> {{!-- Eko or Business --}}
+                <p style="margin: 0;" >{{this.cabinLuggageAllowance}} · {{this.luggageAllowance}}</p>
 
-                <table style="width: 100%; border-spacing: 0; border-collapse: collapse; margin-top: 10px;">
+                <table style="width: 100%; border-spacing: 0 10px; border-collapse: collapse; margin-top: 10px;">
                     <tr>
-                        <td style="width: 20px; vertical-align: middle;">
+                        <td style="width: 20px; vertical-align: top;">
                             <img src="https://biletimlanding.westerops.com/icons/ic_flight_takeoff_48px.png" style="width: 20px; height: 20px;">
                         </td>
                         <td style="vertical-align: middle; padding-left: 5px;">
-                            <p style="margin: 0;"><strong>Kalkış:</strong> {{this.departureDateTime}} - {{this.departureAirport}}</p>
+                            <p style="margin: 0;"><strong>Kalkış:</strong></p>
+                            <p style="margin: 0;">{{this.departureDate}} {{this.departureTime}} - {{this.departureAirportCity}} ({{this.departureAirportName}})</p>
                         </td>
                     </tr>
                     <tr>
-                        <td style="width: 20px; vertical-align: middle;">
+                        <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 20px; vertical-align: top;">
                             <img src="https://biletimlanding.westerops.com/icons/ic_flight_land_48px.png" style="width: 20px; height: 20px;">
                         </td>
                         <td style="vertical-align: middle; padding-left: 5px;">
-                            <p style="margin: 0;"><strong>Varış:</strong> {{this.arrivalDateTime}} - {{this.arrivalAirport}}</p>
+                            <p style="margin: 0;"><strong>Varış:</strong> </p>
+                            <p style="margin: 0;">{{this.arrivalDate}} {{this.arrivalTime}} - {{this.arrivalAirportCity}} ({{this.arrivalAirportName}})</p>
                         </td>
                     </tr>
                     <tr>
-                        <td style="width: 20px; vertical-align: middle;">
+                        <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 20px; vertical-align: top;">
                             <img src="https://biletimlanding.westerops.com/icons/ic_clock.png" style="width: 20px; height: 20px;">
                         </td>
                         <td style="vertical-align: middle; padding-left: 5px;">
-                            <p style="margin: 0;"><strong>Toplam Seyahat Süresi:</strong> {{this.flightDuration}}</p>
+                            <p style="margin: 0;"><strong>Toplam Seyahat Süresi:</strong></p>
+                            <p style="margin: 0;">{{this.flightDuration}}</p>
                         </td>
                     </tr>
                     <tr>
-                        <td style="width: 20px; vertical-align: middle;">
+                        <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 20px; vertical-align: top;">
                             <img src="https://biletimlanding.westerops.com/icons/ic_luggage.png" style="width: 20px; height: 20px;">
                         </td>
                         <td style="vertical-align: middle; padding-left: 5px;">
-                            <p style="margin: 0;"><strong>Bagaj Hakkı:</strong> {{this.luggageAllowanceDetails}}</p>
+                            <p style="margin: 0;"><strong>Bagaj Hakkı:</strong></p>
+                            <p style="margin: 0;" >{{this.luggageAllowance}}</p>
+                            <p style="margin: 0;" >{{this.cabinLuggageAllowance}}</p>
                         </td>
                     </tr>
                     <tr>
-                        <td style="width: 20px; vertical-align: middle;">
+                        <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 20px; vertical-align: top;">
                             <img src="https://biletimlanding.westerops.com/icons/ic_receipt_48px.png" style="width: 20px; height: 20px;">
                         </td>
                         <td style="vertical-align: middle; padding-left: 5px;">
-                            <p style="margin: 0;"><strong>PNR (Rezervasyon Numarası):</strong> {{pnrNumber}}</p>
+                            <p style="margin: 0;"><strong>PNR (Rezervasyon Numarası):</strong> </p>
+                            <p style="margin: 0;" >{{this.pnrNumber}}</p>
                         </td>
                     </tr>
                 </table>

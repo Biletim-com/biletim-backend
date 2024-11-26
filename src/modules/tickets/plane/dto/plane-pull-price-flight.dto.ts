@@ -19,7 +19,7 @@ import {
 } from '../services/biletall/types/biletall-plane-pull-price-flight.type';
 
 // dtos
-import { FlightSegmentDto } from '@app/common/dtos';
+import { FlightSegmentWithoutFareDetailsDto } from '@app/common/dtos';
 
 export class PullPriceFlightRequestDto {
   @ApiProperty({
@@ -33,12 +33,12 @@ export class PullPriceFlightRequestDto {
 
   @ApiProperty({
     description: 'The list of flight segments.',
-    type: [FlightSegmentDto],
+    type: [FlightSegmentWithoutFareDetailsDto],
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => FlightSegmentDto)
-  segments: FlightSegmentDto[];
+  @Type(() => FlightSegmentWithoutFareDetailsDto)
+  segments: Array<FlightSegmentWithoutFareDetailsDto>;
 
   @ApiProperty({
     description: 'The number of adults.',

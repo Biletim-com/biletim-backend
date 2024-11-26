@@ -9,8 +9,8 @@ import {
 } from 'class-validator';
 
 // dtos
+import { FlightSegmentWithoutFareDetailsDto } from '@app/common/dtos';
 import { PullPriceFlightRequestDto } from './plane-pull-price-flight.dto';
-import { FlightSegmentDto } from '@app/common/dtos';
 
 // types
 import {
@@ -27,7 +27,7 @@ import {
   SeatBaggage,
 } from '../services/biletall/types/biletall-plane-pull-abroad-flight-price-packages.type';
 
-class PullAbroadFlightPricePackagesSegmentDto extends FlightSegmentDto {
+class PullAbroadFlightPricePackagesSegmentDto extends FlightSegmentWithoutFareDetailsDto {
   @ApiProperty({
     description: 'Flight segment code (SeferKod).',
     example:

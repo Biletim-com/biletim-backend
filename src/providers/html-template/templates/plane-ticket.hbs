@@ -2,7 +2,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Birleştirilmiş Şablon</title>
+    <title>Ucak biletiniz</title>
     <style>
       @page { size: A4; margin: 32px; border: 1.8px solid #37C1F0; } body {
       width: 210mm; height: 297mm; margin: 0; padding: 0; box-sizing:
@@ -16,11 +16,7 @@
       <header
         style="padding:16px; width: 100%; border-bottom:1px solid #37C1F0 ; display: flex; flex-direction: row; align-items: center; justify-content: space-between; background-color: #e1f3f0;"
       >
-        <img
-          src="https://biletimlanding.westerops.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon.fee63e71.png&w=1920&q=75%22"
-          alt="biletim-logo"
-          height="32px"
-        />
+        <img src="https://biletimlanding.westerops.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon.fee63e71.png&w=1920&q=75%22" alt="biletim-logo" height="32px"/>
         <div
           style="display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 4px;"
         >
@@ -43,17 +39,15 @@
         class="content"
         style="flex: 1; display: flex; flex-direction: column; align-items: start; justify-content: center; padding:32px;"
       >
-        <h3>Merhaba, {{passengerFullName}}</h3>
+        <h3>Merhaba, {{passengers.0.passengerFullName}}</h3>
         <h2 style="font-style: italic; font-size: 32px;">Yeni keşifler için
           hazırsın!</h2>
         <p>Uçak biletinizi Biletim.com'dan online alarak bizimle birlikte yeni
           bir keşfe çıkıyorsunuz.
           <br />
           Teşekkürler
-        </p>
-
-        <div style="height: 200px; width: 400px;">biletim illustration</div>
-
+        </p>        
+          <img src="https://biletimlanding.westerops.com/icons/pdf-illustration.png" alt="illusturation" width="600" height="300"/>
         <p>
           <strong>Bilet detaylarını sonraki sayfalarda bulabilirsiniz. </strong>
           İyi uçuşlar!
@@ -108,234 +102,153 @@
           style="font-size: 16px; font-weight: bold; margin-bottom: 10px;"
         >Yolcu Bilgileri</h2>
         {{#each passengers}}
-          <h2 style="font-size: 16px; font-weight: bold; margin-top: 20px;">
+           <h2 style="font-size: 16px; font-weight: bold; margin-top: 20px;">
             Yolcu
-            {{@index}}</h2>
+            {{#if (moreThanOne ../passengers)}}
+              {{inc @index}}
+            {{/if}}
+          </h2>
           <table
             style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1.5px solid #04B1EC"
           >
             <thead>
               <tr>
-                <th
-                  style="text-align: left; padding: 8px; font-size: 14px;"
-                >Bilet No</th>
-                <th
-                  style="text-align: left; padding: 8px; font-size: 14px;"
-                >Rezervasyon No (PNR)</th>
-                <th
-                  style="text-align: left; padding: 8px; font-size: 14px;"
-                >Yolcu Adı</th>
-                <th style="text-align: left; padding: 8px; font-size: 14px;">T.C
-                  Kimlik No</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Bilet No</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Rezervasyon No (PNR)</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Yolcu Adı</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">T.C Kimlik No</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td
-                  style="padding: 8px; font-size: 14px;"
-                >{{this.ticketNumber}}</td>
-                <td
-                  style="padding: 8px; font-size: 14px; font-weight: bold;"
-                >{{this.pnrNumber}}</td>
-                <td
-                  style="padding: 8px; font-size: 14px; font-weight: bold;"
-                >{{this.passengerFullName}}</td>
-                <td
-                  style="padding: 8px; font-size: 14px;"
-                >{{this.pnrNumber}}</td>
+                <td style="padding: 8px; font-size: 14px;">{{this.ticketNumber}}</td>
+                <td style="padding: 8px; font-size: 14px; font-weight: bold;">{{this.pnrNumber}}</td>
+                <td style="padding: 8px; font-size: 14px; font-weight: bold;">{{this.passengerFullName}}</td>
+                <td style="padding: 8px; font-size: 14px;" >{{this.tcNumber}}</td>
               </tr>
             </tbody>
           </table>
         {{/each}}
 
         <!-- Uçuş Detayları -->
-        <h2
-          style="font-size: 16px; font-weight: bold; margin-bottom: 10px; "
-        >Uçuş Detayları</h2>
+        <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px; ">Uçuş Detayları</h2>
 
-        <h3
-          style="font-size: 14px; font-weight: bold; margin-bottom: 5px;"
-        >Gidiş</h3>
-        <p style="margin: 0 0 5px;">{{departureFlights.0.departureAirport}}</p>
+        <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 5px;" >Gidiş</h3>
+        {{#each departureFlights}}
+          <p style="margin: 0 0 5px;">{{this.departureAirportCity}} ({{this.departureAirportName}})</p>
 
-        <p style="margin: 0 0 5px;">{{departureFlights.0.arrivalAirport}}</p>
+          <p style="margin: 0 0 5px;">{{this.arrivalAirportCity}} ({{this.arrivalAirportName}})</p>
 
-        <table
-          style="width: 100%; border-collapse: collapse; margin-bottom: 20px; "
-        >
-          <thead>
-            <tr>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Havayolu</th>
-              <th style="text-align: left; padding: 8px; font-size: 14px;">Uçuş
-                Kodu</th>
-              <th style="text-align: left; padding: 8px; font-size: 14px;">Uçuş
-                Sınıfı</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td
-                style="padding: 8px; font-size: 14px;"
-              >{{departureFlights.0.airlineCompany}}</td>
-              <td
-                style="padding: 8px; font-size: 14px;"
-              >{{departureFlights.0.flightCode}}</td>
-              <td
-                style="padding: 8px; font-size: 14px;"
-              >{{departureFlights.0.flightClass}}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <table
+            style="width: 100%; border-collapse: collapse; margin-bottom: 20px;"
+          >
+            <thead>
+              <tr>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Havayolu</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Uçuş Kodu</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Uçuş Sınıfı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 8px; font-size: 14px;">{{this.airlineCompany}}</td>
+                <td style="padding: 8px; font-size: 14px;">{{this.flightNumber}}</td>
+                <td style="padding: 8px; font-size: 14px;">{{this.flightClass}}({{this.flightClassName}})</td>
+              </tr>
+            </tbody>
+          </table>
 
-        <table
-          style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1.5px solid #04B1EC"
-        >
-          <thead>
-            <tr>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Kalkış</th>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Varış</th>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Tarih</th>
-              <th style="text-align: left; padding: 8px; font-size: 14px;">Bagaj
-                Hakkı</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td
-                style="padding: 8px; font-size: 14px; font-weight: bold;"
-              >{{departureFlights.0.departureDateTime}}</td>
-              <td
-                style="padding: 8px; font-size: 14px; "
-              >{{departureFlights.0.arrivalDateTime}}</td>
-              <td
-                style="padding: 8px; font-size: 14px; font-weight: bold;"
-              >{{departureFlights.0.arrivalDateTime}}</td>
-              <td
-                style="padding: 8px; font-size: 14px;"
-              >{{departureFlights.0.luggageAllowance}}</td>
-            </tr>
-          </tbody>
-        </table>
+          <table
+            style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1.5px solid #04B1EC"
+          >
+            <thead>
+              <tr>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Kalkış</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Varış</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Tarih</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Bagaj Hakkı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 8px; font-size: 14px; font-weight: bold;">{{this.departureTime}}</td>
+                <td style="padding: 8px; font-size: 14px; ">{{this.arrivalTime}}</td>
+                <td style="padding: 8px; font-size: 14px; font-weight: bold;">{{this.departureDate}}</td>
+                <td style="padding: 8px; font-size: 14px;">{{this.luggageAllowance}}</td>
+              </tr>
+            </tbody>
+          </table>
+        {{/each}}
 
-        <h3
-          style="font-size: 14px; font-weight: bold; margin-bottom: 5px;"
-        >Dönüş</h3>
-        <p style="margin: 0 0 5px;">{{returnFlights.0.departureAirport}}</p>
-        <p style="margin: 0 0 5px;">{{returnFlights.0.arrivalAirport}}</p>
+        {{#each returnFlights}}
 
-        <table
-          style="width: 100%; border-collapse: collapse; margin-bottom: 20px; "
-        >
-          <thead>
-            <tr>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Havayolu</th>
-              <th style="text-align: left; padding: 8px; font-size: 14px;">Uçuş
-                Kodu</th>
-              <th style="text-align: left; padding: 8px; font-size: 14px;">Uçuş
-                Sınıfı</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td
-                style="padding: 8px; font-size: 14px;"
-              >{{returnFlights.0.airlineCompany}}</td>
-              <td
-                style="padding: 8px; font-size: 14px;"
-              >{{returnFlights.0.flightCode}}</td>
-              <td
-                style="padding: 8px; font-size: 14px;"
-              >{{returnFlights.0.flightClass}}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">Dönüş</h3>
+          <p style="margin: 0 0 5px;">{{this.departureAirportCity}} ({{this.departureAirportName}})</p>
+          <p style="margin: 0 0 5px;">{{this.arrivalAirportCity}} ({{this.arrivalAirportName}})</p>
 
-        <table
-          style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1.5px solid #04B1EC"
-        >
-          <thead>
-            <tr>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Kalkış</th>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Varış</th>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Tarih</th>
-              <th style="text-align: left; padding: 8px; font-size: 14px;">Bagaj
-                Hakkı</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td
-                style="padding: 8px; font-size: 14px; font-weight: bold;"
-              >{{returnFlights.0.departureDateTime}}</td>
-              <td
-                style="padding: 8px; font-size: 14px; font-weight: bold;"
-              >{{returnFlights.0.arrivalDateTime}}</td>
-              <td
-                style="padding: 8px; font-size: 14px;"
-              >{{returnFlights.0.arrivalDateTime}}</td>
-              <td
-                style="padding: 8px; font-size: 14px;"
-              >{{returnFlights.0.luggageAllowance}}</td>
-            </tr>
-          </tbody>
-        </table>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; ">
+            <thead>
+              <tr>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Havayolu</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;" >Uçuş Kodu</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;" >Uçuş Sınıfı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 8px; font-size: 14px;">{{this.airlineCompany}}</td>
+                <td style="padding: 8px; font-size: 14px;">{{this.flightNumber}}</td>
+                <td style="padding: 8px; font-size: 14px;">{{this.flightClass}}({{this.flightClassName}})</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <table
+            style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1.5px solid #04B1EC"
+          >
+            <thead>
+              <tr>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Kalkış</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Varış</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Tarih</th>
+                <th style="text-align: left; padding: 8px; font-size: 14px;">Bagaj Hakkı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 8px; font-size: 14px; font-weight: bold;">{{this.departureTime}}</td>
+                <td style="padding: 8px; font-size: 14px; font-weight: bold;">{{this.arrivalTime}}</td>
+                <td style="padding: 8px; font-size: 14px;">{{this.departureDate}}</td>
+                <td style="padding: 8px; font-size: 14px;">{{this.luggageAllowance}}</td>
+              </tr>
+            </tbody>
+          </table>
+
+        {{/each}}
 
         <!-- Fatura ve Ödeme Bilgileri -->
-        <h2
-          style="font-size: 16px; font-weight: bold; margin-bottom: 10px;"
-        >Fatura ve Ödeme Bilgileri</h2>
-        <p style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">Ayça
-          Karaduman</p>
+        <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Fatura ve Ödeme Bilgileri</h2>
+        <p style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">{{passenger.0.passengerFullName}}</p>
 
         <table
           style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 1.5px solid #04B1EC"
         >
           <thead>
             <tr>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Ödeme</th>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Fiyat</th>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Vergi</th>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Hizmet Bedeli</th>
-              <th
-                style="text-align: left; padding: 8px; font-size: 14px;"
-              >Toplam</th>
+              <th style="text-align: left; padding: 8px; font-size: 14px;">Ödeme</th>
+              <th style="text-align: left; padding: 8px; font-size: 14px;">Fiyat</th>
+              <th style="text-align: left; padding: 8px; font-size: 14px;">Vergi</th>
+              <th style="text-align: left; padding: 8px; font-size: 14px;">Hizmet Bedeli</th>
+              <th style="text-align: left; padding: 8px; font-size: 14px;">Toplam</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="padding: 8px; font-size: 14px;">Kredi Kartı</td>
-              <td style="padding: 8px; font-size: 14px;">2.867,90 ₺</td>
-              <td style="padding: 8px; font-size: 14px;">408,31 ₺</td>
-              <td style="padding: 8px; font-size: 14px;">22,00 ₺</td>
-              <td
-                style="padding: 8px; font-size: 14px; font-weight: bold;"
-              >2.867,90 ₺</td>
+              <td style="padding: 8px; font-size: 14px;">{{invoice.paymentType}}</td>
+              <td style="padding: 8px; font-size: 14px;">{{invoice.amount}} ₺</td>
+              <td style="padding: 8px; font-size: 14px;">{{invoice.tax}} ₺</td>
+              <td style="padding: 8px; font-size: 14px;">{{invoice.serviceFee}} ₺</td>
+              <td style="padding: 8px; font-size: 14px; font-weight: bold;">{{invoice.totalAmount}}₺</td>
             </tr>
           </tbody>
         </table>

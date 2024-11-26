@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
@@ -142,3 +142,8 @@ export class FlightSegmentDto {
   @IsOptional()
   isReturnFlight: boolean;
 }
+
+export class FlightSegmentWithoutFareDetailsDto extends OmitType(
+  FlightSegmentDto,
+  ['flightFareDetails'] as const,
+) {}
