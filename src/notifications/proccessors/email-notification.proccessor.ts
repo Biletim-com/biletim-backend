@@ -25,6 +25,10 @@ export class EmailNotificationProcessor implements INotificationProccessor {
       to: recipient,
       subject,
       ...options,
+      attachments: options.attachments?.map((attachment) => ({
+        ...attachment,
+        content: Buffer.from(attachment.content as Buffer),
+      })),
     });
   }
 }
