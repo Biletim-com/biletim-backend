@@ -12,10 +12,12 @@ import { EmailNotificationService } from './services/email-notification.service'
 
 // processors
 import { EmailNotificationProcessor } from './proccessors/email-notification.proccessor';
-import { QueueProviderModule } from '@app/providers/queue/provider.module';
 import { QueueEnum } from '@app/common/enums';
 import { SMSNotificationProcessor } from './proccessors/sms-notification.proccessor';
 import { SMSNotificationService } from './services/sms-notification.service';
+
+// helpers
+import { HandlerbarsHelper } from '@app/common/helpers';
 
 @Module({
   imports: [

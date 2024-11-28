@@ -1,6 +1,6 @@
 import {
-  SendSmsNotificationDto,
   SendVerifyAccountEmailNotificationDto,
+  SendSmsNotificationDto,
 } from '@app/common/dtos';
 
 export type UserEventsMap = {

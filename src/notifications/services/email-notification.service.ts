@@ -16,9 +16,7 @@ import { OnEvent, OnEvents } from '@app/providers/event-emitter/decorators';
 
 // types
 import {
-  SendResetPasswordEmailNotification,
   SendPlaneTicketGeneratedEmailNotication,
-  SendVerifyAccountEmailNotification,
   BusTicketEmailTemplateData,
 } from '@app/common/types';
 

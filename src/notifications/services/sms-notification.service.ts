@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { SendSmsNotificationDto, SendVerifyAccountEmailNotificationDto } from '@app/common/dtos/send-email-notification.dto';
+import { SendSmsNotificationDto } from '@app/common/dtos';
 import { OnEvent, OnEvents } from '@app/providers/event-emitter/decorators';
 
 import { AuthConfigService } from '@app/configs/auth';
@@ -14,18 +14,14 @@ export class SMSNotificationService {
 
   constructor(
     @InjectQueue(QueueEnum.SMS_QUEUE)
-    private readonly queue: Queue
-  ) { }
+    private readonly queue: Queue,
+  ) {}
 
   @OnEvent('user.sms')
-  async sendSms({
-    messsage,
-    gsmno,
-  }: SendSmsNotificationDto): Promise<void> {
+  async sendSms({ messsage, gsmno }: SendSmsNotificationDto): Promise<void> {
     await this.queue.add({
       messsage,
-      gsmno
+      gsmno,
     });
-}
-
+  }
 }
