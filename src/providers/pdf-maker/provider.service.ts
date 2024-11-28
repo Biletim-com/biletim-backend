@@ -1,5 +1,6 @@
+import { getContainerIp } from '@app/common/utils/get-container-ip.util';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import puppeteer, { Browser } from 'puppeteer';
+import puppeteer, { Browser } from 'puppeteer-core';
 
 @Injectable()
 export class PdfMakerService implements OnModuleInit {
@@ -11,12 +12,21 @@ export class PdfMakerService implements OnModuleInit {
   };
 
   async onModuleInit() {
-    this.browser = await puppeteer.launch({
-      headless: true,
-      executablePath: '/usr/bin/chromium-browser',
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      pipe: true,
-    });
+    console.log('START MODULE');
+
+    const containerIp = await getContainerIp('chromium');
+
+    const webSocket = await fetch(`http://${containerIp}:9222/json/version`);
+    const { webSocketDebuggerUrl } = await webSocket.json();
+
+    try {
+      this.browser = await puppeteer.connect({
+        browserWSEndpoint: webSocketDebuggerUrl,
+      });
+    } catch (err) {
+      console.log('ERROR', err);
+    }
+
     this.logger.log('Puppeteer browser is initialized');
   }
 

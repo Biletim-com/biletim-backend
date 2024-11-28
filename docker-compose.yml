@@ -65,6 +65,15 @@ services:
     volumes:
       - biletim-redis-vol:/data
     command: ["redis-server", "--appendonly", "yes"]
+  
+  chromium:
+    build:
+      context: .
+      dockerfile: Dockerfile-chromium
+    ports:
+      - 9222:9222
+    networks:
+      - biletim-network
 
 volumes:
   biletim-vol:

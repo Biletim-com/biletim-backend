@@ -15,15 +15,6 @@ COPY ormconfig.ts ./
 COPY open-zst.script.ts ./
 
 RUN apk add --no-cache \
-    # Install Chromium browser
-    chromium \
-    # Chromium dependencies
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    # Essentials for building native modules and handling zstd
     build-base \
     python3 \
     zstd
@@ -31,7 +22,6 @@ RUN apk add --no-cache \
 
 # Set Puppeteer environment variables
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Install PNPM and dependencies
 RUN npm install -g pnpm
@@ -58,15 +48,6 @@ COPY open-zst.script.ts ./
 COPY docker-entrypoint.sh ./
 
 RUN apk add --no-cache \
-    # Install Chromium browser
-    chromium \
-    # Chromium dependencies
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    # Essentials for building native modules and handling zstd
     build-base \
     python3 \
     zstd && \
@@ -74,7 +55,6 @@ RUN apk add --no-cache \
 
 # Set Puppeteer environment variables
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 RUN npm install -g pnpm
 RUN pnpm install --prod && \
