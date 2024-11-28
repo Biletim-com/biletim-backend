@@ -6,13 +6,14 @@ import { OnEvent, OnEvents } from '@app/providers/event-emitter/decorators';
 import { AuthConfigService } from '@app/configs/auth';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { QueueEnum } from '@app/common/enums';
 
 @Injectable()
 export class EmailNotificationService {
   private readonly logger = new Logger(EmailNotificationService.name);
 
   constructor(
-    @InjectQueue('emailQueue')
+    @InjectQueue(QueueEnum.EMAIL_QUEUE)
     private readonly queue: Queue,
     private readonly authConfigService: AuthConfigService,
   ) {}
