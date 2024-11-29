@@ -1,4 +1,4 @@
-import { getContainerIp } from '@app/common/utils/get-container-ip.util';
+import { ChromiumConfigService } from '@app/configs/chromium';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import puppeteer, { Browser } from 'puppeteer-core';
 
@@ -6,28 +6,19 @@ import puppeteer, { Browser } from 'puppeteer-core';
 export class PdfMakerService implements OnModuleInit {
   private browser: Browser;
   private logger = new Logger(PdfMakerService.name);
-  private options = {
-    format: 'a4' as const,
-    scale: 0.78,
-  };
+  private options = { format: 'a4' as const };
+
+  constructor(private readonly chromiumConfigService: ChromiumConfigService) {}
 
   async onModuleInit() {
-    console.log('START MODULE');
-
-    const containerIp = await getContainerIp('chromium');
-
-    const webSocket = await fetch(`http://${containerIp}:9222/json/version`);
-    const { webSocketDebuggerUrl } = await webSocket.json();
-
     try {
       this.browser = await puppeteer.connect({
-        browserWSEndpoint: webSocketDebuggerUrl,
+        browserWSEndpoint: `ws://${this.chromiumConfigService.host}:${this.chromiumConfigService.port}`,
       });
+      this.logger.log('Chromium browser is initialized');
     } catch (err) {
-      console.log('ERROR', err);
+      this.logger.error(`Error connecting to Chromium: ${err.message}`);
     }
-
-    this.logger.log('Puppeteer browser is initialized');
   }
 
   public async createPdf(html: string): Promise<Uint8Array> {

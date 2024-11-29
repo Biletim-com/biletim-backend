@@ -34,5 +34,11 @@ declare namespace NodeJS {
     REDIS_HOST: string;
     REDIS_PORT: string;
     REDIS_PASSWORD: string;
+    NETGSM_BASE_URL: string;
+    NETGSM_USERNAME: string;
+    NETGSM_PASSWORD: string;
+    NETGSM_APP_KEY: string;
+    CHOROMIUM_HOST: string;
+    CHOROMIUM_PORT: string;
   }
 }

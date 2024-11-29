@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
 
@@ -7,7 +6,7 @@ import { Job } from 'bull';
 import { INotificationProccessor } from '../interfaces/notification.interface';
 
 // types
-import { NotificationsOptions, SMSNotificationsOptions } from '../types/send-notifications-options.type';
+import { SMSNotificationsOptions } from '../types/send-notifications-options.type';
 
 // enums
 import { QueueEnum } from '@app/common/enums';
@@ -22,10 +21,6 @@ export class SMSNotificationProcessor implements INotificationProccessor {
   @Process()
   async send(job: Job<SMSNotificationsOptions>) {
     const { messsage, gsmno } = job.data;
-    await this.smsService.sendSMS(
-      messsage,
-      gsmno
-    );
-    
+    await this.smsService.sendSMS(messsage, gsmno);
   }
 }

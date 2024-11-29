@@ -13,4 +13,5 @@ export default {
   NOTIFICATIONS: 'notifications',
   PAYMENT: 'payment',
   TAMAMLIYO_API: 'tamamliyo_api',
+  CHROMIUM: 'chromium',
 };
