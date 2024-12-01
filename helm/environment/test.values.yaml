@@ -82,7 +82,7 @@ biletim_api:
     NETGSM_USERNAME: '3626060962'
     NETGSM_PASSWORD: '41914FA'
     NETGSM_APP_KEY: 'xxx'
-    CHOROMIUM_HOST: biletim-chromium
+    CHOROMIUM_HOST: 'biletim-chromium-866d4dd5b4-ztv8k'
     CHOROMIUM_PORT: 9222
 
   volumeMounts:
