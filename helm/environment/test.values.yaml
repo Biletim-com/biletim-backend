@@ -78,10 +78,12 @@ biletim_api:
     REDIS_HOST: biletim-redis
     REDIS_PORT: 6379
     REDIS_PASSWORD: 'my-password'
-    NETGSM_BASE_URL: "https://api.netgsm.com.tr"
-    NETGSM_USERNAME: "3626060962"
-    NETGSM_PASSWORD: "41914FA"
-    NETGSM_APP_KEY: "xxx"
+    NETGSM_BASE_URL: 'https://api.netgsm.com.tr'
+    NETGSM_USERNAME: '3626060962'
+    NETGSM_PASSWORD: '41914FA'
+    NETGSM_APP_KEY: 'xxx'
+    CHOROMIUM_HOST: biletim-chromium
+    CHOROMIUM_PORT: 9222
 
   volumeMounts:
     biletim-api: '/app/images'
