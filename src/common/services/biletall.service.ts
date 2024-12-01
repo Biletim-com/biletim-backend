@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import * as fs from 'fs';
-
 import * as xml2js from 'xml2js';
 import axios from 'axios';
 

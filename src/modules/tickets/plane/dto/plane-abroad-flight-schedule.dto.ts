@@ -94,6 +94,7 @@ export class AbroadFlightSegmentDto {
   flightId: string;
   transfer: string;
   companyLogo: string;
+  companyFlightNumber: string;
   flightNumber: string;
   flightCode: string;
   airline: string;
@@ -132,6 +133,7 @@ export class AbroadFlightSegmentDto {
     this.transfer = segment.Aktarma;
     this.companyLogo = `https://ws.biletall.com/HavaYoluLogo/orta/${segment.HavaYoluKod}.png`;
     this.flightNumber = segment.SeferNo;
+    this.companyFlightNumber = segment.FirmaSeferNo;
     this.flightCode = segment.SeferKod;
     this.airline = segment.HavaYolu;
     this.airlineCode = segment.HavaYoluKod;
@@ -164,18 +166,16 @@ export class AbroadFlightSegmentDto {
   }
 }
 
+export class AbroadFlightDto {
+  flightOption: AbroadFlightOptionDto;
+  flightId: string;
+  segments: AbroadFlightSegmentDto[];
+}
+
 export class AbroadFlightScheduleDto {
   constructor(
-    public departureFlights: Array<{
-      flightOption: AbroadFlightOptionDto | undefined;
-      flightId: string;
-      segments: AbroadFlightSegmentDto[];
-    }>,
-    public returnFlights: Array<{
-      flightOption: AbroadFlightOptionDto | undefined;
-      flightId: string;
-      segments: AbroadFlightSegmentDto[];
-    }> = [],
+    public departureFlights: AbroadFlightDto[],
+    public returnFlights: AbroadFlightDto[] = [],
     public operationId?: string | null,
   ) {}
 }

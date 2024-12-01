@@ -14,6 +14,7 @@ import {
 } from '../../dto/plane-domestic-flight-schedule.dto';
 import { ObjectTyped } from '@app/common/utils/object-typed.util';
 import {
+  AbroadFlightDto,
   AbroadFlightOptionDto,
   AbroadFlightScheduleDto,
   AbroadFlightSegmentDto,
@@ -316,6 +317,48 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
     });
   }
 
+  private parseAbroadFlightSegments(
+    flightSegmentsDataSet: Array<{
+      [K in keyof AbroadFlightSegment]: [string];
+    }>,
+    flightOptionsMap: Map<string, AbroadFlightOptionDto>,
+  ): AbroadFlightDto[] {
+    const groupedSegments: { [key in string]: AbroadFlightSegmentDto[] } = {};
+
+    flightSegmentsDataSet.forEach((entry) => {
+      const flightSegmentParsed: AbroadFlightSegment = Object.assign({});
+      Object.entries(entry).forEach(([key, [value]]) => {
+        flightSegmentParsed[key] = value;
+      });
+      const flightSegmentDto = new AbroadFlightSegmentDto(flightSegmentParsed);
+
+      const segmentIdentifier = `${flightSegmentDto.optionId}:${flightSegmentDto.flightId}`;
+      if (!groupedSegments[segmentIdentifier]) {
+        groupedSegments[segmentIdentifier] = [];
+      }
+
+      groupedSegments[segmentIdentifier].push(flightSegmentDto);
+    });
+
+    const dataToReturn: AbroadFlightDto[] = [];
+
+    ObjectTyped.entries(groupedSegments).forEach(
+      ([segmentIdentifier, segments]) => {
+        const [optionId, flightId] = segmentIdentifier.split(':');
+        const flightOption = flightOptionsMap.get(optionId);
+
+        if (flightOption) {
+          dataToReturn.push({
+            flightOption,
+            flightId,
+            segments,
+          });
+        }
+      },
+    );
+    return dataToReturn;
+  }
+
   public parseAbroadFlightResponse = (
     response: AbroadFlightResponse,
   ): AbroadFlightScheduleDto => {
@@ -336,75 +379,18 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
     });
 
     const flightSegmentsDataSet = newDataSet['Segmentler'] ?? [];
-
-    const groupedSegments: { [key: string]: AbroadFlightSegmentDto[] } = {};
-
-    flightSegmentsDataSet.forEach((entry: any) => {
-      const flightSegmentParsed: AbroadFlightSegment = Object.assign({});
-
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        flightSegmentParsed[key] = value;
-      }
-      const flightSegmentDto = new AbroadFlightSegmentDto(flightSegmentParsed);
-
-      if (!groupedSegments[flightSegmentDto.flightId]) {
-        groupedSegments[flightSegmentDto.flightId] = [];
-      }
-
-      groupedSegments[flightSegmentDto.flightId].push(flightSegmentDto);
-    });
-
-    const departureFlights = Object.entries(groupedSegments).map(
-      ([flightId, segments]) => {
-        const optionId = segments[0]?.optionId;
-        const flightOption = flightOptionsMap.get(optionId);
-
-        return {
-          flightOption,
-          flightId: `${flightId}`,
-          segments,
-        };
-      },
+    const departureFlights = this.parseAbroadFlightSegments(
+      flightSegmentsDataSet,
+      flightOptionsMap,
     );
 
     const returnFlightSegmentsDataSet = newDataSet['DonusSegmentler'] ?? [];
-
-    const groupedReturnSegments: { [key: string]: AbroadFlightSegmentDto[] } =
-      {};
-    returnFlightSegmentsDataSet.forEach((entry: any) => {
-      const flightSegmentParsed: AbroadFlightSegment = Object.assign({});
-
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        flightSegmentParsed[key] = value;
-      }
-
-      const flightSegmentDto = new AbroadFlightSegmentDto(flightSegmentParsed);
-
-      if (!groupedReturnSegments[flightSegmentDto.flightId]) {
-        groupedReturnSegments[flightSegmentDto.flightId] = [];
-      }
-
-      groupedReturnSegments[flightSegmentDto.flightId].push(flightSegmentDto);
-    });
-
-    const returnFlights = Object.entries(groupedReturnSegments).map(
-      ([flightId, segments]) => {
-        const optionId = segments[0]?.optionId;
-        const flightOption = flightOptionsMap.get(optionId);
-
-        return {
-          flightOption,
-          flightId: `${flightId}`,
-          segments,
-        };
-      },
+    const returnFlights = this.parseAbroadFlightSegments(
+      returnFlightSegmentsDataSet,
+      flightOptionsMap,
     );
 
-    const operationIdArray = newDataSet['IslemId'] ?? [];
-    let operationId = null;
-    if (operationIdArray.length > 0 && operationIdArray[0]?.Value) {
-      operationId = operationIdArray[0].Value[0];
-    }
+    const operationId = newDataSet['IslemId']?.[0]?.Value?.[0] ?? null;
 
     return { departureFlights, returnFlights, operationId };
   };

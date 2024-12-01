@@ -28,6 +28,7 @@ export type AbroadFlightSegment = {
   UcusID: string;
   Aktarma: string;
   SeferNo: string;
+  FirmaSeferNo: string;
   SeferKod: string;
   HavaYolu: string;
   HavaYoluKod: string;
@@ -60,14 +61,16 @@ export type AbroadFlightSegment = {
 };
 
 type AbroadFlightDataSet = {
-  Secenekler: Array<{
-    [K in keyof AbroadFlightOption]: [string];
-  }>;
-  Segmentler: Array<{
-    [K in keyof AbroadFlightSegment]: [string];
-  }>;
-  DonusSegmentler?: Array<{
-    [K in keyof AbroadFlightSegment]: [string];
+  NewDataSet: Array<{
+    Secenekler: Array<{
+      [K in keyof AbroadFlightOption]: [string];
+    }>;
+    Segmentler: Array<{
+      [K in keyof AbroadFlightSegment]: [string];
+    }>;
+    DonusSegmentler?: Array<{
+      [K in keyof AbroadFlightSegment]: [string];
+    }>;
   }>;
 };
 
