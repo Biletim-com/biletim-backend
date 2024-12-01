@@ -31,10 +31,7 @@ COPY global.d.ts ./
 COPY ormconfig.ts ./
 COPY docker-entrypoint.sh ./
 
-# Set Puppeteer environment variables
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-
 RUN npm install -g pnpm
 RUN pnpm install --prod
 
-CMD ["/bin/bash", "/app/docker-entrypoint.sh"]
+CMD ["/bin/sh", "/app/docker-entrypoint.sh"]
