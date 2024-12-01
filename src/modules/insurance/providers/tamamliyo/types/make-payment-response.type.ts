@@ -2,6 +2,12 @@ export type InsuranceMakePaymentSuccessResponse = {
   success: true;
   data: string;
 };
+export type InsuranceMakePaymentSuccessResponseSecondOption = {
+  success: true;
+  data: {
+    message: string;
+  };
+};
 
 export type InsuranceMakePaymentErrorResponse = {
   success: false;
@@ -10,7 +16,15 @@ export type InsuranceMakePaymentErrorResponse = {
     errorMessage: string;
   };
 };
+export type InsuranceMakePaymentErrorResponseSecondOption = {
+  success: false;
+  data: {
+    error: string;
+  };
+};
 
 export type InsuranceMakePaymentResultResponse =
   | InsuranceMakePaymentSuccessResponse
-  | InsuranceMakePaymentErrorResponse;
+  | InsuranceMakePaymentSuccessResponseSecondOption
+  | InsuranceMakePaymentErrorResponse
+  | InsuranceMakePaymentErrorResponseSecondOption;

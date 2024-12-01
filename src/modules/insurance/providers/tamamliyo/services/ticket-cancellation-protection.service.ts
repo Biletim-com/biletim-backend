@@ -50,13 +50,13 @@ export class TicketCancellationProtectionInsuranceService {
         ticketPrice: requestDto.parameters.ticketPrice,
         company: requestDto.parameters.company,
         departureLocation: requestDto.parameters.departureLocation,
-        ...(requestDto.parameters.departureAirport && {
-          departureAirport: requestDto.parameters.departureAirport,
-        }),
+        departureAirport: requestDto.parameters.departureAirport
+          ? requestDto.parameters.departureAirport
+          : 'AYT',
         arrivalLocation: requestDto.parameters.arrivalLocation,
-        ...(requestDto.parameters.arrivalAirport && {
-          arrivalAirport: requestDto.parameters.arrivalAirport,
-        }),
+        arrivalAirport: requestDto.parameters.arrivalAirport
+          ? requestDto.parameters.arrivalAirport
+          : 'DUB',
         departureDate: requestDto.parameters.departureDate,
       },
     };
@@ -119,19 +119,24 @@ export class TicketCancellationProtectionInsuranceService {
   ): MakePaymentTicketCancellationProtectionInsuranceRequestDtoInTurkish => {
     return {
       parameters: {
-        pnrNo: requestDto.parameters.pnrNo,
-        ...(requestDto.parameters.flightNumber && {
-          flightNumber: requestDto.parameters.flightNumber,
-        }),
-        ticketNumber: requestDto.parameters.ticketNumber,
+        pnrNo: requestDto.parameters.pnrNo
+          ? requestDto.parameters.pnrNo
+          : 'A1B2C3',
+        flightNumber: requestDto.parameters.flightNumber
+          ? requestDto.parameters.flightNumber
+          : 'AA1234',
+        ticketNumber: requestDto.parameters.ticketNumber
+          ? requestDto.parameters.ticketNumber
+          : '12345678',
       },
-      odemeTipi: '1',
+      odemeTipi: '2',
       teklifId: requestDto.offerId,
-      taksitSayisi: 1,
+      taksitSayisi: 0,
       krediKartiCvv: requestDto.creditCardCvv,
-      kartNo: requestDto.creditCardNumber,
-      kartSonKullanmaTarihi: requestDto.creditCardExpiryDate,
-      kartSahibi: requestDto.creditCardHolder,
+      krediKartiNo: requestDto.creditCardNumber,
+      krediKartiBitisTarihi: requestDto.creditCardExpiryDate,
+      krediKartiAd: requestDto.creditCardHolderName,
+      krediKartiSoyad: requestDto.creditCardHolderSurname,
       ilId: 34,
       ilceId: '10',
       adres: ' KILIÇDEDE MAH. ÜLKEM SOK. NO:8A/11 İLKADIM/SAMSUN',

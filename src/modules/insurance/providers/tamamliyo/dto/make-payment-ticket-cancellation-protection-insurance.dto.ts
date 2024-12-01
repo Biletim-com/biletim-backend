@@ -1,31 +1,26 @@
 import { Type } from 'class-transformer';
-import {
-  IsString,
-  IsNumber,
-  IsOptional,
-  ValidateNested,
-  IsNotEmpty,
-} from 'class-validator';
+import { IsString, IsOptional, ValidateNested } from 'class-validator';
 
 export class MakePaymentParametersTicketCancellationProtectionInsuranceDto {
+  @IsOptional()
   @IsString()
-  pnrNo: string;
+  pnrNo?: string;
 
   @IsOptional()
   @IsString()
   flightNumber?: string;
 
+  @IsOptional()
   @IsString()
-  ticketNumber: string;
+  ticketNumber?: string;
 }
 
 export class MakePaymentTicketCancellationProtectionInsuranceRequestDto {
   @ValidateNested()
   @Type(() => MakePaymentParametersTicketCancellationProtectionInsuranceDto)
-  @IsNotEmpty()
   parameters: MakePaymentParametersTicketCancellationProtectionInsuranceDto;
 
-  @IsNumber()
+  @IsString()
   offerId: string;
 
   @IsString()
@@ -35,10 +30,13 @@ export class MakePaymentTicketCancellationProtectionInsuranceRequestDto {
   creditCardNumber: string;
 
   @IsString()
-  creditCardExpiryDate: string; // Expiry date of the credit card "2023-04"
+  creditCardExpiryDate: string; // Expiry date of the credit card "2023-04-01"
 
   @IsString()
-  creditCardHolder: string;
+  creditCardHolderName: string;
+
+  @IsString()
+  creditCardHolderSurname: string;
 }
 
 export class MakePaymentTicketCancellationProtectionInsuranceRequestDtoInTurkish {
@@ -51,9 +49,10 @@ export class MakePaymentTicketCancellationProtectionInsuranceRequestDtoInTurkish
   teklifId: string;
   taksitSayisi: number;
   krediKartiCvv: string;
-  kartNo: string;
-  kartSonKullanmaTarihi: string;
-  kartSahibi: string;
+  krediKartiNo: string;
+  krediKartiBitisTarihi: string;
+  krediKartiAd: string;
+  krediKartiSoyad: string;
   ilId: number;
   ilceId: string;
   adres: string;
