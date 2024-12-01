@@ -10,9 +10,6 @@ export class OrderInvoiceAndFlighFareOptions1732469460571
       `CREATE TABLE "invoices" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "type" character varying NOT NULL, "pnr" character varying, "recipient_name" character varying NOT NULL, "identifier" character varying NOT NULL, "address" character varying NOT NULL, "tax_office" character varying, "phone_number" character varying NOT NULL, "email" character varying NOT NULL, CONSTRAINT "PK_668cef7c22a427fd822cc1be3ce" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `ALTER TABLE "plane_ticket_segments" DROP COLUMN "flight_class_name"`,
-    );
-    await queryRunner.query(
       `ALTER TABLE "plane_ticket_segments" DROP COLUMN "flight_class"`,
     );
     await queryRunner.query(
@@ -56,9 +53,6 @@ export class OrderInvoiceAndFlighFareOptions1732469460571
     );
     await queryRunner.query(
       `ALTER TABLE "plane_ticket_segments" ADD "flight_class" character varying NOT NULL`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "plane_ticket_segments" ADD "flight_class_name" character varying NOT NULL`,
     );
     await queryRunner.query(`DROP TABLE "invoices"`);
   }
