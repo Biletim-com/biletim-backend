@@ -66,10 +66,15 @@ import queueConfiguration, {
   QueueEnvVarsValidation,
 } from './queue';
 
-import netGsmConfiguration, { 
-  NetGsmConfigService, 
-  NetGsmEnvVarsValidation 
+import netGsmConfiguration, {
+  NetGsmConfigService,
+  NetGsmEnvVarsValidation,
 } from './netgsm';
+
+import chromiumConfiguration, {
+  ChromiumConfigService,
+  ChromiumEnvVarsValidation,
+} from './chromium';
 
 @Global()
 @Module({
@@ -89,7 +94,8 @@ import netGsmConfiguration, {
         paymentConfiguration,
         tamamliyoApiConfiguration,
         queueConfiguration,
-        netGsmConfiguration
+        netGsmConfiguration,
+        chromiumConfiguration,
       ],
       validate: async (config) =>
         Promise.all([
@@ -112,6 +118,7 @@ import netGsmConfiguration, {
           ),
           ConfigValidator.validate(PaymentEnvVarsValidation, config),
           ConfigValidator.validate(TamamliyoApiEnvVarsValidation, config),
+          ConfigValidator.validate(ChromiumEnvVarsValidation, config),
         ]),
     }),
   ],
@@ -129,7 +136,8 @@ import netGsmConfiguration, {
     PaymentConfigService,
     TamamliyoApiConfigService,
     QueueConfigService,
-    NetGsmConfigService
+    NetGsmConfigService,
+    ChromiumConfigService,
   ],
   exports: [
     ConfigService,
@@ -145,7 +153,8 @@ import netGsmConfiguration, {
     PaymentConfigService,
     TamamliyoApiConfigService,
     QueueConfigService,
-    NetGsmConfigService
+    NetGsmConfigService,
+    ChromiumConfigService,
   ],
 })
 export class ConfigModule {}

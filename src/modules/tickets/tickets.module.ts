@@ -14,10 +14,14 @@ import { BiletAllOfficialHolidaysService } from './services/biletall/biletall-of
 import { BiletAllOfficialHolidaysParserService } from './services/biletall/biletall-official-holidays.parser.service';
 import { TravelCountryCodeService } from './services/biletall/biletall-travel-country-code.service';
 import { BiletAllTravelCountryCodeParserService } from './services/biletall/biletall-travel-country-code.parser.service';
+import { PlaneTicketOutputHandlerService } from './services/plane-ticket-output-handler.service';
+import { OrdersRepository } from '../orders/orders.repository';
 
 @Module({
   imports: [BusModule, PlaneModule],
   providers: [
+    OrdersRepository,
+    PlaneTicketOutputHandlerService,
     TicketsService,
     BiletAllPnrService,
     BiletAllPnrParserService,

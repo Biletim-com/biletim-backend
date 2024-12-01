@@ -2,15 +2,22 @@ import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
+// modules
+import { QueueProviderModule } from '@app/providers/queue/provider.module';
+
+// services
 import { NotificationsConfigService } from '@app/configs/notifications';
 import { AuthConfigService } from '@app/configs/auth';
-
 import { EmailNotificationService } from './services/email-notification.service';
+
+// processors
 import { EmailNotificationProcessor } from './proccessors/email-notification.proccessor';
-import { QueueProviderModule } from '@app/providers/queue/provider.module';
 import { QueueEnum } from '@app/common/enums';
 import { SMSNotificationProcessor } from './proccessors/sms-notification.proccessor';
 import { SMSNotificationService } from './services/sms-notification.service';
+
+// helpers
+import { HandlerbarsHelper } from '@app/common/helpers';
 
 @Module({
   imports: [
@@ -38,8 +45,8 @@ import { SMSNotificationService } from './services/sms-notification.service';
           from: `"Biletim Team" <${notificationsConfigService.emailUsername}>`,
         },
         template: {
-          dir: `${__dirname}/templates`,
-          adapter: new HandlebarsAdapter(),
+          dir: `${__dirname}/../providers/html-template/templates`,
+          adapter: new HandlebarsAdapter(HandlerbarsHelper.helpers),
         },
       }),
       inject: [NotificationsConfigService],

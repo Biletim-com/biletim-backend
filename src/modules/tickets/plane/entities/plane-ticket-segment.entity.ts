@@ -1,6 +1,14 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
+// entites
+import { Airport } from './airport.entity';
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
+
+// dtos
+import { FlightSegmentFareDetailsDto } from '@app/common/dtos';
+
+// constants
+import { airlineCompaniesAgeRules } from '@app/common/constants';
 
 @Entity('plane_ticket_segments')
 export class PlaneTicketSegment extends AbstractEntity<PlaneTicketSegment> {
@@ -10,17 +18,25 @@ export class PlaneTicketSegment extends AbstractEntity<PlaneTicketSegment> {
   @Column()
   companyNumber: string;
 
-  @Column()
-  departureAirport: string;
+  @JoinColumn({
+    name: 'departure_airport_code',
+    referencedColumnName: 'airportCode',
+  })
+  @ManyToOne(() => Airport, (airport) => airport.airportCode)
+  departureAirport: Airport;
+
+  @JoinColumn({
+    name: 'arrival_airport_code',
+    referencedColumnName: 'airportCode',
+  })
+  @ManyToOne(() => Airport, (airport) => airport.airportCode)
+  arrivalAirport: Airport;
 
   @Column()
-  arrivalAirport: string;
+  departureDateTime: string;
 
   @Column()
-  departureDate: string;
-
-  @Column()
-  arrivalDate: string;
+  arrivalDateTime: string;
 
   @Column()
   flightNumber: string;
@@ -29,11 +45,25 @@ export class PlaneTicketSegment extends AbstractEntity<PlaneTicketSegment> {
   flightCode: string;
 
   @Column()
-  flightClass: string;
+  flightClassCode: string;
+
+  @Column('jsonb')
+  flightFareDetails: FlightSegmentFareDetailsDto;
 
   @Column()
   airlineCode: string;
 
   @Column()
+  airlineName: string;
+
+  @Column()
   isReturnFlight: boolean;
+
+  constructor(
+    planeTicketSegment: Partial<PlaneTicketSegment> & { companyNumber: string },
+  ) {
+    super(planeTicketSegment);
+    this.airlineName =
+      airlineCompaniesAgeRules[planeTicketSegment?.companyNumber]?.companyName;
+  }
 }

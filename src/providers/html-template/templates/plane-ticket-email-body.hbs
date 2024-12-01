@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uçak Biletiniz</title>
+</head>
+<body style="max-width:800px; font-family: Arial, sans-serif; margin:0 auto; padding: 20px; line-height: 1.6; color: #333;">
+<div style="max-width: 240px;">
+    <img src="https://biletimlanding.westerops.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon.fee63e71.png&w=1920&q=75"
+         alt="Biletim.com" style="width: 100%; height: auto; display: block;">
+</div>
+<div style="max-width: 800px; margin: auto;">
+    <!-- Merhaba -->
+    <p>Merhaba <strong>{{passengers.0.passengerFullName}}</strong>, uçak biletinizi başarıyla satın aldınız!</p>
+
+    <!-- Seyahat Bilgileri -->
+    <p>
+        Seyahatinizle ilgili uçuş bilgilerinizi aşağıdaki uçuş detaylarında ve ekte ilettiğimiz
+        <strong>Elektronik Yolcu Seyahat Belgesi</strong> PDF dokümanında görebilirsiniz.
+    </p>
+
+    <p>
+        <strong>{{airlineCompany}}</strong> Uçuşunuz için PNR kodunuz: <strong>{{pnrNumber}}</strong>
+    </p>
+
+    <p>
+        İşlemlerinizde sorun yaşamamanız için <strong>PNR kodunuz</strong> ve <strong>Kimliğiniz</strong> ile
+        uçuş saatinden en az <strong>4 saat önce</strong> havalimanında olunması gerektiğini hatırlatmak isteriz.
+    </p>
+
+    <p>Değişiklik ya da iptal işlemleriniz için <a href="tel:+908502442586">+90 850 244 2586</a> numaralı telefonumuzdan
+        bize 7 gün 24 saat ulaşabilirsiniz.</p>
+
+    <p>Şimdiden iyi uçuşlar dileriz!</p>
+    <p><strong>BILETIM.COM Ekibi</strong></p>
+
+    <!-- Önemli Uyarılar -->
+    <table style="width: 100%; border-spacing: 0; border-collapse: collapse; margin-top: 20px;">
+        <tr>
+            <td style="width: 32px; vertical-align: middle;">
+                <img src="https://biletimlanding.westerops.com/icons/biletim_logo_small.png" alt="logo" style="width: 32px; height: 36px">
+            </td>
+            <td style="vertical-align: middle; padding-left: 8px;">
+                <h3 style="margin: 0; font-size: 16px; font-weight: bold;">Lütfen Dikkat</h3>
+            </td>
+        </tr>
+    </table>
+    <p>
+        Havayolu kurallarına göre havalimanı check-in işlemlerini uçuştan <strong>60 dakika önce</strong> tamamlamış
+        olmanız gerekiyor.
+        Check-in işlemlerinizi zamanında tamamlamanız için uçuş saatinden en az <strong>3 saat önce</strong>
+        havalimanında bulunmanızı öneririz.
+    </p>
+    <p>
+        Pasaport kontrolü veya ülkeye giriş esnasında geçerli bir belgeniz olmadığında, gideceğiniz ülkenin gümrük
+        kurallarına göre,
+        dönüş yolculuğu ve gidilen ülkede konaklayacağınız yer hakkında bilgileriniz ya da belgeleriniz talep
+        edilebilir. Gerekli belgeleri
+        ya da bilgileri sunamamanız durumunda ülkeye giriş yapamayabilirsiniz. Bu sorunla karşılaşmamak için dönüş
+        biletinizi ve otel
+        rezervasyonunuzu Biletim.com üzerinden gerçekleştirebilirsiniz.
+    </p>
+    <p>
+        30 Haziran 2021'den itibaren Türkiye'den K.K.T.C'ye gidecek olan T.C. vatandaşları, eski tip kimlik belgeleriyle
+        seyahat edemezler.
+        Ülkeye kimlikle giriş yapmak isteyen yolcular sadece yeni tip çipli T.C. Kimlik Kartı ile uçuşlarını
+        gerçekleştirebilir.
+    </p>
+    <p>
+        Bu ülkeye seyahat edecek bebek veya çocuk yolcuların fotoğraflı kimlik kartı olması gereklidir. Koşulun
+        sağlanmaması durumunda fotoğraf
+        bulunmayan kimlik kartına sahip bebek veya çocuk yolcu ve ailesi uçağa alınmayabilir.
+    </p>
+
+    <!-- Uçuş Detayları -->
+    <table style="width: 100%; border-spacing: 0; border-collapse: collapse; margin-top: 20px;">
+        <tr>
+            <td style="width: 28px; vertical-align: middle;">
+                <img src="https://biletimlanding.westerops.com/icons/ic_plane_departure_48px.png" alt="Gidiş Uçuşu" style="width: 28px; height: 28px;">
+            </td>
+            <td style="vertical-align: middle; padding-left: 8px;">
+                <h3 style="margin: 0; font-size: 16px; font-weight: bold;">Gidiş Uçuşu Bilgileri</h3>
+            </td>
+        </tr>
+    </table>
+    
+    {{#each departureFlights}}
+        <p><strong>{{this.airlineCompany}}</strong></p>
+        <p>{{this.departureAirportCode}} → {{this.arrivalAirportCode}}   {{this.flightNumber}}  Sınıf: {{this.flightClassType}}</p>
+        <p style="margin: 0;" ><strong>{{this.flightClassName}}</strong></p> {{!-- Eko or Busines --}}
+        <p style="margin: 0;" >{{this.cabinLuggageAllowance}} · {{this.luggageAllowance}}</p>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <tr>
+                <td style="width: 20px;">
+                    <img src="https://biletimlanding.westerops.com/icons/ic_flight_takeoff_48px.png" style="width: 20px; height: 20px;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 5px;">
+                    <p style="margin: 0;"><strong>Kalkış:</strong></p>
+                    <p style="margin: 0;">{{this.departureDate}} {{this.departureTime}} - {{this.departureAirportCity}} ({{this.departureAirportName}})</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="width: 20px; vertical-align: top;">
+                    <img src="https://biletimlanding.westerops.com/icons/ic_flight_land_48px.png" style="width: 20px; height: 20px;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 5px;">
+                    <p style="margin: 0;"><strong>Varış:</strong></p>
+                    <p style="margin: 0;">{{this.arrivalDate}} {{this.arrivalTime}} - {{this.arrivalAirportCity}} ({{this.arrivalAirportName}})</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="width: 20px; vertical-align: top;">
+                    <img src="https://biletimlanding.westerops.com/icons/ic_clock.png" style="width: 20px; height: 20px;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 5px;">
+                    <p style="margin: 0;"><strong>Toplam Seyahat Süresi:</strong></p>
+                    <p style="margin: 0;">{{this.flightDuration}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="width: 20px; vertical-align: top;">
+                    <img src="https://biletimlanding.westerops.com/icons/ic_luggage.png" style="width: 20px; height: 20px;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 5px;">
+                    <p style="margin: 0;"><strong>Bagaj Hakkı:</strong></p>
+                    <p style="margin: 0;" >{{this.luggageAllowance}}</p>
+                    <p style="margin: 0;" >{{this.cabinLuggageAllowance}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="width: 20px; vertical-align: top;">
+                    <img src="https://biletimlanding.westerops.com/icons/ic_receipt_48px.png" style="width: 20px; height: 20px;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 5px;">
+                    <p style="margin: 0;"><strong>PNR (Rezervasyon Numarası):</strong> </p>
+                    <p style="margin: 0;" >{{this.pnrNumber}}</p>
+                </td>
+            </tr>
+        </table>
+    {{/each}}
+
+    {{#if returnFlights}}
+        {{#if returnFlights.length}}
+        <table style="width: 100%; border-spacing: 0; border-collapse: collapse; margin-top: 20px;">
+            <tr>
+                <td style="width: 28px; vertical-align: middle;">
+                    <img src="https://biletimlanding.westerops.com/icons/ic_plane_return_48px.png" alt="Dönüş Uçuşu" style="width: 28px; height: 28px;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 8px;">
+                    <h3 style="margin: 0; font-size: 16px; font-weight: bold;">Dönüş Uçuşu Bilgileri</h3>
+                </td>
+            </tr>
+        </table>
+            {{#each returnFlights}}
+                <p><strong>{{this.airlineCompany}}</strong></p>
+                <p>{{this.departureAirportCode}} → {{this.arrivalAirportCode}}   {{this.flightNumber}}  Sınıf: {{this.flightClassType}}</p>
+                <p style="margin: 0;" ><strong>{{this.flightClassName}}</strong></p> {{!-- Eko or Business --}}
+                <p style="margin: 0;" >{{this.cabinLuggageAllowance}} · {{this.luggageAllowance}}</p>
+
+                <table style="width: 100%; border-spacing: 0 10px; border-collapse: collapse; margin-top: 10px;">
+                    <tr>
+                        <td style="width: 20px; vertical-align: top;">
+                            <img src="https://biletimlanding.westerops.com/icons/ic_flight_takeoff_48px.png" style="width: 20px; height: 20px;">
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 5px;">
+                            <p style="margin: 0;"><strong>Kalkış:</strong></p>
+                            <p style="margin: 0;">{{this.departureDate}} {{this.departureTime}} - {{this.departureAirportCity}} ({{this.departureAirportName}})</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 20px; vertical-align: top;">
+                            <img src="https://biletimlanding.westerops.com/icons/ic_flight_land_48px.png" style="width: 20px; height: 20px;">
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 5px;">
+                            <p style="margin: 0;"><strong>Varış:</strong> </p>
+                            <p style="margin: 0;">{{this.arrivalDate}} {{this.arrivalTime}} - {{this.arrivalAirportCity}} ({{this.arrivalAirportName}})</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 20px; vertical-align: top;">
+                            <img src="https://biletimlanding.westerops.com/icons/ic_clock.png" style="width: 20px; height: 20px;">
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 5px;">
+                            <p style="margin: 0;"><strong>Toplam Seyahat Süresi:</strong></p>
+                            <p style="margin: 0;">{{this.flightDuration}}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 20px; vertical-align: top;">
+                            <img src="https://biletimlanding.westerops.com/icons/ic_luggage.png" style="width: 20px; height: 20px;">
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 5px;">
+                            <p style="margin: 0;"><strong>Bagaj Hakkı:</strong></p>
+                            <p style="margin: 0;" >{{this.luggageAllowance}}</p>
+                            <p style="margin: 0;" >{{this.cabinLuggageAllowance}}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="line-height: 6px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 20px; vertical-align: top;">
+                            <img src="https://biletimlanding.westerops.com/icons/ic_receipt_48px.png" style="width: 20px; height: 20px;">
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 5px;">
+                            <p style="margin: 0;"><strong>PNR (Rezervasyon Numarası):</strong> </p>
+                            <p style="margin: 0;" >{{this.pnrNumber}}</p>
+                        </td>
+                    </tr>
+                </table>
+            {{/each}}
+        {{/if}}
+    {{/if}}
+
+
+    <!-- Önemli Uyarılar -->
+    {{#if importantNote}}
+        <p style="color: red; font-size: 14px;">Önemli Uyarı: {{importantNote}}</p>
+    {{/if}}
+
+    {{#each passengers}}
+        <!-- Yolcu Bilgileri -->
+        <h3 style="font-size: 16px; font-weight: bold; margin-top: 20px;">Yolcu Bilgileri</h3>
+        <p><strong>Yolcu Adı Soyadı</strong> <br> {{this.passengerFullName}}</p>
+        <p><strong>PNR (Rezervasyon Numarası)</strong> <br> {{this.pnrNumber}}</p>
+        <p><strong>Bilet Numarası</strong> <br> {{this.ticketNumber}}</p>
+    {{/each}}
+</div>
+
+</body>
+</html>

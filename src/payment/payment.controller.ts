@@ -15,7 +15,7 @@ import { PaymentService } from './services/payment.service';
 import { BusTicketPaymentService } from './services/bus-ticket-payment.service';
 import { PlaneTicketPaymentService } from './services/plane-ticket-payment.service';
 import { PaymentResultHandlerProviderFactory } from './factories/payment-result-handler-provider.factory';
-import { HtmlTemplateService } from './services/html-template.service';
+import { HtmlTemplateService } from '@app/providers/html-template/provider.service';
 
 // dtos
 import { BusTicketPurchaseDto } from './dto/bus-ticket-purchase.dto';

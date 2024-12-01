@@ -17,21 +17,26 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Gender, PassengerType } from '@app/common/enums';
 
 // dtos
-import { BankCardDto, PassportDto } from '@app/common/dtos';
-import { FlightSegmentDto } from '@app/modules/tickets/plane/dto/plane-pull-price-flight.dto';
+import {
+  BankCardDto,
+  FlightSegmentDto,
+  PassportDto,
+  InvoiceDto,
+} from '@app/common/dtos';
 
 // decoratos
 import { IsTCNumber, IsValidPlanePassengerType } from '@app/common/decorators';
 
 // types
 import { DateISODate } from '@app/common/types';
-import { InvoiceDto } from '@app/common/dtos/invoice.dto';
 
 export class PlanePassengerInfoDto {
   constructor(passengerInfo: PlanePassengerInfoDto) {
     Object.assign(this, passengerInfo);
   }
 
+  // this is for validating passenger type based on companies' age rule
+  // IsValidPlanePassengerType decorator does the validation
   @IsNotEmpty()
   @IsString()
   private readonly companyNumber: string;
@@ -143,7 +148,7 @@ export class PlaneTicketPurchaseDto {
   @ApiProperty({
     description:
       'The phone number of the person purchasing the ticket. Must be 10 characters length.',
-    example: '1234567890',
+    example: '5555555555',
     required: true,
   })
   @IsString()

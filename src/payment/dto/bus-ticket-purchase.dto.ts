@@ -30,6 +30,16 @@ import { InvoiceDto } from '@app/common/dtos/invoice.dto';
 
 class BusPassengerInfoDto extends PassengerInfoDto {
   @ApiProperty({
+    description: 'Total price of the tickets',
+    example: '40',
+    required: true,
+  })
+  @IsNumberString()
+  @IsNotEmpty()
+  @Transform(({ value }) => normalizeDecimal(value))
+  ticketPrice: string;
+
+  @ApiProperty({
     description: 'Seat number assigned to the passenger.',
     example: '2',
     required: true,
@@ -104,16 +114,6 @@ class BusTicketPurchaseTripDto {
 }
 
 export class BusTicketPurchaseDto {
-  @ApiProperty({
-    description: 'Total price of the tickets',
-    example: '40',
-    required: true,
-  })
-  @IsNumberString()
-  @IsNotEmpty()
-  @Transform(({ value }) => normalizeDecimal(value))
-  totalTicketPrice: string;
-
   @ApiProperty({
     description: 'Contact email address of the person booking the ticket',
     required: true,

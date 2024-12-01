@@ -6,3 +6,4 @@ export * from './biletall-action-result.type';
 export * from './biletall-error.type';
 export * from './biletall-soap-envelope.type';
 export * from './passport-country-code.type';
+export * from './event-emitter-data.type';
