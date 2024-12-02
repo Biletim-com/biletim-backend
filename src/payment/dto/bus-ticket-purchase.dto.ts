@@ -108,7 +108,7 @@ class BusTicketPurchaseTripDto {
     example: '22566',
     required: true,
   })
-  @IsNumberString()
+  @IsString()
   @IsNotEmpty()
   tripTrackingNumber: string;
 }
