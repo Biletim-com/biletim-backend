@@ -55,7 +55,7 @@ export class PlaneController {
         this.biletAllPlaneService.domesticFlightScheduleSearch(requestDto);
       return new DomesticFlightScheduleDto(
         (await responseDomesticService).departureFlightsWithFares,
-        (await responseDomesticService)?.ReturnFlightsWithFares,
+        (await responseDomesticService)?.returnFlightsWithFares,
       );
     }
   }

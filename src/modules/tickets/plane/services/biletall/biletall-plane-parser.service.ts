@@ -7,6 +7,7 @@ import { PlaneAirportDto } from '../../dto/plane-airport.dto';
 import {
   DomesticFlightScheduleDto,
   DomesticFlightSegmentDto,
+  DomesticFlightWithFares,
   FlightOptionDto,
   OptionFareDetailDto,
   OptionFareDto,
@@ -107,73 +108,24 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
   ): DomesticFlightScheduleDto => {
     const extractedResult = this.extractResult(response);
     const newDataSet = extractedResult['NewDataSet'][0];
-    const flightOptionsDataSet = newDataSet['Secenekler'] ?? [];
-    const flightOptionsMap = new Map<string, FlightOptionDto>();
 
-    flightOptionsDataSet.forEach((entry) => {
-      const flightOptionParsed: FlightOption = Object.assign({});
+    // map segment classes
+    const segmentClassesDataSet = newDataSet['SegmentSiniflar'] ?? [];
+    const segmentClassesMap = new Map<string, SegmentClassDto>();
+    segmentClassesDataSet.forEach((entry) => {
+      const segmentClassParsed: SegmentClass = Object.assign({});
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        flightOptionParsed[key] = value;
+        segmentClassParsed[key] = value;
       }
-      const flightOptionDto = new FlightOptionDto(flightOptionParsed);
-      flightOptionsMap.set(flightOptionDto.id, flightOptionDto);
+      const segmentClassDto = new SegmentClassDto(segmentClassParsed);
+      const segmentClassIdentifier = `${segmentClassDto.segmentId2}:${segmentClassDto.optionFareId}`;
+
+      segmentClassesMap.set(segmentClassIdentifier, segmentClassDto);
     });
 
-    const flightSegmentsDataSet = newDataSet['Segmentler'] ?? [];
-    const flightOptionsWithSegments: {
-      flightOption: FlightOptionDto;
-      segments: DomesticFlightSegmentDto[];
-    }[] = [];
-
-    flightSegmentsDataSet.forEach((entry) => {
-      const flightSegmentParsed: FlightSegment = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        flightSegmentParsed[key] = value;
-      }
-      const flightSegmentDto = new DomesticFlightSegmentDto(
-        flightSegmentParsed,
-      );
-      const optionId = flightSegmentDto.optionId;
-
-      if (flightOptionsMap.has(optionId)) {
-        const flightOption = flightOptionsMap.get(optionId)!;
-
-        const existingEntry = flightOptionsWithSegments.find(
-          (opt) => opt.flightOption.id === optionId,
-        );
-        if (existingEntry) {
-          existingEntry.segments.push(flightSegmentDto);
-        } else {
-          flightOptionsWithSegments.push({
-            flightOption,
-            segments: [flightSegmentDto],
-          });
-        }
-      }
-    });
-
-    const optionFaresDataSet = newDataSet['SecenekUcretler'] ?? [];
-    const optionFaresBySecenekID2 = new Map<string, OptionFareDto[]>();
-
-    optionFaresDataSet.forEach((entry) => {
-      const optionFareParsed: OptionFare = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        optionFareParsed[key] = value;
-      }
-      const optionFareDto = new OptionFareDto(optionFareParsed);
-      const secenekID2 = optionFareDto.optionId2;
-
-      if (secenekID2) {
-        if (!optionFaresBySecenekID2.has(secenekID2)) {
-          optionFaresBySecenekID2.set(secenekID2, []);
-        }
-        optionFaresBySecenekID2.get(secenekID2)?.push(optionFareDto);
-      }
-    });
-
+    // map option fare details
     const optionFareDetailsDataSet = newDataSet['SecenekUcretDetaylar'] ?? [];
     const optionFareDetailsMap = new Map<string, OptionFareDetailDto[]>();
-
     optionFareDetailsDataSet.forEach((entry) => {
       const optionFareDetailParsed: OptionFareDetail = Object.assign({});
       for (const [key, [value]] of ObjectTyped.entries(entry)) {
@@ -190,129 +142,124 @@ export class BiletAllPlaneParserService extends BiletAllParserService {
       optionFareDetailsMap.get(optionFareId)?.push(optionFareDetailDto);
     });
 
-    const segmentClassesDataSet = newDataSet['SegmentSiniflar'] ?? [];
-    const segmentClassesByOptionFareId = new Map<string, SegmentClassDto[]>();
-
-    segmentClassesDataSet.forEach((entry) => {
-      const segmentClassParsed: SegmentClass = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        segmentClassParsed[key] = value;
+    // Build Parsed Option Fares
+    const optionFaresDataSet = newDataSet['SecenekUcretler'] ?? [];
+    const optionFaresParsed = optionFaresDataSet.map((optionFare) => {
+      const optionFareParsed: OptionFare = Object.assign({});
+      for (const [key, [value]] of ObjectTyped.entries(optionFare)) {
+        optionFareParsed[key] = value;
       }
-      const segmentClassDto = new SegmentClassDto(segmentClassParsed);
-      const optionFareId = segmentClassDto.optionFareId;
-
-      if (!segmentClassesByOptionFareId.has(optionFareId)) {
-        segmentClassesByOptionFareId.set(optionFareId, []);
-      }
-      segmentClassesByOptionFareId.get(optionFareId)?.push(segmentClassDto);
+      return optionFareParsed;
     });
 
-    const departureFlightsWithFares = this.createFinalResponseWithFares(
-      flightOptionsWithSegments,
-      optionFaresBySecenekID2,
-      optionFareDetailsMap,
-      segmentClassesByOptionFareId,
-      false,
-    );
-
-    const returnFlightOptionsDataSet = newDataSet['DonusSecenekler'] ?? [];
-    const returnFlightSegmentsDataSet = newDataSet['DonusSegmentler'] ?? [];
-
-    const returnFlightOptionsMap = new Map<string, FlightOptionDto>();
-    returnFlightOptionsDataSet.forEach((entry) => {
+    /**
+     * Prepare departure flights
+     */
+    // build FlightOptionsDto
+    const flightOptionsDataSet = newDataSet['Secenekler'] ?? [];
+    const flightOptions = flightOptionsDataSet.map((flightOption) => {
       const flightOptionParsed: FlightOption = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
+      for (const [key, [value]] of ObjectTyped.entries(flightOption)) {
         flightOptionParsed[key] = value;
       }
-      const flightOptionDto = new FlightOptionDto(flightOptionParsed);
-      returnFlightOptionsMap.set(flightOptionDto.id, flightOptionDto);
+      return new FlightOptionDto(flightOptionParsed);
     });
-
-    const returnFlightOptionsWithSegments: {
-      flightOption: FlightOptionDto;
-      segments: DomesticFlightSegmentDto[];
-    }[] = [];
-
-    returnFlightSegmentsDataSet.forEach((entry) => {
-      const flightSegmentParsed: FlightSegment = Object.assign({});
-      for (const [key, [value]] of ObjectTyped.entries(entry)) {
-        flightSegmentParsed[key] = value;
+    // build FlightSegmentsDto
+    const flightSegmentsDataSet = newDataSet['Segmentler'] ?? [];
+    const flightSegments = flightSegmentsDataSet.map((flightSegment) => {
+      const flightOptionParsed: FlightSegment = Object.assign({});
+      for (const [key, [value]] of ObjectTyped.entries(flightSegment)) {
+        flightOptionParsed[key] = value;
       }
-      const flightSegmentDto = new DomesticFlightSegmentDto(
-        flightSegmentParsed,
-      );
-      const optionId = flightSegmentDto.optionId;
-
-      if (returnFlightOptionsMap.has(optionId)) {
-        const flightOption = returnFlightOptionsMap.get(optionId)!;
-
-        const existingEntry = returnFlightOptionsWithSegments.find(
-          (opt) => opt.flightOption.id === optionId,
-        );
-        if (existingEntry) {
-          existingEntry.segments.push(flightSegmentDto);
-        } else {
-          returnFlightOptionsWithSegments.push({
-            flightOption,
-            segments: [flightSegmentDto],
-          });
-        }
-      }
+      return new DomesticFlightSegmentDto(flightOptionParsed);
     });
-
-    const ReturnFlightsWithFares = this.createFinalResponseWithFares(
-      returnFlightOptionsWithSegments,
-      optionFaresBySecenekID2,
+    const departureFlightsWithFares = this.parseDomesticFlightSegments(
+      flightOptions,
+      flightSegments,
+      optionFaresParsed,
+      segmentClassesMap,
       optionFareDetailsMap,
-      segmentClassesByOptionFareId,
-      true,
+    );
+
+    /**
+     * Prepare return flights
+     */
+    // build FlightOptionsDto
+    const returnFlightOptionsDataSet = newDataSet['DonusSecenekler'] ?? [];
+    const returnFlightOptions = returnFlightOptionsDataSet.map(
+      (returnFlightOption) => {
+        const returnFlightOptionParsed: FlightOption = Object.assign({});
+        for (const [key, [value]] of ObjectTyped.entries(returnFlightOption)) {
+          returnFlightOptionParsed[key] = value;
+        }
+        return new FlightOptionDto(returnFlightOptionParsed);
+      },
+    );
+    // build FlightSegmentsDto
+    const returnFlightSegmentsDataSet = newDataSet['DonusSegmentler'] ?? [];
+    const returnFlightSegments = returnFlightSegmentsDataSet.map(
+      (returnFlightSegment) => {
+        const returnFlightOptionParsed: FlightSegment = Object.assign({});
+        for (const [key, [value]] of ObjectTyped.entries(returnFlightSegment)) {
+          returnFlightOptionParsed[key] = value;
+        }
+        return new DomesticFlightSegmentDto(returnFlightOptionParsed);
+      },
+    );
+    const returnFlightsWithFares = this.parseDomesticFlightSegments(
+      returnFlightOptions,
+      returnFlightSegments,
+      optionFaresParsed,
+      segmentClassesMap,
+      optionFareDetailsMap,
     );
 
     return {
       departureFlightsWithFares,
-      ReturnFlightsWithFares,
+      returnFlightsWithFares,
     };
   };
 
-  private createFinalResponseWithFares(
-    optionsWithSegments: {
-      flightOption: FlightOptionDto;
-      segments: DomesticFlightSegmentDto[];
-    }[],
-    optionFaresByOptionId: Map<string, OptionFareDto[]>,
+  private parseDomesticFlightSegments(
+    flightOptionsDataSet: FlightOptionDto[],
+    flightSegmentsDataSet: DomesticFlightSegmentDto[],
+    optionFaresDataSet: OptionFare[],
+    segmentClassesMap: Map<string, SegmentClassDto>,
     optionFareDetailsMap: Map<string, OptionFareDetailDto[]>,
-    segmentClassesByOptionFareId: Map<string, SegmentClassDto[]>,
-    useId2ForFares = false,
-  ) {
-    return optionsWithSegments.map((entry) => {
-      const flightOptionId = useId2ForFares
-        ? entry.flightOption.id2
-        : entry.flightOption.id;
-      const relatedOptionFares =
-        optionFaresByOptionId.get(flightOptionId) || [];
-      const segmentsWithClasses = entry.segments.map((segment) => {
-        const segmentOptionFares = relatedOptionFares.map((fare) => {
-          const segmentClassesForFare =
-            segmentClassesByOptionFareId.get(fare.id) || [];
-          const segmentClassForOptionFare = segmentClassesForFare.length
-            ? segmentClassesForFare[0]
-            : null;
+  ): DomesticFlightWithFares[] {
+    const flightSegmentsMap = new Map<string, DomesticFlightSegmentDto[]>();
+    flightSegmentsDataSet.forEach((flightSegment) => {
+      const flightOptionId = flightSegment.optionId;
 
-          return {
-            ...fare,
-            fareDetails: optionFareDetailsMap.get(fare.id) || [],
-            segmentClass: segmentClassForOptionFare,
-          };
-        });
+      if (!flightSegmentsMap.has(flightOptionId)) {
+        flightSegmentsMap.set(flightOptionId, []);
+      }
+      flightSegmentsMap.get(flightOptionId)?.push(flightSegment);
+    });
+
+    return flightOptionsDataSet.map((flightOption) => {
+      const enrichedSegments = (
+        flightSegmentsMap.get(flightOption.id) || []
+      ).map((segment) => {
+        const enrichedOptionFares = optionFaresDataSet
+          .filter((optionFare) => optionFare.SecenekID2 === flightOption.id2)
+          .map((optionFare) => {
+            return new OptionFareDto(
+              optionFare,
+              optionFareDetailsMap.get(optionFare.ID) || [],
+              segmentClassesMap.get(`${segment.id2}:${optionFare.ID}`),
+            );
+          });
 
         return {
           ...segment,
-          optionFares: segmentOptionFares,
+          optionFares: enrichedOptionFares,
         };
       });
+
       return {
-        flightOption: entry.flightOption,
-        segments: segmentsWithClasses,
+        flightOption,
+        segments: enrichedSegments,
       };
     });
   }

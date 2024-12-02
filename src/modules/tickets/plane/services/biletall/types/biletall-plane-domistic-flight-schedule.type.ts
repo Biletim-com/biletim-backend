@@ -93,26 +93,28 @@ export type OptionFareDetail = {
 };
 
 type DomesticFlightDataSet = {
-  GidisSecenekler: Array<{
-    [K in keyof FlightOption]: [string];
-  }>;
-  GidisSegmentler: Array<{
-    [K in keyof FlightSegment]: [string];
-  }>;
-  DonusSecenekler?: Array<{
-    [K in keyof FlightOption]: [string];
-  }>;
-  DonusSegmentler?: Array<{
-    [K in keyof FlightSegment]: [string];
-  }>;
-  SegmentSiniflar: Array<{
-    [K in keyof SegmentClass]: [string];
-  }>;
-  SecenekUcretler: Array<{
-    [K in keyof OptionFare]: [string];
-  }>;
-  SecenekUcretDetaylar: Array<{
-    [K in keyof OptionFareDetail]: [string];
+  NewDataSet: Array<{
+    Secenekler: Array<{
+      [K in keyof FlightOption]: [string];
+    }>;
+    Segmentler: Array<{
+      [K in keyof FlightSegment]: [string];
+    }>;
+    DonusSecenekler?: Array<{
+      [K in keyof FlightOption]: [string];
+    }>;
+    DonusSegmentler?: Array<{
+      [K in keyof FlightSegment]: [string];
+    }>;
+    SegmentSiniflar: Array<{
+      [K in keyof SegmentClass]: [string];
+    }>;
+    SecenekUcretler: Array<{
+      [K in keyof OptionFare]: [string];
+    }>;
+    SecenekUcretDetaylar: Array<{
+      [K in keyof OptionFareDetail]: [string];
+    }>;
   }>;
 };
 
