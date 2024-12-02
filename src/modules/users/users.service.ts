@@ -22,7 +22,8 @@ import { UsersRepository } from './users.repository';
 import { User } from './user.entity';
 import { Passenger } from '../passengers/passenger.entity';
 import { RegisterUserRequest } from '@app/auth/dto/register-user-request.dto';
-import { Verification } from './verification/verification.entity';
+import { Verification } from '../verification/verification.entity';
+
 
 @Injectable()
 export class UsersService {

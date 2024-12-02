@@ -3,7 +3,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 //entities&repositories
 import { VerificationsRepository } from './verification.repository';
 import { Verification } from './verification.entity';
-import { User } from '../user.entity';
+import { User } from '../users/user.entity';
+
 
 @Injectable()
 export class VerificationService {
@@ -54,7 +55,7 @@ export class VerificationService {
     if (!userVerification)
       throw new NotFoundException('Not found userId with verificationCode');
 
-    return userVerification.user.id;
+    return userVerification.user?.id;
   }
 
   async uniqueSixDigitNumber() {
