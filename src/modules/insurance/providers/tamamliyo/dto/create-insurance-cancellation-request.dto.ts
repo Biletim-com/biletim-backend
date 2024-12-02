@@ -1,6 +1,9 @@
 import { IsTCNumber } from '@app/common/decorators';
 import { IsInt, IsNotEmpty, IsString } from 'class-validator';
-import { CreateInsuranceCancellationRequestResponse } from '../types/create-insurance-cancellation-request.type';
+import {
+  CreateInsuranceCancellationFailureRequestResponse,
+  CreateInsuranceCancellationSuccessfulRequestResponse,
+} from '../types/create-insurance-cancellation-request.type';
 
 export class CreateInsuranceCancellationRequestDto {
   @IsInt()
@@ -8,9 +11,8 @@ export class CreateInsuranceCancellationRequestDto {
   offerId: number;
 
   @IsTCNumber()
-  @IsInt()
   @IsNotEmpty()
-  customerTcNumber: number;
+  customerTcNumber: string;
 
   @IsString()
   @IsNotEmpty()
@@ -27,19 +29,21 @@ export class CreateInsuranceCancellationRequestDto {
 
 export class CreateInsuranceCancellationRequestDtoInTurkish {
   teklif_id: number;
-  tc_kimlik_no: number;
+  tc_kimlik_no: string;
   musteri_adi: string;
   musteri_email: string;
   partner_email: string;
   musteri_telefon: number;
 }
 
-export class CreateInsuranceCancellationRequestResponseDto {
+export class CreateInsuranceCancellationSuccessfulRequestResponseDto {
+  success: string;
+  message: string;
   data: {
     id: number;
     partnerId: number;
     offerId: number;
-    tcNumber: string;
+    tcNumber: number;
     status: string;
     customerName: string;
     customerEmail: string;
@@ -50,18 +54,40 @@ export class CreateInsuranceCancellationRequestResponseDto {
     updatedAt: string;
   };
 
-  constructor(data: CreateInsuranceCancellationRequestResponse) {
-    this.data.id = data.data.id;
-    this.data.partnerId = data.data.partner_id;
-    this.data.offerId = data.data.teklif_id;
-    this.data.tcNumber = data.data.tc_kimlik_no;
-    this.data.status = data.data.durum;
-    this.data.customerName = data.data.musteri_adi;
-    this.data.customerEmail = data.data.musteri_email;
-    this.data.partnerEmail = data.data.partner_email;
-    this.data.customerPhone = data.data.musteri_telefon;
-    this.data.productName = data.data?.urun_adi;
-    this.data.createdAt = data.data.created_at;
-    this.data.updatedAt = data.data.updated_at;
+  constructor(
+    success: string,
+    message: string,
+    data: CreateInsuranceCancellationSuccessfulRequestResponse['data'],
+  ) {
+    this.success = success;
+    this.message = message;
+    this.data = {
+      id: data.id,
+      partnerId: data.partner_id,
+      offerId: data.teklif_id,
+      tcNumber: data.tc_kimlik_no,
+      status: data.durum,
+      customerName: data.musteri_adi,
+      customerEmail: data.musteri_email,
+      partnerEmail: data.partner_email,
+      customerPhone: data.musteri_telefon,
+      productName: data?.urun_adi,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
+  }
+}
+
+export class CreateInsuranceCancellationFailureRequestResponseDto {
+  success: string;
+  data: {
+    error: string;
+  };
+
+  constructor(data: CreateInsuranceCancellationFailureRequestResponse) {
+    this.success = data.success;
+    this.data = {
+      error: data.data.error,
+    };
   }
 }

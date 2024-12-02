@@ -3,11 +3,15 @@ import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { Injectable } from '@nestjs/common';
 import { Countries } from '../types/get-countries-type';
 import {
+  CreateInsuranceCancellationFailureRequestResponseDto,
   CreateInsuranceCancellationRequestDto,
   CreateInsuranceCancellationRequestDtoInTurkish,
-  CreateInsuranceCancellationRequestResponseDto,
+  CreateInsuranceCancellationSuccessfulRequestResponseDto,
 } from '../dto/create-insurance-cancellation-request.dto';
-import { CreateInsuranceCancellationRequestResponse } from '../types/create-insurance-cancellation-request.type';
+import {
+  CreateInsuranceCancellationFailureRequestResponse,
+  CreateInsuranceCancellationSuccessfulRequestResponse,
+} from '../types/create-insurance-cancellation-request.type';
 
 @Injectable()
 export class TamamliyoService {
@@ -53,19 +57,38 @@ export class TamamliyoService {
 
   async createInsuranceCancellationRequest(
     requestDto: CreateInsuranceCancellationRequestDto,
-  ): Promise<CreateInsuranceCancellationRequestResponseDto> {
+  ): Promise<
+    | CreateInsuranceCancellationSuccessfulRequestResponseDto
+    | CreateInsuranceCancellationFailureRequestResponseDto
+  > {
     const requestDtoTurkish =
       this.createInsuranceCancellationRequestTranslateToTurkish(requestDto);
-    const response =
-      await this.restClientService.request<CreateInsuranceCancellationRequestResponse>(
-        {
-          path: '/iptal-servis/v1/iptal-talepleri/olustur',
-          method: 'POST',
-          data: requestDtoTurkish,
-          headers: this.getBasicAuthHeader(),
-        },
+    const response = await this.restClientService.request<
+      | CreateInsuranceCancellationSuccessfulRequestResponse
+      | CreateInsuranceCancellationFailureRequestResponse
+    >({
+      path: '/iptal-servis/v1/iptal-talepleri/olustur',
+      method: 'POST',
+      data: requestDtoTurkish,
+      headers: this.getBasicAuthHeader(),
+    });
+    if (response.success) {
+      return new CreateInsuranceCancellationSuccessfulRequestResponseDto(
+        response.success,
+        (
+          response as CreateInsuranceCancellationSuccessfulRequestResponse
+        ).message,
+        (response as CreateInsuranceCancellationSuccessfulRequestResponse).data,
       );
-
-    return new CreateInsuranceCancellationRequestResponseDto(response);
+    } else {
+      return new CreateInsuranceCancellationFailureRequestResponseDto({
+        success: response.success,
+        data: {
+          error:
+            (response as CreateInsuranceCancellationFailureRequestResponse).data
+              .error || 'Unknown error',
+        },
+      });
+    }
   }
 }
