@@ -76,10 +76,16 @@ export class BusTicketPaymentService {
 
     const trip = busTicketPurchaseDto.trip;
 
-    const [departureTerminal, arrivalTerminal] =
-      await queryRunner.manager.findBy(BusTerminal, {
-        externalId: In([trip.departureTerminalId, trip.arrivalTerminalId]),
-      });
+    const terminals = await queryRunner.manager.findBy(BusTerminal, {
+      externalId: In([trip.departureTerminalId, trip.arrivalTerminalId]),
+    });
+
+    const departureTerminal = terminals.find(
+      (terminal) => terminal.externalId === Number(trip.departureTerminalId),
+    );
+    const arrivalTerminal = terminals.find(
+      (terminal) => terminal.externalId === Number(trip.arrivalTerminalId),
+    );
 
     if (!departureTerminal || !arrivalTerminal) {
       throw new ServiceError('Bus Terminal(s) do not exist');
