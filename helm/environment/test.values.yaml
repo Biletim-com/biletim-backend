@@ -64,6 +64,7 @@ biletim_api:
     EMAIL_PASSWORD: 'zyyj jrjl syft egjh'
     EMAIL_PORT: 465
     EMAIL_HOST: smtp.gmail.com
+    EMAIL_USE_SSL: 'true'
     GOOGLE_OAUTH_CLIENT_ID: 347389858095-q2bqpat4bphrt778h8qfuepcd0tbt5o2.apps.googleusercontent.com
     GOOGLE_OAUTH_CLIENT_SECRET: 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
     FACEBOOK_OAUTH_CLIENT_ID: 372069605916295

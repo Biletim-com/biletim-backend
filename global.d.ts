@@ -26,6 +26,7 @@ declare namespace NodeJS {
     EMAIL_PASSWORD: string;
     EMAIL_PORT: string;
     EMAIL_HOST: string;
+    EMAIL_USE_SSL: string;
     PAYMENT_VPOS_BASE_URI: string;
     PAYMENT_3DSECURE_BASE_URI: string;
     PAYMENT_MERCHANT_ID: string;
