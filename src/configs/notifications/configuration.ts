@@ -10,5 +10,6 @@ export default registerAs(
     emailPort: parseInt(process.env.EMAIL_PORT),
     emailUsername: process.env.EMAIL_USERNAME,
     emailPassword: process.env.EMAIL_PASSWORD,
+    emailUseSSL: process.env.EMAIL_USE_SSL === 'true',
   }),
 );

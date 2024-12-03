@@ -35,7 +35,7 @@ import { HandlerbarsHelper } from '@app/common/helpers';
           name: notificationsConfigService.emailHost,
           host: notificationsConfigService.emailHost,
           port: notificationsConfigService.emailPort,
-          secure: false,
+          secure: notificationsConfigService.emailUseSSL,
           auth: {
             user: notificationsConfigService.emailUsername,
             pass: notificationsConfigService.emailPassword,

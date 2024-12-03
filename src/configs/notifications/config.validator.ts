@@ -16,4 +16,8 @@ export class NotificationsEnvVarsValidation {
   @IsNotEmpty()
   @IsString()
   EMAIL_PASSWORD: string;
+
+  @IsNotEmpty()
+  @IsString()
+  EMAIL_USE_SSL: string;
 }
