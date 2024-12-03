@@ -6,20 +6,18 @@ import {
   IsArray,
   ValidateNested,
   IsEnum,
-  IsInt,
-  IsOptional,
-  ValidateIf,
+  Matches,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { InsuranceProductType } from '@app/common/enums';
 import {
   CreateOfferTravelHealthInsuranceResponse,
-  En,
+  Guarantees,
   PersonalInfo,
   ProductInfos,
-  Tr,
 } from '../types/create-offer-travel-health-insurance.type';
-import { InsuranceCompanyInfos } from '../types/get-price-travel-health-insurance-response.type';
+import { InsuranceCompanyInfos } from '../types/get-price-travel-health-insurance.type';
+import { IsTCNumber } from '@app/common/decorators';
 
 // DTO for the insured person information
 export class InsuredPersonDto {
@@ -30,7 +28,8 @@ export class InsuredPersonDto {
   })
   @IsString()
   @IsNotEmpty()
-  nationalIdentityNumber: string;
+  @IsTCNumber()
+  tcNumber: string;
 
   @ApiProperty({
     description: 'The birth date of the insured person.',
@@ -65,7 +64,7 @@ export class CreateOfferTravelHealthInsuranceRequestDto {
 
   @ApiProperty({
     description: 'Start date of the insurance policy.',
-    example: '2023-09-10',
+    example: '2024-12-10',
   })
   @IsDateString({}, { message: 'Start date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
@@ -73,7 +72,7 @@ export class CreateOfferTravelHealthInsuranceRequestDto {
 
   @ApiProperty({
     description: 'End date of the insurance policy.',
-    example: '2023-09-29',
+    example: '2024-12-14',
   })
   @IsDateString({}, { message: 'End date must be in the format yyyy-MM-dd' })
   @IsNotEmpty()
@@ -91,49 +90,25 @@ export class CreateOfferTravelHealthInsuranceRequestDto {
     description: 'The mobile phone number of the policyholder.',
     example: '535xxxxxx',
   })
+  @Matches(/^[1-9]\d{2}\d{3}\d{4}$/, {
+    message:
+      'Phone number must be a 10-digit number starting with a non-zero digit.',
+  })
   @IsString()
   @IsNotEmpty()
   phoneNumber: string;
 
   @ApiProperty({
     description:
-      'The type of the insurance product (e.g., domestic or international travel insurance).',
-    example: 'yurtdisi-seyahat',
+      'The type of the insurance product (e.g., domestic or abroad travel insurance).',
+    example: 'domestic-travel',
     enum: InsuranceProductType,
   })
   @IsEnum(InsuranceProductType, {
-    message:
-      'Product type must be either domestic-travel or international-travel',
+    message: 'Product type must be either domestic-travel or abroad-travel',
   })
   @IsNotEmpty()
   productType: InsuranceProductType;
-
-  @ApiProperty({
-    description:
-      'Country code for international travel insurance (if applicable).',
-    example: 276,
-    required: false,
-  })
-  @IsInt()
-  @ValidateIf((o) => o.productType === InsuranceProductType.ABROAD_TRAVEL)
-  @IsNotEmpty({
-    message: 'Country code is required for International travel insurance',
-  })
-  @IsOptional()
-  countryCode?: number;
-
-  @ApiProperty({
-    description: 'The departure city code for domestic travel insurance.',
-    example: 34,
-    required: false,
-  })
-  @IsInt()
-  @ValidateIf((o) => o.productType === InsuranceProductType.DOMESTIC_TRAVEL)
-  @IsNotEmpty({
-    message: 'City code is required for Domestic travel insurance',
-  })
-  @IsOptional()
-  cityCode?: number;
 }
 
 export class CreateOfferTravelHealthInsuranceRequestDtoInTurkish {
@@ -155,10 +130,10 @@ export class CreateOfferTravelHealthInsuranceRequestDtoInTurkish {
 }
 
 class GuaranteesDTO {
-  tr?: Tr;
-  en?: En;
+  tr: Record<string, any>;
+  en: Record<string, any>;
 
-  constructor(data: { tr?: Tr; en?: En }) {
+  constructor(data: Guarantees) {
     this.tr = data.tr;
     this.en = data.en;
   }

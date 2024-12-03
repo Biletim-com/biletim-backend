@@ -1,18 +1,17 @@
-import { InsuranceTicketType } from '@app/common/enums';
+// import { InsuranceTicketType } from '@app/common/enums';
 import { Type } from 'class-transformer';
 import {
   IsString,
   IsNumber,
   IsOptional,
-  IsEnum,
+  // IsEnum,
   ValidateNested,
   IsNotEmpty,
-  IsInt,
 } from 'class-validator';
 
 export class MakePaymentParametersTravelHealthInsuranceDto {
-  @IsEnum(InsuranceTicketType)
-  ticketType: InsuranceTicketType;
+  // @IsEnum(InsuranceTicketType)
+  // ticketType: InsuranceTicketType;
 
   @IsString()
   pnrNo: string;
@@ -57,13 +56,6 @@ export class MakePaymentTravelHealthInsuranceRequestDto {
 
   @IsString()
   creditCardHolderLastName: string;
-
-  @IsString()
-  address: string;
-
-  @IsOptional()
-  @IsInt()
-  countryId: number;
 }
 
 export class MakePaymentTravelHealthInsuranceRequestDtoInTurkish {
@@ -83,7 +75,8 @@ export class MakePaymentTravelHealthInsuranceRequestDtoInTurkish {
   krediKartiBitisTarihi: string;
   krediKartiAd: string;
   krediKartiSoyad: string;
-  ulkeKodu?: number;
+  ilId: number;
+  ilceId: string;
   adres: string;
   donusUrl: null;
 }

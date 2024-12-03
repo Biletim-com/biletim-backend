@@ -1,7 +1,7 @@
-import { InsuranceTicketType } from '@app/common/enums';
+// import { InsuranceTicketType } from '@app/common/enums';
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsEnum,
+  // IsEnum,
   IsInt,
   IsNotEmpty,
   IsString,
@@ -13,23 +13,21 @@ import { Type } from 'class-transformer';
 import { InsuranceCompanyInfosDto } from './get-price-travel-health-insurance.dto';
 import {
   GetPriceProductInfosTicketCancellationProtectionInsurance,
-  GetPriceTicketCancellationProtectionInsuranceEn,
   GetPriceTicketCancellationProtectionInsuranceResponse,
-  GetPriceTicketCancellationProtectionInsuranceTr,
-  Guarantees,
 } from '../types/get-price-ticket-cancellation-protection-insurance.type';
+import { Guarantees } from '../types/create-offer-travel-health-insurance.type';
 
 export class TicketCancellationProtectionParameters {
-  @ApiProperty({
-    description: 'Ticket type (bus or plane).',
-    example: 'bus',
-    required: true,
-  })
-  @IsEnum(InsuranceTicketType, {
-    message: 'Ticket type must be either bus or plane.',
-  })
-  @IsNotEmpty()
-  ticketType: InsuranceTicketType;
+  // @ApiProperty({
+  //   description: 'Ticket type (bus or plane).',
+  //   example: 'bus',
+  //   required: true,
+  // })
+  // @IsEnum(InsuranceTicketType, {
+  //   message: 'Ticket type must be either bus or plane.',
+  // })
+  // @IsNotEmpty()
+  // ticketType: InsuranceTicketType;
 
   @ApiProperty({
     description: 'Ticket price (e.g., "1050.90")',
@@ -120,8 +118,8 @@ export class GetPriceTicketCancellationProtectionInsuranceDtoInTurkish {
 }
 
 export class GuaranteesDto {
-  tr: GetPriceTicketCancellationProtectionInsuranceTr;
-  en: GetPriceTicketCancellationProtectionInsuranceEn;
+  tr: Record<string, any>;
+  en: Record<string, any>;
 
   constructor(data: Guarantees) {
     this.tr = data.tr;
@@ -159,7 +157,10 @@ export class GetPriceProductInfosTicketCancellationProtectionInsuranceDTO {
       tr: data.urunKategoriMultiple.tr,
       en: data.urunKategoriMultiple.en,
     };
-    this.guarantees = new GuaranteesDto(data.teminatlar);
+    this.guarantees = {
+      tr: Object.keys(data.teminatlar.tr),
+      en: Object.keys(data.teminatlar.en),
+    };
   }
 }
 

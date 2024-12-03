@@ -8,17 +8,16 @@ import {
   IsInt,
   IsNotEmpty,
   IsString,
+  Matches,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
   CreateOfferTicketCancellationProtectionInsuranceeResponse,
-  En,
-  Guarantees,
   ProductInfos,
-  Tr,
 } from '../types/create-offer-ticket-cancellation-protection-insurance.type';
 import { InsuranceCompanyInfosDto } from './get-price-travel-health-insurance.dto';
+import { Guarantees } from '../types/create-offer-travel-health-insurance.type';
 
 export class CreateOfferTicketCancellationProtectionInsuranceRequestDto {
   @ApiProperty({
@@ -53,6 +52,10 @@ export class CreateOfferTicketCancellationProtectionInsuranceRequestDto {
     description: 'The mobile phone number of the policyholder.',
     example: '535xxxxxx',
   })
+  @Matches(/^[1-9]\d{2}\d{3}\d{4}$/, {
+    message:
+      'Phone number must be a 10-digit number starting with a non-zero digit.',
+  })
   @IsString()
   @IsNotEmpty()
   phoneNumber: string;
@@ -81,8 +84,8 @@ export class CreateOfferTicketCancellationProtectionInsuranceRequestDtoInTurkish
 }
 
 export class GuaranteesDto {
-  tr: Tr;
-  en: En;
+  tr: Record<string, any>;
+  en: Record<string, any>;
 
   constructor(data: Guarantees) {
     this.tr = data.tr;
@@ -120,7 +123,11 @@ export class CreateOfferProductInfosTicketCancellationProtectionInsuranceDTO {
       tr: data.urunKategoriMultiple.tr,
       en: data.urunKategoriMultiple.en,
     };
-    this.guarantees = new GuaranteesDto(data.teminatlar);
+
+    this.guarantees = {
+      tr: Object.keys(data.teminatlar.tr),
+      en: Object.keys(data.teminatlar.en),
+    };
   }
 }
 

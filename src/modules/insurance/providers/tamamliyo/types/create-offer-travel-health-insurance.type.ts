@@ -1,48 +1,8 @@
-import { InsuranceCompanyInfos } from './get-price-travel-health-insurance-response.type';
-
-export type Tr = {
-  'Tıbbi Tedavi'?: string;
-  'Tıbbi Nakil'?: string;
-  'Tedavi Sonrası İkametgaha Dönüş'?: string;
-  'Cenaze Nakli'?: string;
-  'Tedavi N. Konaklama Süresinin Uzatılması'?: string;
-  'Refakatçi Nakli'?: string;
-  'Refakatçi Konaklama Giderleri'?: string;
-  'Aileden Birinin Ölümü Sebebi İle Geri Dönüş'?: string;
-  'Daimi İkametgahta Meydana Gelen Hasar Nedeniyle Yolculuğun Durdurulması Sonucu Geri Dönüş Seyahati'?: string;
-  'Kayıp Bagajın Bulunup Ulaştırılması'?: string;
-  'Bagaj Kaybı ve Hasarı'?: string;
-  'Acil Mesajların İletilmesi'?: string;
-  'Acente İflas ve Taahhüdün Yerine Getirilmemesi'?: string;
-  'Ferdi Kaza Ölüm ve Maluliyet'?: string;
-  'Genel Bilgi Danışma'?: string;
-  'Tıbbi Destek'?: string;
-  Rötar?: string;
-};
-
-export type En = {
-  'Medical Treatment'?: string;
-  'Medical Evacuation'?: string;
-  'Return to Residence After Treatment'?: string;
-  'Repatriation of Remains'?: string;
-  'Extension of Medical Treatment Stay'?: string;
-  'Companion Transfer'?: string;
-  'Companion Accommodation Expenses'?: string;
-  'Return Due to Family Member’s Death'?: string;
-  'Return Due to Damage at Permanent Residence'?: string;
-  'Recovery and Delivery of Lost Baggage'?: string;
-  'Baggage Loss and Damage'?: string;
-  'Transmission of Urgent Messages'?: string;
-  'Agency Bankruptcy or Failure to Fulfill Obligations'?: string;
-  'Personal Accident Death and Disability'?: string;
-  'General Information Assistance'?: string;
-  'Medical Support'?: string;
-  Delay?: string;
-};
+import { InsuranceCompanyInfos } from './get-price-travel-health-insurance.type';
 
 export type Guarantees = {
-  tr: Tr;
-  en: En;
+  tr: Record<string, any>;
+  en: Record<string, any>;
 };
 
 export type ProductInfos = {

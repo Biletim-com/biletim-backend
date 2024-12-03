@@ -1,36 +1,27 @@
 import { Type } from 'class-transformer';
-import {
-  IsString,
-  IsNumber,
-  IsOptional,
-  ValidateNested,
-  IsNotEmpty,
-  IsInt,
-} from 'class-validator';
+import { IsString, IsOptional, ValidateNested } from 'class-validator';
 
 export class MakePaymentParametersTicketCancellationProtectionInsuranceDto {
+  @IsOptional()
   @IsString()
-  pnrNo: string;
+  pnrNo?: string;
 
   @IsOptional()
   @IsString()
   flightNumber?: string;
 
+  @IsOptional()
   @IsString()
-  ticketNumber: string;
+  ticketNumber?: string;
 }
 
 export class MakePaymentTicketCancellationProtectionInsuranceRequestDto {
   @ValidateNested()
   @Type(() => MakePaymentParametersTicketCancellationProtectionInsuranceDto)
-  @IsNotEmpty()
   parameters: MakePaymentParametersTicketCancellationProtectionInsuranceDto;
 
-  @IsNumber()
+  @IsString()
   offerId: string;
-
-  @IsInt()
-  installmentCount: number;
 
   @IsString()
   creditCardCvv: string;
@@ -42,17 +33,10 @@ export class MakePaymentTicketCancellationProtectionInsuranceRequestDto {
   creditCardExpiryDate: string; // Expiry date of the credit card "2023-04-01"
 
   @IsString()
-  creditCardHolderFirstName: string;
+  creditCardHolderName: string;
 
   @IsString()
-  creditCardHolderLastName: string;
-
-  @IsOptional()
-  @IsInt()
-  countryId?: number;
-
-  @IsString()
-  address: string;
+  creditCardHolderSurname: string;
 }
 
 export class MakePaymentTicketCancellationProtectionInsuranceRequestDtoInTurkish {
@@ -69,6 +53,7 @@ export class MakePaymentTicketCancellationProtectionInsuranceRequestDtoInTurkish
   krediKartiBitisTarihi: string;
   krediKartiAd: string;
   krediKartiSoyad: string;
-  ulkeKodu?: number;
+  ilId: number;
+  ilceId: string;
   adres: string;
 }

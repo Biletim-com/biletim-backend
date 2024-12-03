@@ -1,3 +1,4 @@
+// import { InsuranceTicketType } from '@app/common/enums/insurance-ticket-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
@@ -9,29 +10,29 @@ import {
   IsOptional,
   IsEnum,
   ValidateIf,
+  Matches,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { InsuranceProductType, InsuranceTicketType } from '@app/common/enums';
 import {
-  en,
   GetPriceTravelHealthInsuranceResponse,
-  Guarantees,
   InsuranceCompanyInfos,
   ProductInfos,
-  tr,
-} from '../types/get-price-travel-health-insurance-response.type';
+} from '../types/get-price-travel-health-insurance.type';
+import { IsTCNumber } from '@app/common/decorators';
+import { Guarantees } from '../types/create-offer-travel-health-insurance.type';
 
 export class InsuranceCustomerInfoDto {
-  @ApiProperty({
-    description: 'Ticket type (bus or plane).',
-    example: 'bus',
-    required: true,
-  })
-  @IsEnum(InsuranceTicketType, {
-    message: 'Ticket type must be either bus or plane.',
-  })
-  @IsNotEmpty()
-  ticketType: InsuranceTicketType;
+  // @ApiProperty({
+  //   description: 'Ticket type (bus or plane).',
+  //   example: 'bus',
+  //   required: true,
+  // })
+  // @IsEnum(InsuranceTicketType, {
+  //   message: 'Ticket type must be either bus or plane.',
+  // })
+  // @IsNotEmpty()
+  // ticketType: InsuranceTicketType;
 
   @ApiProperty({
     description: 'TC identification number of the insured person.',
@@ -40,7 +41,8 @@ export class InsuranceCustomerInfoDto {
   })
   @IsString()
   @IsNotEmpty()
-  nationalIdentityNumber: string;
+  @IsTCNumber()
+  tcNumber: string;
 
   @ApiProperty({
     description: 'Birthdate of the insured person in YYYY-MM-DD format.',
@@ -56,9 +58,13 @@ export class InsuranceCustomerInfoDto {
     example: '537XXXXX',
     required: true,
   })
+  @Matches(/^[1-9]\d{2}\d{3}\d{4}$/, {
+    message:
+      'Phone number must be a 10-digit number starting with a non-zero digit.',
+  })
   @IsString()
   @IsNotEmpty()
-  gsmNo: string;
+  gsmNumber: string;
 
   @ApiProperty({
     description: 'Email address of the insured person.',
@@ -118,11 +124,11 @@ export class GetPriceTravelHealthInsuranceRequestDto {
 
   @ApiProperty({
     description: 'Type of product (e.g., international travel insurance).',
-    example: 'yurtdisi-seyahat',
+    example: 'domestic-travel',
     required: true,
   })
   @IsEnum(InsuranceProductType, {
-    message: 'Product type must be either yurtici-seyahat or yurtdisi-seyahat',
+    message: 'Product type must be either domestic-travel or abroad-travel',
   })
   @IsNotEmpty()
   productType: InsuranceProductType;
@@ -170,8 +176,8 @@ export class GetPriceTravelHealthInsuranceRequestDtoInTurkish {
 }
 
 export class GuaranteesDto {
-  tr: tr;
-  en: en;
+  tr: Record<string, any>;
+  en: Record<string, any>;
 
   constructor(data: Guarantees) {
     this.tr = data.tr;

@@ -1,3 +1,4 @@
+// import { TamamliyoInsuranceTicketType } from '../helpers/insurance-ticket-type.helper';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { Injectable } from '@nestjs/common';
 
@@ -13,11 +14,13 @@ import {
 } from '../dto/create-offer-travel-health-insurance.dto';
 
 import { CreateOfferTravelHealthInsuranceResponse } from '../types/create-offer-travel-health-insurance.type';
-import { GetPriceTravelHealthInsuranceResponse } from '../types/get-price-travel-health-insurance-response.type';
+import { GetPriceTravelHealthInsuranceResponse } from '../types/get-price-travel-health-insurance.type';
 import {
   MakePaymentTravelHealthInsuranceRequestDto,
   MakePaymentTravelHealthInsuranceRequestDtoInTurkish,
 } from '../dto/make-payment-travel-health-insurance.dto';
+import { TamamliyoInsuranceProductType } from '../helpers/insurance-product-type.helper';
+import { InsuranceMakePaymentResultResponse } from '../types/make-payment-response.type';
 
 @Injectable()
 export class TravelHealthInsuranceService {
@@ -47,16 +50,18 @@ export class TravelHealthInsuranceService {
       sigortaliSayisi: requestDto.insuredPersonCount,
       baslangicTarihi: requestDto.startDate,
       bitisTarihi: requestDto.endDate,
-      urun: requestDto.productType,
+      urun: TamamliyoInsuranceProductType[requestDto.productType],
       ulkeKodu:
-        requestDto.productType === InsuranceProductType.ABROAD_TRAVEL
+        TamamliyoInsuranceProductType[requestDto.productType] ===
+        TamamliyoInsuranceProductType[InsuranceProductType.ABROAD_TRAVEL]
           ? requestDto.countryCode
           : undefined,
       customerInfo: requestDto.customerInfo.map((customer) => ({
-        ticketType: customer.ticketType === InsuranceTicketType.BUS ? '0' : '1',
-        tcKimlikNo: customer.nationalIdentityNumber,
+        ticketType: '1',
+        // TamamliyoInsuranceTicketType[customer.ticketType].toString(),
+        tcKimlikNo: customer.tcNumber,
         dogumTarihi: customer.birthDate,
-        gsm_no: customer.gsmNo,
+        gsm_no: customer.gsmNumber,
         email: customer.email,
         ad: customer.firstName,
         soyad: customer.lastName,
@@ -71,7 +76,7 @@ export class TravelHealthInsuranceService {
       this.getPriceTravelHealthInsuranceTranslateToTurkish(requestDto);
     return this.restClientService.request<GetPriceTravelHealthInsuranceResponse>(
       {
-        path: '/v3/seyahat-saglik-sigortasi/fiyat-al',
+        path: '/partner/v3/seyahat-saglik-sigortasi/fiyat-al',
         method: 'POST',
         data: requestDtoInTurkish,
         headers: this.getBasicAuthHeader(),
@@ -84,25 +89,25 @@ export class TravelHealthInsuranceService {
   ): CreateOfferTravelHealthInsuranceRequestDtoInTurkish => {
     return {
       sigortaEttiren: {
-        tcKimlikNo: requestDto.policyholder.nationalIdentityNumber,
+        tcKimlikNo: requestDto.policyholder.tcNumber,
         dogumTarihi: requestDto.policyholder.birthDate,
       },
       sigortali: requestDto.insuredPersons.map((customer) => ({
-        tcKimlikNo: customer.nationalIdentityNumber,
+        tcKimlikNo: customer.tcNumber,
         dogumTarihi: customer.birthDate,
       })),
       baslangicTarihi: requestDto.startDate,
       bitisTarihi: requestDto.endDate,
       email: requestDto.email,
       gsmNo: requestDto.phoneNumber,
-      urun: requestDto.productType,
+      urun: TamamliyoInsuranceProductType[requestDto.productType],
       ulkeKodu:
         requestDto.productType === InsuranceProductType.ABROAD_TRAVEL
-          ? requestDto.countryCode
+          ? 998
           : undefined,
       ilKodu:
         requestDto.productType === InsuranceProductType.DOMESTIC_TRAVEL
-          ? requestDto.cityCode
+          ? 34
           : undefined,
     };
   };
@@ -112,9 +117,10 @@ export class TravelHealthInsuranceService {
   ): Promise<CreateOfferTravelHealthInsuranceResponse> {
     const requestDtoTurkish =
       this.createOfferTravelHealthInsuranceTranslateToTurkish(requestDto);
+    console.log(requestDtoTurkish);
     return this.restClientService.request<CreateOfferTravelHealthInsuranceResponse>(
       {
-        path: '/v3/seyahat-saglik-sigortasi/teklif-olustur',
+        path: '/partner/v3/seyahat-saglik-sigortasi/teklif-olustur',
         method: 'POST',
         data: requestDtoTurkish,
         headers: this.getBasicAuthHeader(),
@@ -127,10 +133,10 @@ export class TravelHealthInsuranceService {
   ): MakePaymentTravelHealthInsuranceRequestDtoInTurkish => {
     return {
       parameters: {
-        ticketType:
-          requestDto.parameters.ticketType === InsuranceTicketType.BUS
-            ? '0'
-            : '1',
+        ticketType: '1',
+        // TamamliyoInsuranceTicketType[
+        //   requestDto.parameters.ticketType
+        // ].toString(),
         pnrNo: requestDto.parameters.pnrNo,
         ...(requestDto.parameters.flightNumber && {
           flightNumber: requestDto.parameters.flightNumber,
@@ -147,25 +153,26 @@ export class TravelHealthInsuranceService {
       krediKartiBitisTarihi: requestDto.creditCardExpiryDate,
       krediKartiAd: requestDto.creditCardHolderFirstName,
       krediKartiSoyad: requestDto.creditCardHolderLastName,
-      ...(requestDto.countryId && {
-        ulkeKodu: requestDto.countryId,
-      }),
-      adres: requestDto.address,
+      ilId: 34,
+      ilceId: '10',
+      adres: ' KILIÇDEDE MAH. ÜLKEM SOK. NO:8A/11 İLKADIM/SAMSUN',
       donusUrl: null,
     };
   };
 
   async makePaymentTravelHealthInsurance(
     requestDto: MakePaymentTravelHealthInsuranceRequestDto,
-  ): Promise<any> {
+  ): Promise<InsuranceMakePaymentResultResponse> {
     const requestDtoTurkish =
       this.makePaymentTravelHealthInsuranceTranslateToTurkish(requestDto);
 
-    return await this.restClientService.request<any>({
-      path: '/v3/seyahat-saglik-sigortasi/odeme-yap',
-      method: 'POST',
-      data: requestDtoTurkish,
-      headers: this.getBasicAuthHeader(),
-    });
+    return await this.restClientService.request<InsuranceMakePaymentResultResponse>(
+      {
+        path: '/partner/v3/seyahat-saglik-sigortasi/odeme-yap',
+        method: 'POST',
+        data: requestDtoTurkish,
+        headers: this.getBasicAuthHeader(),
+      },
+    );
   }
 }
