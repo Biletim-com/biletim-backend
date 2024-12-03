@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 import { Gender } from '@app/common/enums';
@@ -10,28 +10,32 @@ import { Passport } from './passports/passport.entity';
 @Entity('passengers')
 export class Passenger extends AbstractEntity<Passenger> {
   @Column()
-  name: string;
+  firstName: string;
 
   @Column()
-  familyName: string;
+  lastName: string;
 
   @Column({ type: 'varchar' })
   gender: Gender;
 
-  @Column({ type: 'date', nullable: true })
-  birthday?: Nullable<DateISODate>;
+  @Column({ type: 'date' })
+  birthday: DateISODate;
 
   @Column({ type: 'varchar', length: 11 })
-  tcNumber?: Nullable<string>;
+  tcNumber: string;
+
+  @Column({ type: 'varchar' })
+  email: string;
+
+  @Column({ type: 'varchar' })
+  phoneNumber: string;
 
   @ManyToOne(() => User, (user) => user.passengers, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 
-  @OneToOne(() => Passport, (passport) => passport.id, {
-    cascade: ['insert', 'update'],
-    nullable: true,
+  @OneToMany(() => Passport, (passport) => passport.passenger, {
+    cascade: ['insert'],
   })
-  @JoinColumn()
-  passport?: Nullable<Passport>;
+  passports: Passport[];
 }

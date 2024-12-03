@@ -85,17 +85,11 @@ export class UsersService {
       const hashedPassword = this.passwordService.hashPassword(password);
       const user = await this.usersRepository.save(
         new User({
-          name: name,
-          familyName: familyName,
-          email: email,
+          name,
+          familyName,
+          email,
           password: hashedPassword,
           isVerified: true,
-          passengers: [
-            new Passenger({
-              name,
-              familyName,
-            }),
-          ],
         }),
       );
       return user;

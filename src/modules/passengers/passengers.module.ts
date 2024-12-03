@@ -21,6 +21,7 @@ import { PanelUsersModule } from '../panel-users/panel-users.module';
     PostgreSQLProviderModule.forFeature([Passenger]),
   ],
   providers: [PassengersRepository, PassengersService],
+  exports: [PassengersRepository],
   controllers: [PassengersController],
 })
 export class PassengersModule {}

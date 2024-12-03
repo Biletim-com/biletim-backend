@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import { User } from '../users/user.entity';
-import { UsersRepository } from '../users/users.repository';
-
+import { Passport } from './passports/passport.entity';
 import { Passenger } from './passenger.entity';
+
+import { UsersRepository } from '../users/users.repository';
 import { PassengersRepository } from './passengers.repository';
 
 // dtos
@@ -15,7 +16,6 @@ import { PassengerNotFoundError } from '@app/common/errors';
 
 // types
 import { UUID } from '@app/common/types';
-import { Passport } from './passports/passport.entity';
 
 @Injectable()
 export class PassengersService {
@@ -27,20 +27,22 @@ export class PassengersService {
   public async listPassengersByUserId(userId: UUID): Promise<Passenger[]> {
     return this.passengersRepository.find({
       where: { user: { id: userId } },
-      relations: { passport: true },
+      relations: { passports: true },
     });
   }
 
   public async addPassengerToUser(
     userOrUserId: UUID | User,
-    { passport, ...passengerDataToCreate }: CreatePassengerDto,
+    { passports, ...passengerDataToCreate }: CreatePassengerDto,
   ): Promise<Passenger> {
     const user = await this.usersRepository.findEntityData(userOrUserId);
 
     const passengerToCreate = new Passenger({
       user,
       ...passengerDataToCreate,
-      ...(passport ? { passport: new Passport(passport) } : { passport: null }),
+      ...(passports
+        ? { passports: passports.map((passport) => new Passport(passport)) }
+        : { passports: [] }),
     });
     return this.passengersRepository.save(passengerToCreate);
   }
