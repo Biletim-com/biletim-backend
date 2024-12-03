@@ -20,7 +20,7 @@ import { RegisterUserRequest } from '../dto/register-user-request.dto';
 
 // types
 import { UUID } from '@app/common/types';
-import { VerificationService } from '@app/modules/users/verification/verification.service';
+import { VerificationService } from '@app/modules/verification/verification.service';
 import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
 import { VerificationDto } from '../dto/verification.dto';
 import { CreateUserDto } from '@app/modules/users/dto/create-user.dto';

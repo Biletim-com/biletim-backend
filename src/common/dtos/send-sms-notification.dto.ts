@@ -1,9 +1,4 @@
-export class SendSmsNotificationDto {
-  messsage: string;
-  gsmno: string;
-}
-
-export class SendSmsVerificationDto {
+export class SendOrderCancelInitSMSDto {
   verificationCode: string;
   gsmno: string;
 }

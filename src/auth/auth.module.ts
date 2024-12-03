@@ -25,11 +25,13 @@ import { TokenRefreshMiddleware } from './middlewares/token-refresh.middleware';
 import { AuthConfigService } from '@app/configs/auth';
 import { OAuthLoginWithFacebookConfigService } from '@app/configs/oauth-facebook';
 import { OAuthLoginWithGoogleConfigService } from '@app/configs/oauth-google';
+import { VerificationsModule } from '@app/modules/verification/verifications.module';
 
 @Module({
   imports: [
     PanelUsersModule,
     UsersModule,
+    VerificationsModule,
     JwtModule.registerAsync({
       useFactory: (authAppConfigService: AuthConfigService) => ({
         secret: authAppConfigService.jwtSecret,

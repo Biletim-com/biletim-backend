@@ -10,7 +10,7 @@ import { PanelUsersRepository } from './panel-users.repository';
 import { PanelUsersService } from './panel-users.service';
 import { PanelUsersController } from './panel-users.controller';
 import { UsersRepository } from '../users/users.repository';
-import { VerificationsRepository } from '../users/verification/verification.repository';
+import { VerificationsRepository } from '../verification/verification.repository';
 
 @Module({
   imports: [PostgreSQLProviderModule.forFeature([PanelUser])],

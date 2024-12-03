@@ -8,7 +8,7 @@ import { QueueEnum } from '@app/common/enums';
 import { Order } from '@app/modules/orders/order.entity';
 import { DateTimeHelper } from '@app/common/helpers';
 import { SMSBusMessage, SMSPlaneMessage } from '../types/send-notifications-options.type';
-import { SendSmsNotificationDto, SendSmsVerificationDto } from '@app/common/dtos/send-sms-notification.dto';
+import { SendOrderCancelInitSMSDto } from '@app/common/dtos';
 
 @Injectable()
 export class SMSNotificationService {
@@ -19,18 +19,8 @@ export class SMSNotificationService {
     private readonly queue: Queue,
   ) {}
 
-
-  @OnEvent('user.sms')
-  async sendSms({ messsage, gsmno }: SendSmsNotificationDto): Promise<void> {
-    await this.queue.add({
-      messsage,
-      gsmno,
-    });
-  }
-
-
-  @OnEvent('user.verification.code')
-  async sendVerificationCodeSMS({ verificationCode, gsmno }: SendSmsVerificationDto): Promise<void> {
+  @OnEvent('order.cancel.init')
+  async sendOrderCancelInitSMS({ verificationCode, gsmno }: SendOrderCancelInitSMSDto): Promise<void> {
     verificationCode
     await this.queue.add({
       messsage: `Doğrulama Kodu: ${verificationCode} `,

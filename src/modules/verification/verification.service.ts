@@ -55,7 +55,10 @@ export class VerificationService {
     if (!userVerification)
       throw new NotFoundException('Not found userId with verificationCode');
 
-    return userVerification.user?.id;
+    if (!userVerification.user)
+      throw new NotFoundException('User Not found');
+
+    return userVerification.user.id;
   }
 
   async uniqueSixDigitNumber() {

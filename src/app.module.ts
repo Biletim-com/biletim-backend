@@ -18,6 +18,7 @@ import { PassengersModule } from '@app/modules/passengers/passengers.module';
 import { BankCardsModule } from '@app/modules/bank-cards/bank-cards.module';
 import { TransactionsModule } from '@app/modules/transactions/transactions.module';
 import { WalletsModule } from '@app/modules/wallets/wallets.module';
+import { VerificationsModule } from './modules/verification/verifications.module';
 
 // Providers
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
@@ -36,6 +37,7 @@ import { ErrorInterceptor } from '@app/common/interceptors';
 import { JobsModule } from '@app/jobs/jobs.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { InsuranceModule } from './modules/insurance/insurance.module';
+
 
 @Module({
   imports: [
@@ -62,6 +64,7 @@ import { InsuranceModule } from './modules/insurance/insurance.module';
     InsuranceModule,
     QueueProviderModule,
     NetGsmModule,
+    VerificationsModule
   ],
   providers: [
     {

@@ -8,32 +8,25 @@ import { UsersService } from './users.service';
 import { UsersRepository } from './users.repository';
 import { UsersController } from './users.controller';
 
-import { Verification } from './verification/verification.entity';
-import { VerificationsRepository } from './verification/verification.repository';
 
 import { PanelUsersModule } from '../panel-users/panel-users.module';
 import { PanelUsersService } from '../panel-users/panel-users.service';
-import { VerificationService } from './verification/verification.service';
 
 @Module({
   imports: [
     PanelUsersModule,
-    PostgreSQLProviderModule.forFeature([User, Verification]),
+    PostgreSQLProviderModule.forFeature([User]),
   ],
   controllers: [UsersController],
   providers: [
     UsersService,
     PasswordService,
     PanelUsersService,
-    UsersRepository,
-    VerificationsRepository,
-    VerificationService,
+    UsersRepository
   ],
   exports: [
     UsersService,
-    UsersRepository,
-    VerificationsRepository,
-    VerificationService,
+    UsersRepository
   ],
 })
 export class UsersModule {}
