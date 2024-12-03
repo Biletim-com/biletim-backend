@@ -76,6 +76,11 @@ import chromiumConfiguration, {
   ChromiumEnvVarsValidation,
 } from './chromium';
 
+import mongoConfiguration, {
+  MongoConfigService,
+  MongoEnvVarsValidation,
+} from './database/mongodb';
+
 @Global()
 @Module({
   imports: [
@@ -96,6 +101,7 @@ import chromiumConfiguration, {
         queueConfiguration,
         netGsmConfiguration,
         chromiumConfiguration,
+        mongoConfiguration,
       ],
       validate: async (config) =>
         Promise.all([
@@ -119,6 +125,7 @@ import chromiumConfiguration, {
           ConfigValidator.validate(PaymentEnvVarsValidation, config),
           ConfigValidator.validate(TamamliyoApiEnvVarsValidation, config),
           ConfigValidator.validate(ChromiumEnvVarsValidation, config),
+          ConfigValidator.validate(MongoEnvVarsValidation, config),
         ]),
     }),
   ],
@@ -138,6 +145,7 @@ import chromiumConfiguration, {
     QueueConfigService,
     NetGsmConfigService,
     ChromiumConfigService,
+    MongoConfigService,
   ],
   exports: [
     ConfigService,
@@ -155,6 +163,7 @@ import chromiumConfiguration, {
     QueueConfigService,
     NetGsmConfigService,
     ChromiumConfigService,
+    MongoConfigService,
   ],
 })
 export class ConfigModule {}
