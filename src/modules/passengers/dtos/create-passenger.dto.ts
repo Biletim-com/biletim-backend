@@ -5,15 +5,24 @@ import {
   IsEnum,
   IsEmail,
   IsDateString,
-  Length,
   ValidateNested,
   MaxLength,
+  IsIn,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { DateISODate, DateTime } from '@app/common/types';
+// types
+import { DateISODate } from '@app/common/types';
+
+// enums
 import { Gender } from '@app/common/enums';
+
+// decorators
+import { IsTCNumber } from '@app/common/decorators';
+
+// constants
+import { passportCountryCodes } from '@app/common/constants';
 
 class CreatePassportDto {
   @ApiProperty({ required: true })
@@ -23,7 +32,7 @@ class CreatePassportDto {
 
   @ApiProperty({ required: true })
   @IsNotEmpty()
-  @IsString()
+  @IsIn(passportCountryCodes)
   country: string;
 
   @ApiProperty({
@@ -41,12 +50,12 @@ export class CreatePassengerDto {
   @ApiProperty({ required: true })
   @IsNotEmpty()
   @IsString()
-  name: string;
+  firstName: string;
 
   @ApiProperty({ required: true })
   @IsNotEmpty()
   @IsString()
-  familyName: string;
+  lastName: string;
 
   @ApiProperty({ required: true, enum: Gender })
   @IsNotEmpty()
@@ -55,45 +64,43 @@ export class CreatePassengerDto {
   })
   gender: Gender;
 
-  @ApiProperty({ required: false, nullable: true, type: String })
+  @ApiProperty({ required: false, type: String })
   @IsOptional()
   @IsEmail()
-  email?: Nullable<string>;
+  email: string;
 
-  @ApiProperty({ required: false, nullable: true, type: String })
+  @ApiProperty({ required: false, type: String })
   @IsOptional()
   @IsString()
-  phone?: Nullable<string>;
+  phoneNumber: string;
 
   @ApiProperty({
     description: 'Format is YYYY-MM-DD',
     required: false,
-    nullable: true,
     type: String,
   })
   @IsOptional()
   @IsDateString()
   @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
-  birthday?: Nullable<DateISODate>;
+  birthday: DateISODate;
 
   @ApiProperty({
     required: false,
-    nullable: true,
     maxLength: 11,
     minLength: 11,
     type: String,
   })
   @IsOptional()
-  @Length(11)
-  tcNumber?: Nullable<string>;
+  @IsTCNumber()
+  tcNumber: string;
 
   @ApiProperty({
     required: false,
     nullable: true,
-    type: CreatePassportDto,
+    type: [CreatePassportDto],
   })
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => CreatePassportDto)
-  passport?: Nullable<CreatePassportDto>;
+  passports?: Nullable<CreatePassportDto[]>;
 }
