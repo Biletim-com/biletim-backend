@@ -20,10 +20,12 @@ import { RegisterUserRequest } from '../dto/register-user-request.dto';
 
 // types
 import { UUID } from '@app/common/types';
-import { VerificationService } from '@app/modules/users/verification/verification.service';
+import { VerificationService } from '@app/modules/verification/verification.service';
 import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
-import { VerificationDto } from '../dto/verification.dto';
+import { VerificationCodeDto, VerificationDto } from '../dto/verification.dto';
 import { CreateUserDto } from '@app/modules/users/dto/create-user.dto';
+import { DateTimeHelper } from '@app/common/helpers';
+import { VerificationType } from '@app/common/enums';
 
 @Injectable()
 export class AuthService {
@@ -47,63 +49,79 @@ export class AuthService {
     this.cookieService.setAuthCookie(tokens, response);
   }
 
-  async register(registerUserRequest: RegisterUserRequest): Promise<User> {
+  async signup(registerUserRequest: RegisterUserRequest): Promise<User> {
     const existingUser = await this.usersService.registerEmailCheck(
       registerUserRequest.email.toLowerCase(),
     );
 
-    let user: User;
-    let verificationCode: number;
-
-    if (!existingUser) {
-      user = await this.usersService.registerUser(registerUserRequest);
-      verificationCode = await this.verificationService.createVerificationCode(
-        user,
-      );
-    } else {
-      user = existingUser;
-      verificationCode = await this.verificationService.updateVerificationCode(
-        user,
-      );
+    if (existingUser) {
+      throw new BadRequestException('User does not exist');
     }
 
-    this.eventEmitter.emitEvent('user.created', {
-      recipient: user.email,
-      verificationCode,
-    });
-
-    return user;
+    return this.usersService.registerUser(registerUserRequest);
   }
 
-  async appVerification(
-    dto: VerificationDto,
-    response: Response,
-  ): Promise<{ message: string; statusCode: number }> {
-    const { verificationCode } = dto;
+  async sendAccountVerificationCode(dto: VerificationCodeDto): Promise<void> {
+    const { email } = dto;
 
-    const userId = await this.verificationService.findUserIdByVerificationCode(
-      +verificationCode,
-    );
+    const user = await this.usersService.findByEmail(email);
 
-    const user = await this.usersService.findAppUserById(userId, {
-      verification: true,
-    });
-
-    if (user.isVerified || user.isDeleted) {
-      throw new BadRequestException('invalid verification code ');
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    if (user.isDeleted || user.isVerified) {
+      throw new BadRequestException(
+        user.isVerified ? 'User is already verified' : 'User is deleted',
+      );
     }
 
-    const updatedUser = await this.usersService.updateVerificationStatus(
-      userId,
-      user.verification.id,
+    const verificationCode =
+      await this.verificationService.createVerificationCode(
+        user,
+        VerificationType.ACTIVATE_PROFILE,
+      );
+    this.eventEmitter.emitEvent('user.created', {
+      recipient: email,
+      verificationCode,
+    });
+  }
+
+  async verifyAccount(dto: VerificationDto, response: Response): Promise<void> {
+    const { email, verificationCode } = dto;
+
+    const verificationData =
+      await this.verificationService.findByEmailAndVerificationCode(
+        email,
+        +verificationCode,
+        VerificationType.ACTIVATE_PROFILE,
+      );
+
+    if (!verificationData?.user) {
+      throw new BadRequestException('User not found');
+    }
+    const user = verificationData.user;
+    if (user.isDeleted || user.isVerified) {
+      throw new BadRequestException(
+        user.isVerified ? 'User is already verified' : 'User is deleted',
+      );
+    }
+
+    if (verificationData.isUsed) {
+      throw new BadRequestException('This code is already used');
+    }
+    const isCodeExpired = DateTimeHelper.isTimeExpired(
+      verificationData.expiredAt,
+    );
+    if (isCodeExpired) {
+      throw new BadRequestException('Verification code has expired');
+    }
+
+    await this.usersService.updateVerificationStatus(
+      user.id,
+      verificationData.id,
     );
 
-    this.login(updatedUser, response);
-
-    return {
-      message: 'Verification completed successfully',
-      statusCode: HttpStatus.OK,
-    };
+    this.login(user, response);
   }
 
   async forgotPassword(email: string) {
@@ -194,9 +212,7 @@ export class AuthService {
       );
     }
 
-    let user = (await this.usersService.findByEmailWithoutThrowError(
-      email,
-    )) as User;
+    let user = await this.usersService.findByEmailWithoutThrowError(email);
 
     if (!user) {
       const password: string = uuidv4();

@@ -1,4 +1,6 @@
 /// <reference path="./global.d.ts" />
+import * as dotenv from'dotenv';
+dotenv.config();
 
 import { NestFactory } from '@nestjs/core';
 import { Module } from '@nestjs/common';

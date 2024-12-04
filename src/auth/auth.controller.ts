@@ -22,7 +22,7 @@ import { AuthService } from './services/auth.service';
 // dtos
 import { RegisterUserRequest } from './dto/register-user-request.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { VerificationDto } from './dto/verification.dto';
+import { VerificationCodeDto, VerificationDto } from './dto/verification.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { LoginUserRequest } from './dto/login-user-request.dto';
 import { LoginOAuth2Dto } from './dto/login-oauth2.dto';
@@ -102,22 +102,34 @@ export class AuthController {
   @ApiOperation({ summary: 'Register User' })
   @Post('/signup')
   @HttpCode(200)
-  async register(
+  async signup(
     @Body() registerUserRequest: RegisterUserRequest,
   ): Promise<UserWithoutPasswordDto> {
-    const user = await this.authService.register(registerUserRequest);
+    const user = await this.authService.signup(registerUserRequest);
     return new UserWithoutPasswordDto(user);
   }
 
-  @ApiOperation({ summary: 'Verify App User' })
+  @ApiOperation({ summary: 'Send Verification Code for Account Activation' })
+  @ApiCookieAuth()
+  @HttpCode(200)
+  @Post('/send-account-verification-email')
+  async sendAccountVerificationCode(
+    @Body() verificationDto: VerificationCodeDto,
+  ): Promise<any> {
+    await this.authService.sendAccountVerificationCode(verificationDto);
+    return { message: 'Verification code sent successfully' };
+  }
+
+  @ApiOperation({ summary: 'Verify User' })
   @ApiCookieAuth()
   @HttpCode(200)
   @Post('/verify')
-  async appVerification(
+  async verifyAccount(
     @Res({ passthrough: true }) response: Response,
     @Body() verificationDto: VerificationDto,
   ): Promise<any> {
-    return this.authService.appVerification(verificationDto, response);
+    await this.authService.verifyAccount(verificationDto, response);
+    return { message: 'Verification completed successfully' };
   }
 
   @ApiOperation({ summary: 'Forgot Password' })

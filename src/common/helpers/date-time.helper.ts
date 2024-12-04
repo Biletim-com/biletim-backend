@@ -1,4 +1,5 @@
 import * as dayjs from 'dayjs';
+import { DateTime } from '../types';
 
 export class DateTimeHelper {
   static formatTurkishDate(dateString: string): string {
@@ -31,5 +32,17 @@ export class DateTimeHelper {
     const hours = diffDate.getHours();
     const minutes = diffDate.getMinutes();
     return `${hours} saat${minutes !== 0 ? ` ${minutes} dakika` : ''}`;
+  }
+
+  static addMinutesToCurrentDateTime(minutes: number): DateTime {
+    const currentTimestamp = new Date();
+    currentTimestamp.setMinutes(currentTimestamp.getMinutes() + minutes);
+    return currentTimestamp.toISOString() as DateTime;
+  };
+
+  static isTimeExpired(expiredAt: string): boolean {
+    const currentDate = new Date();
+    const expiryDate = new Date(expiredAt);
+    return currentDate.getTime() >= expiryDate.getTime();
   }
 }

@@ -3,58 +3,53 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 //entities&repositories
 import { VerificationsRepository } from './verification.repository';
 import { Verification } from './verification.entity';
-import { User } from '../user.entity';
+import { User } from '../users/user.entity';
+import { DateTimeHelper } from '@app/common/helpers';
+import { VerificationType } from '@app/common/enums';
+import { UUID } from '@app/common/types';
 
 @Injectable()
 export class VerificationService {
   constructor(private verificationRepository: VerificationsRepository) {}
 
-  async createVerificationCode(user: User): Promise<number> {
+  async createVerificationCode(
+    user: User,
+    type: VerificationType,
+  ): Promise<number> {
     const { verificationCode } = await this.uniqueSixDigitNumber();
 
     await this.verificationRepository.save(
       new Verification({
         user,
         verificationCode: verificationCode,
-        isExpired: false,
         isUsed: false,
+        type: type,
+        expiredAt: DateTimeHelper.addMinutesToCurrentDateTime(4),
       }),
     );
-
     return verificationCode;
   }
 
-  async updateVerificationCode(user: User): Promise<number> {
-    const verification = await this.verificationRepository.findOne({
-      where: { user: { id: user.id } },
-      relations: ['user'],
-    });
-
-    if (!verification) {
-      throw new Error('Verification record not found for this user');
-    }
-
-    const { verificationCode } = await this.uniqueSixDigitNumber();
-
-    verification.verificationCode = verificationCode;
-    verification.isUsed = false;
-    verification.isExpired = false;
-
-    await this.verificationRepository.save(verification);
-
-    return verification.verificationCode;
-  }
-
-  async findUserIdByVerificationCode(verificationCode: number) {
+  async findByEmailAndVerificationCode(
+    email: string,
+    verificationCode: number,
+    type: VerificationType,
+  ) {
     const userVerification = await this.verificationRepository.findOne({
-      where: { verificationCode: verificationCode },
+      where: {
+        verificationCode: verificationCode,
+        type: type,
+        user: { email: email },
+      },
       relations: { user: true },
     });
 
     if (!userVerification)
       throw new NotFoundException('Not found userId with verificationCode');
 
-    return userVerification.user.id;
+    if (!userVerification.user) throw new NotFoundException('User Not found');
+
+    return userVerification;
   }
 
   async uniqueSixDigitNumber() {

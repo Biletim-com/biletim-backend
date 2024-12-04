@@ -12,3 +12,6 @@ export * from './transaction.enums';
 export * from './plane-ticket.enums';
 export * from './order.enums';
 export * from './insurance.enums';
+
+export * from './queue.enum';
+export * from './verification.enums';

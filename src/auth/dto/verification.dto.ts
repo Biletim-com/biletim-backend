@@ -4,6 +4,7 @@ import {
   IsNumberString,
   MinLength,
   MaxLength,
+  IsEmail,
 } from 'class-validator';
 
 export class VerificationDto {
@@ -16,4 +17,23 @@ export class VerificationDto {
     example: '123456',
   })
   verificationCode!: string;
+
+  @IsNotEmpty()
+  @IsEmail({}, { message: 'Please provide a valid email address.' })
+  @ApiProperty({
+    description: 'Email address of the user',
+    example: 'user@example.com',
+  })
+  email!: string;
+}
+
+
+export class VerificationCodeDto {
+  @IsNotEmpty()
+  @IsEmail({}, { message: 'Please provide a valid email address.' })
+  @ApiProperty({
+    description: 'Email address of the user',
+    example: 'user@example.com',
+  })
+  email!: string;
 }
