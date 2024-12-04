@@ -24,7 +24,6 @@ import { Passenger } from '../passengers/passenger.entity';
 import { RegisterUserRequest } from '@app/auth/dto/register-user-request.dto';
 import { Verification } from '../verification/verification.entity';
 
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -230,30 +229,12 @@ export class UsersService {
   }
 
   async registerUser(dto: RegisterUserRequest): Promise<User> {
-    const user = await this.usersRepository.save(
-      new User({
-        ...dto,
-        password: this.passwordService.hashPassword(dto.password),
-      }),
-    );
-
-    return user;
-  }
-
-  async updateVerificationStatus(
-    userId: UUID,
-    verificationId: UUID,
-  ): Promise<User> {
-    return await this.usersRepository.save(
-      new User({
-        id: userId,
-        isVerified: true,
-        verification: new Verification({
-          id: verificationId,
-          isUsed: true,
-        }),
-      }),
-    );
+    const userToCreate = new User({
+      ...dto,
+      password: this.passwordService.hashPassword(dto.password),
+    });
+    await this.usersRepository.insert(userToCreate);
+    return userToCreate;
   }
 
   async updateUserPasswordCode(

@@ -102,35 +102,34 @@ export class AuthController {
   @ApiOperation({ summary: 'Register User' })
   @Post('/signup')
   @HttpCode(200)
-  async register(
+  async signup(
     @Body() registerUserRequest: RegisterUserRequest,
   ): Promise<UserWithoutPasswordDto> {
-    const user = await this.authService.register(registerUserRequest);
+    const user = await this.authService.signup(registerUserRequest);
     return new UserWithoutPasswordDto(user);
   }
 
-
-  @ApiOperation({ summary: 'Sent Verify Code' })
+  @ApiOperation({ summary: 'Send Verification Code for Account Activation' })
   @ApiCookieAuth()
   @HttpCode(200)
-  @Post('/sent-verify-code')
-  async sentVerificationCode(
-    @Res({ passthrough: true }) response: Response,
+  @Post('/send-email-account-verification-code')
+  async sendAccountVerificationCode(
     @Body() verificationDto: VerificationCodeDto,
   ): Promise<any> {
-    return this.authService.sentVerificationCode(verificationDto, response);
+    await this.authService.sendAccountVerificationCode(verificationDto);
+    return { message: 'Verification code sent successfully' };
   }
 
-
-  @ApiOperation({ summary: 'Verify App User' })
+  @ApiOperation({ summary: 'Verify User' })
   @ApiCookieAuth()
   @HttpCode(200)
   @Post('/verify')
-  async appVerification(
+  async verifyAccount(
     @Res({ passthrough: true }) response: Response,
     @Body() verificationDto: VerificationDto,
   ): Promise<any> {
-    return this.authService.appVerification(verificationDto, response);
+    await this.authService.verifyAccount(verificationDto, response);
+    return { message: 'Verification completed successfully' };
   }
 
   @ApiOperation({ summary: 'Forgot Password' })

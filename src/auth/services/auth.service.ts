@@ -38,7 +38,7 @@ export class AuthService {
     private verificationService: VerificationService,
     private passwordService: PasswordService,
     private readonly eventEmitter: EventEmitterService,
-  ) { }
+  ) {}
 
   logout(response: Response): void {
     this.cookieService.removeAuthCookie(response);
@@ -49,35 +49,19 @@ export class AuthService {
     this.cookieService.setAuthCookie(tokens, response);
   }
 
-  async register(registerUserRequest: RegisterUserRequest): Promise<User> {
+  async signup(registerUserRequest: RegisterUserRequest): Promise<User> {
     const existingUser = await this.usersService.registerEmailCheck(
       registerUserRequest.email.toLowerCase(),
     );
 
-    let user: User;
-    let verificationCode: number;
-
-    if (!existingUser) {
-      user = await this.usersService.registerUser(registerUserRequest);
-      // verificationCode = await this.verificationService.createVerificationCode(
-      //   user,
-      // );
-    } else {
-      throw new BadRequestException('User is exist');
+    if (existingUser) {
+      throw new BadRequestException('User does not exist');
     }
 
-    // this.eventEmitter.emitEvent('user.created', {
-    //   recipient: user.email,
-    //   verificationCode,
-    // });
-
-    return user;
+    return this.usersService.registerUser(registerUserRequest);
   }
 
-  async sentVerificationCode(
-    dto: VerificationCodeDto,
-    response: Response,
-  ): Promise<{ message: string; statusCode: number }> {
+  async sendAccountVerificationCode(dto: VerificationCodeDto): Promise<void> {
     const { email } = dto;
 
     const user = await this.usersService.findByEmail(email);
@@ -86,61 +70,53 @@ export class AuthService {
       throw new BadRequestException('User not found');
     }
 
-    const verificationCode = await this.verificationService.createVerificationCode(
-      user,
-      VerificationType.PROFILE
-    );
+    const verificationCode =
+      await this.verificationService.createVerificationCode(
+        user,
+        VerificationType.ACTIVATE_PROFILE,
+      );
     this.eventEmitter.emitEvent('user.created', {
       recipient: email,
       verificationCode,
     });
-
-    return {
-      message: 'Verification code sent successfully',
-      statusCode: HttpStatus.OK,
-    };
   }
 
-  async appVerification(
-    dto: VerificationDto,
-    response: Response,
-  ): Promise<{ message: string; statusCode: number }> {
+  async verifyAccount(dto: VerificationDto, response: Response): Promise<void> {
     const { email, verificationCode } = dto;
 
-    const verificationData = await this.verificationService.findByEmailAndVerificationCodeAndType(
-      email,
-      +verificationCode,
-      VerificationType.PROFILE
-    );
-  
+    const verificationData =
+      await this.verificationService.findByEmailAndVerificationCode(
+        email,
+        +verificationCode,
+        VerificationType.ACTIVATE_PROFILE,
+      );
+
     if (!verificationData?.user) {
-      throw new BadRequestException('Not Found User');
+      throw new BadRequestException('User not found');
     }
-  
     const user = verificationData.user;
-  
     if (user.isDeleted || user.isVerified) {
-      throw new BadRequestException(user.isVerified ? 'User is already verified' : 'User is deleted');
+      throw new BadRequestException(
+        user.isVerified ? 'User is already verified' : 'User is deleted',
+      );
     }
-  
-    const isCodeExpired = DateTimeHelper.isTimeExpired(verificationData.expiredAt);
+
+    if (verificationData.isUsed) {
+      throw new BadRequestException('This code is already used');
+    }
+    const isCodeExpired = DateTimeHelper.isTimeExpired(
+      verificationData.expiredAt,
+    );
     if (isCodeExpired) {
       throw new BadRequestException('Verification code has expired');
     }
-  
-    const updatedUser = await this.usersService.updateVerificationStatus(
-      user.id,
+
+    await this.verificationService.updateVerificationStatus(
       verificationData.id,
     );
-  
-    this.login(updatedUser, response);
-  
-    return {
-      message: 'Verification completed successfully',
-      statusCode: HttpStatus.OK,
-    };
-  }
 
+    this.login(user, response);
+  }
 
   async forgotPassword(email: string) {
     const user = await this.usersService.findByEmail(email);
@@ -230,9 +206,7 @@ export class AuthService {
       );
     }
 
-    let user = (await this.usersService.findByEmailWithoutThrowError(
-      email,
-    )) as User;
+    let user = await this.usersService.findByEmailWithoutThrowError(email);
 
     if (!user) {
       const password: string = uuidv4();

@@ -6,13 +6,16 @@ import { Verification } from './verification.entity';
 import { User } from '../users/user.entity';
 import { DateTimeHelper } from '@app/common/helpers';
 import { VerificationType } from '@app/common/enums';
-
+import { UUID } from '@app/common/types';
 
 @Injectable()
 export class VerificationService {
   constructor(private verificationRepository: VerificationsRepository) {}
 
-  async createVerificationCode(user: User, type: VerificationType): Promise<number> {
+  async createVerificationCode(
+    user: User,
+    type: VerificationType,
+  ): Promise<number> {
     const { verificationCode } = await this.uniqueSixDigitNumber();
 
     await this.verificationRepository.save(
@@ -21,46 +24,37 @@ export class VerificationService {
         verificationCode: verificationCode,
         isUsed: false,
         type: type,
-        expiredAt: DateTimeHelper.addMinutesToCurrentDateTime(4)
+        expiredAt: DateTimeHelper.addMinutesToCurrentDateTime(4),
       }),
     );
     return verificationCode;
   }
 
-  async findUserIdByVerificationCode(verificationCode: number) {
-    const userVerification = await this.verificationRepository.findOne({
-      where: { verificationCode: verificationCode },
-      relations: { user: true },
-    });
-
-    if (!userVerification)
-      throw new NotFoundException('Not found userId with verificationCode');
-
-    if (!userVerification.user)
-      throw new NotFoundException('User Not found');
-
-    return userVerification.user.id;
+  async updateVerificationStatus(verificationId: UUID): Promise<void> {
+    this.verificationRepository.update(verificationId, { isUsed: true });
   }
 
-  async findByEmailAndVerificationCodeAndType(email: string, verificationCode: number, type: VerificationType) {
+  async findByEmailAndVerificationCode(
+    email: string,
+    verificationCode: number,
+    type: VerificationType,
+  ) {
     const userVerification = await this.verificationRepository.findOne({
-      where: { 
+      where: {
         verificationCode: verificationCode,
         type: type,
-        user: { email: email }
-       },
+        user: { email: email },
+      },
       relations: { user: true },
     });
 
     if (!userVerification)
       throw new NotFoundException('Not found userId with verificationCode');
 
-    if (!userVerification.user)
-      throw new NotFoundException('User Not found');
+    if (!userVerification.user) throw new NotFoundException('User Not found');
 
     return userVerification;
   }
-
 
   async uniqueSixDigitNumber() {
     let verificationCode: number;
