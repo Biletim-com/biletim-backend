@@ -22,8 +22,10 @@ import { RegisterUserRequest } from '../dto/register-user-request.dto';
 import { UUID } from '@app/common/types';
 import { VerificationService } from '@app/modules/verification/verification.service';
 import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
-import { VerificationDto } from '../dto/verification.dto';
+import { VerificationCodeDto, VerificationDto } from '../dto/verification.dto';
 import { CreateUserDto } from '@app/modules/users/dto/create-user.dto';
+import { DateTimeHelper } from '@app/common/helpers';
+import { VerificationType } from '@app/common/enums';
 
 @Injectable()
 export class AuthService {
@@ -36,7 +38,7 @@ export class AuthService {
     private verificationService: VerificationService,
     private passwordService: PasswordService,
     private readonly eventEmitter: EventEmitterService,
-  ) {}
+  ) { }
 
   logout(response: Response): void {
     this.cookieService.removeAuthCookie(response);
@@ -57,54 +59,88 @@ export class AuthService {
 
     if (!existingUser) {
       user = await this.usersService.registerUser(registerUserRequest);
-      verificationCode = await this.verificationService.createVerificationCode(
-        user,
-      );
+      // verificationCode = await this.verificationService.createVerificationCode(
+      //   user,
+      // );
     } else {
-      user = existingUser;
-      verificationCode = await this.verificationService.updateVerificationCode(
-        user,
-      );
+      throw new BadRequestException('User is exist');
     }
 
+    // this.eventEmitter.emitEvent('user.created', {
+    //   recipient: user.email,
+    //   verificationCode,
+    // });
+
+    return user;
+  }
+
+  async sentVerificationCode(
+    dto: VerificationCodeDto,
+    response: Response,
+  ): Promise<{ message: string; statusCode: number }> {
+    const { email } = dto;
+
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const verificationCode = await this.verificationService.createVerificationCode(
+      user,
+      VerificationType.PROFILE
+    );
     this.eventEmitter.emitEvent('user.created', {
-      recipient: user.email,
+      recipient: email,
       verificationCode,
     });
 
-    return user;
+    return {
+      message: 'Verification code sent successfully',
+      statusCode: HttpStatus.OK,
+    };
   }
 
   async appVerification(
     dto: VerificationDto,
     response: Response,
   ): Promise<{ message: string; statusCode: number }> {
-    const { verificationCode } = dto;
+    const { email, verificationCode } = dto;
 
-    const userId = await this.verificationService.findUserIdByVerificationCode(
+    const verificationData = await this.verificationService.findByEmailAndVerificationCodeAndType(
+      email,
       +verificationCode,
+      VerificationType.PROFILE
     );
-
-    const user = await this.usersService.findAppUserById(userId, {
-      verification: true,
-    });
-
-    if (user.isVerified || user.isDeleted) {
-      throw new BadRequestException('invalid verification code ');
+  
+    if (!verificationData?.user) {
+      throw new BadRequestException('Not Found User');
     }
-
+  
+    const user = verificationData.user;
+  
+    if (user.isDeleted || user.isVerified) {
+      throw new BadRequestException(user.isVerified ? 'User is already verified' : 'User is deleted');
+    }
+  
+    const isCodeExpired = DateTimeHelper.isTimeExpired(verificationData.expiredAt);
+    if (isCodeExpired) {
+      throw new BadRequestException('Verification code has expired');
+    }
+  
     const updatedUser = await this.usersService.updateVerificationStatus(
-      userId,
-      user.verification.id,
+      user.id,
+      verificationData.id,
     );
-
+  
     this.login(updatedUser, response);
-
+  
     return {
       message: 'Verification completed successfully',
       statusCode: HttpStatus.OK,
     };
   }
+
 
   async forgotPassword(email: string) {
     const user = await this.usersService.findByEmail(email);

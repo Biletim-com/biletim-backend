@@ -22,7 +22,7 @@ import { AuthService } from './services/auth.service';
 // dtos
 import { RegisterUserRequest } from './dto/register-user-request.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { VerificationDto } from './dto/verification.dto';
+import { VerificationCodeDto, VerificationDto } from './dto/verification.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { LoginUserRequest } from './dto/login-user-request.dto';
 import { LoginOAuth2Dto } from './dto/login-oauth2.dto';
@@ -108,6 +108,19 @@ export class AuthController {
     const user = await this.authService.register(registerUserRequest);
     return new UserWithoutPasswordDto(user);
   }
+
+
+  @ApiOperation({ summary: 'Sent Verify Code' })
+  @ApiCookieAuth()
+  @HttpCode(200)
+  @Post('/sent-verify-code')
+  async sentVerificationCode(
+    @Res({ passthrough: true }) response: Response,
+    @Body() verificationDto: VerificationCodeDto,
+  ): Promise<any> {
+    return this.authService.sentVerificationCode(verificationDto, response);
+  }
+
 
   @ApiOperation({ summary: 'Verify App User' })
   @ApiCookieAuth()
