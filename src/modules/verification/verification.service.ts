@@ -30,10 +30,6 @@ export class VerificationService {
     return verificationCode;
   }
 
-  async updateVerificationStatus(verificationId: UUID): Promise<void> {
-    this.verificationRepository.update(verificationId, { isUsed: true });
-  }
-
   async findByEmailAndVerificationCode(
     email: string,
     verificationCode: number,

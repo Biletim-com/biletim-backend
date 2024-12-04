@@ -145,6 +145,22 @@ export class UsersService {
     }
   }
 
+  async updateVerificationStatus(
+    userId: UUID,
+    verificationId: UUID,
+  ): Promise<User> {
+    return await this.usersRepository.save(
+      new User({
+        id: userId,
+        isVerified: true,
+        verification: new Verification({
+          id: verificationId,
+          isUsed: true,
+        }),
+      }),
+    );
+  }
+
   async delete(userId: UUID) {
     try {
       // new func

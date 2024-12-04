@@ -112,7 +112,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Send Verification Code for Account Activation' })
   @ApiCookieAuth()
   @HttpCode(200)
-  @Post('/send-email-account-verification-code')
+  @Post('/send-account-verification-email')
   async sendAccountVerificationCode(
     @Body() verificationDto: VerificationCodeDto,
   ): Promise<any> {

@@ -69,6 +69,11 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException('User not found');
     }
+    if (user.isDeleted || user.isVerified) {
+      throw new BadRequestException(
+        user.isVerified ? 'User is already verified' : 'User is deleted',
+      );
+    }
 
     const verificationCode =
       await this.verificationService.createVerificationCode(
@@ -111,7 +116,8 @@ export class AuthService {
       throw new BadRequestException('Verification code has expired');
     }
 
-    await this.verificationService.updateVerificationStatus(
+    await this.usersService.updateVerificationStatus(
+      user.id,
       verificationData.id,
     );
 
