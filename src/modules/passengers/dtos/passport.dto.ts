@@ -1,37 +1,44 @@
 import {
   IsString,
-  IsOptional,
+  IsNotEmpty,
   IsDateString,
-  IsNotIn,
   MaxLength,
   IsIn,
+  IsOptional,
+  IsNotIn,
+  IsUUID,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { DateISODate } from '@app/common/types';
+// types
+import { DateISODate, UUID } from '@app/common/types';
+
+// constants
 import { passportCountryCodes } from '@app/common/constants';
 
-export class UpdatePassportDto {
-  @ApiProperty({ required: false, nullable: false })
+export class PassengerPassportDto {
+  @ApiProperty({ required: false })
   @IsNotIn([null])
   @IsOptional()
+  @IsUUID()
+  id?: UUID;
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
   @IsString()
   number: string;
 
-  @ApiProperty({ required: false, nullable: false })
-  @IsNotIn([null])
-  @IsOptional()
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
   @IsIn(passportCountryCodes)
   country: string;
 
   @ApiProperty({
     description: 'Format is (YYYY-MM-DD)',
     example: '2030-01-01',
-    required: false,
-    nullable: false,
+    required: true,
   })
-  @IsNotIn([null])
-  @IsOptional()
+  @IsNotEmpty()
   @IsDateString()
   @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
   expirationDate: DateISODate;

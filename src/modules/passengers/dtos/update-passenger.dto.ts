@@ -7,11 +7,19 @@ import {
   Length,
   IsNotIn,
   MaxLength,
+  ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
+// types
 import { DateISODate } from '@app/common/types';
+
+// enums
 import { Gender } from '@app/common/enums';
+
+// dtos
+import { PassengerPassportDto } from './passport.dto';
 
 export class UpdatePassengerDto {
   @ApiProperty({ required: false, nullable: false })
@@ -68,4 +76,14 @@ export class UpdatePassengerDto {
   @IsOptional()
   @Length(11)
   tcNumber?: string;
+
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    type: [PassengerPassportDto],
+  })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  @Type(() => PassengerPassportDto)
+  passports?: Nullable<PassengerPassportDto[]>;
 }

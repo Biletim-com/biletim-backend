@@ -7,7 +7,6 @@ import {
   IsDateString,
   ValidateNested,
   MaxLength,
-  IsIn,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -21,30 +20,8 @@ import { Gender } from '@app/common/enums';
 // decorators
 import { IsTCNumber } from '@app/common/decorators';
 
-// constants
-import { passportCountryCodes } from '@app/common/constants';
-
-class CreatePassportDto {
-  @ApiProperty({ required: true })
-  @IsNotEmpty()
-  @IsString()
-  number: string;
-
-  @ApiProperty({ required: true })
-  @IsNotEmpty()
-  @IsIn(passportCountryCodes)
-  country: string;
-
-  @ApiProperty({
-    description: 'Format is (YYYY-MM-DD)',
-    example: '2030-01-01',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsDateString()
-  @MaxLength(10, { message: 'Only provide the date part: YYYY-MM-DD' })
-  expirationDate: DateISODate;
-}
+// dtos
+import { PassengerPassportDto } from './passport.dto';
 
 export class CreatePassengerDto {
   @ApiProperty({ required: true })
@@ -97,10 +74,10 @@ export class CreatePassengerDto {
   @ApiProperty({
     required: false,
     nullable: true,
-    type: [CreatePassportDto],
+    type: [PassengerPassportDto],
   })
   @ValidateNested({ each: true })
   @IsOptional()
-  @Type(() => CreatePassportDto)
-  passports?: Nullable<CreatePassportDto[]>;
+  @Type(() => PassengerPassportDto)
+  passports?: Nullable<PassengerPassportDto[]>;
 }

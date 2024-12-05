@@ -54,7 +54,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Find One App User' })
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
-  @Get('/find-one/:id')
+  @Get('/:id')
   async findOne(@Param('id') id: UUID): Promise<UserWithoutPasswordDto> {
     const user = await this.usersService.findOne(id);
     return new UserWithoutPasswordDto(user);
@@ -92,7 +92,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Delete App User' })
-  //@UseGuards(PanelUserJwtAuthGuard)
+  @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Delete('/:id')
   async delete(@Param('id') id: UUID) {

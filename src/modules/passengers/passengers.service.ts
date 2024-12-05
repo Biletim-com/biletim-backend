@@ -12,7 +12,10 @@ import { CreatePassengerDto } from './dtos/create-passenger.dto';
 import { UpdatePassengerDto } from './dtos/update-passenger.dto';
 
 // errors
-import { PassengerNotFoundError } from '@app/common/errors';
+import {
+  PassengerForbiddenResourceError,
+  PassengerNotFoundError,
+} from '@app/common/errors';
 
 // types
 import { UUID } from '@app/common/types';
@@ -50,17 +53,35 @@ export class PassengersService {
   public async updatePassenger(
     ownerUserId: UUID,
     passengerId: UUID,
-    updatePassengerDto: UpdatePassengerDto,
+    { passports, ...updatePassengerDto }: UpdatePassengerDto,
   ): Promise<Passenger> {
-    const existingPassenger = await this.passengersRepository.findOneBy({
-      id: passengerId,
-      user: { id: ownerUserId },
+    const existingPassenger = await this.passengersRepository.findOne({
+      where: {
+        id: passengerId,
+        user: { id: ownerUserId },
+      },
+      relations: {
+        passports: true,
+      },
     });
     if (!existingPassenger) throw new PassengerNotFoundError();
 
-    const newPassengerData = new Passenger(updatePassengerDto);
-    await this.passengersRepository.update(passengerId, newPassengerData);
-    return { ...existingPassenger, ...newPassengerData };
+    const passportIdsToUpdate = passports?.map((passport) => passport.id) || [];
+    const passengerPassportIds = existingPassenger.passports.map(
+      (passport) => passport.id,
+    );
+    passportIdsToUpdate.forEach((passportIdToUpdate) => {
+      if (
+        passportIdToUpdate &&
+        passengerPassportIds.includes(passportIdToUpdate)
+      ) {
+        throw new PassengerForbiddenResourceError(
+          `passport id with ${passportIdToUpdate}`,
+        );
+      }
+    });
+
+    return this.passengersRepository.save(updatePassengerDto);
   }
 
   public async deletePassenger(
