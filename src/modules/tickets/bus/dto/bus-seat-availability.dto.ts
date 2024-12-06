@@ -117,11 +117,3 @@ export class BusSeatAvailabilityRequestDto {
     return this.travelStartDateTime as DateTime;
   }
 }
-
-export class BusSeatAvailabilityDto {
-  isAvailable: boolean;
-
-  constructor(isAvailable: boolean) {
-    this.isAvailable = isAvailable;
-  }
-}

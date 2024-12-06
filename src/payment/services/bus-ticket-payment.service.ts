@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, In } from 'typeorm';
 
 import { PaymentProviderFactory } from '../factories/payment-provider.factory';
-import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
+
+// services
+import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
 
 // entities
 import { Order } from '@app/modules/orders/order.entity';
@@ -42,7 +44,7 @@ export class BusTicketPaymentService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly paymentProviderFactory: PaymentProviderFactory,
-    private readonly biletAllBusService: BiletAllBusService,
+    private readonly biletAllBusSearchService: BiletAllBusSearchService,
   ) {}
 
   private composeOrderInvoice(invoiceDto: InvoiceDto): Invoice {
@@ -94,7 +96,7 @@ export class BusTicketPaymentService {
     /**
      * Validate Company via company number
      */
-    const [company] = await this.biletAllBusService.company({
+    const [company] = await this.biletAllBusSearchService.companies({
       companyNumber: trip.companyNumber,
     });
     if (!company) {
@@ -115,7 +117,7 @@ export class BusTicketPaymentService {
     });
 
     const busSeatAvailability =
-      await this.biletAllBusService.busSeatAvailability(
+      await this.biletAllBusSearchService.busSeatAvailability(
         clientIp,
         busSeatAvailabilityDto,
       );
@@ -125,7 +127,7 @@ export class BusTicketPaymentService {
     }
 
     const { canSellToForeigners, transactionRules } =
-      await this.biletAllBusService.getForeignSaleEligibilityAndTransactionRules(
+      await this.biletAllBusSearchService.getForeignSaleEligibilityAndTransactionRules(
         clientIp,
         busSeatAvailabilityDto,
       );

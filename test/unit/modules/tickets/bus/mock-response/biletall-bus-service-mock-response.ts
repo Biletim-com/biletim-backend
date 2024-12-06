@@ -1,9 +1,9 @@
-import { BoardingPointDto } from '@app/modules/tickets/bus/dto/bus-boarding-point.dto';
-import { BusCompanyDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
-import { BusRouteDetailDto } from '@app/modules/tickets/bus/dto/bus-route.dto';
-import { BusSeatAvailabilityDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
-import { ServiceInformationDto } from '@app/modules/tickets/bus/dto/bus-service-information.dto';
-import { BusTerminalDto } from '@app/modules/tickets/bus/dto/bus-terminal.dto';
+import { BoardingPointDto } from '@app/providers/ticket/biletall/bus/dto/bus-boarding-point.dto';
+import { BusCompanyDto } from '@app/providers/ticket/biletall/bus/dto/bus-company.dto';
+import { BusRouteDetailDto } from '@app/providers/ticket/biletall/bus/dto/bus-route.dto';
+import { BusSeatAvailabilityDto } from '@app/providers/ticket/biletall/bus/dto/bus-seat-availability.dto';
+import { ServiceInformationDto } from '@app/providers/ticket/biletall/bus/dto/bus-service-information.dto';
+import { BusTerminalDto } from '@app/providers/ticket/biletall/bus/dto/bus-terminal.dto';
 
 export const busCompanyMockResponse: BusCompanyDto[] = [
   {

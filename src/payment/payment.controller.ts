@@ -28,13 +28,13 @@ import { ClientIp } from '@app/common/decorators';
 
 // types
 import { UUID } from '@app/common/types';
-import { BusTicketSaleRequest } from '@app/modules/tickets/bus/services/biletall/types/biletall-sale-request.type';
 import { PaymentResultQueryParams } from './types/payment-result-query-params.type';
 import type { Response, Request } from 'express';
 
 // enums
 import { PaymentProvider, TicketType } from '@app/common/enums';
 import { TransactionRequest } from './dto/get-transaction.dto';
+import { BusTicketSaleRequest } from '@app/providers/ticket/biletall/types/biletall-sale-request.type';
 
 @ApiTags('Payment')
 @Controller('payment')

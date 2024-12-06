@@ -3,14 +3,14 @@ import { Gender } from '@app/common/enums';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { ConfigModule } from '@app/configs/config.module';
 import { BusController } from '@app/modules/tickets/bus/bus.controller';
-import { BoardingPointRequestDto } from '@app/modules/tickets/bus/dto/bus-boarding-point.dto';
+import { BoardingPointRequestDto } from '@app/providers/ticket/biletall/bus/dto/bus-boarding-point.dto';
 import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
 import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
-import { ServiceInformationRequestDto } from '@app/modules/tickets/bus/dto/bus-service-information.dto';
-import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
-import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
-import { BusService } from '@app/modules/tickets/bus/services/bus.service';
+import { ServiceInformationRequestDto } from '@app/providers/ticket/biletall/bus/dto/bus-service-information.dto';
+import { BiletAllBusSearchParserService } from '@app/providers/ticket/biletall/bus/parsers/biletall-bus-search.parser.service';
+import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
+import { BusTerminalsService } from '@app/modules/tickets/bus/services/bus-terminals.service';
 import {
   boardingPointMockResponse,
   busCompanyMockResponse,
@@ -37,21 +37,21 @@ describe('BusController', () => {
   };
 
   let controller: BusController;
-  let biletAllBusService: BiletAllBusService;
+  let biletAllBusService: BiletAllBusSearchService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
       providers: [
-        BiletAllBusParserService,
-        BiletAllBusService,
+        BiletAllBusSearchParserService,
+        BiletAllBusSearchService,
         BiletAllApiConfigService,
         {
-          provide: BusService,
+          provide: BusTerminalsService,
           useValue: busServiceMock,
         },
         {
-          provide: BiletAllBusService,
+          provide: BiletAllBusSearchService,
           useValue: biletAllBusServiceMock,
         },
       ],
@@ -59,7 +59,9 @@ describe('BusController', () => {
     }).compile();
 
     controller = module.get<BusController>(BusController);
-    biletAllBusService = module.get<BiletAllBusService>(BiletAllBusService);
+    biletAllBusService = module.get<BiletAllBusSearchService>(
+      BiletAllBusSearchService,
+    );
   });
 
   it('should be defined', async () => {
@@ -76,7 +78,7 @@ describe('BusController', () => {
 
       const result = await controller.company(requestDto);
 
-      expect(biletAllBusService.company).toBeCalledWith(requestDto);
+      expect(biletAllBusService.companies).toBeCalledWith(requestDto);
       expect(result).toStrictEqual(busCompanyMockResponse);
     });
   });
@@ -112,7 +114,7 @@ describe('BusController', () => {
 
       const result = await controller.scheduleList(clientIp, requestDto);
 
-      expect(biletAllBusService.scheduleList).toBeCalledWith(requestDto);
+      expect(biletAllBusService.searchTripSchedules).toBeCalledWith(requestDto);
       expect(result).toEqual(departureScheduleListMockResponse);
     });
   });
@@ -170,48 +172,6 @@ describe('BusController', () => {
 
       expect(biletAllBusService.busSeatAvailability).toBeCalledWith(requestDto);
       expect(result).toStrictEqual(busSeatAvailabilityMockResponse);
-    });
-  });
-
-  describe('boardingPoint method', () => {
-    it('should return boarding location information of the relevant expedition', async () => {
-      const requestDto: BoardingPointRequestDto = {
-        companyNumber: '37',
-        departurePointID: '738',
-        localTime: '2024-09-25T03:00:00+03:00',
-        routeNumber: '6',
-      };
-
-      biletAllBusServiceMock.boardingPoint.mockResolvedValueOnce(
-        boardingPointMockResponse,
-      );
-
-      const result = await controller.boardingPoint(requestDto);
-
-      expect(biletAllBusService.boardingPoint).toBeCalledWith(requestDto);
-      expect(result).toStrictEqual(boardingPointMockResponse);
-    });
-  });
-
-  describe('serviceInformation method', () => {
-    it('should return service location  and time of the relevant expedition', async () => {
-      const requestDto: ServiceInformationRequestDto = {
-        companyNumber: '37',
-        departurePointID: '84',
-        localTime: '2018-12-10T02:30:00',
-        routeNumber: '1',
-        date: '2079-06-06T01:00:00.000Z',
-        time: '1900-01-01T00:00:00.000Z',
-      };
-
-      biletAllBusServiceMock.serviceInformation.mockResolvedValueOnce(
-        serviceInformationMockResponse,
-      );
-
-      const result = await controller.serviceInformation(requestDto);
-
-      expect(biletAllBusService.serviceInformation).toBeCalledWith(requestDto);
-      expect(result).toStrictEqual(serviceInformationMockResponse);
     });
   });
 

@@ -3,10 +3,10 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
 import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus-terminal.repository';
-import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
+import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
 
 // dto
-import { BusTerminalDto } from '@app/modules/tickets/bus/dto/bus-terminal.dto';
+import { BusTerminalDto } from '@app/providers/ticket/biletall/bus/dto/bus-terminal.dto';
 
 @Injectable()
 export class BusTerminalsCronJobService implements OnModuleInit {
@@ -14,7 +14,7 @@ export class BusTerminalsCronJobService implements OnModuleInit {
   private readonly logger = new Logger(BusTerminalsCronJobService.name);
 
   constructor(
-    private readonly biletAllBusService: BiletAllBusService,
+    private readonly biletAllBusSearchService: BiletAllBusSearchService,
     private readonly busTerminalRepository: BusTerminalRepository,
   ) {}
 
@@ -35,7 +35,7 @@ export class BusTerminalsCronJobService implements OnModuleInit {
   > {
     try {
       this.logger.log('Fetching data from BiletAll');
-      const response = await this.biletAllBusService.busTerminals();
+      const response = await this.biletAllBusSearchService.busTerminals();
       return this.splitIntoChunks(response);
     } catch (error) {
       this.logger.error('Error fetching data from BiletAll', error);

@@ -5,7 +5,7 @@ import { AppConfigService } from '@app/configs/app';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { BiletAllEncryptorService } from './services/biletall-encryptor.service';
 import { HtmlTemplateService } from '@app/providers/html-template/provider.service';
-import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
+import { BiletAllBusTicketPurchaseService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-ticket-purchase.service';
 
 // entites
 import { Transaction } from '@app/modules/transactions/transaction.entity';
@@ -27,7 +27,7 @@ export class BiletAllPaymentStrategy implements IPayment {
     private readonly biletAllApiConfigService: BiletAllApiConfigService,
     private readonly applicationConfigService: AppConfigService,
     private readonly htmlTemplateService: HtmlTemplateService,
-    private readonly biletAllBusService: BiletAllBusService,
+    private readonly biletAllBusTicketPurchaseService: BiletAllBusTicketPurchaseService,
   ) {}
 
   private get authCredentials() {
@@ -41,7 +41,7 @@ export class BiletAllPaymentStrategy implements IPayment {
     transaction: Transaction,
   ): Promise<string> {
     const { encode } = this.biletAllEncryptorService;
-    const saleXml = await this.biletAllBusService.saleRequest(
+    const saleXml = await this.biletAllBusTicketPurchaseService.purchaseTicket(
       clientIp,
       transaction,
       transaction.order,

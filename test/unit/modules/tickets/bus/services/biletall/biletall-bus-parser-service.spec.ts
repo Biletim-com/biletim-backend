@@ -1,9 +1,21 @@
-import { BiletAllParserService } from '@app/common/services';
-import { BusController } from '@app/modules/tickets/bus/bus.controller';
-import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
-import { BiletAllCompanyResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-company.type';
-import { ConfigModule } from '@nestjs/config';
+import * as fs from 'fs';
+import * as path from 'path';
+
+import { DataSource } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
+import { parseStringPromise } from 'xml2js';
+
+import { BusController } from '@app/modules/tickets/bus/bus.controller';
+import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus-terminal.repository';
+
+// services
+import { BiletAllParserService } from '@app/providers/ticket/biletall/services/biletall-response-parser.service';
+import { BiletAllBusSearchParserService } from '@app/providers/ticket/biletall/bus/parsers/biletall-bus-search.parser.service';
+import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
+import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
+import { BusTerminalsService } from '@app/modules/tickets/bus/services/bus-terminals.service';
+
 import {
   boardingPointMockResponse,
   busCompanyMockResponse,
@@ -13,30 +25,26 @@ import {
   getRouteMockResponse,
   serviceInformationMockResponse,
 } from '../../mock-response/biletall-bus-service-mock-response';
-import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
-import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
-import { BusService } from '@app/modules/tickets/bus/services/bus.service';
-import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus-terminal.repository';
-import { DataSource } from 'typeorm';
-import * as fs from 'fs';
-import * as path from 'path';
-import { parseStringPromise } from 'xml2js';
-import { BiletAllResponseError } from '@app/common/errors';
-import { SoapEnvelope } from '@app/common/types';
-import { BusStopPointResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-bus-terminal.type';
 
-import { BusResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-bus-search.type';
-import { BusSeatAvailabilityResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-bus-seat-availability.type';
-import { BoardingPointResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-boarding-point.type';
-import { ServiceInformationResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-service-information.type';
-import { RouteDetailResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-route.type';
-import { BusScheduleAndFeaturesResponse } from '@app/modules/tickets/bus/services/biletall/types/biletall-trip-search.type';
+// errors
+import { BiletAllResponseError } from '@app/providers/ticket/biletall/errors/biletall-response.error';
+
+// types
+import { SoapEnvelope } from '@app/providers/ticket/biletall/types/biletall-soap-envelope.type';
+import { BusCompaniesResponse } from '@app/providers/ticket/biletall/bus/types/biletall-bus-company.type';
+import { BusTerminalPointResponse } from '@app/providers/ticket/biletall/bus/types/biletall-bus-terminal.type';
+import { BusResponse } from '@app/providers/ticket/biletall/bus/types/biletall-bus-search.type';
+import { BusSeatAvailabilityResponse } from '@app/providers/ticket/biletall/bus/types/biletall-bus-seat-availability.type';
+import { BusBoardingPointResponse } from '@app/providers/ticket/biletall/bus/types/biletall-bus-boarding-point.type';
+import { BusServiceInformationResponse } from '@app/providers/ticket/biletall/bus/types/biletall-bus-service-information.type';
+import { BusRouteDetailResponse } from '@app/providers/ticket/biletall/bus/types/biletall-bus-route.type';
+import { BusTripScheduleAndFeaturesResponse } from '@app/providers/ticket/biletall/bus/types/biletall-bus-trip-schedule.type';
 
 describe('BiletAllBusParserService', () => {
   const mockBiletAllParserService = {
     extractResult: jest.fn(),
   };
-  let parser: BiletAllBusParserService;
+  let parser: BiletAllBusSearchParserService;
   let mockDataSource: Partial<DataSource>;
 
   beforeEach(async () => {
@@ -46,10 +54,10 @@ describe('BiletAllBusParserService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
       providers: [
-        BiletAllBusParserService,
-        BiletAllBusService,
+        BiletAllBusSearchParserService,
+        BiletAllBusSearchService,
         BiletAllApiConfigService,
-        BusService,
+        BusTerminalsService,
         BusTerminalRepository,
         { provide: BiletAllParserService, useValue: mockBiletAllParserService },
         { provide: DataSource, useValue: mockDataSource },
@@ -57,7 +65,9 @@ describe('BiletAllBusParserService', () => {
       controllers: [BusController],
     }).compile();
 
-    parser = module.get<BiletAllBusParserService>(BiletAllBusParserService);
+    parser = module.get<BiletAllBusSearchParserService>(
+      BiletAllBusSearchParserService,
+    );
   });
 
   it('should be defined', () => {
@@ -73,8 +83,9 @@ describe('BiletAllBusParserService', () => {
         ),
         'utf-8',
       );
-      const jsonMockResponse: BiletAllCompanyResponse =
-        await parseStringPromise(mockXmlResponse);
+      const jsonMockResponse: BusCompaniesResponse = await parseStringPromise(
+        mockXmlResponse,
+      );
       mockBiletAllParserService.extractResult.mockReturnValue({
         NewDataSet: [{ $: [Object], 'xs:schema': [Array], Table: [Array] }],
       });
@@ -126,9 +137,8 @@ describe('BiletAllBusParserService', () => {
         ),
         'utf-8',
       );
-      const jsonMockResponse: BusStopPointResponse = await parseStringPromise(
-        mockXmlResponse,
-      );
+      const jsonMockResponse: BusTerminalPointResponse =
+        await parseStringPromise(mockXmlResponse);
       mockBiletAllParserService.extractResult.mockReturnValue({
         NewDataSet: [{ $: [Object], 'xs:schema': [Array], Table: [Array] }],
       });
@@ -180,12 +190,12 @@ describe('BiletAllBusParserService', () => {
         ),
         'utf-8',
       );
-      const jsonMockResponse: BusScheduleAndFeaturesResponse =
+      const jsonMockResponse: BusTripScheduleAndFeaturesResponse =
         await parseStringPromise(mockXmlResponse);
       mockBiletAllParserService.extractResult.mockReturnValue({
         NewDataSet: [{ $: [Object], 'xs:schema': [Array], Table: [Array] }],
       });
-      const result = parser.parseBusSchedule(jsonMockResponse);
+      const result = parser.parseTripSchedule(jsonMockResponse);
 
       expect(result).toBeDefined();
       expect(result.schedulesAndFeatures).toBeDefined();
@@ -224,7 +234,7 @@ describe('BiletAllBusParserService', () => {
       });
 
       expect(() => {
-        parser.parseBusSchedule(mockErrorResponse);
+        parser.parseTripSchedule(mockErrorResponse);
       }).toThrow(BiletAllResponseError);
     });
   });
@@ -244,7 +254,7 @@ describe('BiletAllBusParserService', () => {
       mockBiletAllParserService.extractResult.mockReturnValue({
         NewDataSet: [{ $: [Object], 'xs:schema': [Array], Table: [Array] }],
       });
-      const result = parser.parseBusDetailResponse(jsonMockResponse);
+      const result = parser.parseBusDetails(jsonMockResponse);
 
       expect(result).toHaveProperty('bus');
 
@@ -288,7 +298,7 @@ describe('BiletAllBusParserService', () => {
       });
 
       expect(() => {
-        parser.parseBusDetailResponse(mockErrorResponse);
+        parser.parseBusDetails(mockErrorResponse);
       }).toThrow(BiletAllResponseError);
     });
   });
@@ -355,9 +365,8 @@ describe('BiletAllBusParserService', () => {
         ),
         'utf-8',
       );
-      const jsonMockResponse: BoardingPointResponse = await parseStringPromise(
-        mockXmlResponse,
-      );
+      const jsonMockResponse: BusBoardingPointResponse =
+        await parseStringPromise(mockXmlResponse);
       mockBiletAllParserService.extractResult.mockReturnValue({
         NewDataSet: [{ $: [Object], 'xs:schema': [Array], Table: [Array] }],
       });
@@ -409,7 +418,7 @@ describe('BiletAllBusParserService', () => {
         ),
         'utf-8',
       );
-      const jsonMockResponse: ServiceInformationResponse =
+      const jsonMockResponse: BusServiceInformationResponse =
         await parseStringPromise(mockXmlResponse);
       mockBiletAllParserService.extractResult.mockReturnValue({
         NewDataSet: [{ $: [Object], 'xs:schema': [Array], Table: [Array] }],
@@ -462,7 +471,7 @@ describe('BiletAllBusParserService', () => {
         ),
         'utf-8',
       );
-      const jsonMockResponse: RouteDetailResponse = await parseStringPromise(
+      const jsonMockResponse: BusRouteDetailResponse = await parseStringPromise(
         mockXmlResponse,
       );
       mockBiletAllParserService.extractResult.mockReturnValue({

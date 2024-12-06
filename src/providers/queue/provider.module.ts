@@ -8,14 +8,15 @@ import { QueueProviderService } from './provider.service';
   imports: [
     BullModule.forRootAsync({
       inject: [QueueProviderService],
-      useFactory: (queueProviderService: QueueProviderService) => queueProviderService.createBullOptions(),
+      useFactory: (queueProviderService: QueueProviderService) =>
+        queueProviderService.createBullOptions(),
     }),
   ],
   providers: [QueueProviderService, QueueConfigService],
   exports: [QueueProviderService, QueueConfigService],
 })
 export class QueueProviderModule {
-  static registerQueue(options: BullModuleOptions[]): DynamicModule{
-    return BullModule.registerQueue(...options)
+  static registerQueue(options: BullModuleOptions[]): DynamicModule {
+    return BullModule.registerQueue(...options);
   }
 }

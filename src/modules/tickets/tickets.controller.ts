@@ -1,27 +1,26 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { BiletAllPnrService } from './services/biletall/biletall-pnr.service';
-import { BiletAllOfficialHolidaysService } from './services/biletall/biletall-official-holidays.service';
-import { TravelCountryCodeService } from './services/biletall/biletall-travel-country-code.service';
-
-// dto
-import { PnrSearchRequestDto } from './services/biletall/dto/tickets-pnr-search.dto';
-import { PnrSearchDomesticFlightDto } from './services/biletall/dto/tickets-pnr-search-domestic-flight.dto';
-import { PnrSearchAbroadFlightDto } from './services/biletall/dto/tickets-pnr-search-abroad-flight.dto';
-import { PnrSearchBusDto } from './services/biletall/dto/tickets-pnr-search-bus.dto';
-import {
-  OfficialHolidaysDto,
-  OfficialHolidaysRequestDto,
-} from './services/biletall/dto/get-official-holidays.dto';
-import { CountryDto } from './services/biletall/dto/travel-country-code.dto';
-
 // service
-import { PlaneTicketOutputHandlerService } from './services/plane-ticket-output-handler.service';
 import { OrdersRepository } from '@app/modules/orders/orders.repository';
+import { BiletAllPnrService } from '@app/providers/ticket/biletall/common/services/biletall-pnr.service';
+import { BiletAllOfficialHolidaysService } from '@app/providers/ticket/biletall/common/services/biletall-official-holidays.service';
+import { BiletAllTravelCountryCodeService } from '@app/providers/ticket/biletall/common/services/biletall-travel-country-code.service';
+import { PlaneTicketOutputHandlerService } from './services/plane-ticket-output-handler.service';
 
 // entities
 import { Order } from '../orders/order.entity';
+
+// dto request
+import { PnrSearchRequestDto } from './dto/tickets-pnr-search.dto';
+import { OfficialHolidaysRequestDto } from './dto/get-official-holidays.dto';
+
+// dto response
+import { CountryDto } from '@app/providers/ticket/biletall/common/dto/travel-country-code.dto';
+import { OfficialHolidaysDto } from '@app/providers/ticket/biletall/common/dto/get-official-holidays.dto';
+import { PnrSearchAbroadFlightDto } from '@app/providers/ticket/biletall/common/dto/tickets-pnr-search-abroad-flight.dto';
+import { PnrSearchBusDto } from '@app/providers/ticket/biletall/common/dto/tickets-pnr-search-bus.dto';
+import { PnrSearchDomesticFlightDto } from '@app/providers/ticket/biletall/common/dto/tickets-pnr-search-domestic-flight.dto';
 
 @ApiTags('Tickets')
 @Controller()
@@ -29,7 +28,7 @@ export class TicketsController {
   constructor(
     private readonly biletAllPnrService: BiletAllPnrService,
     private readonly biletAllOfficialHolidaysService: BiletAllOfficialHolidaysService,
-    private readonly travelCountryCodeService: TravelCountryCodeService,
+    private readonly biletAllTravelCountryCodeService: BiletAllTravelCountryCodeService,
     private readonly planeTicketOutputHandlerService: PlaneTicketOutputHandlerService,
     private readonly orderRepository: OrdersRepository,
   ) {}
@@ -85,6 +84,6 @@ export class TicketsController {
       'Get travel country code to fill in the passport code at payments ',
   })
   async getTravelCountryCode(): Promise<CountryDto[]> {
-    return this.travelCountryCodeService.getTravelCountryCode();
+    return this.biletAllTravelCountryCodeService.getTravelCountryCode();
   }
 }
