@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   Param,
-  Patch,
   Post,
   UseGuards,
   HttpStatus,
@@ -22,7 +21,6 @@ import { CurrentUser } from '@app/common/decorators';
 
 // dtos
 import { CreateBankCardDto } from './dto/create-bank-card-request.dto';
-import { UpdateBankCardDto } from './dto/update-bank-card-request.dto';
 
 // types
 import { UUID } from '@app/common/types';
@@ -48,21 +46,6 @@ export class CreditCardController {
     @Body() bankCard: CreateBankCardDto,
   ): Promise<BankCard> {
     return this.bankCardsService.createBankCard(currentUser, bankCard);
-  }
-
-  @ApiOperation({ summary: 'Update user bank card' })
-  @UseGuards(JwtAuthGuard)
-  @Patch(':cardId')
-  updateBankCard(
-    @CurrentUser() currentUser: User,
-    @Param('cardId') cardId: UUID,
-    @Body() bankCardToUpdate: UpdateBankCardDto,
-  ): Promise<BankCard> {
-    return this.bankCardsService.updateBankCard(
-      currentUser,
-      cardId,
-      bankCardToUpdate,
-    );
   }
 
   @ApiOperation({ summary: 'Delete user bank card' })
