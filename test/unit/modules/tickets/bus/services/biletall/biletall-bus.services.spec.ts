@@ -1,12 +1,22 @@
-import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
-import { BusController } from '@app/modules/tickets/bus/bus.controller';
-import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
-
-import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
-import { ConfigModule } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
 import * as fs from 'fs';
 import * as path from 'path';
+
+import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
+import { parseStringPromise } from 'xml2js';
+
+import { BusController } from '@app/modules/tickets/bus/bus.controller';
+
+// services
+import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
+import { BiletAllParserService } from '@app/providers/ticket/biletall/services/biletall-response-parser.service';
+import { BiletAllRequestService } from '@app/providers/ticket/biletall/services/biletall-request.service';
+import { BusService } from '@app/modules/tickets/bus/services/bus.service';
+import { BiletAllBusSearchParserService } from '@app/providers/ticket/biletall/bus/parsers/biletall-bus-search.parser.service';
+
+import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
+
+import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
 import {
   boardingPointMockResponse,
   busCompanyMockResponse,
@@ -16,16 +26,12 @@ import {
   returnScheduleListMockResponse,
   serviceInformationMockResponse,
 } from '../../mock-response/biletall-bus-service-mock-response';
-import { BusService } from '@app/modules/tickets/bus/services/bus.service';
 import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus-terminal.repository';
 import { DataSource } from 'typeorm';
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 import { Gender } from '@app/common/enums';
 import { BoardingPointRequestDto } from '@app/modules/tickets/bus/dto/bus-boarding-point.dto';
 import { ServiceInformationRequestDto } from '@app/modules/tickets/bus/dto/bus-service-information.dto';
-import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
-import { BiletAllParserService, BiletAllService } from '@app/common/services';
-import { parseStringPromise } from 'xml2js';
 import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
 
 describe('BiletAllBusService', () => {
@@ -41,7 +47,7 @@ describe('BiletAllBusService', () => {
   };
   const mockTransactionRules = jest.fn();
 
-  let service: BiletAllBusService;
+  let service: BiletAllBusSearchService;
   let mockDataSource: Partial<DataSource>;
 
   beforeEach(async () => {
@@ -53,13 +59,13 @@ describe('BiletAllBusService', () => {
       imports: [ConfigModule],
       providers: [
         BiletAllApiConfigService,
-        BiletAllBusService,
+        BiletAllBusSearchService,
         BusService,
         BusTerminalRepository,
-        BiletAllService,
+        BiletAllRequestService,
         BiletAllParserService,
         {
-          provide: BiletAllBusParserService,
+          provide: BiletAllBusSearchParserService,
           useValue: mockParser,
         },
         { provide: DataSource, useValue: mockDataSource },
@@ -67,7 +73,7 @@ describe('BiletAllBusService', () => {
       controllers: [BusController],
     }).compile();
 
-    service = module.get<BiletAllBusService>(BiletAllBusService);
+    service = module.get<BiletAllBusSearchService>(BiletAllBusSearchService);
     service['transactionRules'] = mockTransactionRules;
   });
 
@@ -87,10 +93,10 @@ describe('BiletAllBusService', () => {
       );
 
       const runSpy = jest
-        .spyOn(BiletAllService.prototype, 'run')
+        .spyOn(BiletAllRequestService.prototype, 'run')
         .mockResolvedValueOnce(mockXmlResponse);
       mockParser.parseCompany.mockResolvedValueOnce(busCompanyMockResponse);
-      const result = await service.company(requestDto);
+      const result = await service.companies(requestDto);
 
       expect(runSpy).toHaveBeenCalledWith(
         `<Firmalar><FirmaNo>${requestDto.companyNumber}</FirmaNo></Firmalar>`,
@@ -111,7 +117,7 @@ describe('BiletAllBusService', () => {
       );
 
       const runSpy = jest
-        .spyOn(BiletAllService.prototype, 'run')
+        .spyOn(BiletAllRequestService.prototype, 'run')
         .mockResolvedValueOnce(mockXmlResponse);
       mockParser.parseBusTerminals.mockResolvedValueOnce(
         getBusTerminalsByNameMockResponse,
@@ -158,14 +164,14 @@ describe('BiletAllBusService', () => {
       const jsonResult = await parseStringPromise(mockXmlResponse);
 
       runSpy = jest
-        .spyOn(BiletAllService.prototype, 'run')
+        .spyOn(BiletAllRequestService.prototype, 'run')
         .mockResolvedValueOnce(jsonResult);
 
       mockParser.parseBusSchedule.mockResolvedValueOnce(
         departureScheduleListMockResponse,
       );
 
-      const result = await service.scheduleList(clientIp, requestDto);
+      const result = await service.searchTripSchedules(clientIp, requestDto);
 
       const expectedXml =
         `<Sefer>\n` +
@@ -226,7 +232,7 @@ describe('BiletAllBusService', () => {
       const jsonResult2 = await parseStringPromise(mockXmlResponse2);
 
       runSpy = jest
-        .spyOn(BiletAllService.prototype, 'run')
+        .spyOn(BiletAllRequestService.prototype, 'run')
         .mockResolvedValueOnce(jsonResult1)
         .mockResolvedValueOnce(jsonResult2);
 
@@ -237,8 +243,8 @@ describe('BiletAllBusService', () => {
         returnScheduleListMockResponse,
       );
 
-      const result1 = await service.scheduleList(clientIp, requestDto);
-      const result2 = await service.scheduleList(clientIp, requestDto2);
+      const result1 = await service.searchTripSchedules(clientIp, requestDto);
+      const result2 = await service.searchTripSchedules(clientIp, requestDto2);
       const expectedXml =
         `<Sefer>\n` +
         `  <FirmaNo>${requestDto.companyNumber}</FirmaNo>\n` +
@@ -359,7 +365,7 @@ describe('BiletAllBusService', () => {
       );
 
       const runSpy = jest
-        .spyOn(BiletAllService.prototype, 'run')
+        .spyOn(BiletAllRequestService.prototype, 'run')
         .mockResolvedValueOnce(mockXmlResponse);
 
       mockParser.parseBusSeatAvailability.mockResolvedValueOnce(
@@ -417,7 +423,7 @@ describe('BiletAllBusService', () => {
       );
 
       const runSpy = jest
-        .spyOn(BiletAllService.prototype, 'run')
+        .spyOn(BiletAllRequestService.prototype, 'run')
         .mockResolvedValueOnce(mockXmlResponse);
       mockParser.parseBoardingPoint.mockResolvedValueOnce(
         boardingPointMockResponse,
@@ -455,7 +461,7 @@ describe('BiletAllBusService', () => {
       );
 
       const runSpy = jest
-        .spyOn(BiletAllService.prototype, 'run')
+        .spyOn(BiletAllRequestService.prototype, 'run')
         .mockResolvedValueOnce(mockXmlResponse);
       mockParser.parseServiceInformation.mockResolvedValueOnce(
         serviceInformationMockResponse,

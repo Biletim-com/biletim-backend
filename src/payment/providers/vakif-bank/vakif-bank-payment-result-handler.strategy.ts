@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
+// services
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 import { VakifBankPaymentStrategy } from './vakif-bank-payment.strategy';
-import { BiletAllPlaneService } from '@app/modules/tickets/plane/services/biletall/biletall-plane.service';
 import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
+import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
 
 // interfaces
 import { IPaymentResultHandler } from '@app/payment/interfaces/payment-result-handler.interface';
@@ -14,9 +15,6 @@ import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { Order } from '@app/modules/orders/order.entity';
 import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
 import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
-
-// services
-import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
 
 // dtos
 import { VakifBankPaymentResultDto } from '../../dto/vakif-bank-payment-result.dto';
@@ -39,6 +37,8 @@ import { threeDSecureResponse } from './constants/3d-response.constant';
 
 // dto
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
+import { BiletAllBusTicketPurchaseService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-ticket-purchase.service';
+import { BiletAllPlaneTicketPurchaseService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-ticket-purchase.service';
 
 @Injectable()
 export class VakifBankPaymentResultHandlerStrategy
@@ -52,9 +52,10 @@ export class VakifBankPaymentResultHandlerStrategy
     private readonly dataSource: DataSource,
     private readonly transactionsRepository: TransactionsRepository,
     private readonly vakifBankPaymentStrategy: VakifBankPaymentStrategy,
-    private readonly biletAllBusService: BiletAllBusService,
-    private readonly biletAllPlaneService: BiletAllPlaneService,
     private readonly eventEmitterService: EventEmitterService,
+    private readonly biletAllBusSearchService: BiletAllBusSearchService,
+    private readonly biletAllBusTicketPurchaseService: BiletAllBusTicketPurchaseService,
+    private readonly biletAllPlaneTicketPurchaseService: BiletAllPlaneTicketPurchaseService,
   ) {}
 
   async handleSuccessfulBusTicketPayment(
@@ -120,7 +121,7 @@ export class VakifBankPaymentResultHandlerStrategy
       });
 
       const busSeatAvailability =
-        await this.biletAllBusService.busSeatAvailability(
+        await this.biletAllBusSearchService.busSeatAvailability(
           clientIp,
           busSeatAvailabilityDto,
         );
@@ -141,12 +142,13 @@ export class VakifBankPaymentResultHandlerStrategy
       actionsCompleted.push('PAYMENT');
 
       // send purchase request to biletall
-      const { pnr, ticketNumbers } = await this.biletAllBusService.saleRequest(
-        clientIp,
-        transaction,
-        transaction.order,
-        transaction.order.busTickets,
-      );
+      const { pnr, ticketNumbers } =
+        await this.biletAllBusTicketPurchaseService.purchaseTicket(
+          clientIp,
+          transaction,
+          transaction.order,
+          transaction.order.busTickets,
+        );
       actionsCompleted.push('TICKET_SALE');
 
       await Promise.all([
@@ -271,7 +273,7 @@ export class VakifBankPaymentResultHandlerStrategy
 
       // send purchase request to biletall
       const { pnr, ticketNumbers } =
-        await this.biletAllPlaneService.processPlaneTicket(
+        await this.biletAllPlaneTicketPurchaseService.processPlaneTicket(
           clientIp,
           PlaneTicketOperationType.PURCHASE,
           transaction.amount,

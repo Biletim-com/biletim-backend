@@ -1,17 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { BiletAllPlaneService } from '@app/modules/tickets/plane/services/biletall/biletall-plane.service';
-import { BiletAllPlaneParserService } from '@app/modules/tickets/plane/services/biletall/biletall-plane-parser.service';
+import { BiletAllPlaneModule } from '@app/providers/ticket/biletall/plane/provider.module';
 import { AirportRepository } from '@app/modules/tickets/plane/repositories/airport.repository';
 
 import { AirportsCronJobService } from './job.service';
 
 @Module({
-  providers: [
-    AirportsCronJobService,
-    BiletAllPlaneService,
-    BiletAllPlaneParserService,
-    AirportRepository,
-  ],
+  imports: [BiletAllPlaneModule],
+  providers: [AirportsCronJobService, AirportRepository],
 })
 export class AirportsCronJobModule {}

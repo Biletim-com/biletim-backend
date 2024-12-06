@@ -8,8 +8,8 @@ import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.d
 import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 import { ServiceInformationRequestDto } from '@app/modules/tickets/bus/dto/bus-service-information.dto';
-import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
-import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
+import { BiletAllBusSearchParserService } from '@app/providers/ticket/biletall/bus/parsers/biletall-bus-search.parser.service';
+import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
 import { BusService } from '@app/modules/tickets/bus/services/bus.service';
 import {
   boardingPointMockResponse,
@@ -37,21 +37,21 @@ describe('BusController', () => {
   };
 
   let controller: BusController;
-  let biletAllBusService: BiletAllBusService;
+  let biletAllBusService: BiletAllBusSearchService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
       providers: [
-        BiletAllBusParserService,
-        BiletAllBusService,
+        BiletAllBusSearchParserService,
+        BiletAllBusSearchService,
         BiletAllApiConfigService,
         {
           provide: BusService,
           useValue: busServiceMock,
         },
         {
-          provide: BiletAllBusService,
+          provide: BiletAllBusSearchService,
           useValue: biletAllBusServiceMock,
         },
       ],
@@ -59,7 +59,9 @@ describe('BusController', () => {
     }).compile();
 
     controller = module.get<BusController>(BusController);
-    biletAllBusService = module.get<BiletAllBusService>(BiletAllBusService);
+    biletAllBusService = module.get<BiletAllBusSearchService>(
+      BiletAllBusSearchService,
+    );
   });
 
   it('should be defined', async () => {
@@ -76,7 +78,7 @@ describe('BusController', () => {
 
       const result = await controller.company(requestDto);
 
-      expect(biletAllBusService.company).toBeCalledWith(requestDto);
+      expect(biletAllBusService.companies).toBeCalledWith(requestDto);
       expect(result).toStrictEqual(busCompanyMockResponse);
     });
   });
@@ -112,7 +114,7 @@ describe('BusController', () => {
 
       const result = await controller.scheduleList(clientIp, requestDto);
 
-      expect(biletAllBusService.scheduleList).toBeCalledWith(requestDto);
+      expect(biletAllBusService.searchTripSchedules).toBeCalledWith(requestDto);
       expect(result).toEqual(departureScheduleListMockResponse);
     });
   });

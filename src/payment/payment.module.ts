@@ -3,6 +3,8 @@ import { Module } from '@nestjs/common';
 import { PaymentProvider } from '@app/common/enums';
 import { PaymentConfigService } from '@app/configs/payment';
 import { PoxClientModule } from '@app/providers/pox-client/provider.module';
+import { BiletAllBusModule } from '@app/providers/ticket/biletall/bus/provider.module';
+import { BiletAllPlaneModule } from '@app/providers/ticket/biletall/plane/provider.module';
 
 import { PaymentController } from './payment.controller';
 
@@ -20,14 +22,12 @@ import { VakifBankEnrollmentService } from './providers/vakif-bank/services/vaki
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 import { BiletAllPaymentStrategy } from './providers/biletall/biletall-payment.strategy';
 import { BiletAllPaymentResultHandlerStrategy } from './providers/biletall/biletall-payment-result-handler.strategy';
-import { BiletAllBusService } from '@app/modules/tickets/bus/services/biletall/biletall-bus.service';
-import { BiletAllBusParserService } from '@app/modules/tickets/bus/services/biletall/biletall-bus-parser.service';
 import { OrdersRepository } from '@app/modules/orders/orders.repository';
-import { BiletAllPlaneService } from '@app/modules/tickets/plane/services/biletall/biletall-plane.service';
-import { BiletAllPlaneParserService } from '@app/modules/tickets/plane/services/biletall/biletall-plane-parser.service';
 
 @Module({
   imports: [
+    BiletAllBusModule,
+    BiletAllPlaneModule,
     PoxClientModule.registerAsync({
       token: `${PaymentProvider.VAKIF_BANK}_VPOS`,
       useFactory: async (configService: PaymentConfigService) =>
@@ -57,10 +57,6 @@ import { BiletAllPlaneParserService } from '@app/modules/tickets/plane/services/
     BiletAllPaymentResultHandlerStrategy,
     TransactionsRepository,
     OrdersRepository,
-    BiletAllBusService,
-    BiletAllBusParserService,
-    BiletAllPlaneService,
-    BiletAllPlaneParserService,
   ],
   exports: [
     PaymentProviderFactory,

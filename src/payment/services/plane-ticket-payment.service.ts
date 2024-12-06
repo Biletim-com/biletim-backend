@@ -3,10 +3,12 @@ import { DataSource } from 'typeorm';
 
 import { PaymentProviderFactory } from '../factories/payment-provider.factory';
 
+// services
+import { BiletAllPlaneSearchService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-search.service';
+
 // entities
 import { Order } from '@app/modules/orders/order.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { BiletAllPlaneService } from '@app/modules/tickets/plane/services/biletall/biletall-plane.service';
 import { PlaneTicketPassenger } from '@app/modules/tickets/plane/entities/plane-ticket-passenger.entity';
 import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
 import { PlaneTicketSegment } from '@app/modules/tickets/plane/entities/plane-ticket-segment.entity';
@@ -47,7 +49,7 @@ export class PlaneTicketPaymentService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly paymentProviderFactory: PaymentProviderFactory,
-    private readonly biletAllPlaneService: BiletAllPlaneService,
+    private readonly biletAllPlaneSearchService: BiletAllPlaneSearchService,
   ) {}
 
   private composePlanePassengerTypeCount(
@@ -133,11 +135,12 @@ export class PlaneTicketPaymentService {
     const passengerTypeCount = this.composePlanePassengerTypeCount(
       planeTicketPurchaseDto.passengers,
     );
-    const { priceList } = await this.biletAllPlaneService.pullPriceOfFlight({
-      companyNumber: planeTicketPurchaseDto.companyNumber,
-      segments: planeTicketPurchaseDto.segments,
-      ...passengerTypeCount,
-    });
+    const { priceList } =
+      await this.biletAllPlaneSearchService.getPriceOfFlight({
+        companyNumber: planeTicketPurchaseDto.companyNumber,
+        segments: planeTicketPurchaseDto.segments,
+        ...passengerTypeCount,
+      });
 
     this.validateTicketsPrice(
       planeTicketPurchaseDto.passengers,
