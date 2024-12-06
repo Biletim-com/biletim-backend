@@ -60,7 +60,11 @@ export class VakifBankCustomerService {
     });
 
     const responseInfo = this.extractResponseInfo(response);
-    if (responseInfo.ResponseCode !== '0000') {
+    if (
+      responseInfo.ResponseCode !== '0000' &&
+      // ignore duplicate user creation
+      responseInfo.ResponseCode !== '9110'
+    ) {
       const { description, detail } = vPOSResponse[responseInfo.ResponseCode];
       this.logger.error({ description, detail });
 
