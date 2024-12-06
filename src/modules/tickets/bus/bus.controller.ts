@@ -3,7 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // services
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
-import { BusService } from './services/bus.service';
+import { BusTerminalsService } from './services/bus-terminals.service';
 
 // entities
 import { BusTerminal } from './entities/bus-terminal.entity';
@@ -29,7 +29,7 @@ import { BusTicketDetailDto } from '@app/providers/ticket/biletall/bus/dto/bus-t
 export class BusController {
   constructor(
     private readonly BiletAllBusSearchService: BiletAllBusSearchService,
-    private readonly busService: BusService,
+    private readonly busTerminalsService: BusTerminalsService,
   ) {}
 
   @ApiOperation({ summary: 'Get Bus Companies' })
@@ -45,7 +45,7 @@ export class BusController {
   async searchBusTerminals(
     @Query() { searchTerm }: BusTerminalSearchQueryDto,
   ): Promise<BusTerminal[]> {
-    return this.busService.searchBusTerminals(searchTerm);
+    return this.busTerminalsService.searchBusTerminals(searchTerm);
   }
 
   @ApiOperation({ summary: 'Get Schedule List and Features' })

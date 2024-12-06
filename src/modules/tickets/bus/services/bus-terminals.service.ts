@@ -4,7 +4,7 @@ import { BusTerminalRepository } from '../repositories/bus-terminal.repository';
 import { BusTerminal } from '../entities/bus-terminal.entity';
 
 @Injectable()
-export class BusService {
+export class BusTerminalsService {
   constructor(private readonly busTerminalRepository: BusTerminalRepository) {}
 
   public async searchBusTerminals(searchTerm: string): Promise<BusTerminal[]> {

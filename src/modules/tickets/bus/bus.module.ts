@@ -7,7 +7,7 @@ import { BusTerminal } from './entities/bus-terminal.entity';
 import { BusTerminalRepository } from './repositories/bus-terminal.repository';
 import { BusController } from './bus.controller';
 
-import { BusService } from './services/bus.service';
+import { BusTerminalsService } from './services/bus-terminals.service';
 
 @Module({
   imports: [
@@ -15,6 +15,6 @@ import { BusService } from './services/bus.service';
     BiletAllBusModule,
   ],
   controllers: [BusController],
-  providers: [BusService, BusTerminalRepository],
+  providers: [BusTerminalsService, BusTerminalRepository],
 })
 export class BusModule {}

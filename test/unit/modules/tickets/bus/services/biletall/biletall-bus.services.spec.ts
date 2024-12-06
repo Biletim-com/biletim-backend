@@ -11,7 +11,7 @@ import { BusController } from '@app/modules/tickets/bus/bus.controller';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { BiletAllParserService } from '@app/providers/ticket/biletall/services/biletall-response-parser.service';
 import { BiletAllRequestService } from '@app/providers/ticket/biletall/services/biletall-request.service';
-import { BusService } from '@app/modules/tickets/bus/services/bus.service';
+import { BusTerminalsService } from '@app/modules/tickets/bus/services/bus-terminals.service';
 import { BiletAllBusSearchParserService } from '@app/providers/ticket/biletall/bus/parsers/biletall-bus-search.parser.service';
 
 import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
@@ -30,8 +30,8 @@ import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus
 import { DataSource } from 'typeorm';
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 import { Gender } from '@app/common/enums';
-import { BoardingPointRequestDto } from '@app/modules/tickets/bus/dto/bus-boarding-point.dto';
-import { ServiceInformationRequestDto } from '@app/modules/tickets/bus/dto/bus-service-information.dto';
+import { BoardingPointRequestDto } from '@app/providers/ticket/biletall/bus/dto/bus-boarding-point.dto';
+import { ServiceInformationRequestDto } from '@app/providers/ticket/biletall/bus/dto/bus-service-information.dto';
 import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
 
 describe('BiletAllBusService', () => {
@@ -60,7 +60,7 @@ describe('BiletAllBusService', () => {
       providers: [
         BiletAllApiConfigService,
         BiletAllBusSearchService,
-        BusService,
+        BusTerminalsService,
         BusTerminalRepository,
         BiletAllRequestService,
         BiletAllParserService,

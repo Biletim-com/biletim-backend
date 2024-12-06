@@ -14,7 +14,7 @@ import { BiletAllParserService } from '@app/providers/ticket/biletall/services/b
 import { BiletAllBusSearchParserService } from '@app/providers/ticket/biletall/bus/parsers/biletall-bus-search.parser.service';
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
-import { BusService } from '@app/modules/tickets/bus/services/bus.service';
+import { BusTerminalsService } from '@app/modules/tickets/bus/services/bus-terminals.service';
 
 import {
   boardingPointMockResponse,
@@ -57,7 +57,7 @@ describe('BiletAllBusParserService', () => {
         BiletAllBusSearchParserService,
         BiletAllBusSearchService,
         BiletAllApiConfigService,
-        BusService,
+        BusTerminalsService,
         BusTerminalRepository,
         { provide: BiletAllParserService, useValue: mockBiletAllParserService },
         { provide: DataSource, useValue: mockDataSource },

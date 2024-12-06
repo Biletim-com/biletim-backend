@@ -4,7 +4,7 @@ import { AirportRepository } from '../repositories/airport.repository';
 import { Airport } from '../entities/airport.entity';
 
 @Injectable()
-export class PlaneService {
+export class AirportsService {
   constructor(private readonly airportRepository: AirportRepository) {}
 
   public async searchAirports(searchTerm: string): Promise<Airport[]> {

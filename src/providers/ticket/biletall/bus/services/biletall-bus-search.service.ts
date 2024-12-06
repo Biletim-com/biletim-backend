@@ -7,11 +7,11 @@ import { BiletAllRequestService } from '../../services/biletall-request.service'
 import { BiletAllBusSearchParserService } from '../parsers/biletall-bus-search.parser.service';
 
 // request dtos
-import { BoardingPointRequestDto } from '@app/modules/tickets/bus/dto/bus-boarding-point.dto';
+import { BoardingPointRequestDto } from '../dto/bus-boarding-point.dto';
+import { ServiceInformationRequestDto } from '../dto/bus-service-information.dto';
 import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
 import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
-import { ServiceInformationRequestDto } from '@app/modules/tickets/bus/dto/bus-service-information.dto';
 import { BusTicketDetailRequestDto } from '@app/modules/tickets/bus/dto/bus-ticket-detail.dto';
 
 // parser dtos

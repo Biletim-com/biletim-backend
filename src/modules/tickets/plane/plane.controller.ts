@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // services
-import { PlaneService } from './services/plane.service';
+import { AirportsService } from './services/airports.service';
 import { BiletAllPlaneSearchService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-search.service';
 
 // entites
@@ -28,7 +28,7 @@ import { PlanePullPriceFlightDto } from '@app/providers/ticket/biletall/plane/dt
 @Controller('plane')
 export class PlaneController {
   constructor(
-    private readonly planeService: PlaneService,
+    private readonly airportsService: AirportsService,
     private readonly biletAllPlaneSearchService: BiletAllPlaneSearchService,
   ) {}
 
@@ -40,7 +40,7 @@ export class PlaneController {
   async busTerminalsByName(
     @Query() { searchText }: AirportSearchQueryDto,
   ): Promise<Airport[]> {
-    return this.planeService.searchAirports(searchText);
+    return this.airportsService.searchAirports(searchText);
   }
 
   @ApiOperation({ summary: 'Search Flight Schedule (Domestic/Abroad)' })

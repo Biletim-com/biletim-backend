@@ -1,5 +1,12 @@
 import { BusBoardingPoint } from '../types/biletall-bus-boarding-point.type';
 
+export class BoardingPointRequestDto {
+  companyNumber?: string;
+  departurePointID: string;
+  localTime: string;
+  routeNumber: string;
+}
+
 export class BoardingPointDto {
   place?: string;
   time: string;

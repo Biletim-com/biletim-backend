@@ -7,7 +7,7 @@ import { Airport } from './entities/airport.entity';
 import { AirportRepository } from './repositories/airport.repository';
 import { PlaneController } from './plane.controller';
 
-import { PlaneService } from './services/plane.service';
+import { AirportsService } from './services/airports.service';
 
 @Module({
   imports: [
@@ -15,6 +15,6 @@ import { PlaneService } from './services/plane.service';
     BiletAllPlaneModule,
   ],
   controllers: [PlaneController],
-  providers: [PlaneService, AirportRepository],
+  providers: [AirportsService, AirportRepository],
 })
 export class PlaneModule {}
