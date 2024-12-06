@@ -129,7 +129,7 @@ export class DomesticFlightSegmentDto {
 }
 
 export class SegmentClassDto {
-  segmentId: string;
+  segmentId2: string;
   optionFareId: string;
   classCode: string;
   seatCount: string;
@@ -138,7 +138,7 @@ export class SegmentClassDto {
   missingSeat: string;
 
   constructor(segmentClass: SegmentClass) {
-    this.segmentId = segmentClass.SegmentID2;
+    this.segmentId2 = segmentClass.SegmentID2;
     this.optionFareId = segmentClass.SecenekUcretID;
     this.classCode = segmentClass.SinifKod;
     this.seatCount = segmentClass.KoltukSayi;
@@ -162,8 +162,14 @@ export class OptionFareDto {
   totalFee: string;
   totalServiceFee: string;
   description: string;
+  fareDetails: OptionFareDetailDto[];
+  segmentClass?: SegmentClassDto;
 
-  constructor(optionFare: OptionFare) {
+  constructor(
+    optionFare: OptionFare,
+    optionFareDetails: OptionFareDetailDto[],
+    segmentClass?: SegmentClassDto,
+  ) {
     this.id = optionFare.ID;
     this.optionId2 = optionFare.SecenekID2;
     this.className = optionFare.SinifAd;
@@ -177,6 +183,8 @@ export class OptionFareDto {
     this.totalFee = optionFare.ToplamUcret;
     this.totalServiceFee = optionFare.ToplamServisUcret;
     this.description = optionFare.Aciklama;
+    this.fareDetails = optionFareDetails;
+    this.segmentClass = segmentClass;
   }
 }
 
@@ -194,23 +202,18 @@ export class OptionFareDetailDto {
   }
 }
 
+export class DomesticFlightWithFares {
+  flightOption: FlightOptionDto;
+  segments: Array<
+    DomesticFlightSegmentDto & {
+      optionFares: OptionFareDto[];
+    }
+  >;
+}
+
 export class DomesticFlightScheduleDto {
   constructor(
-    public departureFlightsWithFares: Array<{
-      flightOption: FlightOptionDto;
-      segments: DomesticFlightSegmentDto[] & {
-        optionFares?: OptionFareDto[];
-        optionFareDetails?: OptionFareDetailDto[];
-        segmentClasses?: SegmentClassDto[];
-      };
-    }>,
-    public ReturnFlightsWithFares: Array<{
-      flightOption: FlightOptionDto;
-      segments: DomesticFlightSegmentDto[] & {
-        optionFares?: OptionFareDto[];
-        optionFareDetails?: OptionFareDetailDto[];
-        segmentClasses?: SegmentClassDto[];
-      };
-    }>,
+    public departureFlightsWithFares: Array<DomesticFlightWithFares>,
+    public returnFlightsWithFares: Array<DomesticFlightWithFares>,
   ) {}
 }

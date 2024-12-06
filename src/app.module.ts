@@ -59,9 +59,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     BankCardsModule,
     TransactionsModule,
     WalletsModule,
-    InsuranceModule,
     QueueProviderModule,
-    NetGsmModule,
+    SmsModule,
     VerificationsModule,
   ],
   providers: [

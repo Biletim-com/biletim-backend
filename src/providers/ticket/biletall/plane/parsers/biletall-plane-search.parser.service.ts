@@ -14,12 +14,11 @@ import { PlanePassengerAgeRuleDto } from '../dto/plane-company-passenger-age-rul
 import {
   DomesticFlightScheduleDto,
   DomesticFlightSegmentDto,
-  DomesticFlightWithFares,
   FlightOptionDto,
-  DomesticFlightSegmentDto,
   OptionFareDto,
   OptionFareDetailDto,
   SegmentClassDto,
+  DomesticFlightWithFares,
 } from '../dto/plane-domestic-flight-schedule.dto';
 import {
   PullAbroadFlightPricePackagesResponseDto,
