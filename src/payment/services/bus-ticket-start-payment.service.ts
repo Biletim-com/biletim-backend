@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, In } from 'typeorm';
 
-import { PaymentProviderFactory } from '../factories/payment-provider.factory';
-
 // services
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
+import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
 
 // entities
 import { Order } from '@app/modules/orders/order.entity';
@@ -40,7 +39,7 @@ import { ServiceError } from '@app/common/errors';
 import { normalizeDecimal } from '@app/common/utils';
 
 @Injectable()
-export class BusTicketPaymentService {
+export class BusTicketStartPaymentService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly paymentProviderFactory: PaymentProviderFactory,

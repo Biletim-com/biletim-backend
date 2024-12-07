@@ -10,7 +10,7 @@ import { InjectPoxClient } from '@app/providers/pox-client/decorators';
 
 // enums
 import { PaymentProvider } from '@app/common/enums';
-import { vPOSResponse } from '@app/payment/providers/vakif-bank/constants/vpos-reponse.constant';
+import { vPOSResponse } from '../constants/vpos-reponse.constant';
 
 // types
 import { UUID } from '@app/common/types';

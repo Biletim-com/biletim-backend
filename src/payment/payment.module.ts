@@ -9,20 +9,18 @@ import { BiletAllPlaneModule } from '@app/providers/ticket/biletall/plane/provid
 import { PaymentController } from './payment.controller';
 
 // services
-import { PaymentService } from './services/payment.service';
-import { BusTicketPaymentService } from './services/bus-ticket-payment.service';
-import { PlaneTicketPaymentService } from './services/plane-ticket-payment.service';
-import { PaymentProviderFactory } from './factories/payment-provider.factory';
+import { PaymentResultService } from './services/payment-result.service';
+import { BusTicketStartPaymentService } from './services/bus-ticket-start-payment.service';
+import { PlaneTicketStartPaymentService } from './services/plane-ticket-start-payment.service';
 import { PaymentResultHandlerProviderFactory } from './factories/payment-result-handler-provider.factory';
-import { VakifBankCardService } from './providers/vakif-bank/services/vakif-bank-card.service';
-import { VakifBankCustomerService } from './providers/vakif-bank/services/vakif-bank-customer.service';
-import { VakifBankPaymentStrategy } from './providers/vakif-bank/vakif-bank-payment.strategy';
-import { VakifBankPaymentResultHandlerStrategy } from './providers/vakif-bank/vakif-bank-payment-result-handler.strategy';
-import { VakifBankEnrollmentService } from './providers/vakif-bank/services/vakif-bank-enrollment.service';
+import { VakifBankPaymentResultHandlerStrategy } from './strategies/vakif-bank-payment-result-handler.strategy';
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
-import { BiletAllPaymentStrategy } from './providers/biletall/biletall-payment.strategy';
-import { BiletAllPaymentResultHandlerStrategy } from './providers/biletall/biletall-payment-result-handler.strategy';
+import { BiletAllPaymentResultHandlerStrategy } from './strategies/biletall-payment-result-handler.strategy';
 import { OrdersRepository } from '@app/modules/orders/orders.repository';
+import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
+import { BiletAllPaymentStrategy } from '@app/providers/payment/biletall/biletall-payment.strategy';
+import { VakifBankPaymentStrategy } from '@app/providers/payment/vakif-bank/vakif-bank-payment.strategy';
+import { VakifBankEnrollmentService } from '@app/providers/payment/vakif-bank/services/vakif-bank-enrollment.service';
 
 @Module({
   imports: [
@@ -43,26 +41,18 @@ import { OrdersRepository } from '@app/modules/orders/orders.repository';
   ],
   controllers: [PaymentController],
   providers: [
-    PaymentService,
-    BusTicketPaymentService,
-    PlaneTicketPaymentService,
+    VakifBankPaymentStrategy,
+    PaymentResultService,
+    BusTicketStartPaymentService,
+    PlaneTicketStartPaymentService,
     PaymentProviderFactory,
     PaymentResultHandlerProviderFactory,
-    VakifBankCardService,
-    VakifBankCustomerService,
-    VakifBankPaymentStrategy,
     VakifBankEnrollmentService,
     VakifBankPaymentResultHandlerStrategy,
     BiletAllPaymentStrategy,
     BiletAllPaymentResultHandlerStrategy,
     TransactionsRepository,
     OrdersRepository,
-  ],
-  exports: [
-    PaymentProviderFactory,
-    VakifBankCardService,
-    VakifBankCustomerService,
-    VakifBankEnrollmentService,
   ],
 })
 export class PaymentModule {}

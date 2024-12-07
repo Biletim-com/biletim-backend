@@ -1,6 +1,6 @@
 import { BankCardDto } from '@app/common/dtos';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { VakifBankPaymentResultDto } from '../dto/vakif-bank-payment-result.dto';
+import { VakifBankPaymentResultDto } from '../vakif-bank/dto/vakif-bank-payment-result.dto';
 import { UUID } from '@app/common/types';
 import { TicketType } from '@app/common/enums';
 

@@ -8,7 +8,7 @@ import { HtmlTemplateService } from '@app/providers/html-template/provider.servi
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 
 // interfaces
-import { IPayment } from '../../interfaces/payment.interface';
+import { IPayment } from '../interfaces/payment.interface';
 
 // decorators
 import { InjectPoxClient } from '@app/providers/pox-client/decorators';
