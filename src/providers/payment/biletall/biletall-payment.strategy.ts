@@ -4,14 +4,14 @@ import { Injectable } from '@nestjs/common';
 import { AppConfigService } from '@app/configs/app';
 import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
 import { BiletAllEncryptorService } from './services/biletall-encryptor.service';
-import { HtmlTemplateService } from '@app/providers/html-template/provider.service';
-import { BiletAllBusTicketPurchaseService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-ticket-purchase.service';
+import { HtmlTemplateService } from '../../html-template/provider.service';
+import { BiletAllBusTicketPurchaseService } from '../../ticket/biletall/bus/services/biletall-bus-ticket-purchase.service';
 
 // entites
 import { Transaction } from '@app/modules/transactions/transaction.entity';
 
 // interfaces
-import { IPayment } from '@app/payment/interfaces/payment.interface';
+import { IPayment } from '../interfaces/payment.interface';
 
 // dtos
 import { BankCardDto } from '@app/common/dtos';

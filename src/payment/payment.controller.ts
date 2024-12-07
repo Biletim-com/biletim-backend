@@ -11,9 +11,9 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { PaymentService } from './services/payment.service';
-import { BusTicketPaymentService } from './services/bus-ticket-payment.service';
-import { PlaneTicketPaymentService } from './services/plane-ticket-payment.service';
+import { PaymentResultService } from './services/payment-result.service';
+import { BusTicketStartPaymentService } from './services/bus-ticket-start-payment.service';
+import { PlaneTicketStartPaymentService } from './services/plane-ticket-start-payment.service';
 import { PaymentResultHandlerProviderFactory } from './factories/payment-result-handler-provider.factory';
 import { HtmlTemplateService } from '@app/providers/html-template/provider.service';
 
@@ -40,9 +40,9 @@ import { BusTicketSaleRequest } from '@app/providers/ticket/biletall/types/bilet
 @Controller('payment')
 export class PaymentController {
   constructor(
-    private readonly paymentService: PaymentService,
-    private readonly busTicketPaymentService: BusTicketPaymentService,
-    private readonly planeTicketPaymentService: PlaneTicketPaymentService,
+    private readonly paymentResultService: PaymentResultService,
+    private readonly busTicketStartPaymentService: BusTicketStartPaymentService,
+    private readonly planeTicketStartPaymentService: PlaneTicketStartPaymentService,
     private readonly paymentResponseHandlerProviderFactory: PaymentResultHandlerProviderFactory,
     private readonly htmlTemplateService: HtmlTemplateService,
   ) {}
@@ -53,7 +53,7 @@ export class PaymentController {
     @Body() busTicketPurchaseDto: BusTicketPurchaseDto,
   ): Promise<{ transactionId: string; htmlContent: string }> {
     const { transactionId, htmlContent } =
-      await this.busTicketPaymentService.busTicketPurchase(
+      await this.busTicketStartPaymentService.busTicketPurchase(
         clientIp,
         busTicketPurchaseDto,
       );
@@ -67,7 +67,7 @@ export class PaymentController {
     @Body() planeTicketPurchaseDto: PlaneTicketPurchaseDto,
   ): Promise<{ transactionId: string; htmlContent: string }> {
     const { transactionId, htmlContent } =
-      await this.planeTicketPaymentService.startPlaneTicketPurchase(
+      await this.planeTicketStartPaymentService.startPlaneTicketPurchase(
         clientIp,
         planeTicketPurchaseDto,
       );
@@ -82,7 +82,7 @@ export class PaymentController {
   getTransactionData(
     @Param() { id }: TransactionRequest,
   ): Promise<Transaction> {
-    return this.paymentService.getTransaction(id);
+    return this.paymentResultService.getTransaction(id);
   }
 
   @Post('success')

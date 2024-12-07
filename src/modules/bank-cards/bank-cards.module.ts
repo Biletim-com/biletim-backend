@@ -6,18 +6,21 @@ import { BankCard } from './bank-card.entity';
 import { BankCardsRepository } from './bank-cards.repository';
 import { BankCardsService } from './services/bank-cards.service';
 import { BankCardValidationService } from './services/bank-card-validation.service';
-import { CreditCardController } from './bank-cards.controller';
+import { BankCardController } from './bank-cards.controller';
 import { UsersRepository } from '../users/users.repository';
-import { PaymentModule } from '@app/payment/payment.module';
+import { VakifBankPaymentProviderModule } from '@app/providers/payment/vakif-bank/provider.module';
 
 @Module({
-  imports: [PostgreSQLProviderModule.forFeature([BankCard]), PaymentModule],
+  imports: [
+    VakifBankPaymentProviderModule,
+    PostgreSQLProviderModule.forFeature([BankCard]),
+  ],
   providers: [
     BankCardsRepository,
     BankCardsService,
     BankCardValidationService,
     UsersRepository,
   ],
-  controllers: [CreditCardController],
+  controllers: [BankCardController],
 })
 export class BankCardsModule {}

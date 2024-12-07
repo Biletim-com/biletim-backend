@@ -10,7 +10,6 @@ import { AuthModule } from '@app/auth/auth.module';
 
 // App Modules
 import { UsersModule } from '@app/modules/users/users.module';
-import { TicketsModule } from '@app/modules/tickets/tickets.module';
 import { PanelUsersModule } from '@app/modules/panel-users/panel-users.module';
 import { HotelModule } from '@app/modules/booking/hotel/hotel.module';
 import { BookingModule } from '@app/modules/booking/booking.module';
@@ -19,6 +18,7 @@ import { BankCardsModule } from '@app/modules/bank-cards/bank-cards.module';
 import { TransactionsModule } from '@app/modules/transactions/transactions.module';
 import { WalletsModule } from '@app/modules/wallets/wallets.module';
 import { VerificationsModule } from './modules/verification/verifications.module';
+import { PaymentModule } from './payment/payment.module';
 
 // Providers
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
@@ -29,6 +29,8 @@ import { QueueProviderModule } from './providers/queue/provider.module';
 import { SmsModule } from './providers/sms/provider.module';
 import { PdfMakerModule } from '@app/providers/pdf-maker/provider.module';
 import { HtmlTemplateModule } from '@app/providers/html-template/provider.module';
+import { PaymentProviderModule } from './providers/payment/provider.module';
+import { TicketsModule } from '@app/modules/tickets/tickets.module';
 
 // Interceptors
 import { ErrorInterceptor } from '@app/common/interceptors';
@@ -55,6 +57,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     HotelModule,
     TicketsModule,
     BookingModule,
+    PaymentModule,
     PassengersModule,
     BankCardsModule,
     TransactionsModule,
@@ -62,6 +65,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     QueueProviderModule,
     SmsModule,
     VerificationsModule,
+    PaymentProviderModule,
   ],
   providers: [
     {

@@ -1,10 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { PaymentProviderFactory } from '../factories/payment-provider.factory';
-
 // services
 import { BiletAllPlaneSearchService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-search.service';
+import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
 
 // entities
 import { Order } from '@app/modules/orders/order.entity';
@@ -43,8 +42,8 @@ import { normalizeDecimal } from '@app/common/utils';
 import { ServiceError } from '@app/common/errors';
 
 @Injectable()
-export class PlaneTicketPaymentService {
-  private readonly logger = new Logger(PlaneTicketPaymentService.name);
+export class PlaneTicketStartPaymentService {
+  private readonly logger = new Logger(PlaneTicketStartPaymentService.name);
 
   constructor(
     private readonly dataSource: DataSource,

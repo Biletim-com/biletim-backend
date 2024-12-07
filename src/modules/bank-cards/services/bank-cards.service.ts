@@ -6,8 +6,8 @@ import { UsersRepository } from '../../users/users.repository';
 import { BankCard } from '../bank-card.entity';
 import { BankCardsRepository } from '../bank-cards.repository';
 import { BankCardValidationService } from './bank-card-validation.service';
-import { VakifBankCardService } from '@app/payment/providers/vakif-bank/services/vakif-bank-card.service';
-import { VakifBankCustomerService } from '@app/payment/providers/vakif-bank/services/vakif-bank-customer.service';
+import { VakifBankCardService } from '@app/providers/payment/vakif-bank/services/vakif-bank-card.service';
+import { VakifBankCustomerService } from '@app/providers/payment/vakif-bank/services/vakif-bank-customer.service';
 
 // dtos
 import { UpdateBankCardDto } from '../dto/update-bank-card-request.dto';

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { VakifBankPaymentStrategy } from '../providers/vakif-bank/vakif-bank-payment.strategy';
-import { BiletAllPaymentStrategy } from '../providers/biletall/biletall-payment.strategy';
+import { VakifBankPaymentStrategy } from './vakif-bank/vakif-bank-payment.strategy';
+import { BiletAllPaymentStrategy } from './biletall/biletall-payment.strategy';
 
 // interfaces
-import { IPayment } from '../interfaces/payment.interface';
+import { IPayment } from './interfaces/payment.interface';
 
 // enums
 import { PaymentProvider } from '@app/common/enums';

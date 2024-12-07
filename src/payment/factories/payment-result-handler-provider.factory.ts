@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { VakifBankPaymentResultHandlerStrategy } from '../providers/vakif-bank/vakif-bank-payment-result-handler.strategy';
-import { BiletAllPaymentResultHandlerStrategy } from '../providers/biletall/biletall-payment-result-handler.strategy';
+import { VakifBankPaymentResultHandlerStrategy } from '../strategies/vakif-bank-payment-result-handler.strategy';
+import { BiletAllPaymentResultHandlerStrategy } from '../strategies/biletall-payment-result-handler.strategy';
 
 // interfaces
 import { IPaymentResultHandler } from '../interfaces/payment-result-handler.interface';

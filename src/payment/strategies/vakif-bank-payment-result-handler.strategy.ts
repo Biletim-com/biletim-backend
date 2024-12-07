@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 
 // services
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
-import { VakifBankPaymentStrategy } from './vakif-bank-payment.strategy';
+import { VakifBankPaymentStrategy } from '@app/providers/payment/vakif-bank/vakif-bank-payment.strategy';
 import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
 
@@ -17,7 +17,7 @@ import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
 import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
 
 // dtos
-import { VakifBankPaymentResultDto } from '../../dto/vakif-bank-payment-result.dto';
+import { VakifBankPaymentResultDto } from '../dto/vakif-bank-payment-result.dto';
 
 // errors
 import { TransactionNotFoundError } from '@app/common/errors';
@@ -33,7 +33,7 @@ import {
 } from '@app/common/enums';
 
 // constants
-import { threeDSecureResponse } from './constants/3d-response.constant';
+import { threeDSecureResponse } from '@app/providers/payment/vakif-bank/constants/3d-response.constant';
 
 // dto
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
@@ -183,7 +183,6 @@ export class VakifBankPaymentResultHandlerStrategy
         'ticket.bus.purchased',
         transaction.order,
       );
-      // send email or SMS
 
       await queryRunner.commitTransaction();
       return transaction;

@@ -25,10 +25,10 @@ import { CreateBankCardDto } from './dto/create-bank-card-request.dto';
 // types
 import { UUID } from '@app/common/types';
 
-@ApiTags('Credit cards')
+@ApiTags('Bank cards')
 @ApiCookieAuth()
 @Controller('bank-cards')
-export class CreditCardController {
+export class BankCardController {
   constructor(private readonly bankCardsService: BankCardsService) {}
 
   @ApiOperation({ summary: "List user's cards" })
