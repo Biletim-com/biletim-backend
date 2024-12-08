@@ -7,7 +7,10 @@ import { Queue } from 'bull';
 import { QueueEnum } from '@app/common/enums';
 import { Order } from '@app/modules/orders/order.entity';
 import { DateTimeHelper } from '@app/common/helpers';
-import { SMSBusMessage, SMSPlaneMessage } from '../types/send-notifications-options.type';
+import {
+  SMSBusMessage,
+  SMSPlaneMessage,
+} from '../types/send-notifications-options.type';
 import { SendOrderCancelInitSMSDto } from '@app/common/dtos';
 
 @Injectable()
@@ -20,14 +23,16 @@ export class SMSNotificationService {
   ) {}
 
   @OnEvent('order.cancel.init')
-  async sendOrderCancelInitSMS({ verificationCode, gsmno }: SendOrderCancelInitSMSDto): Promise<void> {
-    verificationCode
+  async sendOrderCancelInitSMS({
+    verificationCode,
+    gsmno,
+  }: SendOrderCancelInitSMSDto): Promise<void> {
+    verificationCode;
     await this.queue.add({
       messsage: `Doğrulama Kodu: ${verificationCode} `,
       gsmno,
     });
   }
-
 
   @OnEvent('ticket.bus.purchased')
   async sendBusTicketSMS(order: Order): Promise<void> {
@@ -53,16 +58,17 @@ export class SMSNotificationService {
     });
   }
 
-
   @OnEvent('ticket.plane.purchased')
   async sendPlaneTicketSMS(order: Order): Promise<void> {
-    order.busTickets.sort((a, b) => a.ticketOrder - b.ticketOrder);
+    order.planeTickets.sort((a, b) => a.ticketOrder - b.ticketOrder);
     const ticketData: SMSPlaneMessage = {
       pnrNumber: order.pnr as string,
       userPhoneNumber: order.userPhoneNumber,
       airlineName: order.planeTickets[0].segments[0].airlineName,
-      departureAirport: order.planeTickets[0].segments[0].departureAirport.airportName,
-      arrivalAirport: order.planeTickets[0].segments[0].arrivalAirport.airportName,
+      departureAirport:
+        order.planeTickets[0].segments[0].departureAirport.airportName,
+      arrivalAirport:
+        order.planeTickets[0].segments[0].arrivalAirport.airportName,
       departureDate: DateTimeHelper.extractDate(
         order.planeTickets[0].segments[0].departureDateTime,
       ),
@@ -75,7 +81,7 @@ export class SMSNotificationService {
       arrivalTime: DateTimeHelper.extractTime(
         order.planeTickets[0].segments[0].departureDateTime,
       ),
-      flightNumber: order.planeTickets[0].segments[0].flightNumber
+      flightNumber: order.planeTickets[0].segments[0].flightNumber,
     };
 
     await this.queue.add({

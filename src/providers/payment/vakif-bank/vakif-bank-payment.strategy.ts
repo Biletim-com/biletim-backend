@@ -5,7 +5,6 @@ import { VakifBankEnrollmentService } from './services/vakif-bank-enrollment.ser
 import { PoxClientService } from '@app/providers/pox-client/provider.service';
 import { PaymentConfigService } from '@app/configs/payment';
 import { HtmlTemplateService } from '@app/providers/html-template/provider.service';
-import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 
 // interfaces
 import { IPayment } from '../interfaces/payment.interface';
@@ -46,7 +45,6 @@ export class VakifBankPaymentStrategy implements IPayment {
     private readonly paymentConfigService: PaymentConfigService,
     private readonly vakifBankEnrollmentService: VakifBankEnrollmentService,
     private readonly htmlTemplateService: HtmlTemplateService,
-    private readonly transactionsRepository: TransactionsRepository,
   ) {}
 
   private async sendRequest<T extends VposResponse>(
@@ -170,17 +168,13 @@ export class VakifBankPaymentStrategy implements IPayment {
    */
   async cancelPayment(
     clientIp: string,
-    transactionOrTransactionId: UUID | Transaction,
+    transactionId: UUID,
   ): Promise<CancelResponse> {
-    const transaction = await this.transactionsRepository.findEntityData(
-      transactionOrTransactionId,
-    );
-
     const body = {
       VposRequest: {
         ...this.authCredentials,
         TransactionType: 'Cancel',
-        ReferenceTransactionId: transaction.id,
+        ReferenceTransactionId: transactionId,
         ClientIp: clientIp,
       },
     };
@@ -190,9 +184,7 @@ export class VakifBankPaymentStrategy implements IPayment {
     );
     this.logger.log(
       `CancelVakifBankPayment: ${{
-        transactionId: transaction.id,
-        amount: transaction.amount,
-        currency: transaction.currency,
+        transactionId: transactionId,
       }}`,
     );
     return resp;
@@ -203,29 +195,27 @@ export class VakifBankPaymentStrategy implements IPayment {
    */
   async refundPayment(
     clientIp: string,
-    transactionOrTransactionId: UUID | Transaction,
+    transactionId: UUID,
+    refundAmount: string,
   ): Promise<RefundResponse> {
-    const transaction = await this.transactionsRepository.findEntityData(
-      transactionOrTransactionId,
-    );
     const body = {
       VposRequest: {
         ...this.authCredentials,
         TransactionType: 'Refund',
-        CurrencyAmount: transaction.amount,
-        ReferenceTransactionId: transaction.id,
+        ReferenceTransactionId: transactionId,
+        CurrencyAmount: refundAmount,
         ClientIp: clientIp,
       },
     };
+
     const resp = await this.sendRequest<RefundResponse>(
       '/VposService/v3/Vposreq.aspx',
       body,
     );
     this.logger.log(
       `RefundVakifBankPayment: ${{
-        transactionId: transaction.id,
-        amount: transaction.amount,
-        currency: transaction.currency,
+        transactionId: transactionId,
+        amount: refundAmount,
       }}`,
     );
     return resp;

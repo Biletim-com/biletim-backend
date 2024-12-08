@@ -197,7 +197,7 @@ export class VakifBankPaymentResultHandlerStrategy
 
       // TODO: this should be sent to a queue
       if (actionsCompleted.includes('PAYMENT')) {
-        this.vakifBankPaymentStrategy.cancelPayment(clientIp, transaction);
+        this.vakifBankPaymentStrategy.cancelPayment(clientIp, transaction.id);
       }
       if (actionsCompleted.includes('TICKET_SALE')) {
         console.log('cancel with PNR number');
@@ -335,7 +335,7 @@ export class VakifBankPaymentResultHandlerStrategy
 
       // TODO: this should be sent to a queue
       if (actionsCompleted.includes('PAYMENT')) {
-        this.vakifBankPaymentStrategy.cancelPayment(clientIp, transaction);
+        this.vakifBankPaymentStrategy.cancelPayment(clientIp, transaction.id);
       }
       if (actionsCompleted.includes('TICKET_SALE')) {
         console.log('cancel with PNR number');

@@ -16,12 +16,10 @@ export interface IPayment {
     paymentDetailsDto: VakifBankPaymentResultDto,
     orderId: UUID,
   ): Promise<any>;
-  cancelPayment(
-    clientIp: string,
-    transactionOrTransactionId: UUID | Transaction,
-  ): Promise<any>;
+  cancelPayment(clientIp: string, transactionId: UUID): Promise<any>;
   refundPayment(
     clientIp: string,
-    transactionOrTransactionId: UUID | Transaction,
+    transactionId: UUID,
+    refundAmount: string,
   ): Promise<any>;
 }

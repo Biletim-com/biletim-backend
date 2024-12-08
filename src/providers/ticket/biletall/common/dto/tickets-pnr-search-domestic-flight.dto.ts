@@ -415,7 +415,7 @@ export class PnrExtraServiceSegmentDomesticFlightDto {
     this.flightStatus = {
       hasCancellationOrChange:
         extraServiceSegment.UcuslarinHavayolundakiSonDurumu
-          .UcuslardaIptalveyaDegisiklikVarMi,
+          ?.UcuslardaIptalveyaDegisiklikVarMi,
     };
   }
 }

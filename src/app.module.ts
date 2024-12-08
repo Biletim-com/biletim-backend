@@ -20,6 +20,7 @@ import { WalletsModule } from '@app/modules/wallets/wallets.module';
 import { VerificationsModule } from './modules/verification/verifications.module';
 import { PaymentModule } from './payment/payment.module';
 import { OrderReturnModule } from './order-return/order-return.module';
+import { TicketsModule } from './modules/tickets/tickets.module';
 import { SearchModule } from './search/search.module';
 
 // Providers
@@ -55,6 +56,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     AuthModule,
     UsersModule,
     PanelUsersModule,
+    TicketsModule,
     HotelModule,
     BookingModule,
     SearchModule,

@@ -6,6 +6,6 @@ export class BusTicketReturnDto {
 
   constructor(ticketReturn: BusTicketReturn) {
     this.result = ticketReturn.Sonuc === 'true';
-    this.amount = ticketReturn.Tutar;
+    this.amount = ticketReturn.Tutar.split('-')[1];
   }
 }

@@ -7,6 +7,8 @@ import { BiletAllPlaneSearchService } from './services/biletall-plane-search.ser
 import { BiletAllPlaneTicketPurchaseService } from './services/biletall-plane-ticket-purchase.service';
 import { BiletAllPlaneSearchParserService } from './parsers/biletall-plane-search.parser.service';
 import { BiletAllPlaneTicketPurchaseParserService } from './parsers/biletall-plane-ticket-purchase.parser.service';
+import { BiletAllPlaneTicketReturnParserService } from './parsers/biletall-plane-ticket-return.parser.service';
+import { BiletAllPlaneTicketReturnService } from './services/biletall-plane-ticket-return.service';
 
 @Module({
   providers: [
@@ -14,14 +16,18 @@ import { BiletAllPlaneTicketPurchaseParserService } from './parsers/biletall-pla
     BiletAllParserService,
     BiletAllPlaneSearchService,
     BiletAllPlaneTicketPurchaseService,
+    BiletAllPlaneTicketReturnService,
     BiletAllPlaneSearchParserService,
     BiletAllPlaneTicketPurchaseParserService,
+    BiletAllPlaneTicketReturnParserService,
   ],
   exports: [
     BiletAllPlaneSearchService,
     BiletAllPlaneTicketPurchaseService,
+    BiletAllPlaneTicketReturnService,
     BiletAllPlaneSearchParserService,
     BiletAllPlaneTicketPurchaseParserService,
+    BiletAllPlaneTicketReturnParserService,
   ],
 })
 export class BiletAllPlaneModule {}
