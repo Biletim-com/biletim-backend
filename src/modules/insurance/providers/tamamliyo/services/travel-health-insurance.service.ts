@@ -1,9 +1,8 @@
-// import { TamamliyoInsuranceTicketType } from '../helpers/insurance-ticket-type.helper';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { Injectable } from '@nestjs/common';
 
 import { TamamliyoApiConfigService } from '@app/configs/tamamliyo-insurance';
-import { InsuranceProductType, InsuranceTicketType } from '@app/common/enums';
+import { InsuranceProductType } from '@app/common/enums';
 import {
   GetPriceTravelHealthInsuranceRequestDto,
   GetPriceTravelHealthInsuranceRequestDtoInTurkish,
