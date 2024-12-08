@@ -13,10 +13,10 @@ import { BiletAllBusTicketPurchaseParserService } from '../parsers/biletall-bus-
 
 // dtos
 import { BankCardDto } from '@app/common/dtos';
-import { BusTicketSaleDto } from '../dto/bus-ticket-sale.dto';
+import { BusTicketPurchaseDto } from '../dto/bus-ticket-purchase.dto';
 
 // types
-import { BusTicketSaleRequestResponse } from '../../types/biletall-sale-request.type';
+import { BusTicketPurchaseRequestResponse } from '../types/biletall-bus-ticket-purchase.type';
 
 // helpers
 import { BiletAllGender } from '../../helpers/biletall-gender.helper';
@@ -28,7 +28,7 @@ import { turkishToEnglish } from '@app/common/utils';
 export class BiletAllBusTicketPurchaseService {
   constructor(
     private readonly biletAllRequestService: BiletAllRequestService,
-    private readonly BiletAllBusTicketPurchaseParserService: BiletAllBusTicketPurchaseParserService,
+    private readonly biletAllBusTicketPurchaseParserService: BiletAllBusTicketPurchaseParserService,
   ) {}
 
   async purchaseTicket(
@@ -45,7 +45,7 @@ export class BiletAllBusTicketPurchaseService {
     order: Order,
     tickets: BusTicket[],
     bankCard?: undefined,
-  ): Promise<BusTicketSaleDto>;
+  ): Promise<BusTicketPurchaseDto>;
 
   async purchaseTicket(
     clientIp: string,
@@ -53,7 +53,7 @@ export class BiletAllBusTicketPurchaseService {
     order: Order,
     tickets: BusTicket[],
     bankCard?: BankCardDto,
-  ): Promise<BusTicketSaleDto | string> {
+  ): Promise<BusTicketPurchaseDto | string> {
     const builder = new xml2js.Builder({
       headless: true,
       renderOpts: { pretty: false },
@@ -128,7 +128,11 @@ export class BiletAllBusTicketPurchaseService {
     if (bankCard) return xml;
 
     const res =
-      await this.biletAllRequestService.run<BusTicketSaleRequestResponse>(xml);
-    return this.BiletAllBusTicketPurchaseParserService.parseSaleRequest(res);
+      await this.biletAllRequestService.run<BusTicketPurchaseRequestResponse>(
+        xml,
+      );
+    return this.biletAllBusTicketPurchaseParserService.parsePurchaseRequest(
+      res,
+    );
   }
 }

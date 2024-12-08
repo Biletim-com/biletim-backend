@@ -76,9 +76,8 @@ export class AuthService {
     }
 
     const verificationCode =
-      await this.verificationService.createVerificationCode(
+      await this.verificationService.createProfileActivationVerificationCode(
         user,
-        VerificationType.ACTIVATE_PROFILE,
       );
     this.eventEmitter.emitEvent('user.created', {
       recipient: email,
@@ -93,7 +92,6 @@ export class AuthService {
       await this.verificationService.findByEmailAndVerificationCode(
         email,
         +verificationCode,
-        VerificationType.ACTIVATE_PROFILE,
       );
 
     if (!verificationData?.user) {

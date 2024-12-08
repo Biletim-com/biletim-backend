@@ -1,29 +1,57 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
-//entities&repositories
+// repositories
 import { VerificationsRepository } from './verification.repository';
-import { Verification } from './verification.entity';
+
+// entites
 import { User } from '../users/user.entity';
-import { DateTimeHelper } from '@app/common/helpers';
+import { Order } from '../orders/order.entity';
+import { Verification } from './verification.entity';
+
+// enums
 import { VerificationType } from '@app/common/enums';
+
+// helpers
+import { DateTimeHelper } from '@app/common/helpers';
+
+// types
 import { UUID } from '@app/common/types';
+
+// errors
+import {
+  UserNotFoundError,
+  VerificaitonCodeExpiredError,
+  VerificaitonCodeInvalidError,
+  VerificaitonCodeUserError,
+} from '@app/common/errors';
 
 @Injectable()
 export class VerificationService {
   constructor(private verificationRepository: VerificationsRepository) {}
 
-  async createVerificationCode(
-    user: User,
-    type: VerificationType,
-  ): Promise<number> {
+  async createProfileActivationVerificationCode(user: User): Promise<number> {
     const { verificationCode } = await this.uniqueSixDigitNumber();
-
     await this.verificationRepository.save(
       new Verification({
         user,
         verificationCode: verificationCode,
         isUsed: false,
-        type: type,
+        type: VerificationType.ACTIVATE_PROFILE,
+        expiredAt: DateTimeHelper.addMinutesToCurrentDateTime(4),
+      }),
+    );
+    return verificationCode;
+  }
+
+  async createOrderCancellationVerificationCode(order: Order): Promise<number> {
+    const { verificationCode } = await this.uniqueSixDigitNumber();
+
+    await this.verificationRepository.save(
+      new Verification({
+        order,
+        verificationCode: verificationCode,
+        isUsed: false,
+        type: VerificationType.CANCEL_ORDER,
         expiredAt: DateTimeHelper.addMinutesToCurrentDateTime(4),
       }),
     );
@@ -33,23 +61,62 @@ export class VerificationService {
   async findByEmailAndVerificationCode(
     email: string,
     verificationCode: number,
-    type: VerificationType,
   ) {
     const userVerification = await this.verificationRepository.findOne({
       where: {
         verificationCode: verificationCode,
-        type: type,
+        type: VerificationType.ACTIVATE_PROFILE,
         user: { email: email },
       },
       relations: { user: true },
     });
 
-    if (!userVerification)
-      throw new NotFoundException('Not found userId with verificationCode');
+    if (!userVerification) throw new VerificaitonCodeInvalidError();
 
-    if (!userVerification.user) throw new NotFoundException('User Not found');
+    if (!userVerification.user) throw new UserNotFoundError();
 
     return userVerification;
+  }
+
+  async findByOrderIdAndVerificationCode(
+    orderId: UUID,
+    verificationCode: number,
+  ): Promise<Verification> {
+    const orderCancellationVerification =
+      await this.verificationRepository.findOne({
+        where: {
+          verificationCode: verificationCode,
+          type: VerificationType.CANCEL_ORDER,
+          order: { id: orderId },
+        },
+        relations: { order: true },
+      });
+
+    if (!orderCancellationVerification)
+      throw new VerificaitonCodeInvalidError();
+
+    return orderCancellationVerification;
+  }
+
+  async verifyVerification(
+    verificationIdOrVerificationObject: UUID | Verification,
+  ) {
+    const { expiredAt, isUsed } =
+      await this.verificationRepository.findEntityData(
+        verificationIdOrVerificationObject,
+      );
+
+    const isCodeExpired = DateTimeHelper.isTimeExpired(expiredAt);
+    if (isCodeExpired) {
+      throw new VerificaitonCodeExpiredError();
+    }
+    if (isUsed) {
+      throw new VerificaitonCodeUserError();
+    }
+  }
+
+  async markAsUsed(verificationId: UUID): Promise<void> {
+    await this.verificationRepository.update(verificationId, { isUsed: true });
   }
 
   async uniqueSixDigitNumber() {

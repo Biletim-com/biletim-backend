@@ -19,6 +19,7 @@ import { TransactionsModule } from '@app/modules/transactions/transactions.modul
 import { WalletsModule } from '@app/modules/wallets/wallets.module';
 import { VerificationsModule } from './modules/verification/verifications.module';
 import { PaymentModule } from './payment/payment.module';
+import { OrderReturnModule } from './order-return/order-return.module';
 
 // Providers
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
@@ -58,6 +59,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     TicketsModule,
     BookingModule,
     PaymentModule,
+    OrderReturnModule,
     PassengersModule,
     BankCardsModule,
     TransactionsModule,
