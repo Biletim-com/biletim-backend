@@ -46,6 +46,9 @@ export class Transaction extends AbstractEntity<Transaction> {
   @Column('varchar', { nullable: true })
   errorMessage?: Nullable<string>;
 
+  @Column('varchar', { nullable: true })
+  refundAmount?: Nullable<string>;
+
   // anonymous credit cards
   @Column('varchar', { nullable: true })
   cardholderName?: Nullable<string>;

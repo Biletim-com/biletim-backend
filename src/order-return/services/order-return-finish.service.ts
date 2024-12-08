@@ -6,13 +6,14 @@ import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.
 import { OrderReturnValidationService } from './order-return-validation.service';
 import { VerificationService } from '@app/modules/verification/verification.service';
 import { BiletAllBusTicketReturnService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-ticket-return.service';
+import { BiletAllPlaneTicketReturnService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-ticket-return.service';
 
 // entities
 import { Order } from '@app/modules/orders/order.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
 
-// helpers
-import { DateTimeHelper } from '@app/common/helpers';
+// dto
+import { OrderReturnValidationDto } from '../dto/order-return-validation.dto';
 
 // enums
 import {
@@ -28,7 +29,8 @@ export class OrderReturnFinishService {
     private readonly dataSource: DataSource,
     private readonly orderReturnValidationService: OrderReturnValidationService,
     private readonly verificaitonService: VerificationService,
-    private readonly biletAllTicketReturnService: BiletAllBusTicketReturnService,
+    private readonly biletAllBusTicketReturnService: BiletAllBusTicketReturnService,
+    private readonly biletAllPlaneTicketReturnService: BiletAllPlaneTicketReturnService,
     private readonly paymentProviderFactory: PaymentProviderFactory,
   ) {}
 
@@ -36,7 +38,7 @@ export class OrderReturnFinishService {
     pnrNumber: string,
     passengerLastName: string,
     verificationCode: number,
-  ): Promise<Order> {
+  ): Promise<OrderReturnValidationDto> {
     const order =
       await this.orderReturnValidationService.validateOrderWithPnrNumber(
         pnrNumber,
@@ -73,9 +75,18 @@ export class OrderReturnFinishService {
     try {
       const paymentMethod = order.transaction.paymentMethod;
       const paymentProviderName = order.transaction.paymentProvider;
+      const refundAmount = order.penalty.amountToRefund;
 
       // return ticket
-      await this.biletAllTicketReturnService.returnBusTicket(pnrNumber);
+      if (order.busTickets.length > 0) {
+        await this.biletAllBusTicketReturnService.returnBusTicket(pnrNumber);
+      } else {
+        await this.biletAllPlaneTicketReturnService.returnPlaneTicket(
+          pnrNumber,
+          passengerLastName,
+          refundAmount,
+        );
+      }
 
       // return money
       if (
@@ -86,12 +97,11 @@ export class OrderReturnFinishService {
         const paymentProvider =
           this.paymentProviderFactory.getStrategy(paymentProviderName);
 
-        // check wether the payment was in one of the previous days
-        if (DateTimeHelper.isPastDate(order.transaction.createdAt)) {
-          await paymentProvider.refundPayment(clientIp, order.transaction);
-        } else {
-          await paymentProvider.cancelPayment(clientIp, order.transaction);
-        }
+        await paymentProvider.refundPayment(
+          clientIp,
+          order.transaction.id,
+          refundAmount,
+        );
       } else {
         // TODO: it is purchased with wallet then
       }
@@ -102,7 +112,7 @@ export class OrderReturnFinishService {
         }),
         await queryRunner.manager.update(Transaction, order.transaction.id, {
           status: TransactionStatus.REFUND_PROCESSED,
-          // TODO: add refund amount
+          refundAmount,
         }),
       ]);
       await queryRunner.commitTransaction();

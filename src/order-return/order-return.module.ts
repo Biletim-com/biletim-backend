@@ -9,12 +9,18 @@ import { OrderReturnFinishService } from './services/order-return-finish.service
 import { VerificationsRepository } from '@app/modules/verification/verification.repository';
 
 import { OrderReturnController } from './order-return.controller';
-import { BiletAllCommonModule } from '@app/providers/ticket/biletall/common/provider.module';
-import { BiletAllBusModule } from '@app/providers/ticket/biletall/bus/provider.module';
 import { PaymentProviderModule } from '@app/providers/payment/provider.module';
+import { BiletAllCommonModule } from '@app/providers/ticket/biletall/common/provider.module';
+import { BiletAllPlaneModule } from '@app/providers/ticket/biletall/plane/provider.module';
+import { BiletAllBusModule } from '@app/providers/ticket/biletall/bus/provider.module';
 
 @Module({
-  imports: [PaymentProviderModule, BiletAllCommonModule, BiletAllBusModule],
+  imports: [
+    PaymentProviderModule,
+    BiletAllCommonModule,
+    BiletAllPlaneModule,
+    BiletAllBusModule,
+  ],
   providers: [
     OrderReturnValidationService,
     OrderReturnStartService,
