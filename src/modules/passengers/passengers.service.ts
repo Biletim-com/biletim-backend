@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
 import { User } from '../users/user.entity';
 import { Passport } from './passports/passport.entity';
@@ -23,6 +24,7 @@ import { UUID } from '@app/common/types';
 @Injectable()
 export class PassengersService {
   constructor(
+    private readonly dataSource: DataSource,
     private readonly passengersRepository: PassengersRepository,
     private readonly usersRepository: UsersRepository,
   ) {}
@@ -37,17 +39,21 @@ export class PassengersService {
   public async addPassengerToUser(
     userOrUserId: UUID | User,
     { passports, ...passengerDataToCreate }: CreatePassengerDto,
-  ): Promise<Passenger> {
-    const user = await this.usersRepository.findEntityData(userOrUserId);
+  ): Promise<Omit<Passenger, 'user'>> {
+    const existingUser = await this.usersRepository.findEntityData(
+      userOrUserId,
+    );
 
     const passengerToCreate = new Passenger({
-      user,
+      user: existingUser,
       ...passengerDataToCreate,
       ...(passports
         ? { passports: passports.map((passport) => new Passport(passport)) }
         : { passports: [] }),
     });
-    return this.passengersRepository.save(passengerToCreate);
+    await this.passengersRepository.save(passengerToCreate);
+    const { user: _user, ...passengerToReturn } = passengerToCreate;
+    return passengerToReturn;
   }
 
   public async updatePassenger(
@@ -66,22 +72,72 @@ export class PassengersService {
     });
     if (!existingPassenger) throw new PassengerNotFoundError();
 
-    const passportIdsToUpdate = passports?.map((passport) => passport.id) || [];
+    // compose passport data
+    const passportsToCreate: Passport[] = [];
+    const passportsToUpdate: Passport[] = [];
+    passports?.forEach((passport) => {
+      if (passport.id) {
+        passportsToUpdate.push(
+          new Passport({
+            ...passport,
+            passenger: new Passenger({ id: passengerId }),
+          }),
+        );
+      } else {
+        passportsToCreate.push(
+          new Passport({
+            ...passport,
+            passenger: new Passenger({ id: passengerId }),
+          }),
+        );
+      }
+    });
+
+    // validate passport via id
+    const passportIdsToUpdate =
+      passportsToUpdate?.map((passport) => passport.id) || [];
     const passengerPassportIds = existingPassenger.passports.map(
       (passport) => passport.id,
     );
     passportIdsToUpdate.forEach((passportIdToUpdate) => {
-      if (
-        passportIdToUpdate &&
-        passengerPassportIds.includes(passportIdToUpdate)
-      ) {
+      if (!passengerPassportIds.includes(passportIdToUpdate)) {
         throw new PassengerForbiddenResourceError(
           `passport id with ${passportIdToUpdate}`,
         );
       }
     });
 
-    return this.passengersRepository.save(updatePassengerDto);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // update passenger
+      await queryRunner.manager.update(
+        Passenger,
+        passengerId,
+        updatePassengerDto,
+      );
+      await queryRunner.manager.save(passportsToUpdate);
+      await queryRunner.manager.save(passportsToCreate);
+
+      await queryRunner.commitTransaction();
+      return {
+        ...existingPassenger,
+        ...updatePassengerDto,
+        passports: Array.from(
+          new Set([
+            ...existingPassenger.passports,
+            ...passportsToCreate,
+            ...passportsToUpdate,
+          ]),
+        ),
+      };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   public async deletePassenger(

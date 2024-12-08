@@ -35,7 +35,7 @@ export class Passenger extends AbstractEntity<Passenger> {
   user: User;
 
   @OneToMany(() => Passport, (passport) => passport.passenger, {
-    cascade: ['insert', 'update'],
+    cascade: true,
   })
   passports: Passport[];
 }

@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { BiletAllCommonModule } from '@app/providers/ticket/biletall/common/provider.module';
 
 // controllers
-import { SearchGeneralController } from '@app/search/controllers/search-general.controller';
+import { SearchGeneralController } from './controllers/search-general.controller';
 
 @Module({
   imports: [BiletAllCommonModule],
