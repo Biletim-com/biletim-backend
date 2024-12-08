@@ -20,6 +20,7 @@ import { WalletsModule } from '@app/modules/wallets/wallets.module';
 import { VerificationsModule } from './modules/verification/verifications.module';
 import { PaymentModule } from './payment/payment.module';
 import { OrderReturnModule } from './order-return/order-return.module';
+import { SearchModule } from './search/search.module';
 
 // Providers
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
@@ -31,7 +32,6 @@ import { SmsModule } from './providers/sms/provider.module';
 import { PdfMakerModule } from '@app/providers/pdf-maker/provider.module';
 import { HtmlTemplateModule } from '@app/providers/html-template/provider.module';
 import { PaymentProviderModule } from './providers/payment/provider.module';
-import { TicketsModule } from '@app/modules/tickets/tickets.module';
 
 // Interceptors
 import { ErrorInterceptor } from '@app/common/interceptors';
@@ -56,8 +56,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     UsersModule,
     PanelUsersModule,
     HotelModule,
-    TicketsModule,
     BookingModule,
+    SearchModule,
     PaymentModule,
     OrderReturnModule,
     PassengersModule,

@@ -1,4 +1,3 @@
-// import { TamamliyoInsuranceTicketType } from '../helpers/insurance-ticket-type.helper';
 import { TamamliyoApiConfigService } from '@app/configs/tamamliyo-insurance';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { Injectable } from '@nestjs/common';
