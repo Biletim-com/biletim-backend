@@ -1,7 +1,7 @@
-import { BusTicketSaleRequest } from '../types/biletall-bus-ticket-purchase.type';
+import { BusTicketPurchaseRequest } from '../types/biletall-bus-ticket-purchase.type';
 import { DateTime } from '@app/common/types';
 
-export class BusTicketSaleDto {
+export class BusTicketPurchaseDto {
   result: boolean;
   pnr: string;
   message?: string;
@@ -16,7 +16,7 @@ export class BusTicketSaleDto {
     SeferInternetTarihSaat,
     Hata,
     ...rest
-  }: BusTicketSaleRequest) {
+  }: BusTicketPurchaseRequest) {
     this.result = Sonuc === 'true';
     this.pnr = PNR;
     this.message = Mesaj;

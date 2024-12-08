@@ -13,4 +13,6 @@ export enum TransactionStatus {
   COMPLETED = 'completed', // The transaction was successfully processed.
   FAILED = 'failed', // The transaction failed due to an error (e.g., insufficient funds, invalid card).
   CANCELLED = 'cancelled', // The transaction was cancelled by the user or system.
+  REFUND_REQUESTED = 'refund-requested', // Customer has requested a refund for the order.
+  REFUND_PROCESSED = 'refund-processed', // The refund for the order has been successfully processed.
 }

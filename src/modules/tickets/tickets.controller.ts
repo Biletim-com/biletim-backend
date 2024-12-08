@@ -2,14 +2,9 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // service
-import { OrdersRepository } from '@app/modules/orders/orders.repository';
 import { BiletAllPnrService } from '@app/providers/ticket/biletall/common/services/biletall-pnr.service';
 import { BiletAllOfficialHolidaysService } from '@app/providers/ticket/biletall/common/services/biletall-official-holidays.service';
 import { BiletAllTravelCountryCodeService } from '@app/providers/ticket/biletall/common/services/biletall-travel-country-code.service';
-import { PlaneTicketOutputHandlerService } from './services/plane-ticket-output-handler.service';
-
-// entities
-import { Order } from '../orders/order.entity';
 
 // dto request
 import { PnrSearchRequestDto } from './dto/tickets-pnr-search.dto';
@@ -29,8 +24,6 @@ export class TicketsController {
     private readonly biletAllPnrService: BiletAllPnrService,
     private readonly biletAllOfficialHolidaysService: BiletAllOfficialHolidaysService,
     private readonly biletAllTravelCountryCodeService: BiletAllTravelCountryCodeService,
-    private readonly planeTicketOutputHandlerService: PlaneTicketOutputHandlerService,
-    private readonly orderRepository: OrdersRepository,
   ) {}
 
   @Post('tickets/pnr-search')
@@ -40,33 +33,6 @@ export class TicketsController {
   ): Promise<
     PnrSearchBusDto | PnrSearchDomesticFlightDto | PnrSearchAbroadFlightDto
   > {
-    /**
-     * TEMP ORDER
-     */
-    const order = await this.orderRepository.findOne({
-      where: {
-        id: '7ba00a14-e3df-411a-97e7-e18e165e4425',
-      },
-      relations: {
-        planeTickets: {
-          passenger: true,
-          segments: {
-            departureAirport: true,
-            arrivalAirport: true,
-          },
-        },
-      },
-    });
-    if (!order) {
-      throw new Error();
-    }
-
-    this.planeTicketOutputHandlerService.handlePlaneTicketOutputGeneration(
-      new Order({
-        ...order,
-        userEmail: 'bahyeddin@gmail.com',
-      }),
-    );
     return this.biletAllPnrService.pnrSearch(requestDto);
   }
 

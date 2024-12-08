@@ -38,11 +38,21 @@ export class DateTimeHelper {
     const currentTimestamp = new Date();
     currentTimestamp.setMinutes(currentTimestamp.getMinutes() + minutes);
     return currentTimestamp.toISOString() as DateTime;
-  };
+  }
 
   static isTimeExpired(expiredAt: string): boolean {
     const currentDate = new Date();
     const expiryDate = new Date(expiredAt);
     return currentDate.getTime() >= expiryDate.getTime();
+  }
+
+  static isPastDate(date: Date | string): boolean {
+    const givenDate = new Date(date);
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+    givenDate.setHours(0, 0, 0, 0);
+
+    return givenDate < today;
   }
 }

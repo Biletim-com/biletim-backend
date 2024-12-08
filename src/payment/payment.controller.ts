@@ -27,14 +27,14 @@ import { PlaneTicketPurchaseDto } from './dto/plane-ticket-purchase.dto';
 import { ClientIp } from '@app/common/decorators';
 
 // types
+import type { Response, Request } from 'express';
 import { UUID } from '@app/common/types';
 import { PaymentResultQueryParams } from './types/payment-result-query-params.type';
-import type { Response, Request } from 'express';
+import { BusTicketPurchaseRequest } from '@app/providers/ticket/biletall/bus/types/biletall-bus-ticket-purchase.type';
 
 // enums
 import { PaymentProvider, TicketType } from '@app/common/enums';
 import { TransactionRequest } from './dto/get-transaction.dto';
-import { BusTicketSaleRequest } from '@app/providers/ticket/biletall/types/biletall-sale-request.type';
 
 @ApiTags('Payment')
 @Controller('payment')
@@ -95,13 +95,13 @@ export class PaymentController {
   ): Promise<void> {
     const body = request.body as unknown as
       | VakifBankPaymentResultDto
-      | BusTicketSaleRequest;
+      | BusTicketPurchaseRequest;
 
     let dto: VakifBankPaymentResultDto | BiletAllPaymentResultDto;
 
     if (provider === PaymentProvider.BILET_ALL) {
       dto = new BiletAllPaymentResultDto(
-        body as BusTicketSaleRequest,
+        body as BusTicketPurchaseRequest,
         transactionId,
       );
     } else {
@@ -151,13 +151,13 @@ export class PaymentController {
   ): Promise<void> {
     let body = request.body as unknown as
       | VakifBankPaymentResultDto
-      | BusTicketSaleRequest;
+      | BusTicketPurchaseRequest;
 
     let transactionId: UUID | undefined = undefined;
     let errorMessage: string | undefined = undefined;
 
     if (provider === PaymentProvider.BILET_ALL) {
-      body = body as unknown as BusTicketSaleRequest;
+      body = body as unknown as BusTicketPurchaseRequest;
       transactionId = transactionIdQuery;
       errorMessage = body.Hata;
     } else {

@@ -7,7 +7,7 @@ import { ErrorResponse } from '../types/biletall-error.type';
 
 @Injectable()
 export class BiletAllParserService {
-  public isErrorResponse(response: any): response is ErrorResponse {
+  protected isErrorResponse(response: any): response is ErrorResponse {
     return (
       Array.isArray(response?.IslemSonuc) &&
       response.IslemSonuc.some((islemSonuc: ActionResult) =>
@@ -16,7 +16,7 @@ export class BiletAllParserService {
     );
   }
 
-  public extractResult<T>(response: SoapEnvelope<T>): T {
+  protected extractResult<T>(response: SoapEnvelope<T>): T {
     const envelope = response['soap:Envelope'];
     const body = envelope['soap:Body'][0];
     const xmlIsletResponse = body['XmlIsletResponse'][0];

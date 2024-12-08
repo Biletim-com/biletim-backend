@@ -9,7 +9,7 @@ import {
   BusScheduleDto,
   BusFeaturesDto,
 } from '../dto/bus-schedule-list.dto';
-import { BusTicketSaleDto } from '../dto/bus-ticket-sale.dto';
+import { BusTicketPurchaseDto } from '../dto/bus-ticket-purchase.dto';
 
 // types
 import { BusFeature } from '../types/biletall-bus-feature.type';
@@ -17,7 +17,7 @@ import {
   BusTripSchedule,
   BusTripScheduleAndFeaturesResponse,
 } from '../types/biletall-bus-trip-schedule.type';
-import { BusTicketSaleRequestResponse } from '../../types/biletall-sale-request.type';
+import { BusTicketPurchaseRequestResponse } from '../types/biletall-bus-ticket-purchase.type';
 
 @Injectable()
 export class BiletAllBusTicketPurchaseParserService extends BiletAllParserService {
@@ -81,9 +81,9 @@ export class BiletAllBusTicketPurchaseParserService extends BiletAllParserServic
     return new BusScheduleListParserDto(SchedulesAndFeatures);
   };
 
-  public parseSaleRequest = (
-    response: BusTicketSaleRequestResponse,
-  ): BusTicketSaleDto => {
+  public parsePurchaseRequest = (
+    response: BusTicketPurchaseRequestResponse,
+  ): BusTicketPurchaseDto => {
     const extractedResult = this.extractResult(response);
     const result = extractedResult['IslemSonuc'][0];
 
@@ -93,6 +93,6 @@ export class BiletAllBusTicketPurchaseParserService extends BiletAllParserServic
         saleResultParsed[key] = value[0];
       }
     }
-    return new BusTicketSaleDto(saleResultParsed);
+    return new BusTicketPurchaseDto(saleResultParsed);
   };
 }
