@@ -35,40 +35,28 @@ services:
     networks:
       - biletim-network
 
-  # biletim-redis:
-  #   image: redis:6
-  #   container_name: biletim-redis
-  #   restart: always
-  #   ports:
-  #     - 6379:6379
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - biletim-network
-  #   volumes:
-  #     - biletim-redis-vol:/data
-  #   command: [ "redis-server", "--appendonly", "yes" ]
-
-  # biletim-chromium:
-  #   build:
-  #     context: ../biletim_chromium
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - biletim-network
-
-  biletim-mongodb:
-    image: mongo:6.0
+  biletim-redis:
+    image: redis:6
+    container_name: biletim-redis
     restart: always
-    container_name: biletim-mongodb
     ports:
-      - "27017:27017"
+      - 6379:6379
     env_file:
       - .env
+    networks:
+      - biletim-network
     volumes:
       - biletim-redis-vol:/data
     command: [ "redis-server", "--appendonly", "yes" ]
+
+  biletim-chromium:
+    build:
+      context: ../biletim_chromium
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    networks:
+      - biletim-network
 
   biletim-chromium:
     build:
