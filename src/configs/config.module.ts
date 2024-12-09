@@ -21,10 +21,10 @@ import postgresqlConfiguration, {
   PostgreSQLEnvVarsValidation,
 } from './database/postgresql';
 
-import biletAllApiConfiguration, {
-  BiletAllApiConfigService,
-  BiletAllApiEnvVarsValidation,
-} from './bilet-all-api';
+import ticketConfiguration, {
+  TicketConfigService,
+  TicketEnvVarsValidation,
+} from './ticket';
 
 import hotelApiConfiguration, {
   HotelApiConfigService,
@@ -76,8 +76,6 @@ import chromiumConfiguration, {
   ChromiumEnvVarsValidation,
 } from './chromium';
 
-
-
 @Global()
 @Module({
   imports: [
@@ -87,7 +85,7 @@ import chromiumConfiguration, {
         appConfiguration,
         authConfiguration,
         postgresqlConfiguration,
-        biletAllApiConfiguration,
+        ticketConfiguration,
         hotelApiConfiguration,
         superAdminConfiguration,
         loginWithGoogleConfiguration,
@@ -104,7 +102,7 @@ import chromiumConfiguration, {
           ConfigValidator.validate(AppEnvVarsValidation, config),
           ConfigValidator.validate(AuthEnvVarsValidation, config),
           ConfigValidator.validate(PostgreSQLEnvVarsValidation, config),
-          ConfigValidator.validate(BiletAllApiEnvVarsValidation, config),
+          ConfigValidator.validate(TicketEnvVarsValidation, config),
           ConfigValidator.validate(HotelApiEnvVarsValidation, config),
           ConfigValidator.validate(SuperAdminEnvVarsValidation, config),
           ConfigValidator.validate(NotificationsEnvVarsValidation, config),
@@ -129,7 +127,7 @@ import chromiumConfiguration, {
     AppConfigService,
     AuthConfigService,
     PostgreSQLConfigService,
-    BiletAllApiConfigService,
+    TicketConfigService,
     HotelApiConfigService,
     SuperAdminConfigService,
     OAuthLoginWithGoogleConfigService,
@@ -146,7 +144,7 @@ import chromiumConfiguration, {
     AppConfigService,
     AuthConfigService,
     PostgreSQLConfigService,
-    BiletAllApiConfigService,
+    TicketConfigService,
     HotelApiConfigService,
     SuperAdminConfigService,
     OAuthLoginWithGoogleConfigService,

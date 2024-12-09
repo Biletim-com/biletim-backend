@@ -78,8 +78,8 @@ export class VakifBankCustomerService {
   } {
     return {
       MerchantCriteria: {
-        HostMerchantId: this.paymentConfigService.merchantId,
-        MerchantPassword: this.paymentConfigService.merchantPassword,
+        HostMerchantId: this.paymentConfigService.vakifBankMerchantId,
+        MerchantPassword: this.paymentConfigService.vakifBankMerchantPassword,
       },
     };
   }

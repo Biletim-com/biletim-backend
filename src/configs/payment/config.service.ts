@@ -11,33 +11,51 @@ export class PaymentConfigService {
 
   constructor(private configService: ConfigService) {}
 
-  get vPosBaseUrl(): string {
+  get vakifBankVPosBaseUrl(): string {
     return this.configService.getOrThrow<TPaymentConfiguration>(
       this.configurationNamespace,
-    ).vPosBaseUrl;
+    ).vakifBankVPosBaseUrl;
   }
 
-  get threeDSecureBaseUrl(): string {
+  get vakifBank3DSBaseUrl(): string {
     return this.configService.getOrThrow<TPaymentConfiguration>(
       this.configurationNamespace,
-    ).threeDSecureBaseUrl;
+    ).vakifBank3DSBaseUrl;
   }
 
-  get merchantId(): string {
+  get vakifBankMerchantId(): string {
     return this.configService.getOrThrow<TPaymentConfiguration>(
       this.configurationNamespace,
-    ).merchantId;
+    ).vakifBankMerchantId;
   }
 
-  get merchantPassword(): string {
+  get vakifBankMerchantPassword(): string {
     return this.configService.getOrThrow<TPaymentConfiguration>(
       this.configurationNamespace,
-    ).merchantPassword;
+    ).vakifBankMerchantPassword;
   }
 
-  get terminalNumber(): string {
+  get vakifBankTerminalNumber(): string {
     return this.configService.getOrThrow<TPaymentConfiguration>(
       this.configurationNamespace,
-    ).terminalNumber;
+    ).vakifBankTerminalNumber;
+  }
+
+  get biletAll3DSBaseUrl(): string {
+    return this.configService.getOrThrow<TPaymentConfiguration>(
+      this.configurationNamespace,
+    ).biletAll3DSBaseUrl;
+  }
+
+  get biletAll3DSUsername(): string {
+    return this.configService.getOrThrow<TPaymentConfiguration>(
+      this.configurationNamespace,
+    ).biletAll3DSUsername;
+  }
+
+  get biletAll3DSPassword(): string {
+    return this.configService.getOrThrow<TPaymentConfiguration>(
+      this.configurationNamespace,
+    ).biletAll3DSPassword;
   }
 }

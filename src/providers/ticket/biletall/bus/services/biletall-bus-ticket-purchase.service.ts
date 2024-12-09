@@ -8,6 +8,7 @@ import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
 
 // services
+import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 import { BiletAllBusTicketPurchaseParserService } from '../parsers/biletall-bus-ticket-purchase.parser.service';
 
@@ -26,10 +27,17 @@ import { turkishToEnglish } from '@app/common/utils';
 
 @Injectable()
 export class BiletAllBusTicketPurchaseService {
+  private readonly biletAllRequestService: BiletAllRequestService;
   constructor(
-    private readonly biletAllRequestService: BiletAllRequestService,
+    ticketConfigService: TicketConfigService,
     private readonly biletAllBusTicketPurchaseParserService: BiletAllBusTicketPurchaseParserService,
-  ) {}
+  ) {
+    this.biletAllRequestService = new BiletAllRequestService(
+      ticketConfigService.biletAllBaseUrl,
+      ticketConfigService.biletAllUsername,
+      ticketConfigService.biletAllPassword,
+    );
+  }
 
   async purchaseTicket(
     clientIp: string,

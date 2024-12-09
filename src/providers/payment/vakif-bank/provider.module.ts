@@ -15,13 +15,13 @@ import { VakifBankPaymentStrategy } from './vakif-bank-payment.strategy';
     PoxClientModule.registerAsync({
       token: `${PaymentProvider.VAKIF_BANK}_VPOS`,
       useFactory: async (configService: PaymentConfigService) =>
-        configService.vPosBaseUrl,
+        configService.vakifBankVPosBaseUrl,
       inject: [PaymentConfigService],
     }),
     PoxClientModule.registerAsync({
       token: `${PaymentProvider.VAKIF_BANK}_3DS`,
       useFactory: async (configService: PaymentConfigService) =>
-        configService.threeDSecureBaseUrl,
+        configService.vakifBank3DSBaseUrl,
       inject: [PaymentConfigService],
     }),
   ],

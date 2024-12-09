@@ -13,7 +13,7 @@ import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus
 import { BiletAllParserService } from '@app/providers/ticket/biletall/services/biletall-response-parser.service';
 import { BiletAllBusSearchParserService } from '@app/providers/ticket/biletall/bus/parsers/biletall-bus-search.parser.service';
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
-import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
+import { TicketConfigService } from '@app/configs/ticket';
 import { BusTerminalsService } from '@app/modules/tickets/bus/services/bus-terminals.service';
 
 import {
@@ -56,7 +56,7 @@ describe('BiletAllBusParserService', () => {
       providers: [
         BiletAllBusSearchParserService,
         BiletAllBusSearchService,
-        BiletAllApiConfigService,
+        TicketConfigService,
         BusTerminalsService,
         BusTerminalRepository,
         { provide: BiletAllParserService, useValue: mockBiletAllParserService },

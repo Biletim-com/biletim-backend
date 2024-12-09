@@ -75,9 +75,9 @@ export class VakifBankPaymentStrategy implements IPayment {
     TerminalNo: string;
   } {
     return {
-      MerchantId: this.paymentConfigService.merchantId,
-      Password: this.paymentConfigService.merchantPassword,
-      TerminalNo: this.paymentConfigService.terminalNumber,
+      MerchantId: this.paymentConfigService.vakifBankMerchantId,
+      Password: this.paymentConfigService.vakifBankMerchantPassword,
+      TerminalNo: this.paymentConfigService.vakifBankTerminalNumber,
     };
   }
 

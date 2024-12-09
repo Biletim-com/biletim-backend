@@ -1,7 +1,13 @@
 export type TPaymentConfiguration = {
-  vPosBaseUrl: string;
-  threeDSecureBaseUrl: string;
-  merchantId: string;
-  merchantPassword: string;
-  terminalNumber: string;
+  // vakifbank
+  vakifBankVPosBaseUrl: string;
+  vakifBank3DSBaseUrl: string;
+  vakifBankMerchantId: string;
+  vakifBankMerchantPassword: string;
+  vakifBankTerminalNumber: string;
+
+  // biletall
+  biletAll3DSBaseUrl: string;
+  biletAll3DSUsername: string;
+  biletAll3DSPassword: string;
 };

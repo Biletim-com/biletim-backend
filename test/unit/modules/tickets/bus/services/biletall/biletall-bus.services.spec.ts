@@ -8,7 +8,7 @@ import { parseStringPromise } from 'xml2js';
 import { BusController } from '@app/modules/tickets/bus/bus.controller';
 
 // services
-import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
+import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllParserService } from '@app/providers/ticket/biletall/services/biletall-response-parser.service';
 import { BiletAllRequestService } from '@app/providers/ticket/biletall/services/biletall-request.service';
 import { BusTerminalsService } from '@app/modules/tickets/bus/services/bus-terminals.service';
@@ -58,7 +58,7 @@ describe('BiletAllBusService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
       providers: [
-        BiletAllApiConfigService,
+        TicketConfigService,
         BiletAllBusSearchService,
         BusTerminalsService,
         BusTerminalRepository,

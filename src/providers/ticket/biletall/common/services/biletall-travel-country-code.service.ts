@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 // services
+import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 import { BiletAllTravelCountryCodeParserService } from '../parsers/biletall-travel-country-code.parser.service';
 
@@ -12,10 +13,17 @@ import { TravelCountryCodeResponse } from '../types/tickets-travel-country-code.
 
 @Injectable()
 export class BiletAllTravelCountryCodeService {
+  private readonly biletAllRequestService: BiletAllRequestService;
   constructor(
-    private readonly biletAllRequestService: BiletAllRequestService,
+    ticketConfigService: TicketConfigService,
     private readonly biletAllTravelCountryCodeParserService: BiletAllTravelCountryCodeParserService,
-  ) {}
+  ) {
+    this.biletAllRequestService = new BiletAllRequestService(
+      ticketConfigService.biletAllBaseUrl,
+      ticketConfigService.biletAllUsername,
+      ticketConfigService.biletAllPassword,
+    );
+  }
 
   async getTravelCountryCode(): Promise<CountryDto[]> {
     const travelCountryXml = `<SeyahatUlkeGetirKomut/> `;

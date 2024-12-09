@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 
 // services
+import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllPlaneSearchParserService } from '../parsers/biletall-plane-search.parser.service';
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 
@@ -32,10 +33,17 @@ import { AbroadFlightScheduleDto } from '../dto/plane-abroad-flight-schedule.dto
 
 @Injectable()
 export class BiletAllPlaneSearchService {
+  private readonly biletAllRequestService: BiletAllRequestService;
   constructor(
-    private readonly biletAllRequestService: BiletAllRequestService,
+    ticketConfigService: TicketConfigService,
     private readonly biletAllPlaneSearchParserService: BiletAllPlaneSearchParserService,
-  ) {}
+  ) {
+    this.biletAllRequestService = new BiletAllRequestService(
+      ticketConfigService.biletAllExtraBaseUrl,
+      ticketConfigService.biletAllExtraUsername,
+      ticketConfigService.biletAllExtraPassword,
+    );
+  }
 
   async getAirports(): Promise<PlaneAirportDto[]> {
     const airportXML = '<HavaNoktaGetirKomut/>';

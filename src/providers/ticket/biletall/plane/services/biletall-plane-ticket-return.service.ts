@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 
 // services
+import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 import { BiletAllPlaneTicketReturnParserService } from '../parsers/biletall-plane-ticket-return.parser.service';
 
@@ -15,10 +16,17 @@ import { PlaneTicketReturnResponse } from '../types/bilatall-plane-ticket-return
 
 @Injectable()
 export class BiletAllPlaneTicketReturnService {
+  private readonly biletAllRequestService: BiletAllRequestService;
   constructor(
-    private readonly biletAllRequestService: BiletAllRequestService,
+    ticketConfigService: TicketConfigService,
     private readonly biletAllPlaneTicketReturnParserService: BiletAllPlaneTicketReturnParserService,
-  ) {}
+  ) {
+    this.biletAllRequestService = new BiletAllRequestService(
+      ticketConfigService.biletAllExtraBaseUrl,
+      ticketConfigService.biletAllExtraUsername,
+      ticketConfigService.biletAllExtraPassword,
+    );
+  }
 
   public async ticketReturnPenalty(
     pnrNumber: string,

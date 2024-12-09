@@ -40,12 +40,6 @@ biletim_api:
     APP_PORT: 8080
     NODE_ENV: development
     BACKEND_URL: https://biletimapi.westerops.com
-    POSTGRES_USER: biletim-user
-    POSTGRES_PASSWORD: 1234
-    POSTGRES_HOST: biletim-db
-    POSTGRES_PORT: 5432
-    POSTGRES_DB: biletim
-    DATABASE_URL: postgres://biletim-user:1234@biletim-db:5432/biletim?connect_timeout=300
     SUPER_ADMIN_EMAIL: super_admin@gmail.com
     SUPER_ADMIN_PASSWORD: SuperAdmin.12345
     SUPER_ADMIN_KEY: biletimcom2024
@@ -53,38 +47,67 @@ biletim_api:
     JWT_EXPIRATION: 172800
     BCRYPT_SALT_ROUNDS: 12
     RESET_PASSWORD_URL: https://timetracker.westerops.com/reset-password
-    BILETALL_BASE_URI: https://ws.biletall.com/Service.asmx
-    BILETALL_3DSECURE_BASE_URI: https://ws.biletall.com/3DSecure/SecurePay2.aspx
-    BILETALL_WS_USERNAME: biletimcomWS
-    BILETALL_WS_PASSWORD: fd306d
+
+    # services
+    CHOROMIUM_HOST: biletim-chromium
+    CHOROMIUM_PORT: 9222
+
+    # queue
+    REDIS_HOST: biletim-redis
+    REDIS_PORT: 6379
+    REDIS_PASSWORD: 'my-password'
+
+    # OAuth
+    GOOGLE_OAUTH_CLIENT_ID: 347389858095-q2bqpat4bphrt778h8qfuepcd0tbt5o2.apps.googleusercontent.com
+    GOOGLE_OAUTH_CLIENT_SECRET: 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
+    FACEBOOK_OAUTH_CLIENT_ID: 372069605916295
+    FACEBOOK_OAUTH_CLIENT_SECRET: 93aab68e49875d748c594c1721653309
+
+    # DB
+    DATABASE_URL: postgres://biletim-user:1234@biletim-db:5432/biletim?connect_timeout=300
+    POSTGRES_USER: biletim-user
+    POSTGRES_PASSWORD: 1234
+    POSTGRES_HOST: biletim-db
+    POSTGRES_PORT: 5432
+    POSTGRES_DB: biletim
+
+    # ticket
+    BILETALL_BASE_URI: http://94.55.20.137/WSTEST/Service.asmx
+    BILETALL_USERNAME: biletimcomWS
+    BILETALL_PASSWORD: aa8809
+    BILETALL_EXTRA_BASE_URI: https://ws.biletall.com/Service.asmx
+    BILETALL_EXTRA_USERNAME: biletimcomWS
+    BILETALL_EXTRA_PASSWORD: fd306d
+
+    # hotel
     HOTEL_API_BASE_URL: https://api.worldota.net/api/b2b/v3
     HOTEL_WS_USERNAME: 8175
     HOTEL_WS_PASSWORD: 88346326-e817-4e3f-8852-44185a44e606
+
+    # payment
+    VAKIF_BANK_VPOS_BASE_URI: https://onlineodemetest.vakifbank.com.tr:4443
+    VAKIF_BANK_3DS_BASE_URI: https://3dsecuretest.vakifbank.com.tr:4443
+    VAKIF_BANK_MERCHANT_ID: '000100000013506'
+    VAKIF_BANK_MERCHANT_PASSWORD: '123456'
+    VAKIF_BANK_TERMINAL_NO: 'VP000579'
+
+    BILETALL_3DS_BASE_URI: http://94.55.20.137//WSTEST/3DSecure/SecurePay2.aspx
+
+    # insurance
+    TAMAMLIYO_API_BASE_URL: https://api-test.tamamliyo.com
+    TAMAMLIYO_TOKEN: b1bd655bcd0b061c32b2e8072f298769
+
+    # notifications
+    NETGSM_BASE_URL: 'https://api.netgsm.com.tr'
+    NETGSM_USERNAME: '3626060962'
+    NETGSM_PASSWORD: '41914FA'
+    NETGSM_APP_KEY: 'xxx'
+
     EMAIL_USERNAME: dws.timetracker@gmail.com
     EMAIL_PASSWORD: 'zyyj jrjl syft egjh'
     EMAIL_PORT: 465
     EMAIL_HOST: smtp.gmail.com
     EMAIL_USE_SSL: 'true'
-    GOOGLE_OAUTH_CLIENT_ID: 347389858095-q2bqpat4bphrt778h8qfuepcd0tbt5o2.apps.googleusercontent.com
-    GOOGLE_OAUTH_CLIENT_SECRET: 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
-    FACEBOOK_OAUTH_CLIENT_ID: 372069605916295
-    FACEBOOK_OAUTH_CLIENT_SECRET: 93aab68e49875d748c594c1721653309
-    PAYMENT_VPOS_BASE_URI: https://onlineodemetest.vakifbank.com.tr:4443
-    PAYMENT_3DSECURE_BASE_URI: https://3dsecuretest.vakifbank.com.tr:4443
-    PAYMENT_MERCHANT_ID: '000100000013506'
-    PAYMENT_MERCHANT_PASSWORD: '123456'
-    PAYMENT_TERMINAL_NO: 'VP000579'
-    TAMAMLIYO_API_BASE_URL: https://api-test.tamamliyo.com
-    TAMAMLIYO_TOKEN: b1bd655bcd0b061c32b2e8072f298769
-    REDIS_HOST: biletim-redis
-    REDIS_PORT: 6379
-    REDIS_PASSWORD: 'my-password'
-    NETGSM_BASE_URL: 'https://api.netgsm.com.tr'
-    NETGSM_USERNAME: '3626060962'
-    NETGSM_PASSWORD: '41914FA'
-    NETGSM_APP_KEY: 'xxx'
-    CHOROMIUM_HOST: biletim-chromium
-    CHOROMIUM_PORT: 9222
 
   volumeMounts:
     biletim-api: '/app/images'
