@@ -44,8 +44,8 @@ export class MongoConfigService {
   }
 
   get mongoURI(): string {
-    const { host, port, user, password, database } = this;
-    return `mongodb://${user}:${password}@${host}:${port}/${database}?retryWrites=true&w=majority`;
+    const { host, port, user, password } = this;
+    return `mongodb://${user}:${password}@${host}:${port}/?retryWrites=true&w=majority`;
   }
 
   get logging(): boolean {

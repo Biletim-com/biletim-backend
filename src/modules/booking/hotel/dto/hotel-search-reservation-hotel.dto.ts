@@ -99,7 +99,7 @@ export class SearchReservationByHotelRequestDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => GuestDto)
-  guests!: GuestDto[];
+  guests: GuestDto[];
 
   @ApiProperty({
     description: 'Hotel id. (Required)',

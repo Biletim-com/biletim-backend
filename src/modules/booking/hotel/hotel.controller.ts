@@ -16,13 +16,9 @@ import {
   HotelSearchQueryDto,
   HotelSearchResponseDto,
 } from './dto/hotel-search.dto';
-import {
-  QueryDto,
-  searchReservationByRegionIdRequestDto,
-} from './dto/hotel-search-reservation-by-region-id.dto';
+import { searchReservationByRegionIdRequestDto } from './dto/hotel-search-reservation-by-region-id.dto';
 import { SearchReservationsHotelsRequestDto } from './dto/hotel-search-reservations-hotels.dto';
 import { SearchReservationByHotelRequestDto } from './dto/hotel-search-reservation-hotel.dto';
-import { HotelDetailsPageRequestDto } from './dto/hotel-details-page.dto';
 import { PrebookRequestDto } from './dto/hotel-prebook.dto';
 import { OrderBookingFormRequestDto } from './dto/hotel-order-booking-form.dto';
 import { CreditCardDataTokenizationRequestDto } from './dto/hotel-credit-card-data-tokenization.dto';
@@ -31,11 +27,22 @@ import { OrderBookingFinishStatusRequestDto } from './dto/hotel-order-booking-fi
 import { WebhookRequestDto } from './dto/hotel-webhook.dto';
 import { OrderTotalInformationRequestDto } from './dto/hotel-order-total-information.dto';
 import { HotelOrderCancelRequestDto } from './dto/hotel-order-cancel.dto';
+import { GetHotelsByIdsDto } from './dto/hotel-get-by-ids-from-db.dto';
+import { HotelService } from './services/ratehawk/hotel.service';
 
 @ApiTags('Hotel')
 @Controller('hotel')
 export class HotelController {
-  constructor(private readonly ratehawkHotelService: RatehawkHotelService) {}
+  constructor(
+    private readonly ratehawkHotelService: RatehawkHotelService,
+    private readonly hotelService: HotelService,
+  ) {}
+
+  @Get('/find/hotels-by-ids')
+  async findHotelsByIds(@Query() query: GetHotelsByIdsDto) {
+    const hotels = await this.hotelService.findHotelsByIds(query.ids);
+    return hotels;
+  }
 
   @ApiOperation({ summary: 'Search Autocomplete' })
   @Get('/search')
@@ -52,18 +59,16 @@ export class HotelController {
   async searchReservationByRegionId(
     @Body()
     searchHotelsDto: searchReservationByRegionIdRequestDto,
-    @Query() queryDto: QueryDto,
   ): Promise<any> {
     return this.ratehawkHotelService.searchReservationByRegionId(
       searchHotelsDto,
-      queryDto,
     );
   }
 
   @ApiOperation({
     summary: 'Search Reservation By Hotel Ids  For One and More Hotels',
   })
-  @Post('/search/reservation-hotels-pages')
+  @Post('/search/reservation-hotels-by-ids')
   async searchReservationsHotels(
     @Body() searchReservationsHotelsDto: SearchReservationsHotelsRequestDto,
   ): Promise<any> {
@@ -82,15 +87,6 @@ export class HotelController {
     return this.ratehawkHotelService.searchReservationByHotelId(
       searchReservationByHotelDto,
     );
-  }
-
-  @ApiOperation({ summary: 'Search Details Page of Hotel By Hotel Id' })
-  @Post('/search/hotel-details')
-  async hotelDetails(
-    @Body() hotelDetailsDto: HotelDetailsPageRequestDto,
-  ): Promise<any> {
-    const { id, language } = hotelDetailsDto;
-    return this.ratehawkHotelService.hotelDetails(id, language);
   }
 
   @ApiOperation({
@@ -259,17 +255,4 @@ export class HotelController {
       );
     }
   }
-
-  // @Post('all-hotels')
-  // async fetchAllHotels(
-  //   @Body('inventory') inventory: string,
-  //   @Body('language') language: string,
-  // ): Promise<any> {
-  //   try {
-  //     const result = await this.hotelService.allHotels(inventory, language);
-  //     return result;
-  //   } catch (error) {
-  //     throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-  //   }
-  // }
 }

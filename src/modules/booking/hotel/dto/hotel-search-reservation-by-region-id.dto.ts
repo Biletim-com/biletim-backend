@@ -4,10 +4,8 @@ import {
   IsArray,
   IsDate,
   IsEnum,
-  IsIn,
   IsInt,
   IsNotEmpty,
-  IsNumberString,
   IsOptional,
   IsString,
   Length,
@@ -125,19 +123,4 @@ export class searchReservationByRegionIdRequestDto {
   @IsString()
   @IsOptional()
   currency?: string;
-}
-
-export class QueryDto {
-  @IsOptional()
-  @IsNumberString({}, { message: 'minPrice must be a number' })
-  minPrice?: number;
-
-  @IsOptional()
-  @IsNumberString({}, { message: 'maxPrice must be a number' })
-  maxPrice?: number;
-
-  @IsOptional()
-  @IsString()
-  @IsIn(['asc', 'desc'])
-  sortOrder?: 'asc' | 'desc';
 }

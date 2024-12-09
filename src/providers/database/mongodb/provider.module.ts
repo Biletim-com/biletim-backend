@@ -1,20 +1,16 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { MongoProviderService } from './provider.service';
-import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
-import { MongoConfigService } from '@app/configs/database/mongodb';
+import { MongoDBProviderService } from './provider.service';
+import { ModelDefinition, MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({
-      useClass: MongoProviderService,
-      inject: [MongoConfigService],
+    MongooseModule.forRootAsync({
+      useClass: MongoDBProviderService,
     }),
   ],
-  providers: [MongoConfigService, MongoProviderService],
 })
 export class MongoProviderModule {
-  static forFeature(entities: EntityClassOrSchema[]) {
-    return TypeOrmModule.forFeature(entities);
+  static forFeature(models: ModelDefinition[]) {
+    return MongooseModule.forFeature(models);
   }
 }

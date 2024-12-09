@@ -18,14 +18,14 @@ import { DateISODate } from '@app/common/types';
 export class SearchReservationsHotelsRequestDto {
   @ApiProperty({
     description: 'Check-in date (Required)',
-    example: '2024-07-14',
+    example: '2024-12-24',
   })
   @IsNotEmpty()
   checkin: DateISODate;
 
   @ApiProperty({
     description: 'Check-out date (Required)',
-    example: '2024-07-16',
+    example: '2024-12-27',
   })
   @IsNotEmpty()
   checkout: DateISODate;
