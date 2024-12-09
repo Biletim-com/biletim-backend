@@ -3,7 +3,7 @@ export default {
   APPLICATION: 'application',
   AUTH: 'auth',
   SUPER_ADMIN: 'super_admin',
-  BILET_ALL_API: 'bilet_all_api',
+  TICKET: 'ticket',
   HOTEL_API: 'hotel_api',
   QUEUE: 'queue',
   NETGSM: 'netgsm',

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 
 // service
-import { BiletAllRequestService } from '../services/biletall-request.service';
 import { BiletAllParserService } from '../services/biletall-response-parser.service';
 
 import { BiletAllPnrService } from './services/biletall-pnr.service';
@@ -14,7 +13,6 @@ import { BiletAllTravelCountryCodeParserService } from './parsers/biletall-trave
 
 @Module({
   providers: [
-    BiletAllRequestService,
     BiletAllParserService,
     BiletAllPnrService,
     BiletAllOfficialHolidaysService,

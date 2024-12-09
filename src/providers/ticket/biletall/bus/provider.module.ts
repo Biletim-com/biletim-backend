@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 
 // service
-import { BiletAllRequestService } from '../services/biletall-request.service';
 import { BiletAllParserService } from '../services/biletall-response-parser.service';
 import { BiletAllBusSearchService } from './services/biletall-bus-search.service';
 import { BiletAllBusTicketPurchaseService } from './services/biletall-bus-ticket-purchase.service';
@@ -12,7 +11,6 @@ import { BiletAllBusTicketReturnParserService } from './parsers/biletall-bus-tic
 
 @Module({
   providers: [
-    BiletAllRequestService,
     BiletAllParserService,
     BiletAllBusSearchService,
     BiletAllBusTicketPurchaseService,

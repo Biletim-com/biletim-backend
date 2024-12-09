@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 // services
 import { AppConfigService } from '@app/configs/app';
-import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
+import { PaymentConfigService } from '@app/configs/payment';
 import { BiletAllEncryptorService } from './services/biletall-encryptor.service';
 import { HtmlTemplateService } from '../../html-template/provider.service';
 import { BiletAllBusTicketPurchaseService } from '../../ticket/biletall/bus/services/biletall-bus-ticket-purchase.service';
@@ -24,14 +24,14 @@ export class BiletAllPaymentStrategy implements IPayment {
   private readonly biletAllEncryptorService = BiletAllEncryptorService;
 
   constructor(
-    private readonly biletAllApiConfigService: BiletAllApiConfigService,
+    private readonly paymentConfigService: PaymentConfigService,
     private readonly applicationConfigService: AppConfigService,
     private readonly htmlTemplateService: HtmlTemplateService,
     private readonly biletAllBusTicketPurchaseService: BiletAllBusTicketPurchaseService,
   ) {}
 
   private get authCredentials() {
-    return `<Kullanici><Adi>${this.biletAllApiConfigService.biletAllApiUsername}</Adi><Sifre>${this.biletAllApiConfigService.biletAllApiPassword}</Sifre></Kullanici>`;
+    return `<Kullanici><Adi>${this.paymentConfigService.biletAll3DSUsername}</Adi><Sifre>${this.paymentConfigService.biletAll3DSPassword}</Sifre></Kullanici>`;
   }
 
   async startPayment(
@@ -50,7 +50,7 @@ export class BiletAllPaymentStrategy implements IPayment {
     );
 
     const templateData = {
-      formAction: this.biletAllApiConfigService.biletAll3DSBaseUrl,
+      formAction: this.paymentConfigService.biletAll3DSBaseUrl,
       fields: [
         {
           name: 'satisXML',

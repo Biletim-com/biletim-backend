@@ -53,8 +53,8 @@ export class VakifBankEnrollmentService {
     MerchantPassword: string;
   } {
     return {
-      MerchantId: this.paymentConfigService.merchantId,
-      MerchantPassword: this.paymentConfigService.merchantPassword,
+      MerchantId: this.paymentConfigService.vakifBankMerchantId,
+      MerchantPassword: this.paymentConfigService.vakifBankMerchantPassword,
     };
   }
 

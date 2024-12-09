@@ -3,6 +3,7 @@ import * as xml2js from 'xml2js';
 import * as dayjs from 'dayjs';
 
 // services
+import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 import { BiletAllBusSearchParserService } from '../parsers/biletall-bus-search.parser.service';
 
@@ -39,10 +40,17 @@ import { BiletAllGender } from '../../helpers/biletall-gender.helper';
 
 @Injectable()
 export class BiletAllBusSearchService {
+  private readonly biletAllRequestService: BiletAllRequestService;
   constructor(
-    private readonly biletAllRequestService: BiletAllRequestService,
+    ticketConfigService: TicketConfigService,
     private readonly biletAllBusSearchParserService: BiletAllBusSearchParserService,
-  ) {}
+  ) {
+    this.biletAllRequestService = new BiletAllRequestService(
+      ticketConfigService.biletAllBaseUrl,
+      ticketConfigService.biletAllUsername,
+      ticketConfigService.biletAllPassword,
+    );
+  }
 
   async searchTripSchedules(
     clientIp: string,

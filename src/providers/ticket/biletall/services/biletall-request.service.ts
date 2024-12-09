@@ -1,16 +1,11 @@
-import { Injectable } from '@nestjs/common';
-
-import * as fs from 'fs';
-
 import * as xml2js from 'xml2js';
 import axios from 'axios';
 
-import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
-
-@Injectable()
 export class BiletAllRequestService {
   constructor(
-    private readonly biletAllApiConfigService: BiletAllApiConfigService,
+    private readonly baseUrl: string,
+    private readonly username: string,
+    private readonly password: string,
   ) {}
 
   public async run<T>(bodyXml: string): Promise<T> {
@@ -24,8 +19,8 @@ export class BiletAllRequestService {
               </tns:xmlIslem>
               <tns:xmlYetki>
                 <Kullanici>
-                  <Adi>${this.biletAllApiConfigService.biletAllApiUsername}</Adi>
-                  <Sifre>${this.biletAllApiConfigService.biletAllApiPassword}</Sifre>
+                  <Adi>${this.username}</Adi>
+                  <Sifre>${this.password}</Sifre>
                 </Kullanici>
               </tns:xmlYetki>
             </tns:XmlIslet>
@@ -40,7 +35,7 @@ export class BiletAllRequestService {
 
     try {
       const response = await axios.post(
-        this.biletAllApiConfigService.biletAllApiBaseUrl,
+        this.baseUrl,
         soapEnvelope.trim(),
         config,
       );
