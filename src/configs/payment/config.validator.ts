@@ -24,4 +24,16 @@ export class PaymentEnvVarsValidation {
   @IsNotEmpty()
   @IsString()
   BILETALL_3DS_BASE_URI: string;
+
+  @IsNotEmpty()
+  @IsString()
+  GARANTI_VPOS_BASE_URI: string;
+
+  @IsNotEmpty()
+  @IsString()
+  GARANTI_SWITCH_ID: string;
+
+  @IsNotEmpty()
+  @IsString()
+  GARANTI_SWITCH_PASSWORD: string;
 }

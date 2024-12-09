@@ -10,4 +10,8 @@ export type TPaymentConfiguration = {
   biletAll3DSBaseUrl: string;
   biletAll3DSUsername: string;
   biletAll3DSPassword: string;
+
+  garantiVPosBaseUrl: string;
+  garantiSwitchId: string;
+  garantiSwitchPassword: string;
 };

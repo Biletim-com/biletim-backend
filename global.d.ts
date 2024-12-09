@@ -44,6 +44,10 @@ declare namespace NodeJS {
     VAKIF_BANK_MERCHANT_PASSWORD: string;
     VAKIF_BANK_TERMINAL_NO: string;
 
+    GARANTI_VPOS_BASE_URI: string;
+    GARANTI_SWITCH_ID: string;
+    GARANTI_SWITCH_PASSWORD: string;
+
     BILETALL_3DS_BASE_URI: string;
 
     // notification

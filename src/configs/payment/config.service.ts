@@ -58,4 +58,22 @@ export class PaymentConfigService {
       this.configurationNamespace,
     ).biletAll3DSPassword;
   }
+
+  get garantiVPosBaseUrl(): string {
+    return this.configService.getOrThrow<TPaymentConfiguration>(
+      this.configurationNamespace,
+    ).garantiVPosBaseUrl;
+  }
+
+  get garantiSwitchId(): string {
+    return this.configService.getOrThrow<TPaymentConfiguration>(
+      this.configurationNamespace,
+    ).garantiSwitchId;
+  }
+
+  get garantiSwitchPassword(): string {
+    return this.configService.getOrThrow<TPaymentConfiguration>(
+      this.configurationNamespace,
+    ).garantiSwitchPassword;
+  }
 }
