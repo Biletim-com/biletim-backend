@@ -1,13 +1,11 @@
-import { Min, Max, IsNumber, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class MongoEnvVarsValidation {
   @IsString()
   MONGO_HOST: string;
 
-  @IsNumber()
-  @Min(0)
-  @Max(65535)
-  MONGO_PORT: number;
+  @IsString()
+  MONGO_PORT: string;
 
   @IsString()
   MONGO_DB: string;

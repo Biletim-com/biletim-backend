@@ -9,7 +9,7 @@ export default registerAs(
   ConfigurationNamespaces.DATABASE.MONGO,
   (): TMongoConfiguration => ({
     host: process.env.MONGO_HOST || 'localhost',
-    port: parseInt(process.env.MONGO_PORT || '27017', 10),
+    port: process.env.MONGO_PORT || '27017',
     name:
       process.env.NODE_ENV === AppEnvironment.TEST
         ? 'test'

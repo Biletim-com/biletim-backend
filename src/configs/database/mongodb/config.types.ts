@@ -1,6 +1,6 @@
 export type TMongoConfiguration = {
   host: string;
-  port: number;
+  port: string;
   name: string;
   user: string;
   password: string;
