@@ -22,7 +22,7 @@ import { normalizeDecimal } from '@app/common/utils';
 import { DateISODate, DateTime } from '@app/common/types';
 
 // dtos
-import { BankCardDto } from '@app/common/dtos/credit-card.dto';
+import { BankCardDto } from '@app/common/dtos/bank-card.dto';
 import { PassengerInfoDto } from '@app/common/dtos';
 
 // dtos

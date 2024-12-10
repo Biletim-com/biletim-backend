@@ -86,7 +86,7 @@ export class VakifBankCardService {
   async createCustomerCard(
     userId: string,
     bankCard: CreateBankCardDto,
-  ): Promise<CreateCustomerPanResponse> {
+  ): Promise<string> {
     const params = {
       CreateCustomerPanRequest: {
         ...this.authCredentials,
@@ -96,7 +96,12 @@ export class VakifBankCardService {
         CardHolderName: bankCard.holderName,
       },
     };
-    return this.sendRequest('/UIService/CreateCustomerPan.aspx', params);
+    const createCustomerCardResponse =
+      await this.sendRequest<CreateCustomerPanResponse>(
+        '/UIService/CreateCustomerPan.aspx',
+        params,
+      );
+    return createCustomerCardResponse.CreateCustomerPanResponse.PanCode;
   }
 
   updateCustomerCard(
@@ -126,10 +131,7 @@ export class VakifBankCardService {
     return this.sendRequest('/UIService/EditCustomerPan.aspx', params);
   }
 
-  deleteCustomerCard(
-    userId: string,
-    panToken: string,
-  ): Promise<DeleteCustomerPanResponse> {
+  async deleteCustomerCard(userId: string, panToken: string): Promise<void> {
     const params = {
       DeleteCustomerPanRequest: {
         ...this.authCredentials,
@@ -137,6 +139,9 @@ export class VakifBankCardService {
         PanCode: panToken,
       },
     };
-    return this.sendRequest('/UIService/DeleteCustomerPan.aspx', params);
+    await this.sendRequest<DeleteCustomerPanResponse>(
+      '/UIService/DeleteCustomerPan.aspx',
+      params,
+    );
   }
 }

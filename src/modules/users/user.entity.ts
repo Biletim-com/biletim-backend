@@ -1,4 +1,4 @@
-import { Entity, Column, OneToOne, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
@@ -38,7 +38,7 @@ export class User extends AbstractEntity<User> {
   @Column({ default: false })
   isUsed: boolean;
 
-  @OneToOne(() => Verification, (verification) => verification.user, {
+  @OneToMany(() => Verification, (verification) => verification.user, {
     cascade: ['insert', 'update'],
   })
   verification: Verification;

@@ -6,9 +6,14 @@ import { BiletAllPaymentProviderModule } from './biletall/provider.module';
 
 // services
 import { PaymentProviderFactory } from './payment-provider.factory';
+import { GarantiPaymentProviderModule } from './garanti/provider.module';
 
 @Module({
-  imports: [VakifBankPaymentProviderModule, BiletAllPaymentProviderModule],
+  imports: [
+    VakifBankPaymentProviderModule,
+    GarantiPaymentProviderModule,
+    BiletAllPaymentProviderModule,
+  ],
   providers: [PaymentProviderFactory],
   exports: [PaymentProviderFactory],
 })

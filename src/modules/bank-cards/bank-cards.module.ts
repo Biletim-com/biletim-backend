@@ -8,11 +8,15 @@ import { BankCardsService } from './services/bank-cards.service';
 import { BankCardValidationService } from './services/bank-card-validation.service';
 import { BankCardController } from './bank-cards.controller';
 import { UsersRepository } from '../users/users.repository';
+
+// providers
 import { VakifBankPaymentProviderModule } from '@app/providers/payment/vakif-bank/provider.module';
+import { GarantiPaymentProviderModule } from '@app/providers/payment/garanti/provider.module';
 
 @Module({
   imports: [
     VakifBankPaymentProviderModule,
+    GarantiPaymentProviderModule,
     PostgreSQLProviderModule.forFeature([BankCard]),
   ],
   providers: [

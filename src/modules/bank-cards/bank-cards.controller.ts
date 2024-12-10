@@ -12,7 +12,6 @@ import {
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { User } from '../users/user.entity';
-import { BankCard } from './bank-card.entity';
 import { BankCardsService } from './services/bank-cards.service';
 
 // decorators
@@ -21,6 +20,7 @@ import { CurrentUser } from '@app/common/decorators';
 
 // dtos
 import { CreateBankCardDto } from './dto/create-bank-card-request.dto';
+import { BankCardResponseDto } from './dto/bank-card-response.dto';
 
 // types
 import { UUID } from '@app/common/types';
@@ -34,18 +34,25 @@ export class BankCardController {
   @ApiOperation({ summary: "List user's cards" })
   @UseGuards(JwtAuthGuard)
   @Get()
-  listBankCards(@CurrentUser() currentUser: User) {
-    return this.bankCardsService.listBankCards(currentUser);
+  async listBankCards(
+    @CurrentUser() currentUser: User,
+  ): Promise<BankCardResponseDto[]> {
+    const bankCards = await this.bankCardsService.listBankCards(currentUser);
+    return bankCards.map((bankCard) => new BankCardResponseDto(bankCard));
   }
 
   @ApiOperation({ summary: 'Create user bank card' })
   @UseGuards(JwtAuthGuard)
   @Post()
-  createBankCard(
+  async createBankCard(
     @CurrentUser() currentUser: User,
     @Body() bankCard: CreateBankCardDto,
-  ): Promise<BankCard> {
-    return this.bankCardsService.createBankCard(currentUser, bankCard);
+  ): Promise<BankCardResponseDto> {
+    const createdBankCard = await this.bankCardsService.createBankCard(
+      currentUser,
+      bankCard,
+    );
+    return new BankCardResponseDto(createdBankCard);
   }
 
   @ApiOperation({ summary: 'Delete user bank card' })

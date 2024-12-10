@@ -5,7 +5,7 @@ import {
   registerDecorator,
 } from 'class-validator';
 
-import { isValidTCNumber } from '../utils';
+import { isValidTCNumber } from '../validators';
 
 @ValidatorConstraint({ async: false })
 class IsTCNumberConstraint implements ValidatorConstraintInterface {

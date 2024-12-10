@@ -15,7 +15,7 @@ export const isValidPlanePassengerType = (
 
   if (!ageRestrictions[passengerType]) {
     throw new ServiceError(
-      `Company with the number ${ageRestrictions.companyName} does not sell tickets to ${passengerType}`,
+      `${ageRestrictions.companyName} does not sell tickets to ${passengerType}`,
     );
   }
 

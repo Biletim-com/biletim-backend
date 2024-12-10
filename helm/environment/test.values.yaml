@@ -93,6 +93,10 @@ biletim_api:
 
     BILETALL_3DS_BASE_URI: http://94.55.20.137//WSTEST/3DSecure/SecurePay2.aspx
 
+    GARANTI_VPOS_BASE_URI: https://gbtaksimtunel-integration.garanti.com.tr
+    GARANTI_SWITCH_ID: CC82C381E078482AB328943FCCB7100C
+    GARANTI_SWITCH_PASSWORD: '123asdASD@'
+
     # insurance
     TAMAMLIYO_API_BASE_URL: https://api-test.tamamliyo.com
     TAMAMLIYO_TOKEN: b1bd655bcd0b061c32b2e8072f298769

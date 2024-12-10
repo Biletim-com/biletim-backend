@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from 'axios';
 import { Builder, parseStringPromise } from 'xml2js';
 
 // utils
-import { isObject } from '@app/common/utils';
+import { isObject } from '@app/common/validators';
 
 type Methods = 'POST' | 'GET';
 
