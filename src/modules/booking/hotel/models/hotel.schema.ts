@@ -7,7 +7,7 @@ export class HotelDocument extends AbstractDocument {
   address: string;
 
   @Prop({ required: true, type: [Object] })
-  amenity_groups: object[];
+  amenityGroups: object[];
 
   @Prop()
   checkInTime: string;
@@ -83,6 +83,9 @@ export class HotelDocument extends AbstractDocument {
 
   @Prop({ required: false, type: [Object] })
   policyStruct: object[];
+
+  @Prop()
+  postalCode: string;
 
   @Prop({ required: false, type: Object })
   region: Record<string, any>;

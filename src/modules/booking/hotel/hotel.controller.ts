@@ -38,6 +38,7 @@ export class HotelController {
     private readonly hotelService: HotelService,
   ) {}
 
+  @ApiOperation({ summary: 'Find Hotel Or Hotels By Id From Mongodb' })
   @Get('/find/hotels-by-ids')
   async findHotelsByIds(@Query() { ids }: GetHotelsByIdsDto) {
     if (ids.length === 1) {

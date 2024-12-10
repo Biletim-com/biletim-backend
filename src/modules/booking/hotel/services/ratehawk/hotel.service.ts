@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { HotelDocument } from '../../models/hotel.schema';
@@ -61,23 +61,25 @@ export class HotelService {
 
   async findHotelById(id: string): Promise<HotelDocument> {
     let hotel = await this.hotelRepository.findOne({ _id: id });
+
     if (hotel) {
       return hotel;
     }
 
     const hotelData = await this.hotelDetails(id);
+
     if (!hotelData || !hotelData.data) {
       console.error('Hotel data is missing or invalid:', hotelData);
       throw new Error('Hotel data is missing or invalid');
     }
 
-    const formattedHotelData = this.convertKeysToCamelCase(
-      hotelData.data.hotels[0],
-    );
+    const formattedHotelData = this.convertKeysToCamelCase(hotelData.data);
+
     hotel = await this.hotelRepository.create({
       ...formattedHotelData,
       _id: formattedHotelData.id,
     });
+
     return hotel;
   }
 
@@ -101,9 +103,8 @@ export class HotelService {
       (existingHotel) => existingHotel._id,
     );
 
-    const missingHotelIds = existingHotelIds
-      .filter((existingHotelId) => ids.indexOf(existingHotelId) !== -1)
-      // the endpoint has the 30 requests in a minute
+    const missingHotelIds = ids
+      .filter((hotelId) => !existingHotelIds.includes(hotelId))
       .slice(0, 30);
 
     let createdMissingHotels: Partial<HotelDocument>[] = [];
@@ -113,18 +114,22 @@ export class HotelService {
           this.hotelDetails(missingHotelId),
         ),
       );
+
       createdMissingHotels = await this.hotelRepository.createMany(
         newHotelsData.map((newHotelData) => {
-          const formattedHotelData = this.convertKeysToCamelCase(newHotelData);
+          const formattedHotelData = this.convertKeysToCamelCase(
+            newHotelData.data,
+          );
           return {
             ...formattedHotelData,
             _id: formattedHotelData.id,
           };
         }),
-        projection,
       );
     }
 
-    return [...existingHotels, ...createdMissingHotels];
+    const result = [...existingHotels, ...createdMissingHotels];
+    console.log('Returning combined hotels:', result);
+    return result;
   }
 }
