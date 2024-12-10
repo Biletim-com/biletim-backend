@@ -72,6 +72,7 @@ export class PlaneTicketStartPaymentService {
       [PassengerType.ADULT]: 'adultCount',
       [PassengerType.CHILD]: 'childCount',
       [PassengerType.BABY]: 'babyCount',
+      [PassengerType.STUDENT]: 'studentCount',
       [PassengerType.ELDERLY]: 'elderlyCount',
     };
 
