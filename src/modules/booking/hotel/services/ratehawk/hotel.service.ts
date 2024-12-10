@@ -59,52 +59,72 @@ export class HotelService {
     });
   }
 
-  async findHotelsByIds(
-    ids: string[],
-  ): Promise<HotelDocument | Partial<HotelDocument>[]> {
-    try {
-      if (ids.length === 1) {
-        const hotelId = ids[0];
+  async findHotelById(id: string): Promise<HotelDocument> {
+    let hotel = await this.hotelRepository.findOne({ _id: id });
+    if (hotel) {
+      return hotel;
+    }
 
-        let hotel = await this.hotelRepository.findOne({ _id: hotelId });
+    const hotelData = await this.hotelDetails(id);
+    if (!hotelData || !hotelData.data) {
+      console.error('Hotel data is missing or invalid:', hotelData);
+      throw new Error('Hotel data is missing or invalid');
+    }
 
-        if (hotel) {
-          return hotel;
-        }
+    const formattedHotelData = this.convertKeysToCamelCase(
+      hotelData.data.hotels[0],
+    );
+    hotel = await this.hotelRepository.create({
+      ...formattedHotelData,
+      _id: formattedHotelData.id,
+    });
+    return hotel;
+  }
 
-        const hotelData = await this.hotelDetails(hotelId);
+  async findHotelsByIds(ids: string[]): Promise<Partial<HotelDocument>[]> {
+    const projection: Partial<Record<keyof HotelDocument, 0 | 1>> = {
+      address: 1,
+      name: 1,
+      starRating: 1,
+      latitude: 1,
+      longitude: 1,
+      images: 1,
+      descriptionStruct: 1,
+    };
 
-        if (!hotelData || !hotelData.data) {
-          console.error('Hotel data is missing or invalid:', hotelData);
-          throw new Error('Hotel data is missing or invalid');
-        }
+    const existingHotels = await this.hotelRepository.find(
+      { _id: { $in: ids } },
+      projection,
+    );
 
-        const formattedHotelData = this.convertKeysToCamelCase(hotelData.data);
+    const existingHotelIds = existingHotels.map(
+      (existingHotel) => existingHotel._id,
+    );
 
-        hotel = await this.hotelRepository.create({
-          ...formattedHotelData,
-          _id: hotelData.data.id,
-        });
+    const missingHotelIds = existingHotelIds
+      .filter((existingHotelId) => ids.indexOf(existingHotelId) !== -1)
+      // the endpoint has the 30 requests in a minute
+      .slice(0, 30);
 
-        return hotel;
-      }
-
-      const projection = {
-        address: 1,
-        name: 1,
-        starRating: 1,
-        latitude: 1,
-        longitude: 1,
-        images: 1,
-        descriptionStruct: 1,
-      };
-
-      return await this.hotelRepository.find({ _id: { $in: ids } }, projection);
-    } catch (error: any) {
-      throw new HttpException(
-        `find hotels by ids  error ->  ${error.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+    let createdMissingHotels: Partial<HotelDocument>[] = [];
+    if (missingHotelIds.length > 0) {
+      const newHotelsData = await Promise.all(
+        missingHotelIds.map((missingHotelId) =>
+          this.hotelDetails(missingHotelId),
+        ),
+      );
+      createdMissingHotels = await this.hotelRepository.createMany(
+        newHotelsData.map((newHotelData) => {
+          const formattedHotelData = this.convertKeysToCamelCase(newHotelData);
+          return {
+            ...formattedHotelData,
+            _id: formattedHotelData.id,
+          };
+        }),
+        projection,
       );
     }
+
+    return [...existingHotels, ...createdMissingHotels];
   }
 }

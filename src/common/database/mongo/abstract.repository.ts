@@ -12,9 +12,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   protected abstract readonly logger: Logger;
   constructor(protected readonly model: Model<TDocument>) {}
 
-  async create(
-    document: TDocument & { _id?: string | Types.ObjectId },
-  ): Promise<TDocument> {
+  async create(document: TDocument): Promise<TDocument> {
     const _id = document._id ? document._id : new Types.ObjectId();
     const documentToCreate = new this.model({
       ...document,
@@ -22,9 +20,36 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     });
 
     const createdDocument = await documentToCreate.save();
-
     return createdDocument.toJSON() as TDocument;
   }
+
+  async createMany(
+    documents: TDocument[],
+    projection?: Partial<Record<keyof TDocument, 1 | 0>>,
+  ): Promise<Partial<TDocument>[]> {
+    const documentsToCreate = documents.map((doc) => ({
+      ...doc,
+      _id: doc._id || new Types.ObjectId(),
+    }));
+
+    const createdDocuments = await this.model.insertMany(documentsToCreate, {
+      lean: true,
+    });
+
+    if (projection) {
+      return createdDocuments.map((doc) => {
+        const projectedDoc: Partial<TDocument> = {};
+        for (const key in projection) {
+          if (projection[key]) {
+            projectedDoc[key] = doc[key];
+          }
+        }
+        return projectedDoc;
+      });
+    }
+    return createdDocuments as Partial<TDocument>[];
+  }
+
   async findOne(
     filterQuery: FilterQuery<TDocument>,
   ): Promise<TDocument | null> {

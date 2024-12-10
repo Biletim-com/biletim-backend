@@ -39,9 +39,11 @@ export class HotelController {
   ) {}
 
   @Get('/find/hotels-by-ids')
-  async findHotelsByIds(@Query() query: GetHotelsByIdsDto) {
-    const hotels = await this.hotelService.findHotelsByIds(query.ids);
-    return hotels;
+  async findHotelsByIds(@Query() { ids }: GetHotelsByIdsDto) {
+    if (ids.length === 1) {
+      return this.hotelService.findHotelById(ids[0]);
+    }
+    return this.hotelService.findHotelsByIds(ids);
   }
 
   @ApiOperation({ summary: 'Search Autocomplete' })
