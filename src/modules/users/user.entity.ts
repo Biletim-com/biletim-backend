@@ -47,5 +47,5 @@ export class User extends AbstractEntity<User> {
   passengers: Passenger[];
 
   @OneToMany(() => BankCard, (bankCard) => bankCard.user)
-  bankCards: BankCard;
+  bankCards: BankCard[];
 }
