@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { FindOptionsRelations, ILike } from 'typeorm';
+import { FindOptionsRelations, FindOptionsWhere, ILike } from 'typeorm';
 
 //services
 import { PasswordService } from '@app/auth/services/password.service';
@@ -20,7 +20,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 //entities&repositories
 import { UsersRepository } from './users.repository';
 import { User } from './user.entity';
-import { Passenger } from '../passengers/passenger.entity';
 import { RegisterUserRequest } from '@app/auth/dto/register-user-request.dto';
 import { Verification } from '../verification/verification.entity';
 
@@ -32,33 +31,25 @@ export class UsersService {
   ) {}
 
   async getUsers(fullName?: string, offset = 0, limit = 10): Promise<User[]> {
-    try {
-      const nameParts = fullName ? fullName.trim().split(' ') : [];
-      const firstName = nameParts.length > 0 ? nameParts[0] : '';
-      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+    const nameParts = fullName ? fullName.trim().split(' ') : [];
+    const firstName = nameParts.length > 0 ? nameParts[0] : '';
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
 
-      const whereCondition: any = {};
+    const whereCondition: FindOptionsWhere<User> = {};
 
-      if (firstName) {
-        whereCondition.name = ILike(`%${firstName}%`);
-      }
-
-      if (lastName) {
-        whereCondition.familyName = ILike(`%${lastName}%`);
-      }
-
-      const totalUsers = await this.usersRepository.find({
-        skip: offset,
-        take: limit,
-        where: whereCondition,
-      });
-      return totalUsers;
-    } catch (err: any) {
-      throw new HttpException(
-        `user get error -> ${err?.message}`,
-        HttpStatus.BAD_REQUEST,
-      );
+    if (firstName) {
+      whereCondition.name = ILike(`%${firstName}%`);
     }
+
+    if (lastName) {
+      whereCondition.familyName = ILike(`%${lastName}%`);
+    }
+
+    return this.usersRepository.find({
+      skip: offset,
+      take: limit,
+      where: whereCondition,
+    });
   }
 
   async findOne(id: UUID): Promise<User> {
@@ -161,27 +152,18 @@ export class UsersService {
     );
   }
 
-  async delete(userId: UUID) {
-    try {
-      // new func
-      const user = await this.usersRepository.findOneBy({
-        id: userId,
-      });
-      if (!user) {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-      }
-      // new func
-
-      await this.usersRepository.delete({
-        id: userId,
-      });
-      return { message: 'user deleted', statusCode: 200 };
-    } catch (err: any) {
-      throw new HttpException(
-        `user delete error -> ${err?.message}`,
-        HttpStatus.BAD_REQUEST,
-      );
+  async delete(userId: UUID): Promise<boolean> {
+    const user = await this.usersRepository.findOneBy({
+      id: userId,
+    });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
+
+    const deleteResult = await this.usersRepository.delete({
+      id: userId,
+    });
+    return !!deleteResult.affected;
   }
 
   async findByEmail(email: string): Promise<User> {

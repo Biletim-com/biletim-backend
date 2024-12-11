@@ -37,7 +37,7 @@ export class UsersController {
   ) {}
 
   @ApiOperation({ summary: 'Find All App Users' })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Get()
   async getUsers(
@@ -52,7 +52,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Find One App User' })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(200)
   @Get('/:id')
   async findOne(@Param('id') id: UUID): Promise<UserWithoutPasswordDto> {
@@ -63,7 +63,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Create App User' })
   @UseGuards(PanelUserJwtAuthGuard)
   @HttpCode(201)
-  @Post('/create')
+  @Post()
   async create(
     @Body() createUserDto: CreateUserDto,
   ): Promise<UserWithoutPasswordDto> {
@@ -88,7 +88,7 @@ export class UsersController {
         );
       }
     }
-    return await this.usersService.updateUser(id, createUserDto);
+    return this.usersService.updateUser(id, createUserDto);
   }
 
   @ApiOperation({ summary: 'Delete App User' })
@@ -96,6 +96,7 @@ export class UsersController {
   @HttpCode(200)
   @Delete('/:id')
   async delete(@Param('id') id: UUID) {
-    return this.usersService.delete(id);
+    await this.usersService.delete(id);
+    return { message: 'user deleted' };
   }
 }
