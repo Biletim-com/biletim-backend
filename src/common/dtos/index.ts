@@ -1,4 +1,4 @@
-export * from './credit-card.dto';
+export * from './bank-card.dto';
 export * from './passport.dto';
 export * from './passenger-info.dto';
 export * from './flight-segment.dto';

@@ -1,7 +1,6 @@
 import { DateISODate } from '@app/common/types';
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsCreditCard,
   IsInt,
   IsNotEmpty,
   IsNumberString,
@@ -10,13 +9,20 @@ import {
   Max,
   Min,
 } from 'class-validator';
+
+// enums
 import { BankCardType } from '../enums';
-import { identifyCardType } from '../utils';
+
+// utils
+import { identifyBankCardType } from '../utils';
+
+// decorators
+import { IsBankCardNumber } from '../decorators';
 
 export class BankCardDto {
   @ApiProperty({ required: true, minLength: 16, maxLength: 16 })
   @IsNotEmpty()
-  @IsCreditCard()
+  @IsBankCardNumber()
   pan: string;
 
   @ApiProperty({ required: true })
@@ -35,7 +41,7 @@ export class BankCardDto {
   @IsInt()
   @Min(1, { message: 'Expiry month must be between 1 and 12.' })
   @Max(12, { message: 'Expiry month must be between 1 and 12.' })
-  private readonly expiryMonth: number;
+  expiryMonth: number;
 
   @ApiProperty({ required: true, minLength: 4, maxLength: 4 })
   @IsNotEmpty()
@@ -46,7 +52,7 @@ export class BankCardDto {
   @Max(new Date().getFullYear() + 20, {
     message: 'Expiry year is too far in the future.',
   })
-  private readonly expiryYear: number;
+  expiryYear: number;
 
   get expiryDate(): DateISODate {
     const lastDate = new Date(this.expiryYear, this.expiryMonth, 0);
@@ -63,6 +69,6 @@ export class BankCardDto {
   }
 
   get cardType(): BankCardType {
-    return identifyCardType(this.pan);
+    return identifyBankCardType(this.pan);
   }
 }

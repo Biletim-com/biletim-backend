@@ -23,9 +23,6 @@ export class BankCard extends AbstractEntity<BankCard> {
   @Column()
   garantiPanToken: string;
 
-  @Column()
-  ratehawkPanToken: string;
-
   @Column('date')
   expiryDate: DateISODate;
 

@@ -6,7 +6,7 @@ import {
   ValidationArguments,
 } from 'class-validator';
 
-import { isValidPlanePassengerType } from '../utils';
+import { isValidPlanePassengerType } from '../validators';
 import { PassengerType } from '../enums';
 
 @ValidatorConstraint({ async: false })

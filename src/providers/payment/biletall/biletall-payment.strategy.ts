@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 // services
 import { AppConfigService } from '@app/configs/app';
 import { PaymentConfigService } from '@app/configs/payment';
-import { BiletAllEncryptorService } from './services/biletall-encryptor.service';
+import { BiletAllEncryptorService } from './helpers/biletall-encryptor.service';
 import { HtmlTemplateService } from '../../html-template/provider.service';
 import { BiletAllBusTicketPurchaseService } from '../../ticket/biletall/bus/services/biletall-bus-ticket-purchase.service';
 
