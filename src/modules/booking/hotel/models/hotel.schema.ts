@@ -15,9 +15,6 @@ export class HotelDocument extends AbstractDocument {
   @Prop()
   checkOutTime: string;
 
-  @Prop()
-  deleted: boolean;
-
   @Prop({ required: true, type: Object })
   descriptionStruct: Record<string, any>;
 

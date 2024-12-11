@@ -18,6 +18,11 @@ import { OrderTotalInformationRequestDto } from '../../dto/hotel-order-total-inf
 import { HotelOrderCancelRequestDto } from '../../dto/hotel-order-cancel.dto';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { HotelHelperService } from '../hotel-helper.service';
+import {
+  HotelAutocompleteSearchResponse,
+  HotelAutocompleteSearchSnakeCaseResponse,
+} from '../../types/hotel-autocomplate-search.type';
+import { HotelErrorsResponse } from '../../types/hotel-errors.type';
 
 @Injectable()
 export class RatehawkHotelService {
@@ -31,13 +36,19 @@ export class RatehawkHotelService {
     );
   }
 
-  async search(query: string, language?: string): Promise<any> {
-    const response = await this.restClientService.request<any>({
+  async search(
+    query: string,
+    language?: string,
+  ): Promise<HotelAutocompleteSearchResponse | HotelErrorsResponse> {
+    const response = await this.restClientService.request<
+      HotelAutocompleteSearchSnakeCaseResponse | HotelErrorsResponse
+    >({
       path: '/search/multicomplete/',
       method: 'POST',
       data: { query, language },
       headers: this.hotelHelperService.getBasicAuthHeader(),
     });
+
     return this.hotelHelperService.convertKeysToCamelCase(response.data);
   }
 
@@ -47,91 +58,64 @@ export class RatehawkHotelService {
     const [checkin] = searchDto.checkin.toISOString().split('T');
     const [checkout] = searchDto.checkout.toISOString().split('T');
 
-    try {
-      const response = await this.restClientService.request<any>({
-        path: '/search/serp/region/',
-        method: 'POST',
-        data: { ...searchDto, checkin, checkout },
-        headers: this.hotelHelperService.getBasicAuthHeader(),
-      });
+    const response = await this.restClientService.request<any>({
+      path: '/search/serp/region/',
+      method: 'POST',
+      data: { ...searchDto, checkin, checkout },
+      headers: this.hotelHelperService.getBasicAuthHeader(),
+    });
 
-      return this.hotelHelperService.convertKeysToCamelCase(response.data);
-    } catch (error: any) {
-      throw new HttpException(
-        `search reservation by region id error -> ${error?.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return this.hotelHelperService.convertKeysToCamelCase(response.data);
   }
 
   async searchReservationsHotels(
     requestDto: SearchReservationsHotelsRequestDto,
   ): Promise<any> {
-    try {
-      const response = await this.restClientService.request<any>({
-        path: '/search/serp/hotels/',
-        method: 'POST',
-        data: { ...requestDto },
-        headers: this.hotelHelperService.getBasicAuthHeader(),
-      });
-      if (response.data.data?.hotels?.length === 0) {
-        throw new HttpException(
-          'There are no rooms available in this date range',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      return this.hotelHelperService.convertKeysToCamelCase(response.data);
-    } catch (error: any) {
+    const response = await this.restClientService.request<any>({
+      path: '/search/serp/hotels/',
+      method: 'POST',
+      data: { ...requestDto },
+      headers: this.hotelHelperService.getBasicAuthHeader(),
+    });
+
+    if (response.data.data?.hotels?.length === 0) {
       throw new HttpException(
-        `search reservations by hotel ids error -> ${error.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        'There are no rooms available in this date range',
+        HttpStatus.NOT_FOUND,
       );
     }
+    return this.hotelHelperService.convertKeysToCamelCase(response.data);
   }
 
   async searchReservationByHotelId(
     requestDto: SearchReservationByHotelRequestDto,
   ): Promise<any> {
-    try {
-      const response = await this.restClientService.request<any>({
-        path: '/search/hp/',
-        method: 'POST',
-        data: { ...requestDto },
-        headers: this.hotelHelperService.getBasicAuthHeader(),
-      });
+    const response = await this.restClientService.request<any>({
+      path: '/search/hp/',
+      method: 'POST',
+      data: { ...requestDto },
+      headers: this.hotelHelperService.getBasicAuthHeader(),
+    });
 
-      if (response.data.hotels.length === 0) {
-        throw new HttpException(
-          'There are no rooms available in this date range',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return this.hotelHelperService.convertKeysToCamelCase(response.data);
-    } catch (error: any) {
+    if (response.data.hotels.length === 0) {
       throw new HttpException(
-        `search reservation by hotel id error -> ${error?.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        'There are no rooms available in this date range',
+        HttpStatus.NOT_FOUND,
       );
     }
+
+    return this.hotelHelperService.convertKeysToCamelCase(response.data);
   }
 
   async prebook(requestDto: PrebookRequestDto): Promise<any> {
-    try {
-      const response = await this.restClientService.request<any>({
-        path: '/hotel/prebook/',
-        method: 'POST',
-        data: { ...requestDto },
-        headers: this.hotelHelperService.getBasicAuthHeader(),
-      });
+    const response = await this.restClientService.request<any>({
+      path: '/hotel/prebook/',
+      method: 'POST',
+      data: { ...requestDto },
+      headers: this.hotelHelperService.getBasicAuthHeader(),
+    });
 
-      return this.hotelHelperService.convertKeysToCamelCase(response.data);
-    } catch (error: any) {
-      throw new HttpException(
-        `prebook error -> ${error?.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return this.hotelHelperService.convertKeysToCamelCase(response.data);
   }
 
   async orderBookingForm(

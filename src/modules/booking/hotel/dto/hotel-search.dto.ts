@@ -34,25 +34,3 @@ export class HotelSearchQueryDto {
   @IsEnum(languages)
   language?: string;
 }
-
-export class Hotel {
-  id: string;
-  name: string;
-  regionId: number;
-}
-
-export class HotelRegion {
-  id: number;
-  name: string;
-  type: string;
-  countryCode: string;
-}
-
-export class HotelSearchResponseDto {
-  constructor(
-    public result: Array<{
-      hotels: Hotel[];
-      regions: HotelRegion[];
-    }>,
-  ) {}
-}

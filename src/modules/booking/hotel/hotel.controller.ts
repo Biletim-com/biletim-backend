@@ -12,10 +12,7 @@ import {
 } from '@nestjs/common';
 import { RatehawkHotelService } from './services/ratehawk/hotel-ratehawk.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  HotelSearchQueryDto,
-  HotelSearchResponseDto,
-} from './dto/hotel-search.dto';
+import { HotelSearchQueryDto } from './dto/hotel-search.dto';
 import { searchReservationByRegionIdRequestDto } from './dto/hotel-search-reservation-by-region-id.dto';
 import { SearchReservationsHotelsRequestDto } from './dto/hotel-search-reservations-hotels.dto';
 import { SearchReservationByHotelRequestDto } from './dto/hotel-search-reservation-hotel.dto';
@@ -29,6 +26,9 @@ import { OrderTotalInformationRequestDto } from './dto/hotel-order-total-informa
 import { HotelOrderCancelRequestDto } from './dto/hotel-order-cancel.dto';
 import { GetHotelsByIdsDto } from './dto/hotel-get-by-ids-from-db.dto';
 import { HotelService } from './services/hotel.service';
+import { HotelDocument } from './models/hotel.schema';
+import { HotelAutocompleteSearchResponse } from './types/hotel-autocomplate-search.type';
+import { HotelErrorsResponse } from './types/hotel-errors.type';
 
 @ApiTags('Hotel')
 @Controller('hotel')
@@ -40,7 +40,9 @@ export class HotelController {
 
   @ApiOperation({ summary: 'Find Hotel Or Hotels By Id From Mongodb' })
   @Get('/find/hotels-by-ids')
-  async findHotelsByIds(@Query() { ids }: GetHotelsByIdsDto) {
+  async findHotelsByIds(
+    @Query() { ids }: GetHotelsByIdsDto,
+  ): Promise<Partial<HotelDocument>[] | HotelDocument> {
     if (ids.length === 1) {
       return this.hotelService.findHotelById(ids[0]);
     }
@@ -51,10 +53,9 @@ export class HotelController {
   @Get('/search')
   async search(
     @Query() autocompleteRequestDto: HotelSearchQueryDto,
-  ): Promise<HotelSearchResponseDto> {
+  ): Promise<HotelAutocompleteSearchResponse | HotelErrorsResponse> {
     const { query, language } = autocompleteRequestDto;
-    const result = await this.ratehawkHotelService.search(query, language);
-    return new HotelSearchResponseDto(result);
+    return this.ratehawkHotelService.search(query, language);
   }
 
   @ApiOperation({ summary: 'Search Reservation By Region Id' })

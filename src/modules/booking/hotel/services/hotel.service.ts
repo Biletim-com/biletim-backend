@@ -6,6 +6,8 @@ import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { HotelApiConfigService } from '@app/configs/hotel-api/config.service';
 import { HotelRepository } from '../hotel.repository';
 import { HotelHelperService } from './hotel-helper.service';
+import { HotelAllDataResponse } from '../types/hotel-all-data.type';
+import { HotelErrorsResponse } from '../types/hotel-errors.type';
 
 @Injectable()
 export class HotelService {
@@ -22,8 +24,12 @@ export class HotelService {
     );
   }
 
-  async hotelDetails(id: string): Promise<any> {
-    return this.restClientService.request<any>({
+  async hotelDetails(
+    id: string,
+  ): Promise<HotelAllDataResponse | HotelErrorsResponse> {
+    return this.restClientService.request<
+      HotelAllDataResponse | HotelErrorsResponse
+    >({
       path: '/hotel/info/',
       method: 'POST',
       data: { id, language: 'en' },
@@ -65,6 +71,14 @@ export class HotelService {
       latitude: 1,
       longitude: 1,
       images: 1,
+      imagesExt: 1,
+      hid: 1,
+      id: 1,
+      isClosed: 1,
+      region: 1,
+      serpFilters: 1,
+      amenityGroups: 1,
+      kind: 1,
       descriptionStruct: 1,
     };
 
