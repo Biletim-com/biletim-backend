@@ -5,9 +5,7 @@ import { User } from '../../users/user.entity';
 import { UsersRepository } from '../../users/users.repository';
 import { BankCard } from '../bank-card.entity';
 import { BankCardsRepository } from '../bank-cards.repository';
-import { VakifBankCardService } from '@app/providers/payment/vakif-bank/services/vakif-bank-card.service';
-import { VakifBankCustomerService } from '@app/providers/payment/vakif-bank/services/vakif-bank-customer.service';
-import { GarantiCardService } from '@app/providers/payment/garanti/services/garanti-card.service';
+import { ProvidersBankCardService } from './provider-bank-card-create.service';
 
 // dtos
 import { CreateBankCardDto } from '../dto/create-bank-card-request.dto';
@@ -26,9 +24,7 @@ export class BankCardsService {
   constructor(
     private readonly bankCardsRepository: BankCardsRepository,
     private readonly usersRepository: UsersRepository,
-    private readonly vakifBankCardService: VakifBankCardService,
-    private readonly vakifBankCustomerService: VakifBankCustomerService,
-    private readonly garantiBankCardService: GarantiCardService,
+    private readonly providersBankCardService: ProvidersBankCardService,
   ) {}
 
   async listBankCards(userOrUserId: User | UUID): Promise<BankCard[]> {
@@ -60,33 +56,14 @@ export class BankCardsService {
       throw new BankCardUniqueConstraintViolationError(['pan']);
     }
 
-    // create user first on VPOS
-    const customerId = this.vakifBankCustomerService.generateVPosCustomerId(
-      existingUser.id,
-    );
-    if (existingUserCards.length === 0) {
-      await this.vakifBankCustomerService.createCustomer({
-        ...existingUser,
-        id: customerId as UUID,
-      });
-    }
-
     // create credit card tokens
-    const vakifBankCardTokenPromise =
-      await this.vakifBankCardService.createCustomerCard(
-        customerId,
-        createBankCardDto,
-      );
-    const garantiCardTokenPromise =
-      await this.garantiBankCardService.createCustomerCard(
-        existingUser.id,
-        createBankCardDto,
-      );
 
-    const [vakifBankCardToken, garantiCardToken] = await Promise.all([
-      vakifBankCardTokenPromise,
-      garantiCardTokenPromise,
-    ]);
+    const [vakifBankCardToken, garantiCardToken] =
+      await this.providersBankCardService.createCustomerCards(
+        createBankCardDto,
+        existingUser,
+        existingUserCards.length !== 0,
+      );
 
     // create card on DB
     const bankCardToCreate = new BankCard({
@@ -95,8 +72,6 @@ export class BankCardsService {
       expiryDate: createBankCardDto.expiryDate,
       vakifPanToken: vakifBankCardToken,
       garantiPanToken: garantiCardToken,
-      // TODO: REPLACE IT WITH RATEHAWK TOKEN
-      ratehawkPanToken: vakifBankCardToken,
       hash: hashSync(createBankCardDto.pan, 12),
       maskedPan: createBankCardDto.maskedPan,
       user: existingUser,
@@ -122,16 +97,11 @@ export class BankCardsService {
       throw new BankCardNotFoundError();
     }
 
-    await Promise.all([
-      await this.vakifBankCardService.deleteCustomerCard(
-        this.vakifBankCustomerService.generateVPosCustomerId(existingUser.id),
-        existingCard.vakifPanToken,
-      ),
-      await this.garantiBankCardService.deleteCustomerCard(
-        existingUser.id,
-        existingCard.garantiPanToken,
-      ),
-    ]);
+    await this.providersBankCardService.deleteCustomerCards(
+      existingUser.id,
+      existingCard.vakifPanToken,
+      existingCard.garantiPanToken,
+    );
     await this.bankCardsRepository.delete(existingCard.id);
   }
 }
