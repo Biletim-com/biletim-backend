@@ -55,7 +55,7 @@ export class AuthService {
     );
 
     if (existingUser) {
-      throw new BadRequestException('User does not exist');
+      throw new BadRequestException('User already exist');
     }
 
     return this.usersService.registerUser(registerUserRequest);
