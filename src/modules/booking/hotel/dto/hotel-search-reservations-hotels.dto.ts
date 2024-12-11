@@ -3,12 +3,9 @@ import {
   ArrayMaxSize,
   IsArray,
   IsEnum,
-  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
-  Length,
-  Max,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -29,15 +26,6 @@ export class SearchReservationsHotelsRequestDto {
   })
   @IsNotEmpty()
   checkout: DateISODate;
-
-  @ApiProperty({
-    description: "Guest's (or multiple guests') citizenship. (Optional)",
-    example: 'us',
-  })
-  @IsOptional()
-  @IsString()
-  @Length(2, 2)
-  residency?: string;
 
   @ApiProperty({
     description: 'Language. (Optional)',
@@ -119,14 +107,4 @@ export class SearchReservationsHotelsRequestDto {
   @IsOptional()
   @IsString()
   currency?: string;
-
-  @ApiProperty({
-    description:
-      'The maximum amount of time (in seconds) within which searched for rates will be returned. (Optional) Max value: 100.',
-    example: 30,
-  })
-  @IsOptional()
-  @IsInt()
-  @Max(100)
-  timeout?: number;
 }

@@ -3,12 +3,9 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
-  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
-  Length,
-  Max,
   ValidateNested,
 } from 'class-validator';
 import { GuestDto } from './hotel-search-reservation-by-region-id.dto';
@@ -17,26 +14,17 @@ import { DateISODate } from '@app/common/types';
 export class SearchReservationByHotelRequestDto {
   @ApiProperty({
     description: 'Check-in date (Required)',
-    example: '2024-07-14',
+    example: '2024-12-14',
   })
   @IsNotEmpty()
   checkin!: DateISODate;
 
   @ApiProperty({
     description: 'Check-out date (Required)',
-    example: '2024-07-16',
+    example: '2024-12-16',
   })
   @IsNotEmpty()
   checkout!: DateISODate;
-
-  @ApiProperty({
-    description: "Guest's (or multiple guests') citizenship. (Optional)",
-    example: 'us',
-  })
-  @IsOptional()
-  @IsString()
-  @Length(2, 2)
-  residency?: string;
 
   @ApiProperty({
     description: 'Language. (Optional)',
@@ -116,14 +104,4 @@ export class SearchReservationByHotelRequestDto {
   @IsOptional()
   @IsString()
   currency?: string;
-
-  @ApiProperty({
-    description:
-      'The maximum amount of time (in seconds) within which searched for rates will be returned. (Optional) Max value: 100.',
-    example: 30,
-  })
-  @IsOptional()
-  @IsInt()
-  @Max(100)
-  timeout?: number;
 }

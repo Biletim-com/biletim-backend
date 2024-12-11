@@ -29,6 +29,10 @@ import { HotelService } from './services/hotel.service';
 import { HotelDocument } from './models/hotel.schema';
 import { HotelAutocompleteSearchResponse } from './types/hotel-autocomplate-search.type';
 import { HotelErrorsResponse } from './types/hotel-errors.type';
+import { HotelSearchReservationByRegionIdResponse } from './types/hotel-search-reservation-by-region-id.type';
+import { HotelsSearchReservationsResponse } from './types/hotel-search-reservations-hotels.type';
+import { HotelPrebookResponse } from './types/hotel-prebook.type';
+import { HotelOrderBookingFormResponse } from './types/hotel-order-booking-form.type';
 
 @ApiTags('Hotel')
 @Controller('hotel')
@@ -55,9 +59,7 @@ export class HotelController {
     @Query() autocompleteRequestDto: HotelSearchQueryDto,
   ): Promise<HotelAutocompleteSearchResponse | HotelErrorsResponse> {
     const { query, language } = autocompleteRequestDto;
-    const response = await this.ratehawkHotelService.search(query, language);
-    console.log(response);
-    return response;
+    return this.ratehawkHotelService.search(query, language);
   }
 
   @ApiOperation({ summary: 'Search Reservation By Region Id' })
@@ -65,7 +67,7 @@ export class HotelController {
   async searchReservationByRegionId(
     @Body()
     searchHotelsDto: searchReservationByRegionIdRequestDto,
-  ): Promise<any> {
+  ): Promise<HotelSearchReservationByRegionIdResponse | HotelErrorsResponse> {
     return this.ratehawkHotelService.searchReservationByRegionId(
       searchHotelsDto,
     );
@@ -77,7 +79,7 @@ export class HotelController {
   @Post('/search/reservation-hotels-by-ids')
   async searchReservationsHotels(
     @Body() searchReservationsHotelsDto: SearchReservationsHotelsRequestDto,
-  ): Promise<any> {
+  ): Promise<HotelsSearchReservationsResponse | HotelErrorsResponse> {
     return this.ratehawkHotelService.searchReservationsHotels(
       searchReservationsHotelsDto,
     );
@@ -99,7 +101,9 @@ export class HotelController {
     summary: 'Availability Query of The Selected Hotel Room (Prebook)',
   })
   @Post('/order/prebook')
-  async prebook(@Body() prebookDto: PrebookRequestDto): Promise<any> {
+  async prebook(
+    @Body() prebookDto: PrebookRequestDto,
+  ): Promise<HotelPrebookResponse | HotelErrorsResponse> {
     return this.ratehawkHotelService.prebook(prebookDto);
   }
 
@@ -112,7 +116,7 @@ export class HotelController {
     @Query('currency_code') currency_code: string,
     @Body() orderBookingFormDto: OrderBookingFormRequestDto,
     @Req() req: any,
-  ): Promise<any> {
+  ): Promise<HotelOrderBookingFormResponse | HotelErrorsResponse> {
     if (currency_code !== currency_code.toUpperCase() || !currency_code) {
       throw new HttpException(
         'currency_code is required and must be uppercase',
