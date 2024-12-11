@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { HotelDocument } from '../../models/hotel.schema';
+import { HotelDocument } from '../models/hotel.schema';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { HotelApiConfigService } from '@app/configs/hotel-api/config.service';
-import { HotelRepository } from '../../hotel.repository';
+import { HotelRepository } from '../hotel.repository';
+import { HotelHelperService } from './hotel-helper.service';
 
 @Injectable()
 export class HotelService {
@@ -12,6 +13,7 @@ export class HotelService {
   constructor(
     @InjectModel(HotelDocument.name)
     private readonly hotelModel: Model<HotelDocument>,
+    private readonly hotelHelperService: HotelHelperService,
     private readonly hotelApiConfigService: HotelApiConfigService,
     private readonly hotelRepository: HotelRepository,
   ) {
@@ -20,42 +22,12 @@ export class HotelService {
     );
   }
 
-  get getBasicAuthHeader() {
-    const { hotelApiUsername, hotelApiPassword } = this.hotelApiConfigService;
-
-    const auth = Buffer.from(
-      `${hotelApiUsername}:${hotelApiPassword}`,
-    ).toString('base64');
-
-    return {
-      Authorization: `Basic ${auth}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
-  public toCamelCase(snakeStr: string): string {
-    return snakeStr.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-  }
-
-  public convertKeysToCamelCase(data: any): any {
-    if (Array.isArray(data)) {
-      return data.map((item) => this.convertKeysToCamelCase(item));
-    } else if (data !== null && typeof data === 'object') {
-      return Object.keys(data).reduce((acc, key) => {
-        const camelCaseKey = this.toCamelCase(key);
-        acc[camelCaseKey] = this.convertKeysToCamelCase(data[key]);
-        return acc;
-      }, {});
-    }
-    return data;
-  }
-
   async hotelDetails(id: string): Promise<any> {
     return this.restClientService.request<any>({
       path: '/hotel/info/',
       method: 'POST',
       data: { id, language: 'en' },
-      headers: this.getBasicAuthHeader,
+      headers: this.hotelHelperService.getBasicAuthHeader(),
     });
   }
 
@@ -73,7 +45,9 @@ export class HotelService {
       throw new Error('Hotel data is missing or invalid');
     }
 
-    const formattedHotelData = this.convertKeysToCamelCase(hotelData.data);
+    const formattedHotelData = this.hotelHelperService.convertKeysToCamelCase(
+      hotelData.data,
+    );
 
     hotel = await this.hotelRepository.create({
       ...formattedHotelData,
@@ -117,19 +91,18 @@ export class HotelService {
 
       createdMissingHotels = await this.hotelRepository.createMany(
         newHotelsData.map((newHotelData) => {
-          const formattedHotelData = this.convertKeysToCamelCase(
-            newHotelData.data,
-          );
+          const formattedHotelData =
+            this.hotelHelperService.convertKeysToCamelCase(newHotelData.data);
           return {
             ...formattedHotelData,
             _id: formattedHotelData.id,
           };
         }),
+        projection,
       );
     }
 
     const result = [...existingHotels, ...createdMissingHotels];
-    console.log('Returning combined hotels:', result);
     return result;
   }
 }

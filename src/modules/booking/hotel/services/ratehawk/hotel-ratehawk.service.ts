@@ -17,31 +17,18 @@ import { WebhookRequestDto } from '../../dto/hotel-webhook.dto';
 import { OrderTotalInformationRequestDto } from '../../dto/hotel-order-total-information.dto';
 import { HotelOrderCancelRequestDto } from '../../dto/hotel-order-cancel.dto';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
-import { HotelService } from './hotel.service';
+import { HotelHelperService } from '../hotel-helper.service';
 
 @Injectable()
 export class RatehawkHotelService {
   private readonly restClientService: RestClientService;
   constructor(
     private readonly hotelApiConfigService: HotelApiConfigService,
-    private readonly hotelService: HotelService,
+    private readonly hotelHelperService: HotelHelperService,
   ) {
     this.restClientService = new RestClientService(
       hotelApiConfigService.hotelApiBaseUrl,
     );
-  }
-
-  get getBasicAuthHeader() {
-    const { hotelApiUsername, hotelApiPassword } = this.hotelApiConfigService;
-
-    const auth = Buffer.from(
-      `${hotelApiUsername}:${hotelApiPassword}`,
-    ).toString('base64');
-
-    return {
-      Authorization: `Basic ${auth}`,
-      'Content-Type': 'application/json',
-    };
   }
 
   async search(query: string, language?: string): Promise<any> {
@@ -49,9 +36,9 @@ export class RatehawkHotelService {
       path: '/search/multicomplete/',
       method: 'POST',
       data: { query, language },
-      headers: this.getBasicAuthHeader,
+      headers: this.hotelHelperService.getBasicAuthHeader(),
     });
-    return this.hotelService.convertKeysToCamelCase(response.data);
+    return this.hotelHelperService.convertKeysToCamelCase(response.data);
   }
 
   async searchReservationByRegionId(
@@ -65,10 +52,10 @@ export class RatehawkHotelService {
         path: '/search/serp/region/',
         method: 'POST',
         data: { ...searchDto, checkin, checkout },
-        headers: this.getBasicAuthHeader,
+        headers: this.hotelHelperService.getBasicAuthHeader(),
       });
 
-      return this.hotelService.convertKeysToCamelCase(response.data);
+      return this.hotelHelperService.convertKeysToCamelCase(response.data);
     } catch (error: any) {
       throw new HttpException(
         `search reservation by region id error -> ${error?.message}`,
@@ -85,7 +72,7 @@ export class RatehawkHotelService {
         path: '/search/serp/hotels/',
         method: 'POST',
         data: { ...requestDto },
-        headers: this.getBasicAuthHeader,
+        headers: this.hotelHelperService.getBasicAuthHeader(),
       });
       if (response.data.data?.hotels?.length === 0) {
         throw new HttpException(
@@ -93,7 +80,7 @@ export class RatehawkHotelService {
           HttpStatus.NOT_FOUND,
         );
       }
-      return this.hotelService.convertKeysToCamelCase(response.data);
+      return this.hotelHelperService.convertKeysToCamelCase(response.data);
     } catch (error: any) {
       throw new HttpException(
         `search reservations by hotel ids error -> ${error.message}`,
@@ -110,7 +97,7 @@ export class RatehawkHotelService {
         path: '/search/hp/',
         method: 'POST',
         data: { ...requestDto },
-        headers: this.getBasicAuthHeader,
+        headers: this.hotelHelperService.getBasicAuthHeader(),
       });
 
       if (response.data.hotels.length === 0) {
@@ -120,7 +107,7 @@ export class RatehawkHotelService {
         );
       }
 
-      return this.hotelService.convertKeysToCamelCase(response.data);
+      return this.hotelHelperService.convertKeysToCamelCase(response.data);
     } catch (error: any) {
       throw new HttpException(
         `search reservation by hotel id error -> ${error?.message}`,
@@ -135,10 +122,10 @@ export class RatehawkHotelService {
         path: '/hotel/prebook/',
         method: 'POST',
         data: { ...requestDto },
-        headers: this.getBasicAuthHeader,
+        headers: this.hotelHelperService.getBasicAuthHeader(),
       });
 
-      return this.hotelService.convertKeysToCamelCase(response.data);
+      return this.hotelHelperService.convertKeysToCamelCase(response.data);
     } catch (error: any) {
       throw new HttpException(
         `prebook error -> ${error?.message}`,
@@ -164,15 +151,15 @@ export class RatehawkHotelService {
       const response = await this.restClientService.request<any>({
         path: '/hotel/order/booking/form/',
         method: 'POST',
-        data: { requestDto },
-        headers: this.getBasicAuthHeader,
+        data: { ...requestDto },
+        headers: this.hotelHelperService.getBasicAuthHeader(),
       });
-      const responseData = response.data.data;
+      const responseData = response.data;
       responseData.payment_types = responseData.payment_types.filter(
         (payment) => payment.currency_code === currency_code,
       );
 
-      return responseData;
+      return this.hotelHelperService.convertKeysToCamelCase(responseData);
     } catch (error: any) {
       throw new HttpException(
         `order booking form error -> ${error?.message}`,
@@ -189,7 +176,7 @@ export class RatehawkHotelService {
       init_uuid: uuidv4(),
     });
     const url = 'https://api.payota.net/api/public/v1/manage/init_partners';
-    const headers = this.getBasicAuthHeader;
+    const headers = this.hotelHelperService.getBasicAuthHeader();
 
     try {
       const response = await axios.post(url, dto, { headers });
@@ -227,9 +214,9 @@ export class RatehawkHotelService {
         path: '/hotel/order/booking/finish/',
         method: 'POST',
         data: { requestDto },
-        headers: this.getBasicAuthHeader,
+        headers: this.hotelHelperService.getBasicAuthHeader(),
       });
-      return response.data;
+      return this.hotelHelperService.convertKeysToCamelCase(response.data);
     } catch (error: any) {
       throw new HttpException(
         `order booking finish error -> ${error?.message}`,
@@ -246,9 +233,9 @@ export class RatehawkHotelService {
         path: '/hotel/order/booking/finish/status/',
         method: 'POST',
         data: { requestDto },
-        headers: this.getBasicAuthHeader,
+        headers: this.hotelHelperService.getBasicAuthHeader(),
       });
-      return response.data;
+      return this.hotelHelperService.convertKeysToCamelCase(response.data);
     } catch (error: any) {
       throw new HttpException(
         `order booking finish status  error -> ${error?.message}`,
@@ -300,9 +287,9 @@ export class RatehawkHotelService {
         path: '/hotel/order/info/',
         method: 'POST',
         data: { requestDto },
-        headers: this.getBasicAuthHeader,
+        headers: this.hotelHelperService.getBasicAuthHeader(),
       });
-      return response.data;
+      return this.hotelHelperService.convertKeysToCamelCase(response.data);
     } catch (error: any) {
       throw new HttpException(
         `order info error -> ${error?.message}`,
@@ -319,9 +306,9 @@ export class RatehawkHotelService {
         path: '/hotel/order/cancel/',
         method: 'POST',
         data: { partner_order_id },
-        headers: this.getBasicAuthHeader,
+        headers: this.hotelHelperService.getBasicAuthHeader(),
       });
-      return response.data;
+      return this.hotelHelperService.convertKeysToCamelCase(response.data);
     } catch (error: any) {
       throw new HttpException(
         `order cancellation error -> ${error?.message}`,
@@ -331,7 +318,7 @@ export class RatehawkHotelService {
   }
 
   async downloadInfoInvoice(partner_order_id: string): Promise<Buffer> {
-    const headers = this.getBasicAuthHeader;
+    const headers = this.hotelHelperService.getBasicAuthHeader();
     const params = { partner_order_id };
     const jsonData = encodeURIComponent(JSON.stringify(params));
     const url = `https://api.worldota.net/api/b2b/v3/hotel/order/document/info_invoice/download/?data=${jsonData}`;
@@ -342,7 +329,7 @@ export class RatehawkHotelService {
         headers: headers,
       });
 
-      return response.data;
+      return this.hotelHelperService.convertKeysToCamelCase(response.data);
     } catch (error: any) {
       throw new HttpException(
         `download info invoice error -> ${error?.message}`,

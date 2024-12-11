@@ -28,7 +28,7 @@ import { WebhookRequestDto } from './dto/hotel-webhook.dto';
 import { OrderTotalInformationRequestDto } from './dto/hotel-order-total-information.dto';
 import { HotelOrderCancelRequestDto } from './dto/hotel-order-cancel.dto';
 import { GetHotelsByIdsDto } from './dto/hotel-get-by-ids-from-db.dto';
-import { HotelService } from './services/ratehawk/hotel.service';
+import { HotelService } from './services/hotel.service';
 
 @ApiTags('Hotel')
 @Controller('hotel')
