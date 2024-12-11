@@ -33,6 +33,6 @@ export class BankCard extends AbstractEntity<BankCard> {
   holderName: string;
 
   @JoinColumn()
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
   user: User;
 }
