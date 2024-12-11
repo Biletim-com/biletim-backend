@@ -13,13 +13,8 @@ export type HotelRegion = {
 };
 
 export type HotelAutocompleteSearchResponse = {
-  data: {
-    hotels: Hotel[];
-    regions: HotelRegion[];
-  };
-  debug: Record<string, unknown>;
-  status: 'ok';
-  error: null;
+  hotels: Hotel[];
+  regions: HotelRegion[];
 };
 
 export type HotelSnakeCase = {

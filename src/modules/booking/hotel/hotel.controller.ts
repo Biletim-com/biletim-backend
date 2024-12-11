@@ -55,7 +55,9 @@ export class HotelController {
     @Query() autocompleteRequestDto: HotelSearchQueryDto,
   ): Promise<HotelAutocompleteSearchResponse | HotelErrorsResponse> {
     const { query, language } = autocompleteRequestDto;
-    return this.ratehawkHotelService.search(query, language);
+    const response = await this.ratehawkHotelService.search(query, language);
+    console.log(response);
+    return response;
   }
 
   @ApiOperation({ summary: 'Search Reservation By Region Id' })

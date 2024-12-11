@@ -26,7 +26,7 @@ export class GuestDto {
 export class searchReservationByRegionIdRequestDto {
   @ApiProperty({
     description: 'Check-in date (Required)',
-    example: '2024-07-14',
+    example: '2024-12-14',
   })
   @Type(() => Date)
   @IsNotEmpty()
@@ -35,7 +35,7 @@ export class searchReservationByRegionIdRequestDto {
 
   @ApiProperty({
     description: 'Check-out date (Required)',
-    example: '2024-07-16',
+    example: '2024-12-16',
   })
   @Type(() => Date)
   @IsNotEmpty()

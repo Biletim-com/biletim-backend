@@ -64,7 +64,7 @@ export class RatehawkHotelService {
       data: { ...searchDto, checkin, checkout },
       headers: this.hotelHelperService.getBasicAuthHeader(),
     });
-
+    console.log(response.data);
     return this.hotelHelperService.convertKeysToCamelCase(response.data);
   }
 
