@@ -46,7 +46,7 @@ biletim_api:
     JWT_SECRET: PEMPassPhrase
     JWT_EXPIRATION: 172800
     BCRYPT_SALT_ROUNDS: 12
-    RESET_PASSWORD_URL: https://timetracker.westerops.com/reset-password
+    RESET_PASSWORD_URL: https://biletimlanding.westerops.com/tr?reset_password=true
 
     # services
     CHOROMIUM_HOST: biletim-chromium
