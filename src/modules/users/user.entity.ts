@@ -41,7 +41,7 @@ export class User extends AbstractEntity<User> {
   @OneToMany(() => Verification, (verification) => verification.user, {
     cascade: ['insert', 'update'],
   })
-  verification: Verification;
+  verification: Verification[];
 
   @OneToMany(() => Passenger, (passenger) => passenger.user)
   passengers: Passenger[];

@@ -144,10 +144,12 @@ export class UsersService {
       new User({
         id: userId,
         isVerified: true,
-        verification: new Verification({
-          id: verificationId,
-          isUsed: true,
-        }),
+        verification: [
+          new Verification({
+            id: verificationId,
+            isUsed: true,
+          }),
+        ],
       }),
     );
   }
