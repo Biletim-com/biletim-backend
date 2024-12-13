@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { BiletAllParserService } from '../../services/biletall-response-parser.service';
-
+import { v4 as uuidv4 } from 'uuid';
 //dto
 import {
   AbroadFlightOptionDto,
@@ -328,7 +328,7 @@ export class BiletAllPlaneSearchParserService extends BiletAllParserService {
       flightOptionsMap,
     );
 
-    const operationId = newDataSet['IslemId']?.[0]?.Value?.[0] ?? null;
+    const operationId = newDataSet['IslemId']?.[0]?.Value?.[0] ?? uuidv4();
 
     return { departureFlights, returnFlights, operationId };
   };
