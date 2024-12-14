@@ -9,7 +9,7 @@ import { ModelDefinition, MongooseModule } from '@nestjs/mongoose';
     }),
   ],
 })
-export class MongoProviderModule {
+export class MongoDBProviderModule {
   static forFeature(models: ModelDefinition[]) {
     return MongooseModule.forFeature(models);
   }

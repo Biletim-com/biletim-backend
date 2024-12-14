@@ -11,8 +11,6 @@ import { AuthModule } from '@app/auth/auth.module';
 // App Modules
 import { UsersModule } from '@app/modules/users/users.module';
 import { PanelUsersModule } from '@app/modules/panel-users/panel-users.module';
-import { HotelModule } from '@app/modules/booking/hotel/hotel.module';
-import { BookingModule } from '@app/modules/booking/booking.module';
 import { PassengersModule } from '@app/modules/passengers/passengers.module';
 import { BankCardsModule } from '@app/modules/bank-cards/bank-cards.module';
 import { TransactionsModule } from '@app/modules/transactions/transactions.module';
@@ -57,8 +55,6 @@ import { NotificationsModule } from './notifications/notifications.module';
     UsersModule,
     PanelUsersModule,
     TicketsModule,
-    HotelModule,
-    BookingModule,
     SearchModule,
     PaymentModule,
     OrderReturnModule,

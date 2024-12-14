@@ -43,6 +43,7 @@ export class RestClientService {
       return response.data;
     } catch (error) {
       if (isAxiosError(error)) {
+        console.log({ error: error.response.data });
         const errorMessage = this.getErrorMessage(
           error,
           config.method,
