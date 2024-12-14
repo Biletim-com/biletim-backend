@@ -23,6 +23,7 @@ import { SearchModule } from './search/search.module';
 
 // Providers
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
+import { MongoDBProviderModule } from '@app/providers/database/mongodb/provider.module';
 import { RestClientModule } from '@app/providers/rest-client/provider.module';
 import { PoxClientModule } from '@app/providers/pox-client/provider.module';
 import { EventEmitterModule } from '@app/providers/event-emitter/provider.module';
@@ -49,6 +50,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     HtmlTemplateModule,
     LoggerModule,
     PostgreSQLProviderModule,
+    MongoDBProviderModule,
     JobsModule,
     NotificationsModule,
     AuthModule,

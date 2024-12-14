@@ -27,7 +27,6 @@ declare namespace NodeJS {
     MONGO_HOST: string;
     MONGO_PORT: string;
     MONGO_DB: string;
-    MONGO_URI: string;
 
     // queue
     REDIS_HOST: string;
