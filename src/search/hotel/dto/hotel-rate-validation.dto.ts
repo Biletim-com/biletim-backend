@@ -20,7 +20,7 @@ export class HotelRateValidationRequestDto {
   @IsString()
   @MinLength(1)
   @MaxLength(256)
-  bookBash: string;
+  bookHash: string;
 
   @ApiProperty({
     description: 'Permissible Price Increase',
