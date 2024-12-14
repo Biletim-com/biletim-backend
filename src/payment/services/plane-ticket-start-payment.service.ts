@@ -153,7 +153,7 @@ export class PlaneTicketStartPaymentService {
        */
       const transaction = new Transaction({
         amount: priceList.totalTicketPrice,
-        currency: Currency.TL,
+        currency: Currency.TRY,
         status: TransactionStatus.PENDING,
         transactionType: TransactionType.PURCHASE,
         paymentMethod: PaymentMethod.BANK_CARD,

@@ -69,7 +69,7 @@ export class VakifBankEnrollmentService {
       Pan: creditCard.pan,
       ExpiryDate: dayjs(creditCard.expiryDate).format('YYMM'),
       PurchaseAmount: normalizeDecimal(transaction.amount),
-      Currency: VakifBankCurrency[Currency.TL],
+      Currency: VakifBankCurrency[Currency.TRY],
       BrandName: VakifBankBankCardBrand[creditCard.cardType],
       SuccessUrl: `${this.applicationConfigService.backendUrl}/payment/success?provider=${PaymentProvider.VAKIF_BANK}&ticketType=${ticketType}`,
       FailureUrl: `${this.applicationConfigService.backendUrl}/payment/failure?provider=${PaymentProvider.VAKIF_BANK}&ticketType=${ticketType}`,

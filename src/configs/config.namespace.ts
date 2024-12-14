@@ -1,5 +1,5 @@
 export default {
-  DATABASE: { POSTGRESQL: 'postgresql' },
+  DATABASE: { POSTGRESQL: 'postgresql', MONGO: 'mongo' },
   APPLICATION: 'application',
   AUTH: 'auth',
   SUPER_ADMIN: 'super_admin',

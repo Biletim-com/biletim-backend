@@ -22,6 +22,12 @@ declare namespace NodeJS {
     POSTGRES_USER: string;
     POSTGRES_PASSWORD: string;
 
+    MONGO_USER: string;
+    MONGO_PASSWORD: string;
+    MONGO_HOST: string;
+    MONGO_PORT: string;
+    MONGO_DB: string;
+
     // queue
     REDIS_HOST: string;
     REDIS_PORT: string;

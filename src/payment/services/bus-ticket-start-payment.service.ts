@@ -162,7 +162,7 @@ export class BusTicketStartPaymentService {
        */
       const transaction = new Transaction({
         amount: totalTicketPrice,
-        currency: Currency.TL,
+        currency: Currency.TRY,
         status: TransactionStatus.PENDING,
         transactionType: TransactionType.PURCHASE,
         paymentMethod: PaymentMethod.BANK_CARD,
@@ -215,7 +215,7 @@ export class BusTicketStartPaymentService {
         ) =>
           new BusTicket({
             ticketPrice,
-            currency: Currency.TL,
+            currency: Currency.TRY,
             companyNumber: trip.companyNumber,
             companyName: company.companyName,
             ticketOrder: index + 1,
