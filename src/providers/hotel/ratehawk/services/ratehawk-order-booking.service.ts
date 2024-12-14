@@ -38,7 +38,7 @@ export class RatehawkOrderBookingService {
         path: '/hotel/prebook/',
         method: 'POST',
         data: {
-          hash: requestDto.hash,
+          hash: requestDto.bookBash,
           price_increase_percent: requestDto.priceIncreasePercent,
         },
       },
