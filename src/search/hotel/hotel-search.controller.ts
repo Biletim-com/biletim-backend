@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Query, Get } from '@nestjs/common';
+import { Controller, Query, Get } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // services
@@ -9,7 +9,7 @@ import { RatehawkStaticHotelDataService } from '@app/providers/hotel/ratehawk/se
 import { HotelSearchQueryDto } from './dto/hotel-search.dto';
 import { HotelAvailabilityByRegionIdRequestDto } from './dto/hotel-availability-by-region-id-request.dto';
 import { HotelAvailabilityByHotelIdsRequestDto } from './dto/hotel-availability-by-hotel-ids-request.dto';
-import { PrebookRequestDto } from './dto/hotel-prebook.dto';
+import { HotelRateValidationRequestDto } from './dto/hotel-rate-validation.dto';
 
 // dto
 import { HotelPageRequestDto } from './dto/hotel-page-request.dto';
@@ -107,10 +107,10 @@ export class HotelSearchController {
   }
 
   @ApiOperation({
-    summary: 'Availability Query of The Selected Hotel Room (Prebook)',
+    summary: 'Availability Rate of The Selected Hotel Room',
   })
-  @Post('/order/prebook')
-  async prebook(@Body() prebookDto: PrebookRequestDto) {
-    return this.ratehawkOrderBookingService.prebook(prebookDto);
+  @Get('/validate-rate')
+  async validateRate(@Query() prebookDto: HotelRateValidationRequestDto) {
+    return this.ratehawkOrderBookingService.validateRate(prebookDto);
   }
 }

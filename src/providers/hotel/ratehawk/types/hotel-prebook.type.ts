@@ -1,11 +1,6 @@
-type Hotel = {
-  id: string;
-  hid: number;
-  rates?: Array<Record<string, unknown>>;
-  bar_price_data: any;
-};
+import { Hotel } from './hotel.type';
 
-export type HotelPrebookResponseData = {
+export type HotelRateValidationResponseData = {
   hotels: Hotel[];
   changes: {
     price_changed: boolean;

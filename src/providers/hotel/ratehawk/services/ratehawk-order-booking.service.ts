@@ -5,7 +5,7 @@ import { HotelApiConfigService } from '@app/configs/hotel-api';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
 import { RatehawkRequestService } from './ratehawk-request.service';
 
-import { PrebookRequestDto } from '../../../../search/hotel/dto/hotel-prebook.dto';
+import { HotelRateValidationRequestDto } from '@app/search/hotel/dto/hotel-rate-validation.dto';
 import { BookingFinishRequestDto } from '../dto/hotel-booking-finish.dto';
 import { OrderBookingFormRequestDto } from '../dto/hotel-order-booking-form.dto';
 import { OrderBookingFinishStatusRequestDto } from '../dto/hotel-order-booking-finish-status.dto';
@@ -14,7 +14,7 @@ import { OrderTotalInformationRequestDto } from '../dto/hotel-order-total-inform
 import { CaseConversionService } from '@app/common/helpers';
 
 // types
-import { HotelPrebookResponseData } from '../types/hotel-prebook.type';
+import { HotelRateValidationResponseData } from '../types/hotel-prebook.type';
 import { HotelOrderBookingFormResponseData } from '../types/hotel-order-booking-form.type';
 import { UUID } from '@app/common/types';
 
@@ -32,12 +32,17 @@ export class RatehawkOrderBookingService {
     );
   }
 
-  async prebook(requestDto: PrebookRequestDto) {
-    return this.ratehawkRequestService.sendRequest<HotelPrebookResponseData>({
-      path: '/hotel/prebook/',
-      method: 'POST',
-      data: requestDto,
-    });
+  async validateRate(requestDto: HotelRateValidationRequestDto) {
+    return this.ratehawkRequestService.sendRequest<HotelRateValidationResponseData>(
+      {
+        path: '/hotel/prebook/',
+        method: 'POST',
+        data: {
+          hash: requestDto.hash,
+          price_increase_percent: requestDto.priceIncreasePercent,
+        },
+      },
+    );
   }
 
   async orderBookingForm(
@@ -69,11 +74,13 @@ export class RatehawkOrderBookingService {
   }
 
   async orderBookingFinish(requestDto: BookingFinishRequestDto) {
-    return this.ratehawkRequestService.sendRequest<HotelPrebookResponseData>({
-      path: '/hotel/order/booking/finish/',
-      method: 'POST',
-      data: requestDto,
-    });
+    return this.ratehawkRequestService.sendRequest<HotelRateValidationResponseData>(
+      {
+        path: '/hotel/order/booking/finish/',
+        method: 'POST',
+        data: requestDto,
+      },
+    );
   }
 
   async orderBookingFinishStatus(
