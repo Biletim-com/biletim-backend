@@ -10,5 +10,5 @@ export class HotelOrderCancelRequestDto {
   @IsString()
   @Length(1, 256)
   @IsNotEmpty()
-  partner_order_id: string;
+  orderId: string;
 }

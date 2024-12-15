@@ -19,6 +19,11 @@ export interface IPaymentResultHandler {
     paymentResultDto: PaymentResultDto,
   ): Promise<Transaction>;
 
+  handleSuccessfulHotelBookingPayment(
+    clientIp: string,
+    paymentResultDto: PaymentResultDto,
+  ): Promise<Transaction>;
+
   handleFailedPayment(
     transactionId: UUID,
     errorMessage?: string,

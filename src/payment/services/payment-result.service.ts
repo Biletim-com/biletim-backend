@@ -27,7 +27,7 @@ export class PaymentResultService {
     }
 
     const minuteDifference =
-      (new Date().getTime() - new Date(tranaction?.createdAt).getTime()) /
+      (new Date().getTime() - new Date(tranaction.createdAt).getTime()) /
       (1000 * 60);
 
     if (minuteDifference > 3) {

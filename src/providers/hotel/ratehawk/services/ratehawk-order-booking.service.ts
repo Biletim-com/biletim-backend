@@ -16,7 +16,6 @@ import { CaseConversionService } from '@app/common/helpers';
 // types
 import { HotelRateValidationResponseData } from '../types/hotel-prebook.type';
 import { HotelOrderBookingFormResponseData } from '../types/hotel-order-booking-form.type';
-import { UUID } from '@app/common/types';
 
 @Injectable()
 export class RatehawkOrderBookingService {
@@ -33,26 +32,24 @@ export class RatehawkOrderBookingService {
   }
 
   async validateRate(requestDto: HotelRateValidationRequestDto) {
-    return this.ratehawkRequestService.sendRequest<HotelRateValidationResponseData>(
-      {
-        path: '/hotel/prebook/',
-        method: 'POST',
-        data: {
-          hash: requestDto.bookHash,
-          price_increase_percent: requestDto.priceIncreasePercent,
+    const { hotels, changes } =
+      await this.ratehawkRequestService.sendRequest<HotelRateValidationResponseData>(
+        {
+          path: '/hotel/prebook/',
+          method: 'POST',
+          data: {
+            hash: requestDto.bookHash,
+            price_increase_percent: requestDto.priceIncreasePercent,
+          },
         },
-      },
-    );
+      );
+    return { ...hotels[0], changes };
   }
 
-  async orderBookingForm(
-    clientIp: string,
-    orderId: UUID,
-    dto: OrderBookingFormRequestDto,
-  ) {
+  async orderBookingForm(clientIp: string, dto: OrderBookingFormRequestDto) {
     const requestDto = {
-      partner_order_id: orderId,
-      book_hash: dto.book_hash,
+      partner_order_id: dto.orderId,
+      book_hash: dto.bookHash,
       language: dto.language,
       user_ip: clientIp,
     };
@@ -73,14 +70,55 @@ export class RatehawkOrderBookingService {
     return { ...response, paymentTypes };
   }
 
-  async orderBookingFinish(requestDto: BookingFinishRequestDto) {
-    return this.ratehawkRequestService.sendRequest<HotelRateValidationResponseData>(
-      {
-        path: '/hotel/order/booking/finish/',
-        method: 'POST',
-        data: requestDto,
+  async orderBookingFinish({
+    arrivalDatetime,
+    language,
+    partner,
+    paymentType,
+    upsellData,
+    rooms,
+    user,
+    supplierData,
+  }: BookingFinishRequestDto) {
+    const requestDto = {
+      arrival_datetime: arrivalDatetime,
+      language,
+      partner: {
+        partner_order_id: partner.partnerOrderId,
       },
-    );
+      payment_type: {
+        type: paymentType.type,
+        amount: paymentType.amount,
+        currency_code: paymentType.currencyCode,
+      },
+      upsell_data: upsellData,
+      rooms: rooms.map((room) => ({
+        guests: room.guests.map((guest) => ({
+          first_name: guest.firstName,
+          last_name: guest.lastName,
+          ...(guest.isChild
+            ? { is_child: guest.isChild, age: Number(guest.age.toFixed()) }
+            : {}),
+          gender: guest.gender,
+        })),
+      })),
+      user: {
+        email: user.email,
+        phone: user.phone,
+        comment: user.comment,
+      },
+      supplier_data: {
+        first_name_original: supplierData.firstNameOriginal,
+        last_name_original: supplierData.lastNameOriginal,
+        email: supplierData.email,
+        phone: supplierData.phone,
+      },
+    };
+    return this.ratehawkRequestService.sendRequest<null>({
+      path: '/hotel/order/booking/finish/',
+      method: 'POST',
+      data: requestDto,
+    });
   }
 
   async orderBookingFinishStatus(

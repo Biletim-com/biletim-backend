@@ -1,0 +1,17 @@
+export type HotelOrderUpsellName =
+  | 'additional_service'
+  | 'complimentary'
+  | 'dubai_expo_2020_month'
+  | 'dubai_expo_2020_one_day'
+  | 'early_checkin'
+  | 'extra_bed'
+  | 'hotel_facilities'
+  | 'insurance'
+  | 'late_checkout'
+  | 'meal_upgrade'
+  | 'name_change_auto'
+  | 'name_change_manual'
+  | 'room_service'
+  | 'room_upgrade'
+  | 'taxes_and_fees'
+  | 'visa_support';

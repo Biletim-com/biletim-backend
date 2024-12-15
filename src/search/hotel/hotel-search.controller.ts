@@ -1,5 +1,5 @@
 import { Controller, Query, Get } from '@nestjs/common';
-import { ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // services
 import { RatehawkSearchService } from '@app/providers/hotel/ratehawk/services/ratehawk-search.service';
@@ -17,7 +17,6 @@ import { HotelPageResponseDto } from './dto/hotel-page-response.dto';
 import { HotelDocument } from '@app/providers/hotel/ratehawk/models/hotel.schema';
 
 @ApiTags('Hotel Search')
-@ApiExtraModels(HotelAvailabilityByHotelIdsRequestDto)
 @Controller('search/hotels')
 export class HotelSearchController {
   constructor(
