@@ -16,12 +16,14 @@ import { BusTicketStartPaymentService } from './services/bus-ticket-start-paymen
 import { PlaneTicketStartPaymentService } from './services/plane-ticket-start-payment.service';
 import { PaymentResultHandlerProviderFactory } from './factories/payment-result-handler-provider.factory';
 import { HtmlTemplateService } from '@app/providers/html-template/provider.service';
+import { HotelBookingStartPaymentService } from './services/hotel-booking-start-payment.service';
 
 // dtos
 import { BusTicketPurchaseDto } from './dto/bus-ticket-purchase.dto';
 import { VakifBankPaymentResultDto } from './dto/vakif-bank-payment-result.dto';
 import { BiletAllPaymentResultDto } from './dto/biletall-payment-result.dto';
 import { PlaneTicketPurchaseDto } from './dto/plane-ticket-purchase.dto';
+import { HotelBookingPurchaseDto } from './dto/hotel-booking-purchase.dto';
 
 // decorators
 import { ClientIp } from '@app/common/decorators';
@@ -43,6 +45,7 @@ export class PaymentController {
     private readonly paymentResultService: PaymentResultService,
     private readonly busTicketStartPaymentService: BusTicketStartPaymentService,
     private readonly planeTicketStartPaymentService: PlaneTicketStartPaymentService,
+    private readonly hotelBookingStartPaymentService: HotelBookingStartPaymentService,
     private readonly paymentResponseHandlerProviderFactory: PaymentResultHandlerProviderFactory,
     private readonly htmlTemplateService: HtmlTemplateService,
   ) {}
@@ -76,7 +79,18 @@ export class PaymentController {
   }
 
   @Post('start-hotel-reservation-payment')
-  startHotelReservationPayment() {}
+  async startHotelReservationPayment(
+    @ClientIp() clientIp: string,
+    @Body() hotelBookingPurchaseDto: HotelBookingPurchaseDto,
+  ) {
+    const { transactionId, htmlContent } =
+      await this.hotelBookingStartPaymentService.startHotelBookingOrderPayment(
+        clientIp,
+        hotelBookingPurchaseDto,
+      );
+    const base64HtmlContent = Buffer.from(htmlContent).toString('base64');
+    return { transactionId, htmlContent: base64HtmlContent };
+  }
 
   @Get('transaction/:id')
   getTransactionData(
@@ -118,8 +132,13 @@ export class PaymentController {
           clientIp,
           dto,
         );
-      } else {
+      } else if (ticketType === TicketType.PLANE) {
         await paymentResultHandlerStrategy.handleSuccessfulPlaneTicketPayment(
+          clientIp,
+          dto,
+        );
+      } else {
+        await paymentResultHandlerStrategy.handleSuccessfulHotelBookingPayment(
           clientIp,
           dto,
         );

@@ -15,6 +15,7 @@ import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { Order } from '@app/modules/orders/order.entity';
 import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
 import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
+import { HotelBookingOrder } from '@app/modules/orders/entites/hotel-booking-order.entity';
 
 // dtos
 import { VakifBankPaymentResultDto } from '../dto/vakif-bank-payment-result.dto';
@@ -39,6 +40,7 @@ import { threeDSecureResponse } from '@app/providers/payment/vakif-bank/constant
 import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
 import { BiletAllBusTicketPurchaseService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-ticket-purchase.service';
 import { BiletAllPlaneTicketPurchaseService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-ticket-purchase.service';
+import { RatehawkOrderBookingService } from '@app/providers/hotel/ratehawk/services/ratehawk-order-booking.service';
 
 @Injectable()
 export class VakifBankPaymentResultHandlerStrategy
@@ -56,6 +58,7 @@ export class VakifBankPaymentResultHandlerStrategy
     private readonly biletAllBusSearchService: BiletAllBusSearchService,
     private readonly biletAllBusTicketPurchaseService: BiletAllBusTicketPurchaseService,
     private readonly biletAllPlaneTicketPurchaseService: BiletAllPlaneTicketPurchaseService,
+    private readonly ratehawkOrderBookingService: RatehawkOrderBookingService,
   ) {}
 
   async handleSuccessfulBusTicketPayment(
@@ -339,6 +342,120 @@ export class VakifBankPaymentResultHandlerStrategy
       }
       if (actionsCompleted.includes('TICKET_SALE')) {
         console.log('cancel with PNR number');
+      }
+      err.message = errorMessage;
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async handleSuccessfulHotelBookingPayment(
+    clientIp: string,
+    paymentResultDto: VakifBankPaymentResultDto,
+  ): Promise<Transaction> {
+    if (paymentResultDto.Status !== 'Y') {
+      const { description, detail } =
+        threeDSecureResponse[paymentResultDto.ErrorCode];
+      this.logger.error({ description, detail });
+      throw new BadRequestException(paymentResultDto.ErrorMessage);
+    }
+
+    const transaction = await this.transactionsRepository.findOne({
+      where: {
+        id: paymentResultDto.VerifyEnrollmentRequestId,
+      },
+      relations: {
+        hotelBookingOrder: {
+          rooms: {
+            guests: true,
+          },
+        },
+      },
+    });
+
+    if (!transaction) {
+      throw new TransactionNotFoundError();
+    }
+
+    const actionsCompleted: Array<'PAYMENT' | 'HOTEL_BOOKING'> = [];
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // finalize payment
+      await this.vakifBankPaymentStrategy.finishPayment(
+        clientIp,
+        {
+          ...paymentResultDto,
+          PurchAmount: transaction.amount,
+        },
+        transaction.hotelBookingOrder.id,
+      );
+      actionsCompleted.push('PAYMENT');
+
+      // send purchase request to biletall
+      await this.ratehawkOrderBookingService.orderBookingFinish({
+        language: 'en',
+        partner: {
+          partnerOrderId: transaction.hotelBookingOrder.id,
+        },
+        paymentType: transaction.hotelBookingOrder.paymentType,
+        rooms: transaction.hotelBookingOrder.rooms,
+        upsellData: transaction.hotelBookingOrder.upsell,
+        user: {
+          email: 'test@mail.com',
+          phone: '5550240045',
+        },
+        supplierData: {
+          firstNameOriginal:
+            transaction.hotelBookingOrder.rooms[0].guests[0].firstName,
+          lastNameOriginal:
+            transaction.hotelBookingOrder.rooms[0].guests[0].lastName,
+          email: transaction.hotelBookingOrder.userEmail,
+          phone: transaction.hotelBookingOrder.userPhoneNumber,
+        },
+      });
+      actionsCompleted.push('HOTEL_BOOKING');
+
+      await Promise.all([
+        queryRunner.manager.update(Transaction, transaction.id, {
+          status: TransactionStatus.COMPLETED,
+        }),
+        queryRunner.manager.update(
+          HotelBookingOrder,
+          transaction.hotelBookingOrder.id,
+          {
+            status: OrderStatus.AWAITING,
+          },
+        ),
+      ]);
+
+      // update transaction and order for the data to return
+      transaction.status = TransactionStatus.COMPLETED;
+      transaction.hotelBookingOrder.status = OrderStatus.AWAITING;
+
+      await queryRunner.commitTransaction();
+      return transaction;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      const errorMessage =
+        err.message || 'Something went wrong while processing payment';
+
+      await this.transactionsRepository.update(transaction.id, {
+        status: TransactionStatus.FAILED,
+        errorMessage,
+      });
+
+      // TODO: this should be sent to a queue
+      if (actionsCompleted.includes('PAYMENT')) {
+        this.vakifBankPaymentStrategy.cancelPayment(clientIp, transaction.id);
+      }
+      if (actionsCompleted.includes('HOTEL_BOOKING')) {
+        console.log('cancel with order id');
       }
       err.message = errorMessage;
       throw err;

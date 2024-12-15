@@ -17,7 +17,7 @@ export class OrderBookingFinishStatusRequestDto {
   @IsString()
   @Length(1, 256)
   @IsNotEmpty()
-  partner_order_id: string;
+  partnerOrderId: string;
 
   @ApiProperty({
     description: 'Comment (Optional)',
@@ -31,5 +31,5 @@ export class OrderBookingFinishStatusRequestDto {
 
   @IsOptional()
   @MinLength(1)
-  amount_sell_b2b2c?: number;
+  amountSellB2b2c?: number;
 }

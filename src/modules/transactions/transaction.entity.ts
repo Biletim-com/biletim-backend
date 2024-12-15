@@ -2,8 +2,10 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
+import { Order } from '../orders/order.entity';
 import { Wallet } from '../wallets/wallet.entity';
 import { BankCard } from '../bank-cards/bank-card.entity';
+import { HotelBookingOrder } from '../orders/entites/hotel-booking-order.entity';
 
 // utils
 import { normalizeDecimal } from '@app/common/utils';
@@ -15,7 +17,6 @@ import {
   TransactionStatus,
   TransactionType,
 } from '@app/common/enums';
-import { Order } from '../orders/order.entity';
 
 @Entity('transactions')
 export class Transaction extends AbstractEntity<Transaction> {
@@ -59,6 +60,12 @@ export class Transaction extends AbstractEntity<Transaction> {
 
   @OneToOne(() => Order, (order) => order.transaction)
   order: Order;
+
+  @OneToOne(
+    () => HotelBookingOrder,
+    (hotelBookingOrder) => hotelBookingOrder.transaction,
+  )
+  hotelBookingOrder: HotelBookingOrder;
 
   // saved card
   @JoinColumn()

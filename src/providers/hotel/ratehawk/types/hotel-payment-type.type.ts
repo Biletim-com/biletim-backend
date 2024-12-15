@@ -1,12 +1,14 @@
+import { Currency } from '@app/common/enums';
+
 export type PaymentType = {
   amount: string;
   show_amount: string;
-  currency_code: string;
-  show_currency_code: string;
+  currency_code: Currency;
+  show_currency_code: Currency;
   by: any | null;
   is_need_credit_card_data: boolean;
   is_need_cvc: boolean;
-  type: string;
+  type: 'deposit' | 'now' | 'hotel';
   vat_data: VatData;
   tax_data: TaxData;
   perks: Record<string, any>;
@@ -19,7 +21,7 @@ type VatData = {
   included: boolean;
   applied: boolean;
   amount: string;
-  currency_code: string;
+  currency_code: Currency;
   value: string;
 };
 
@@ -31,7 +33,7 @@ type Tax = {
   name: string;
   included_by_supplier: boolean;
   amount: string;
-  currency_code: string;
+  currency_code: Currency;
 };
 
 type CommissionInfo = {

@@ -1,3 +1,5 @@
+import { OrderUpsellData } from '../dto/hotel-booking-finish.dto';
+
 export type PaymentType = {
   amount: string;
   currency_code: string;
@@ -18,5 +20,5 @@ export type HotelOrderBookingFormResponseData = {
   order_id: number;
   partner_order_id: string;
   payment_types: PaymentType[];
-  upsell_data: Record<string, unknown>[];
+  upsell_data: OrderUpsellData[];
 };

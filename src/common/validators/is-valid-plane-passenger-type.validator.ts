@@ -2,13 +2,14 @@ import { airlineCompaniesAgeRules } from '../constants';
 import { PassengerType } from '../enums';
 import { ServiceError } from '../errors';
 import { DateISODate } from '../types';
+import { calculateAge } from '../utils';
 
 export const isValidPlanePassengerType = (
   birthday: DateISODate,
   passengerType: PassengerType,
   companyNumber: string,
 ): boolean => {
-  const yearsOld = getAge(birthday);
+  const yearsOld = calculateAge(birthday);
 
   const ageRestrictions =
     airlineCompaniesAgeRules[companyNumber] || defaultAgeRestrictions;
@@ -24,14 +25,6 @@ export const isValidPlanePassengerType = (
     yearsOld > passengerTypeRestrictions.minAge &&
     yearsOld <= passengerTypeRestrictions.maxAge
   );
-};
-
-const getAge = (birthday: string): number => {
-  const millisecondsDifference =
-    new Date().getTime() - new Date(birthday).getTime();
-  const millisecondsInYear = 1000 * 60 * 60 * 24 * 365.25;
-
-  return millisecondsDifference / millisecondsInYear;
 };
 
 const defaultAgeRestrictions: Record<

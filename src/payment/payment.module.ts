@@ -21,11 +21,14 @@ import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.
 import { BiletAllPaymentStrategy } from '@app/providers/payment/biletall/biletall-payment.strategy';
 import { VakifBankPaymentStrategy } from '@app/providers/payment/vakif-bank/vakif-bank-payment.strategy';
 import { VakifBankEnrollmentService } from '@app/providers/payment/vakif-bank/services/vakif-bank-enrollment.service';
+import { HotelBookingStartPaymentService } from './services/hotel-booking-start-payment.service';
+import { RatehawkProviderModule } from '@app/providers/hotel/ratehawk/provider.module';
 
 @Module({
   imports: [
     BiletAllBusModule,
     BiletAllPlaneModule,
+    RatehawkProviderModule,
     PoxClientModule.registerAsync({
       token: `${PaymentProvider.VAKIF_BANK}_VPOS`,
       useFactory: async (configService: PaymentConfigService) =>
@@ -45,6 +48,7 @@ import { VakifBankEnrollmentService } from '@app/providers/payment/vakif-bank/se
     PaymentResultService,
     BusTicketStartPaymentService,
     PlaneTicketStartPaymentService,
+    HotelBookingStartPaymentService,
     PaymentProviderFactory,
     PaymentResultHandlerProviderFactory,
     VakifBankEnrollmentService,

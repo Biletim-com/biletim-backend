@@ -169,4 +169,11 @@ export class BiletAllPaymentResultHandlerStrategy
   ): Promise<Transaction> {
     throw new Error('Method not implemented.');
   }
+
+  handleSuccessfulHotelBookingPayment(
+    clientIp: string,
+    paymentResultDto: VakifBankPaymentResultDto | BiletAllPaymentResultDto,
+  ): Promise<Transaction> {
+    throw new Error('Method not implemented.');
+  }
 }
