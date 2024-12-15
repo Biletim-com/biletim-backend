@@ -19,6 +19,13 @@ export class HotelBookingOrder extends AbstractOrder<HotelBookingOrder> {
   @Column('jsonb')
   paymentType: PaymentType;
 
+  @Column({
+    type: 'bigint',
+    default: () => `nextval('reservation_number_seq')`,
+    unique: true,
+  })
+  reservationNumber: number;
+
   @OneToMany(
     () => HotelBookingRoom,
     (hotelBookingRoom) => hotelBookingRoom.order,

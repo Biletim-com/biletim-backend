@@ -137,7 +137,7 @@ export class HotelBookingStartPaymentService {
         await this.ratehawkOrderBookingService.orderBookingForm(clientIp, {
           bookHash: hotelBookingPurchaseDto.bookHash,
           language: 'en',
-          orderId: order.id,
+          orderId: order.reservationNumber.toString(),
         });
 
       /**

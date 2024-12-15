@@ -400,7 +400,8 @@ export class VakifBankPaymentResultHandlerStrategy
       await this.ratehawkOrderBookingService.orderBookingFinish({
         language: 'en',
         partner: {
-          partnerOrderId: transaction.hotelBookingOrder.id,
+          partnerOrderId:
+            transaction.hotelBookingOrder.reservationNumber.toString(),
         },
         paymentType: transaction.hotelBookingOrder.paymentType,
         rooms: transaction.hotelBookingOrder.rooms,

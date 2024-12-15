@@ -78,7 +78,7 @@ export class PaymentController {
     return { transactionId, htmlContent: base64HtmlContent };
   }
 
-  @Post('start-hotel-reservation-payment')
+  @Post('start-hotel-booking-payment')
   async startHotelReservationPayment(
     @ClientIp() clientIp: string,
     @Body() hotelBookingPurchaseDto: HotelBookingPurchaseDto,
