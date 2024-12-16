@@ -24,8 +24,8 @@ import { HotelOrderStatusRequestDto } from './dto/hotel-order-status.dto';
 import type { Request } from 'express';
 
 @Controller('/hotel/webhook')
-export class HotelOrderStatusWebhookController {
-  private readonly logger = new Logger(HotelOrderStatusWebhookController.name);
+export class RatehawkWebhookController {
+  private readonly logger = new Logger(RatehawkWebhookController.name);
 
   constructor(
     private readonly hotelBookingOrdersRepository: HotelBookingOrdersRepository,
@@ -39,7 +39,6 @@ export class HotelOrderStatusWebhookController {
   ): Promise<void> {
     try {
       const { data, signature } = body;
-      console.log({ data, signature });
       if (
         !this.verifySignature({
           apiKey: this.hotelApiConfigService.hotelApiPassword,
@@ -63,7 +62,30 @@ export class HotelOrderStatusWebhookController {
       );
     } catch (error) {
       this.logger.error(`Error handling webhook: ${error}`);
-      throw new InternalServerErrorException('Internal server error');
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @Post('test-connection')
+  @HttpCode(HttpStatus.OK)
+  async testConnection(
+    @Req() { body }: Request<object, any, HotelOrderStatusRequestDto>,
+  ): Promise<void> {
+    try {
+      const { signature } = body;
+      if (
+        !this.verifySignature({
+          apiKey: this.hotelApiConfigService.hotelApiPassword,
+          timestamp: signature.timestamp,
+          token: signature.token,
+          signature: signature.signature,
+        })
+      ) {
+        throw new UnauthorizedException('Invalid signature');
+      }
+    } catch (error) {
+      this.logger.error(`Error testing webhook connection: ${error}`);
+      throw new InternalServerErrorException();
     }
   }
 
