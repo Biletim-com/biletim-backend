@@ -1,4 +1,4 @@
-import { Controller, Query, Get } from '@nestjs/common';
+import { Controller, Query, Get, NotFoundException } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // services
@@ -6,15 +6,20 @@ import { RatehawkSearchService } from '@app/providers/hotel/ratehawk/services/ra
 import { RatehawkOrderBookingService } from '@app/providers/hotel/ratehawk/services/ratehawk-order-booking.service';
 import { RatehawkStaticHotelDataService } from '@app/providers/hotel/ratehawk/services/ratehawk-static-hotel-data.service';
 
-import { HotelSearchQueryDto } from './dto/hotel-search.dto';
-import { HotelAvailabilityByRegionIdRequestDto } from './dto/hotel-availability-by-region-id-request.dto';
-import { HotelAvailabilityByHotelIdsRequestDto } from './dto/hotel-availability-by-hotel-ids-request.dto';
-import { HotelRateValidationRequestDto } from './dto/hotel-rate-validation.dto';
+import { HotelBookingOrdersRepository } from '@app/modules/orders/repositories/hotel-booking-orders.repository';
+import { HotelDocument } from '@app/providers/hotel/ratehawk/models/hotel.schema';
 
 // dto
 import { HotelPageRequestDto } from './dto/hotel-page-request.dto';
 import { HotelPageResponseDto } from './dto/hotel-page-response.dto';
-import { HotelDocument } from '@app/providers/hotel/ratehawk/models/hotel.schema';
+import { HotelRateValidationRequestDto } from './dto/hotel-rate-validation.dto';
+import { HotelSearchQueryDto } from './dto/hotel-search.dto';
+import { HotelAvailabilityByRegionIdRequestDto } from './dto/hotel-availability-by-region-id-request.dto';
+import { HotelAvailabilityByHotelIdsRequestDto } from './dto/hotel-availability-by-hotel-ids-request.dto';
+import {
+  HotelBookingOrderStatusRequestDto,
+  HotelBookingOrderStatusResponseDto,
+} from './dto/hotel-booking-order-status.dto';
 
 @ApiTags('Hotel Search')
 @Controller('search/hotels')
@@ -23,6 +28,7 @@ export class HotelSearchController {
     private readonly ratehawkSearchService: RatehawkSearchService,
     private readonly ratehawkStaticHotelDataService: RatehawkStaticHotelDataService,
     private readonly ratehawkOrderBookingService: RatehawkOrderBookingService,
+    private readonly hotelBookingOrdersRepository: HotelBookingOrdersRepository,
   ) {}
 
   @ApiOperation({ summary: 'Search Hotels' })
@@ -111,5 +117,21 @@ export class HotelSearchController {
   @Get('/validate-rate')
   async validateRate(@Query() prebookDto: HotelRateValidationRequestDto) {
     return this.ratehawkOrderBookingService.validateRate(prebookDto);
+  }
+
+  @ApiOperation({
+    summary: 'Status of the order',
+  })
+  @Get('/order-status')
+  async orderStatus(
+    @Query() { reservationNumber }: HotelBookingOrderStatusRequestDto,
+  ): Promise<HotelBookingOrderStatusResponseDto> {
+    const order = await this.hotelBookingOrdersRepository.findOneBy({
+      reservationNumber: Number(reservationNumber),
+    });
+    if (!order) {
+      throw new NotFoundException('Order does not exist');
+    }
+    return { status: order.status };
   }
 }

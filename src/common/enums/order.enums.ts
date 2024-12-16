@@ -9,6 +9,7 @@ export enum OrderStatus {
   REFUND_REQUESTED = 'refund-requested', // Customer has requested a refund for the order.
   REFUND_PROCESSED = 'refund-processed', // The refund for the order has been successfully processed.
   COMPLETED = 'completed', // The order has been successfully completed, and no further action is required.
+  REJECTED = 'rejected', // The order has been successfully completed, and no further action is required.
 }
 
 export enum OrderType {

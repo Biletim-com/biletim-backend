@@ -6,7 +6,6 @@ import {
   IsEnum,
   IsISO31661Alpha2,
   IsNotEmpty,
-  IsOptional,
   ValidateNested,
 } from 'class-validator';
 import { plainToInstance, Transform, Type } from 'class-transformer';
@@ -65,19 +64,20 @@ export class HotelAvailabilityRequestDto {
   guests: GuestDto[];
 
   @ApiProperty({
-    description: "Guest's (or multiple guests') citizenship. (Optional)",
+    description: "Guest's (or multiple guests') citizenship",
     example: 'us',
-    required: false,
+    required: true,
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsISO31661Alpha2()
-  residency?: string;
+  residency: string;
 
   @ApiProperty({
     example: 'en',
+    required: true,
     enum: languages,
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsEnum(languages)
-  language?: Language;
+  language: Language;
 }

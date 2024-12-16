@@ -11,6 +11,8 @@ import { RatehawkRequestService } from './services/ratehawk-request.service';
 import { RatehawkStaticHotelDataService } from './services/ratehawk-static-hotel-data.service';
 
 import { HotelRepository } from './hotel.repository';
+import { HotelOrderStatusWebhookController } from './hotel-order-status-webhook.controller';
+import { HotelBookingOrdersRepository } from '@app/modules/orders/repositories/hotel-booking-orders.repository';
 
 @Module({
   imports: [
@@ -18,7 +20,9 @@ import { HotelRepository } from './hotel.repository';
       { name: HotelDocument.name, schema: HotelSchema },
     ]),
   ],
+  controllers: [HotelOrderStatusWebhookController],
   providers: [
+    HotelBookingOrdersRepository,
     RatehawkSearchService,
     RatehawkOrderBookingService,
     RatehawkOrderCancelService,
