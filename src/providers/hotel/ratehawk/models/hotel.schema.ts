@@ -46,6 +46,9 @@ export class HotelDocument extends AbstractDocument {
   imagesExt: object[];
 
   @Prop()
+  deleted: boolean;
+
+  @Prop()
   isClosed: boolean;
 
   @Prop({ required: true })

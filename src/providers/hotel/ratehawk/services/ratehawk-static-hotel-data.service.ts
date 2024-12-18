@@ -63,6 +63,7 @@ export class RatehawkStaticHotelDataService {
       hid: 1,
       id: 1,
       isClosed: 1,
+      deleted: 1,
       region: 1,
       serpFilters: 1,
       amenityGroups: 1,
