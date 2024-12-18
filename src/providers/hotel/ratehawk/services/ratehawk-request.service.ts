@@ -61,7 +61,7 @@ export class RatehawkRequestService {
     });
 
     if (response.status === 'error') {
-      throw new ServiceError('Soemthing went wrong');
+      throw new ServiceError(response.error || 'Something went wrong');
     }
 
     return this.caseConversionService.convertKeysToCamelCase(response.data);

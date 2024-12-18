@@ -8,7 +8,7 @@ import {
   Get,
   Res,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 
 import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { PaymentResultService } from './services/payment-result.service';
@@ -49,6 +49,13 @@ export class PaymentController {
     private readonly paymentResponseHandlerProviderFactory: PaymentResultHandlerProviderFactory,
     private readonly htmlTemplateService: HtmlTemplateService,
   ) {}
+
+  @Get('transaction/:id')
+  getTransactionData(
+    @Param() { id }: TransactionRequest,
+  ): Promise<Transaction> {
+    return this.paymentResultService.getTransaction(id);
+  }
 
   @Post('start-bus-ticket-payment')
   async startBusTicketPurchasePayment(
@@ -92,13 +99,7 @@ export class PaymentController {
     return { transactionId, htmlContent: base64HtmlContent };
   }
 
-  @Get('transaction/:id')
-  getTransactionData(
-    @Param() { id }: TransactionRequest,
-  ): Promise<Transaction> {
-    return this.paymentResultService.getTransaction(id);
-  }
-
+  @ApiExcludeEndpoint()
   @Post('success')
   async successfulPaymentHandler(
     @Req() request: Request,
@@ -161,6 +162,7 @@ export class PaymentController {
     }
   }
 
+  @ApiExcludeEndpoint()
   @Post('failure')
   async failedPaymentHandler(
     @Req() request: Request,

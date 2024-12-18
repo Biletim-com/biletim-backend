@@ -9,6 +9,7 @@ import {
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ApiExcludeController } from '@nestjs/swagger';
 
 // services
 import { HotelApiConfigService } from '@app/configs/hotel-api';
@@ -23,6 +24,7 @@ import { HotelOrderStatusRequestDto } from './dto/hotel-order-status.dto';
 // types
 import type { Request } from 'express';
 
+@ApiExcludeController()
 @Controller('/hotel/webhook')
 export class RatehawkWebhookController {
   private readonly logger = new Logger(RatehawkWebhookController.name);
