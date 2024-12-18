@@ -5,6 +5,7 @@ import { HotelRepository } from '../hotel.repository';
 import { RatehawkRequestService } from './ratehawk-request.service';
 
 // types
+import { Language } from '@app/common/types/languages.type';
 import { HotelStaticDataResponseData } from '../types/hotel-static-data.type';
 
 // errors
@@ -17,33 +18,36 @@ export class RatehawkStaticHotelDataService {
     private readonly ratehawkRequestService: RatehawkRequestService,
   ) {}
 
-  private getSingleHotelStaticData(id: string) {
+  private getSingleHotelStaticData(id: string, language: Language) {
     return this.ratehawkRequestService.sendRequest<HotelStaticDataResponseData>(
       {
         path: '/hotel/info/',
         method: 'POST',
-        data: { id, language: 'en' },
+        data: { id, language },
       },
     );
   }
 
-  async findHotelById(id: string): Promise<HotelDocument> {
-    let hotel = await this.hotelRepository.findOne({ _id: id });
+  async findHotelById(id: string, language: Language): Promise<HotelDocument> {
+    let hotel = await this.hotelRepository.findOne({
+      _id: `${id}_${language}`,
+    });
 
     if (hotel) {
       return hotel;
     }
 
-    const hotelData = await this.getSingleHotelStaticData(id);
+    const newHotelData = await this.getSingleHotelStaticData(id, language);
 
-    if (!hotelData) {
-      console.error('Hotel data is missing or invalid:', hotelData);
+    if (!newHotelData) {
+      console.error('Hotel data is missing or invalid:', newHotelData);
       throw new ServiceError('Hotel data is missing or invalid');
     }
 
     hotel = await this.hotelRepository.create({
-      ...hotelData,
-      _id: hotelData.id,
+      ...newHotelData,
+      language,
+      _id: `${newHotelData.id}_${language}`,
     });
 
     return hotel;
@@ -51,7 +55,8 @@ export class RatehawkStaticHotelDataService {
 
   async findHotelsByIds(
     ids: string[],
-  ): Promise<Partial<HotelDocument & { _id: string }>[]> {
+    language: Language,
+  ): Promise<Partial<HotelDocument>[]> {
     const projection: Partial<Record<keyof HotelDocument, 0 | 1>> = {
       address: 1,
       name: 1,
@@ -72,23 +77,25 @@ export class RatehawkStaticHotelDataService {
     };
 
     const existingHotels = await this.hotelRepository.find(
-      { _id: { $in: ids } },
+      {
+        _id: ids.map((id) => `${id}_${language}`),
+      },
       projection,
     );
 
     const existingHotelIds = existingHotels.map(
-      (existingHotel) => existingHotel._id,
+      (existingHotel) => existingHotel.id,
     );
 
     const missingHotelIds = ids
       .filter((hotelId) => !existingHotelIds.includes(hotelId))
       .slice(0, 30);
 
-    let createdMissingHotels: Partial<HotelDocument & { _id: string }>[] = [];
+    let createdMissingHotels: Partial<HotelDocument>[] = [];
     if (missingHotelIds.length > 0) {
       const newHotelsData = await Promise.all(
         missingHotelIds.map((missingHotelId) =>
-          this.getSingleHotelStaticData(missingHotelId),
+          this.getSingleHotelStaticData(missingHotelId, language),
         ),
       );
 
@@ -96,7 +103,8 @@ export class RatehawkStaticHotelDataService {
         newHotelsData.map((newHotelData) => {
           return {
             ...newHotelData,
-            _id: newHotelData.id,
+            language,
+            _id: `${newHotelData.id}_${language}`,
           };
         }),
         projection,

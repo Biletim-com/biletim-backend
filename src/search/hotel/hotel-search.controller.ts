@@ -47,7 +47,10 @@ export class HotelSearchController {
     const hotelPagePromise =
       this.ratehawkSearchService.getHotelPage(requestDto);
     const hotelPageStaticDataPromise =
-      this.ratehawkStaticHotelDataService.findHotelById(requestDto.id);
+      this.ratehawkStaticHotelDataService.findHotelById(
+        requestDto.id,
+        requestDto.language,
+      );
 
     const [{ hotels }, hotelPageStaticData] = await Promise.all([
       hotelPagePromise,
@@ -70,10 +73,13 @@ export class HotelSearchController {
     const hotelIds = hotels.map((hotel) => hotel.id);
 
     const hotelsStaticData =
-      await this.ratehawkStaticHotelDataService.findHotelsByIds(hotelIds);
+      await this.ratehawkStaticHotelDataService.findHotelsByIds(
+        hotelIds,
+        requestDto.language,
+      );
     const hotelsStaticDataMap = new Map<string, Partial<HotelDocument>>();
     hotelsStaticData.forEach((hotelStaticData) =>
-      hotelsStaticDataMap.set(hotelStaticData._id as string, hotelStaticData),
+      hotelsStaticDataMap.set(hotelStaticData.id as string, hotelStaticData),
     );
 
     return hotels.map((hotel) => ({
@@ -93,7 +99,10 @@ export class HotelSearchController {
     const hotelsPromise =
       this.ratehawkSearchService.searchHotelAvailabilityByHotelIds(requestDto);
     const hotelsStaticDataPromise =
-      this.ratehawkStaticHotelDataService.findHotelsByIds(requestDto.ids);
+      this.ratehawkStaticHotelDataService.findHotelsByIds(
+        requestDto.ids,
+        requestDto.language,
+      );
 
     const [{ hotels }, hotelsStaticData] = await Promise.all([
       hotelsPromise,
@@ -102,7 +111,7 @@ export class HotelSearchController {
 
     const hotelsStaticDataMap = new Map<string, Partial<HotelDocument>>();
     hotelsStaticData.forEach((hotelStaticData) =>
-      hotelsStaticDataMap.set(hotelStaticData._id as string, hotelStaticData),
+      hotelsStaticDataMap.set(hotelStaticData.id as string, hotelStaticData),
     );
 
     return hotels.map((hotel) => ({

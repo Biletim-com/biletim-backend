@@ -3,6 +3,15 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({ collection: 'hotel_data_collection' })
 export class HotelDocument extends AbstractDocument {
+  @Prop({ required: true })
+  id: string;
+
+  @Prop({ required: true })
+  hid: string;
+
+  @Prop({ required: true })
+  language: string;
+
   @Prop()
   address: string;
 
@@ -30,14 +39,8 @@ export class HotelDocument extends AbstractDocument {
   @Prop({ required: false })
   frontDeskTimeStart: string;
 
-  @Prop({ required: true })
-  hid: string;
-
   @Prop()
   hotelChain: string;
-
-  @Prop({ required: true })
-  id: string;
 
   @Prop({ required: true, type: [String] })
   images: string[];
