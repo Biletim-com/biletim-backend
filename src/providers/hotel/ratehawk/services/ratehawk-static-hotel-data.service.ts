@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HotelDocument } from '../models/hotel.schema';
-import { HotelRepository } from '../hotel.repository';
+import { HotelRepository } from '../../repositories/hotel.repository';
 
 import { RatehawkRequestService } from './ratehawk-request.service';
 
@@ -10,11 +10,14 @@ import { HotelStaticDataResponseData } from '../types/hotel-static-data.type';
 
 // errors
 import { ServiceError } from '@app/common/errors';
+import { HotelReviewsDocument } from '../models/hotel-reviews.schema';
+import { HotelReviewsRepository } from '../../repositories/hotel-reviews.repository';
 
 @Injectable()
 export class RatehawkStaticHotelDataService {
   constructor(
     private readonly hotelRepository: HotelRepository,
+    private readonly hotelReviewsRepository: HotelReviewsRepository,
     private readonly ratehawkRequestService: RatehawkRequestService,
   ) {}
 
@@ -112,5 +115,15 @@ export class RatehawkStaticHotelDataService {
     }
 
     return [...existingHotels, ...createdMissingHotels];
+  }
+
+  async findHotelReviewsByIds(
+    ids: string | string[],
+  ): Promise<HotelReviewsDocument | HotelReviewsDocument[] | null> {
+    if (ids.length === 1) {
+      return await this.hotelReviewsRepository.findOne({ _id: ids[0] });
+    } else {
+      return await this.hotelReviewsRepository.find({ _id: { $in: ids } });
+    }
   }
 }
