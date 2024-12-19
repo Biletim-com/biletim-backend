@@ -12,6 +12,7 @@ import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
 import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
 import { BusTicketPassenger } from '@app/modules/tickets/bus/entities/bus-ticket-passenger.entity';
 import { Invoice } from '@app/modules/invoices/invoice.entity';
+import { User } from '@app/modules/users/user.entity';
 
 // enums
 import {
@@ -68,8 +69,9 @@ export class BusTicketStartPaymentService {
   }
 
   async busTicketPurchase(
-    clientIp: string,
     busTicketPurchaseDto: BusTicketPurchaseDto,
+    clientIp: string,
+    user?: User,
   ): Promise<{ transactionId: UUID; htmlContent: string }> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -191,7 +193,7 @@ export class BusTicketStartPaymentService {
         userPhoneNumber: busTicketPurchaseDto.phoneNumber,
         type: OrderType.PURCHASE,
         status: OrderStatus.PENDING,
-        user: null,
+        user,
         transaction,
         invoice,
       });

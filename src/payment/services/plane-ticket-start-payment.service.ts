@@ -13,6 +13,7 @@ import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.en
 import { PlaneTicketSegment } from '@app/modules/tickets/plane/entities/plane-ticket-segment.entity';
 import { Airport } from '@app/modules/tickets/plane/entities/airport.entity';
 import { Invoice } from '@app/modules/invoices/invoice.entity';
+import { User } from '@app/modules/users/user.entity';
 
 // enums
 import {
@@ -125,8 +126,9 @@ export class PlaneTicketStartPaymentService {
   }
 
   async startPlaneTicketPurchase(
-    clientIp: string,
     planeTicketPurchaseDto: PlaneTicketPurchaseDto,
+    clientIp: string,
+    user?: User,
   ): Promise<{ transactionId: string; htmlContent: string }> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -182,7 +184,7 @@ export class PlaneTicketStartPaymentService {
         status: OrderStatus.PENDING,
         invoice,
         transaction,
-        user: null,
+        user,
       });
       await queryRunner.manager.save(Order, order);
 

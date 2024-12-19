@@ -7,10 +7,15 @@ import {
   Param,
   Get,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 
+// entities
 import { Transaction } from '@app/modules/transactions/transaction.entity';
+import { User } from '@app/modules/users/user.entity';
+
+// services
 import { PaymentResultService } from './services/payment-result.service';
 import { BusTicketStartPaymentService } from './services/bus-ticket-start-payment.service';
 import { PlaneTicketStartPaymentService } from './services/plane-ticket-start-payment.service';
@@ -26,7 +31,7 @@ import { PlaneTicketPurchaseDto } from './dto/plane-ticket-purchase.dto';
 import { HotelBookingPurchaseDto } from './dto/hotel-booking-purchase.dto';
 
 // decorators
-import { ClientIp } from '@app/common/decorators';
+import { ClientIp, CurrentUser } from '@app/common/decorators';
 
 // types
 import type { Response, Request } from 'express';
@@ -37,6 +42,7 @@ import { BusTicketPurchaseRequest } from '@app/providers/ticket/biletall/bus/typ
 // enums
 import { PaymentProvider, TicketType } from '@app/common/enums';
 import { TransactionRequest } from './dto/get-transaction.dto';
+import { UserInterceptor } from '@app/common/interceptors';
 
 @ApiTags('Payment')
 @Controller('payment')
@@ -57,43 +63,52 @@ export class PaymentController {
     return this.paymentResultService.getTransaction(id);
   }
 
+  @UseInterceptors(UserInterceptor)
   @Post('start-bus-ticket-payment')
   async startBusTicketPurchasePayment(
-    @ClientIp() clientIp: string,
     @Body() busTicketPurchaseDto: BusTicketPurchaseDto,
+    @ClientIp() clientIp: string,
+    @CurrentUser() user?: User,
   ): Promise<{ transactionId: string; htmlContent: string }> {
     const { transactionId, htmlContent } =
       await this.busTicketStartPaymentService.busTicketPurchase(
-        clientIp,
         busTicketPurchaseDto,
+        clientIp,
+        user,
       );
     const base64HtmlContent = Buffer.from(htmlContent).toString('base64');
     return { transactionId, htmlContent: base64HtmlContent };
   }
 
+  @UseInterceptors(UserInterceptor)
   @Post('start-plane-ticket-payment')
   async startPlaneTicketPurchasePayment(
-    @ClientIp() clientIp: string,
     @Body() planeTicketPurchaseDto: PlaneTicketPurchaseDto,
+    @ClientIp() clientIp: string,
+    @CurrentUser() user?: User,
   ): Promise<{ transactionId: string; htmlContent: string }> {
     const { transactionId, htmlContent } =
       await this.planeTicketStartPaymentService.startPlaneTicketPurchase(
-        clientIp,
         planeTicketPurchaseDto,
+        clientIp,
+        user,
       );
     const base64HtmlContent = Buffer.from(htmlContent).toString('base64');
     return { transactionId, htmlContent: base64HtmlContent };
   }
 
+  @UseInterceptors(UserInterceptor)
   @Post('start-hotel-booking-payment')
   async startHotelReservationPayment(
-    @ClientIp() clientIp: string,
     @Body() hotelBookingPurchaseDto: HotelBookingPurchaseDto,
+    @ClientIp() clientIp: string,
+    @CurrentUser() user?: User,
   ) {
     const { transactionId, htmlContent } =
       await this.hotelBookingStartPaymentService.startHotelBookingOrderPayment(
-        clientIp,
         hotelBookingPurchaseDto,
+        clientIp,
+        user,
       );
     const base64HtmlContent = Buffer.from(htmlContent).toString('base64');
     return { transactionId, htmlContent: base64HtmlContent };

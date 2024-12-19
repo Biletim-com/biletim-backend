@@ -11,6 +11,7 @@ import { HotelBookingRoom } from '@app/modules/orders/entites/hotel-booking-room
 import { HotelRoomGuest } from '@app/modules/orders/entites/hotel-room-guest.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { Invoice } from '@app/modules/invoices/invoice.entity';
+import { User } from '@app/modules/users/user.entity';
 
 // dto
 import { HotelBookingPurchaseDto } from '../dto/hotel-booking-purchase.dto';
@@ -59,8 +60,9 @@ export class HotelBookingStartPaymentService {
   }
 
   public async startHotelBookingOrderPayment(
-    clientIp: string,
     hotelBookingPurchaseDto: HotelBookingPurchaseDto,
+    clientIp: string,
+    user?: User,
   ) {
     const { rates, changes } =
       await this.ratehawkOrderBookingService.validateRate({
@@ -115,7 +117,7 @@ export class HotelBookingStartPaymentService {
         userPhoneNumber: hotelBookingPurchaseDto.phoneNumber,
         type: OrderType.PURCHASE,
         status: OrderStatus.PENDING,
-        user: null,
+        user,
         transaction,
         invoice,
         upsell: [],
@@ -132,6 +134,7 @@ export class HotelBookingStartPaymentService {
 
       /**
        * Start booking against the provider
+       * need to figure out this usellData shit
        */
       const { upsellData } =
         await this.ratehawkOrderBookingService.orderBookingForm(clientIp, {
@@ -144,7 +147,7 @@ export class HotelBookingStartPaymentService {
        * Update HotelBookingOrder with the upsell data
        */
       await queryRunner.manager.update(HotelBookingOrder, order.id, {
-        upsell: upsellData,
+        upsell: [],
       });
 
       /**

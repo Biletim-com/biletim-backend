@@ -22,6 +22,7 @@ import { TicketsModule } from './modules/tickets/tickets.module';
 import { SearchModule } from './search/search.module';
 
 // Providers
+import { JwtModule } from '@app/providers/jwt/provider.module';
 import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
 import { MongoDBProviderModule } from '@app/providers/database/mongodb/provider.module';
 import { RestClientModule } from '@app/providers/rest-client/provider.module';
@@ -34,7 +35,7 @@ import { HtmlTemplateModule } from '@app/providers/html-template/provider.module
 import { PaymentProviderModule } from './providers/payment/provider.module';
 
 // Interceptors
-import { ErrorInterceptor } from '@app/common/interceptors';
+import { ErrorInterceptor, UserInterceptor } from '@app/common/interceptors';
 
 // Jobs
 import { JobsModule } from '@app/jobs/jobs.module';
@@ -42,6 +43,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
+    JwtModule,
     ConfigModule,
     EventEmitterModule,
     RestClientModule,
@@ -73,6 +75,10 @@ import { NotificationsModule } from './notifications/notifications.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: ErrorInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: UserInterceptor,
     },
   ],
 })

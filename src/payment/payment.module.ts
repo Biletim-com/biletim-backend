@@ -23,6 +23,7 @@ import { VakifBankPaymentStrategy } from '@app/providers/payment/vakif-bank/vaki
 import { VakifBankEnrollmentService } from '@app/providers/payment/vakif-bank/services/vakif-bank-enrollment.service';
 import { HotelBookingStartPaymentService } from './services/hotel-booking-start-payment.service';
 import { RatehawkProviderModule } from '@app/providers/hotel/ratehawk/provider.module';
+import { UsersRepository } from '@app/modules/users/users.repository';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { RatehawkProviderModule } from '@app/providers/hotel/ratehawk/provider.m
     BiletAllPaymentResultHandlerStrategy,
     TransactionsRepository,
     OrdersRepository,
+    UsersRepository,
   ],
 })
 export class PaymentModule {}

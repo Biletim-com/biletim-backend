@@ -25,7 +25,6 @@ import { EventEmitterService } from '@app/providers/event-emitter/provider.servi
 import { VerificationCodeDto, VerificationDto } from '../dto/verification.dto';
 import { CreateUserDto } from '@app/modules/users/dto/create-user.dto';
 import { DateTimeHelper } from '@app/common/helpers';
-import { VerificationType } from '@app/common/enums';
 
 @Injectable()
 export class AuthService {
