@@ -1,12 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { HotelDocument } from '../models/hotel.schema';
-import { HotelRepository } from '../hotel.repository';
 
+// repositories
+import { HotelRepository } from '../repositories/hotel.repository';
+import { HotelReviewsRepository } from '../repositories/hotel-reviews.repository';
+
+// services
 import { RatehawkRequestService } from './ratehawk-request.service';
 
 // types
 import { Language } from '@app/common/types/languages.type';
 import { HotelStaticDataResponseData } from '../types/hotel-static-data.type';
+
+// shcemas
+import { HotelReviewsDocument } from '../models/hotel-reviews.schema';
 
 // errors
 import { ServiceError } from '@app/common/errors';
@@ -15,6 +22,7 @@ import { ServiceError } from '@app/common/errors';
 export class RatehawkStaticHotelDataService {
   constructor(
     private readonly hotelRepository: HotelRepository,
+    private readonly hotelReviewsRepository: HotelReviewsRepository,
     private readonly ratehawkRequestService: RatehawkRequestService,
   ) {}
 
@@ -112,5 +120,11 @@ export class RatehawkStaticHotelDataService {
     }
 
     return [...existingHotels, ...createdMissingHotels];
+  }
+
+  async findHotelReviewsByIds(ids: string[]): Promise<HotelReviewsDocument[]> {
+    return await this.hotelReviewsRepository.find({
+      _id: { $in: ids.map((id) => `${id}_en`) },
+    });
   }
 }

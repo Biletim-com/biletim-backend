@@ -1,6 +1,12 @@
 import { Module } from '@nestjs/common';
 
 import { MongoDBProviderModule } from '@app/providers/database/mongodb/provider.module';
+
+// schemas
+import {
+  HotelReviewsDocument,
+  HotelReviewsSchema,
+} from './models/hotel-reviews.schema';
 import { HotelDocument, HotelSchema } from './models/hotel.schema';
 
 // services
@@ -10,14 +16,19 @@ import { RatehawkOrderCancelService } from './services/ratehawk-order-cancel.ser
 import { RatehawkRequestService } from './services/ratehawk-request.service';
 import { RatehawkStaticHotelDataService } from './services/ratehawk-static-hotel-data.service';
 
-import { HotelRepository } from './hotel.repository';
+// controllers
 import { RatehawkWebhookController } from './ratehawk-webhook.controller';
+
+// repositories
 import { HotelBookingOrdersRepository } from '@app/modules/orders/repositories/hotel-booking-orders.repository';
+import { HotelRepository } from './repositories/hotel.repository';
+import { HotelReviewsRepository } from './repositories/hotel-reviews.repository';
 
 @Module({
   imports: [
     MongoDBProviderModule.forFeature([
       { name: HotelDocument.name, schema: HotelSchema },
+      { name: HotelReviewsDocument.name, schema: HotelReviewsSchema },
     ]),
   ],
   controllers: [RatehawkWebhookController],
@@ -29,6 +40,7 @@ import { HotelBookingOrdersRepository } from '@app/modules/orders/repositories/h
     RatehawkRequestService,
     RatehawkStaticHotelDataService,
     HotelRepository,
+    HotelReviewsRepository,
   ],
   exports: [
     RatehawkSearchService,
@@ -36,6 +48,7 @@ import { HotelBookingOrdersRepository } from '@app/modules/orders/repositories/h
     RatehawkOrderCancelService,
     RatehawkStaticHotelDataService,
     HotelRepository,
+    HotelReviewsRepository,
   ],
 })
 export class RatehawkProviderModule {}

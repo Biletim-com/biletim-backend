@@ -20,6 +20,7 @@ import {
   HotelBookingOrderStatusRequestDto,
   HotelBookingOrderStatusResponseDto,
 } from './dto/hotel-booking-order-status.dto';
+import { HotelReviewsDocument } from '@app/providers/hotel/ratehawk/models/hotel-reviews.schema';
 
 @ApiTags('Hotel Search')
 @Controller('search/hotels')
@@ -51,13 +52,23 @@ export class HotelSearchController {
         requestDto.id,
         requestDto.language,
       );
+    const hotelReviewsDataPromise =
+      this.ratehawkStaticHotelDataService.findHotelReviewsByIds([
+        requestDto.id,
+      ]);
 
-    const [{ hotels }, hotelPageStaticData] = await Promise.all([
-      hotelPagePromise,
-      hotelPageStaticDataPromise,
-    ]);
+    const [{ hotels }, hotelPageStaticData, [hotelReviewsData]] =
+      await Promise.all([
+        hotelPagePromise,
+        hotelPageStaticDataPromise,
+        hotelReviewsDataPromise,
+      ]);
 
-    return { ...hotels[0], staticData: hotelPageStaticData };
+    return {
+      ...hotels[0],
+      staticData: hotelPageStaticData,
+      reviews: hotelReviewsData,
+    };
   }
 
   @ApiOperation({ summary: 'Search Hotel Availability By Region Id' })
@@ -72,19 +83,33 @@ export class HotelSearchController {
       );
     const hotelIds = hotels.map((hotel) => hotel.id);
 
-    const hotelsStaticData =
-      await this.ratehawkStaticHotelDataService.findHotelsByIds(
+    const hotelsStaticDataMap = new Map<string, Partial<HotelDocument>>();
+    const hotelsReviewsDataMap = new Map<string, HotelReviewsDocument>();
+
+    const hotelsStaticDataPromise =
+      this.ratehawkStaticHotelDataService.findHotelsByIds(
         hotelIds,
         requestDto.language,
       );
-    const hotelsStaticDataMap = new Map<string, Partial<HotelDocument>>();
+    const hotelsReviewsDataPromise =
+      this.ratehawkStaticHotelDataService.findHotelReviewsByIds(hotelIds);
+
+    const [hotelsStaticData, hotelsReviewsData] = await Promise.all([
+      hotelsStaticDataPromise,
+      hotelsReviewsDataPromise,
+    ]);
+
     hotelsStaticData.forEach((hotelStaticData) =>
       hotelsStaticDataMap.set(hotelStaticData.id as string, hotelStaticData),
+    );
+    hotelsReviewsData.forEach((hotelReviewsData) =>
+      hotelsReviewsDataMap.set(hotelReviewsData.id, hotelReviewsData),
     );
 
     return hotels.map((hotel) => ({
       ...hotel,
       staticData: hotelsStaticDataMap.get(hotel.id),
+      reviews: hotelsReviewsDataMap.get(hotel.id),
     }));
   }
 
@@ -96,6 +121,9 @@ export class HotelSearchController {
     @Query()
     requestDto: HotelAvailabilityByHotelIdsRequestDto,
   ) {
+    const hotelsStaticDataMap = new Map<string, Partial<HotelDocument>>();
+    const hotelsReviewsDataMap = new Map<string, HotelReviewsDocument>();
+
     const hotelsPromise =
       this.ratehawkSearchService.searchHotelAvailabilityByHotelIds(requestDto);
     const hotelsStaticDataPromise =
@@ -103,20 +131,26 @@ export class HotelSearchController {
         requestDto.ids,
         requestDto.language,
       );
+    const hotelsReviewsDataPromise =
+      await this.ratehawkStaticHotelDataService.findHotelReviewsByIds(
+        requestDto.ids,
+      );
 
-    const [{ hotels }, hotelsStaticData] = await Promise.all([
-      hotelsPromise,
-      hotelsStaticDataPromise,
-    ]);
+    const [{ hotels }, hotelsStaticData, hotelsReviewsData] = await Promise.all(
+      [hotelsPromise, hotelsStaticDataPromise, hotelsReviewsDataPromise],
+    );
 
-    const hotelsStaticDataMap = new Map<string, Partial<HotelDocument>>();
     hotelsStaticData.forEach((hotelStaticData) =>
       hotelsStaticDataMap.set(hotelStaticData.id as string, hotelStaticData),
+    );
+    hotelsReviewsData.forEach((hotelReviewsData) =>
+      hotelsReviewsDataMap.set(hotelReviewsData.id, hotelReviewsData),
     );
 
     return hotels.map((hotel) => ({
       ...hotel,
       staticData: hotelsStaticDataMap.get(hotel.id),
+      reviews: hotelsReviewsDataMap.get(hotel.id),
     }));
   }
 
