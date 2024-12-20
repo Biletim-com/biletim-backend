@@ -53,9 +53,11 @@ export class HotelSearchController {
         requestDto.language,
       );
     const hotelReviewsDataPromise =
-      this.ratehawkStaticHotelDataService.findHotelReviewsByIds(requestDto.id);
+      this.ratehawkStaticHotelDataService.findHotelReviewsByIds([
+        requestDto.id,
+      ]);
 
-    const [{ hotels }, hotelPageStaticData, hotelReviewsData] =
+    const [{ hotels }, hotelPageStaticData, [hotelReviewsData]] =
       await Promise.all([
         hotelPagePromise,
         hotelPageStaticDataPromise,
@@ -81,33 +83,29 @@ export class HotelSearchController {
       );
     const hotelIds = hotels.map((hotel) => hotel.id);
 
-    const hotelsStaticData =
-      await this.ratehawkStaticHotelDataService.findHotelsByIds(
+    const hotelsStaticDataMap = new Map<string, Partial<HotelDocument>>();
+    const hotelsReviewsDataMap = new Map<string, HotelReviewsDocument>();
+
+    const hotelsStaticDataPromise =
+      this.ratehawkStaticHotelDataService.findHotelsByIds(
         hotelIds,
         requestDto.language,
       );
-    const hotelsStaticDataMap = new Map<string, Partial<HotelDocument>>();
+    const hotelsReviewsDataPromise =
+      this.ratehawkStaticHotelDataService.findHotelReviewsByIds(hotelIds);
+
+    const [hotelsStaticData, hotelsReviewsData] = await Promise.all([
+      hotelsStaticDataPromise,
+      hotelsReviewsDataPromise,
+    ]);
+
     hotelsStaticData.forEach((hotelStaticData) =>
       hotelsStaticDataMap.set(hotelStaticData.id as string, hotelStaticData),
     );
+    hotelsReviewsData.forEach((hotelReviewsData) =>
+      hotelsReviewsDataMap.set(hotelReviewsData.id, hotelReviewsData),
+    );
 
-    const hotelsReviewsData =
-      await this.ratehawkStaticHotelDataService.findHotelReviewsByIds(hotelIds);
-    const hotelsReviewsDataMap = new Map<string, HotelReviewsDocument>();
-
-    if (Array.isArray(hotelsReviewsData)) {
-      hotelsReviewsData.forEach((hotelReviewsData) =>
-        hotelsReviewsDataMap.set(
-          hotelReviewsData._id as string,
-          hotelReviewsData,
-        ),
-      );
-    } else if (hotelsReviewsData) {
-      hotelsReviewsDataMap.set(
-        hotelsReviewsData._id as string,
-        hotelsReviewsData,
-      );
-    }
     return hotels.map((hotel) => ({
       ...hotel,
       staticData: hotelsStaticDataMap.get(hotel.id),
@@ -123,6 +121,9 @@ export class HotelSearchController {
     @Query()
     requestDto: HotelAvailabilityByHotelIdsRequestDto,
   ) {
+    const hotelsStaticDataMap = new Map<string, Partial<HotelDocument>>();
+    const hotelsReviewsDataMap = new Map<string, HotelReviewsDocument>();
+
     const hotelsPromise =
       this.ratehawkSearchService.searchHotelAvailabilityByHotelIds(requestDto);
     const hotelsStaticDataPromise =
@@ -139,25 +140,12 @@ export class HotelSearchController {
       [hotelsPromise, hotelsStaticDataPromise, hotelsReviewsDataPromise],
     );
 
-    const hotelsStaticDataMap = new Map<string, Partial<HotelDocument>>();
     hotelsStaticData.forEach((hotelStaticData) =>
       hotelsStaticDataMap.set(hotelStaticData.id as string, hotelStaticData),
     );
-
-    const hotelsReviewsDataMap = new Map<string, HotelReviewsDocument>();
-    if (Array.isArray(hotelsReviewsData)) {
-      hotelsReviewsData.forEach((hotelReviewsData) =>
-        hotelsReviewsDataMap.set(
-          hotelReviewsData._id as string,
-          hotelReviewsData,
-        ),
-      );
-    } else if (hotelsReviewsData) {
-      hotelsReviewsDataMap.set(
-        hotelsReviewsData._id as string,
-        hotelsReviewsData,
-      );
-    }
+    hotelsReviewsData.forEach((hotelReviewsData) =>
+      hotelsReviewsDataMap.set(hotelReviewsData.id, hotelReviewsData),
+    );
 
     return hotels.map((hotel) => ({
       ...hotel,

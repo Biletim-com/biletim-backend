@@ -73,6 +73,9 @@ export const ReviewsSchema = SchemaFactory.createForClass(Reviews);
 
 @Schema({ collection: 'hotel_reviews_collection' })
 export class HotelReviewsDocument extends AbstractDocument {
+  @Prop({ required: true })
+  id: string;
+
   @Prop({ required: false, type: DetailedRatingsSchema })
   detailedRatings: DetailedRatings;
 
