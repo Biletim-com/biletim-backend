@@ -11,7 +11,7 @@ import {
 import { AbstractOrder } from '../../abstract-order.entity';
 import { Invoice } from '@app/modules/invoices/invoice.entity';
 import { BusTicket } from './bus-ticket.entity';
-import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
+import { BusTerminal } from '@app/providers/ticket/biletall/bus/entities/bus-terminal.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
 
 // types

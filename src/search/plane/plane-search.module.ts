@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 
 import { BiletAllPlaneModule } from '@app/providers/ticket/biletall/plane/provider.module';
 
-import { AirportsCronJobService } from './job.service';
+import { PlaneSearchController } from './plane-search.controller';
 
 @Module({
   imports: [BiletAllPlaneModule],
-  providers: [AirportsCronJobService],
+  controllers: [PlaneSearchController],
 })
-export class AirportsCronJobModule {}
+export class PlaneSearchModule {}

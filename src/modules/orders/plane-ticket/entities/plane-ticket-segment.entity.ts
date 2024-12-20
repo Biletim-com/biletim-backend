@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 // entites
 import { PlaneTicketOrder } from './plane-ticket-order.entity';
-import { Airport } from '@app/modules/tickets/plane/entities/airport.entity';
+import { Airport } from '@app/providers/ticket/biletall/plane/entities/airport.entity';
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
 // dtos

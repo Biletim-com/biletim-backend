@@ -10,7 +10,7 @@ import { BusTicketOrder } from '@app/modules/orders/bus-ticket/entities/bus-tick
 import { BusTicket } from '@app/modules/orders/bus-ticket/entities/bus-ticket.entity';
 import { BusTicketPassenger } from '@app/modules/orders/bus-ticket/entities/bus-ticket-passenger.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
+import { BusTerminal } from '@app/providers/ticket/biletall/bus/entities/bus-terminal.entity';
 import { Invoice } from '@app/modules/invoices/invoice.entity';
 import { User } from '@app/modules/users/user.entity';
 
@@ -31,7 +31,7 @@ import {
 // dtos
 import { InvoiceDto } from '@app/common/dtos';
 import { BusTicketPurchaseDto } from '../dto/bus-ticket-purchase.dto';
-import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
+import { BusSeatAvailabilityRequestDto } from '@app/search/bus/dto/bus-seat-availability.dto';
 
 // types
 import { UUID } from '@app/common/types';

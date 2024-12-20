@@ -11,7 +11,7 @@ import { PlaneTicketSegment } from '@app/modules/orders/plane-ticket/entities/pl
 import { PlaneTicketPassenger } from '@app/modules/orders/plane-ticket/entities/plane-ticket-passenger.entity';
 import { PlaneTicket } from '@app/modules/orders/plane-ticket/entities/plane-ticket.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { Airport } from '@app/modules/tickets/plane/entities/airport.entity';
+import { Airport } from '@app/providers/ticket/biletall/plane/entities/airport.entity';
 import { Invoice } from '@app/modules/invoices/invoice.entity';
 import { User } from '@app/modules/users/user.entity';
 

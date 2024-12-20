@@ -5,16 +5,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { parseStringPromise } from 'xml2js';
 
-import { BusController } from '@app/modules/tickets/bus/bus.controller';
+import { BusSearchController } from '@app/search/bus/bus-search.controller';
 
 // services
 import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllParserService } from '@app/providers/ticket/biletall/services/biletall-response-parser.service';
 import { BiletAllRequestService } from '@app/providers/ticket/biletall/services/biletall-request.service';
-import { BusTerminalsService } from '@app/modules/tickets/bus/services/bus-terminals.service';
+import { BusTerminalsService } from '@app/providers/ticket/biletall/bus/services/bus-terminals.service';
 import { BiletAllBusSearchParserService } from '@app/providers/ticket/biletall/bus/parsers/biletall-bus-search.parser.service';
 
-import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
+import { BusCompanyRequestDto } from '@app/search/bus/dto/bus-company.dto';
 
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
 import {
@@ -26,13 +26,13 @@ import {
   returnScheduleListMockResponse,
   serviceInformationMockResponse,
 } from '../../mock-response/biletall-bus-service-mock-response';
-import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus-terminal.repository';
 import { DataSource } from 'typeorm';
-import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
+import { BusSeatAvailabilityRequestDto } from '@app/search/bus/dto/bus-seat-availability.dto';
 import { Gender } from '@app/common/enums';
 import { BoardingPointRequestDto } from '@app/providers/ticket/biletall/bus/dto/bus-boarding-point.dto';
 import { ServiceInformationRequestDto } from '@app/providers/ticket/biletall/bus/dto/bus-service-information.dto';
-import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
+import { BusScheduleRequestDto } from '@app/search/bus/dto/bus-schedule-list.dto';
+import { BusTerminalRepository } from '@app/providers/ticket/biletall/bus/repositories/bus-terminal.repository';
 
 describe('BiletAllBusService', () => {
   const mockParser = {
@@ -70,7 +70,7 @@ describe('BiletAllBusService', () => {
         },
         { provide: DataSource, useValue: mockDataSource },
       ],
-      controllers: [BusController],
+      controllers: [BusSearchController],
     }).compile();
 
     service = module.get<BiletAllBusSearchService>(BiletAllBusSearchService);

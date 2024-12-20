@@ -1,8 +1,8 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
-import { Airport } from '@app/modules/tickets/plane/entities/airport.entity';
-import { AirportRepository } from '@app/modules/tickets/plane/repositories/airport.repository';
+import { Airport } from '@app/providers/ticket/biletall/plane/entities/airport.entity';
+import { AirportRepository } from '@app/providers/ticket/biletall/plane/repositories/airport.repository';
 import { BiletAllPlaneSearchService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-search.service';
 
 // dto

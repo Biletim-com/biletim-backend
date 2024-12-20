@@ -10,10 +10,10 @@ import { BiletAllBusSearchParserService } from '../parsers/biletall-bus-search.p
 // request dtos
 import { BoardingPointRequestDto } from '../dto/bus-boarding-point.dto';
 import { ServiceInformationRequestDto } from '../dto/bus-service-information.dto';
-import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
-import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
-import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
-import { BusTicketDetailRequestDto } from '@app/modules/tickets/bus/dto/bus-ticket-detail.dto';
+import { BusCompanyRequestDto } from '@app/search/bus/dto/bus-company.dto';
+import { BusScheduleRequestDto } from '@app/search/bus/dto/bus-schedule-list.dto';
+import { BusSeatAvailabilityRequestDto } from '@app/search/bus/dto/bus-seat-availability.dto';
+import { BusTicketDetailRequestDto } from '@app/search/bus/dto/bus-ticket-detail.dto';
 
 // parser dtos
 import { BusTicketDetailDto } from '../dto/bus-ticket-detail.dto';

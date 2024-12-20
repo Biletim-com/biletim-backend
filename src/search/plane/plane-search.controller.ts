@@ -2,11 +2,11 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // services
-import { AirportsService } from './services/airports.service';
+import { AirportsService } from '../../providers/ticket/biletall/plane/services/airports.service';
 import { BiletAllPlaneSearchService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-search.service';
 
 // entites
-import { Airport } from './entities/airport.entity';
+import { Airport } from '../../providers/ticket/biletall/plane/entities/airport.entity';
 
 // decorators
 import { ClientIp } from '@app/common/decorators';
@@ -24,9 +24,9 @@ import { DomesticFlightScheduleDto } from '@app/providers/ticket/biletall/plane/
 import { PullAbroadFlightPricePackagesResponseDto } from '@app/providers/ticket/biletall/plane/dto/plane-pull-abroad-flight-price-packages.dto';
 import { PlanePullPriceFlightDto } from '@app/providers/ticket/biletall/plane/dto/plane-pull-price-flight.dto';
 
-@ApiTags('Plane')
-@Controller('plane')
-export class PlaneController {
+@ApiTags('Plane Search')
+@Controller('search/plane')
+export class PlaneSearchController {
   constructor(
     private readonly airportsService: AirportsService,
     private readonly biletAllPlaneSearchService: BiletAllPlaneSearchService,
@@ -36,7 +36,7 @@ export class PlaneController {
     summary:
       'Airport search by CountryName, CityName, AirportCode and AirportName',
   })
-  @Get('airport-search')
+  @Get('airports')
   async busTerminalsByName(
     @Query() { searchText }: AirportSearchQueryDto,
   ): Promise<Airport[]> {
@@ -73,8 +73,22 @@ export class PlaneController {
     }
   }
 
+  @ApiOperation({ summary: 'Get Plane Passenger Age Rules' })
+  @Get('passenger-age-rules')
+  async planePassengerAgeRules(): Promise<PlanePassengerAgeRuleDto[]> {
+    return this.biletAllPlaneSearchService.getPassengerAgeRulesPerCompany();
+  }
+
+  @ApiOperation({ summary: 'Pull Price Of Flight' })
+  @Post('pull-price')
+  async pullPriceOfFlight(
+    @Body() requestDto: PullPriceFlightRequestDto,
+  ): Promise<PlanePullPriceFlightDto> {
+    return this.biletAllPlaneSearchService.getPriceOfFlight(requestDto);
+  }
+
   @ApiOperation({ summary: 'Pull Abroad Flight Price Packages' })
-  @Post('pull-abroad-flight-price-packages')
+  @Post('pull-abroad-flight-packages')
   async pullAbroadFlightPricePackages(
     @Body() requestDto: PullAbroadFlightPricePackagesRequestDto,
   ): Promise<PullAbroadFlightPricePackagesResponseDto> {
@@ -87,19 +101,5 @@ export class PlaneController {
       response.message,
       response.brandFareInfos,
     );
-  }
-
-  @ApiOperation({ summary: 'Pull Price Of Flight' })
-  @Post('pull-price')
-  async pullPriceOfFlight(
-    @Body() requestDto: PullPriceFlightRequestDto,
-  ): Promise<PlanePullPriceFlightDto> {
-    return this.biletAllPlaneSearchService.getPriceOfFlight(requestDto);
-  }
-
-  @ApiOperation({ summary: 'Get Plane Passenger Age Rules' })
-  @Get('passenger-age-rules')
-  async planePassengerAgeRules(): Promise<PlanePassengerAgeRuleDto[]> {
-    return this.biletAllPlaneSearchService.getPassengerAgeRulesPerCompany();
   }
 }
