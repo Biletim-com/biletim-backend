@@ -1,24 +1,14 @@
 import { Module } from '@nestjs/common';
 
-import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
-
-import { Order } from './order.entity';
-import { HotelBookingOrder } from './entites/hotel-booking-order.entity';
-import { HotelBookingRoom } from './entites/hotel-booking-room.entity';
-import { HotelRoomGuest } from './entites/hotel-room-guest.entity';
-
-import { OrdersRepository } from './orders.repository';
-import { HotelBookingOrdersRepository } from './repositories/hotel-booking-orders.repository';
+import { HotelBookingOrderModule } from './hotel-booking/hotel-booking-order.module';
+import { BusTicketOrdersModule } from './bus-ticket/bus-ticket-orders.module';
+import { PlaneTicketOrdersModule } from './plane-ticket/plane-ticket-orders.module';
 
 @Module({
   imports: [
-    PostgreSQLProviderModule.forFeature([
-      Order,
-      HotelRoomGuest,
-      HotelBookingRoom,
-      HotelBookingOrder,
-    ]),
+    PlaneTicketOrdersModule,
+    HotelBookingOrderModule,
+    BusTicketOrdersModule,
   ],
-  providers: [OrdersRepository, HotelBookingOrdersRepository],
 })
-export class TransactionsModule {}
+export class OrdersModule {}

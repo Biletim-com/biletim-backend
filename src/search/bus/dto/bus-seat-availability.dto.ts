@@ -73,7 +73,7 @@ export class BusSeatAvailabilityRequestDto {
 
   @ApiProperty({
     description: 'Date of the trip in the format YYYY-MM-ddTHH:mm.SS',
-    example: '2024-09-20T15:00.00',
+    example: '2024-09-20T15:00:00',
     required: true,
   })
   @IsDateString()

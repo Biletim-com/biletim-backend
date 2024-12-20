@@ -4,15 +4,15 @@ import { DataSource } from 'typeorm';
 import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
 
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
-import { OrdersRepository } from '@app/modules/orders/orders.repository';
+import { BusTicketOrdersRepository } from '@app/modules/orders/bus-ticket/bus-ticket-orders.repository';
 
 // interfaces
 import { IPaymentResultHandler } from '@app/payment/interfaces/payment-result-handler.interface';
 
 // entities
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { Order } from '@app/modules/orders/order.entity';
-import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
+import { BusTicket } from '@app/modules/orders/bus-ticket/entities/bus-ticket.entity';
+import { BusTicketOrder } from '@app/modules/orders/bus-ticket/entities/bus-ticket-order.entity';
 
 // dtos
 import { BiletAllPaymentResultDto } from '@app/payment/dto/biletall-payment-result.dto';
@@ -38,7 +38,7 @@ export class BiletAllPaymentResultHandlerStrategy
   constructor(
     private readonly dataSource: DataSource,
     private readonly transactionsRepository: TransactionsRepository,
-    private readonly ordersRepository: OrdersRepository,
+    private readonly busTicketOrdersRepository: BusTicketOrdersRepository,
     private readonly eventEmitterService: EventEmitterService,
   ) {}
 
@@ -55,11 +55,9 @@ export class BiletAllPaymentResultHandlerStrategy
         id: paymentResultDto.transactionId,
       },
       relations: {
-        order: {
-          busTickets: {
-            departureTerminal: true,
-            arrivalTerminal: true,
-          },
+        busTicketOrder: {
+          departureTerminal: true,
+          arrivalTerminal: true,
         },
       },
     });
@@ -67,7 +65,9 @@ export class BiletAllPaymentResultHandlerStrategy
       throw new TransactionNotFoundError();
     }
     // sort bus tickets based on order
-    transaction.order.busTickets.sort((a, b) => a.ticketOrder - b.ticketOrder);
+    transaction.busTicketOrder.tickets.sort(
+      (a, b) => a.ticketOrder - b.ticketOrder,
+    );
 
     try {
       if (paymentResultDto.result === false) {
@@ -80,7 +80,7 @@ export class BiletAllPaymentResultHandlerStrategy
       }
 
       await Promise.all([
-        ...transaction.order.busTickets.map(
+        ...transaction.busTicketOrder.tickets.map(
           (sortedBusTicket, index: number) => {
             const ticketNumber = ticketNumbers[index];
             // update tickets for the data to return
@@ -96,21 +96,25 @@ export class BiletAllPaymentResultHandlerStrategy
           status: TransactionStatus.COMPLETED,
         }),
         // update order status
-        queryRunner.manager.update(Order, transaction.order.id, {
-          status: OrderStatus.COMPLETED,
-          pnr,
-        }),
+        queryRunner.manager.update(
+          BusTicketOrder,
+          transaction.busTicketOrder.id,
+          {
+            status: OrderStatus.COMPLETED,
+            pnr,
+          },
+        ),
       ]);
 
       // update transaction and order for the data to return
       transaction.status = TransactionStatus.COMPLETED;
-      transaction.order.status = OrderStatus.COMPLETED;
-      transaction.order.pnr = pnr;
+      transaction.busTicketOrder.status = OrderStatus.COMPLETED;
+      transaction.busTicketOrder.pnr = pnr;
 
       /** SEND EVENTS */
       this.eventEmitterService.emitEvent(
         'ticket.bus.purchased',
-        transaction.order,
+        transaction.busTicketOrder,
       );
       // send email or SMS
 
@@ -126,7 +130,7 @@ export class BiletAllPaymentResultHandlerStrategy
         status: TransactionStatus.FAILED,
         errorMessage,
       });
-      this.ordersRepository.update(transaction.order.id, {
+      this.busTicketOrdersRepository.update(transaction.busTicketOrder.id, {
         status: OrderStatus.PAYMENT_FAILED,
       });
 
@@ -144,7 +148,7 @@ export class BiletAllPaymentResultHandlerStrategy
         id: transactionId,
       },
       relations: {
-        order: true,
+        busTicketOrder: true,
       },
     });
     if (!transaction) {
@@ -156,8 +160,8 @@ export class BiletAllPaymentResultHandlerStrategy
         { id: transactionId },
         { status: TransactionStatus.FAILED, errorMessage },
       ),
-      this.ordersRepository.update(
-        { id: transaction.order.id },
+      this.busTicketOrdersRepository.update(
+        { id: transaction.busTicketOrder.id },
         { status: OrderStatus.PAYMENT_FAILED },
       ),
     ]);

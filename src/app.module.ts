@@ -19,6 +19,7 @@ import { VerificationsModule } from './modules/verification/verifications.module
 import { PaymentModule } from './payment/payment.module';
 import { OrderReturnModule } from './order-return/order-return.module';
 import { TicketsModule } from './modules/tickets/tickets.module';
+import { OrdersModule } from './modules/orders/orders.module';
 import { SearchModule } from './search/search.module';
 
 // Providers
@@ -43,17 +44,17 @@ import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
-    JwtModule,
     ConfigModule,
+    LoggerModule,
+    JwtModule,
     EventEmitterModule,
     RestClientModule,
     PoxClientModule,
     PdfMakerModule,
     HtmlTemplateModule,
-    LoggerModule,
+    JobsModule,
     PostgreSQLProviderModule,
     MongoDBProviderModule,
-    JobsModule,
     NotificationsModule,
     AuthModule,
     UsersModule,
@@ -64,6 +65,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     OrderReturnModule,
     PassengersModule,
     BankCardsModule,
+    OrdersModule,
     TransactionsModule,
     WalletsModule,
     QueueProviderModule,

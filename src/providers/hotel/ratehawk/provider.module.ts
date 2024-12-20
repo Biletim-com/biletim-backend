@@ -20,7 +20,7 @@ import { RatehawkStaticHotelDataService } from './services/ratehawk-static-hotel
 import { RatehawkWebhookController } from './ratehawk-webhook.controller';
 
 // repositories
-import { HotelBookingOrdersRepository } from '@app/modules/orders/repositories/hotel-booking-orders.repository';
+import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
 import { HotelRepository } from './repositories/hotel.repository';
 import { HotelReviewsRepository } from './repositories/hotel-reviews.repository';
 

@@ -7,10 +7,10 @@ import { BiletAllPlaneSearchParserService } from '../parsers/biletall-plane-sear
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 
 // request dto
-import { PullPriceFlightRequestDto } from '@app/modules/tickets/plane/dto/plane-pull-price-flight.dto';
+import { PullPriceFlightRequestDto } from '@app/search/plane/dto/plane-pull-price-flight.dto';
 import { PlanePassengerAgeRulesResponse } from '../types/biletall-plane-company-passanger-age-rules.type';
-import { PlaneFlightScheduleRequestDto } from '@app/modules/tickets/plane/dto/plane-flight-schedule.dto';
-import { PullAbroadFlightPricePackagesRequestDto } from '@app/modules/tickets/plane/dto/plane-pull-abroad-flight-price-packages.dto';
+import { PlaneFlightScheduleRequestDto } from '@app/search/plane/dto/plane-flight-schedule.dto';
+import { PullAbroadFlightPricePackagesRequestDto } from '@app/search/plane/dto/plane-pull-abroad-flight-price-packages.dto';
 
 // response dto
 import { PlaneAirportDto } from '../dto/plane-airport.dto';

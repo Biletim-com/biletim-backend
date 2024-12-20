@@ -2,20 +2,26 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 // services
-import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 import { VakifBankPaymentStrategy } from '@app/providers/payment/vakif-bank/vakif-bank-payment.strategy';
 import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
+
+// repositories
+import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
+import { BusTicketOrdersRepository } from '@app/modules/orders/bus-ticket/bus-ticket-orders.repository';
+import { PlaneTicketOrdersRepository } from '@app/modules/orders/plane-ticket/plane-ticket-orders.repository';
+import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
 
 // interfaces
 import { IPaymentResultHandler } from '@app/payment/interfaces/payment-result-handler.interface';
 
 // entities
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { Order } from '@app/modules/orders/order.entity';
-import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
-import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
-import { HotelBookingOrder } from '@app/modules/orders/entites/hotel-booking-order.entity';
+import { BusTicket } from '@app/modules/orders/bus-ticket/entities/bus-ticket.entity';
+import { BusTicketOrder } from '@app/modules/orders/bus-ticket/entities/bus-ticket-order.entity';
+import { HotelBookingOrder } from '@app/modules/orders/hotel-booking/entities/hotel-booking-order.entity';
+import { PlaneTicket } from '@app/modules/orders/plane-ticket/entities/plane-ticket.entity';
+import { PlaneTicketOrder } from '@app/modules/orders/plane-ticket/entities/plane-ticket-order.entity';
 
 // dtos
 import { VakifBankPaymentResultDto } from '../dto/vakif-bank-payment-result.dto';
@@ -37,7 +43,7 @@ import {
 import { threeDSecureResponse } from '@app/providers/payment/vakif-bank/constants/3d-response.constant';
 
 // dto
-import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
+import { BusSeatAvailabilityRequestDto } from '@app/search/bus/dto/bus-seat-availability.dto';
 import { BiletAllBusTicketPurchaseService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-ticket-purchase.service';
 import { BiletAllPlaneTicketPurchaseService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-ticket-purchase.service';
 import { RatehawkOrderBookingService } from '@app/providers/hotel/ratehawk/services/ratehawk-order-booking.service';
@@ -53,6 +59,9 @@ export class VakifBankPaymentResultHandlerStrategy
   constructor(
     private readonly dataSource: DataSource,
     private readonly transactionsRepository: TransactionsRepository,
+    private readonly busTicketOrdersRepository: BusTicketOrdersRepository,
+    private readonly planeTicketOrdersRepository: PlaneTicketOrdersRepository,
+    private readonly hotelBookingOrdersRepository: HotelBookingOrdersRepository,
     private readonly vakifBankPaymentStrategy: VakifBankPaymentStrategy,
     private readonly eventEmitterService: EventEmitterService,
     private readonly biletAllBusSearchService: BiletAllBusSearchService,
@@ -77,10 +86,10 @@ export class VakifBankPaymentResultHandlerStrategy
         id: paymentResultDto.VerifyEnrollmentRequestId,
       },
       relations: {
-        order: {
-          busTickets: {
-            departureTerminal: true,
-            arrivalTerminal: true,
+        busTicketOrder: {
+          departureTerminal: true,
+          arrivalTerminal: true,
+          tickets: {
             passenger: true,
           },
         },
@@ -89,7 +98,9 @@ export class VakifBankPaymentResultHandlerStrategy
     if (!transaction) {
       throw new TransactionNotFoundError();
     }
-    transaction.order.busTickets.sort((a, b) => a.ticketOrder - b.ticketOrder);
+    transaction.busTicketOrder.tickets.sort(
+      (a, b) => a.ticketOrder - b.ticketOrder,
+    );
 
     const actionsCompleted: Array<'PAYMENT' | 'TICKET_SALE'> = [];
 
@@ -105,7 +116,7 @@ export class VakifBankPaymentResultHandlerStrategy
         departureTerminal,
         arrivalTerminal,
         travelStartDateTime,
-      } = transaction.order.busTickets[0];
+      } = transaction.busTicketOrder;
 
       /**
        * check ticket validity against biletall
@@ -117,9 +128,9 @@ export class VakifBankPaymentResultHandlerStrategy
         departurePointId: String(departureTerminal.externalId),
         arrivalPointId: String(arrivalTerminal.externalId),
         travelStartDateTime,
-        seats: transaction.order.busTickets.map((busTicket) => ({
-          gender: busTicket.passenger.gender,
-          seatNumber: busTicket.seatNumber,
+        seats: transaction.busTicketOrder.tickets.map((ticket) => ({
+          gender: ticket.passenger.gender,
+          seatNumber: ticket.seatNumber,
         })),
       });
 
@@ -140,7 +151,7 @@ export class VakifBankPaymentResultHandlerStrategy
           ...paymentResultDto,
           PurchAmount: transaction.amount,
         },
-        transaction.order.id,
+        transaction.busTicketOrder.id,
       );
       actionsCompleted.push('PAYMENT');
 
@@ -149,13 +160,13 @@ export class VakifBankPaymentResultHandlerStrategy
         await this.biletAllBusTicketPurchaseService.purchaseTicket(
           clientIp,
           transaction,
-          transaction.order,
-          transaction.order.busTickets,
+          transaction.busTicketOrder,
+          transaction.busTicketOrder.tickets,
         );
       actionsCompleted.push('TICKET_SALE');
 
       await Promise.all([
-        ...transaction.order.busTickets.map(
+        ...transaction.busTicketOrder.tickets.map(
           (sortedBusTicket, index: number) => {
             const ticketNumber = ticketNumbers[index];
             // update tickets for the data to return
@@ -170,21 +181,25 @@ export class VakifBankPaymentResultHandlerStrategy
         queryRunner.manager.update(Transaction, transaction.id, {
           status: TransactionStatus.COMPLETED,
         }),
-        queryRunner.manager.update(Order, transaction.order.id, {
-          status: OrderStatus.COMPLETED,
-          pnr,
-        }),
+        queryRunner.manager.update(
+          BusTicketOrder,
+          transaction.busTicketOrder.id,
+          {
+            status: OrderStatus.COMPLETED,
+            pnr,
+          },
+        ),
       ]);
 
       // update transaction and order for the data to return
       transaction.status = TransactionStatus.COMPLETED;
-      transaction.order.status = OrderStatus.COMPLETED;
-      transaction.order.pnr = pnr;
+      transaction.busTicketOrder.status = OrderStatus.COMPLETED;
+      transaction.busTicketOrder.pnr = pnr;
 
       /** SEND EVENTS */
       this.eventEmitterService.emitEvent(
         'ticket.bus.purchased',
-        transaction.order,
+        transaction.busTicketOrder,
       );
 
       await queryRunner.commitTransaction();
@@ -192,11 +207,17 @@ export class VakifBankPaymentResultHandlerStrategy
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
-      await this.transactionsRepository.update(transaction.id, {
-        status: TransactionStatus.FAILED,
-        errorMessage:
-          err.message || 'Something went wrong while processing payment',
-      });
+      Promise.all([
+        this.transactionsRepository.update(transaction.id, {
+          status: TransactionStatus.FAILED,
+          errorMessage:
+            err.message || 'Something went wrong while processing payment',
+        }),
+        this.busTicketOrdersRepository.update(
+          { id: transaction.busTicketOrder.id },
+          { status: OrderStatus.PAYMENT_FAILED },
+        ),
+      ]);
 
       // TODO: this should be sent to a queue
       if (actionsCompleted.includes('PAYMENT')) {
@@ -233,13 +254,13 @@ export class VakifBankPaymentResultHandlerStrategy
         id: paymentResultDto.VerifyEnrollmentRequestId,
       },
       relations: {
-        order: {
-          planeTickets: {
+        planeTicketOrder: {
+          tickets: {
             passenger: true,
-            segments: {
-              departureAirport: true,
-              arrivalAirport: true,
-            },
+          },
+          segments: {
+            departureAirport: true,
+            arrivalAirport: true,
           },
         },
       },
@@ -248,11 +269,11 @@ export class VakifBankPaymentResultHandlerStrategy
     if (!transaction) {
       throw new TransactionNotFoundError();
     }
-    transaction.order.planeTickets.sort(
+    transaction.planeTicketOrder.tickets.sort(
       (a, b) => a.ticketOrder - b.ticketOrder,
     );
-    transaction.order.planeTickets.forEach((planeTicket) =>
-      planeTicket.segments.sort((a, b) => a.segmentOrder - b.segmentOrder),
+    transaction.planeTicketOrder.segments.sort(
+      (a, b) => a.segmentOrder - b.segmentOrder,
     );
 
     const actionsCompleted: Array<'PAYMENT' | 'TICKET_SALE'> = [];
@@ -269,7 +290,7 @@ export class VakifBankPaymentResultHandlerStrategy
           ...paymentResultDto,
           PurchAmount: transaction.amount,
         },
-        transaction.order.id,
+        transaction.planeTicketOrder.id,
       );
       actionsCompleted.push('PAYMENT');
 
@@ -279,14 +300,14 @@ export class VakifBankPaymentResultHandlerStrategy
           clientIp,
           PlaneTicketOperationType.PURCHASE,
           transaction.amount,
-          transaction.order,
-          transaction.order.planeTickets,
-          transaction.order.planeTickets[0].segments,
+          transaction.planeTicketOrder,
+          transaction.planeTicketOrder.tickets,
+          transaction.planeTicketOrder.segments,
         );
       actionsCompleted.push('TICKET_SALE');
 
       await Promise.all([
-        ...transaction.order.planeTickets.map(
+        ...transaction.planeTicketOrder.tickets.map(
           (sortedPlaneTicket, index: number) => {
             const ticketNumber = ticketNumbers[index];
             // update tickets for the data to return
@@ -305,21 +326,25 @@ export class VakifBankPaymentResultHandlerStrategy
         queryRunner.manager.update(Transaction, transaction.id, {
           status: TransactionStatus.COMPLETED,
         }),
-        queryRunner.manager.update(Order, transaction.order.id, {
-          status: OrderStatus.COMPLETED,
-          pnr,
-        }),
+        queryRunner.manager.update(
+          PlaneTicketOrder,
+          transaction.planeTicketOrder.id,
+          {
+            status: OrderStatus.COMPLETED,
+            pnr,
+          },
+        ),
       ]);
 
       // update transaction and order for the data to return
       transaction.status = TransactionStatus.COMPLETED;
-      transaction.order.status = OrderStatus.COMPLETED;
-      transaction.order.pnr = pnr;
+      transaction.planeTicketOrder.status = OrderStatus.COMPLETED;
+      transaction.planeTicketOrder.pnr = pnr;
 
       /** SEND EVENTS */
       this.eventEmitterService.emitEvent(
         'ticket.plane.purchased',
-        transaction.order,
+        transaction.planeTicketOrder,
       );
       // send email or SMS
 
@@ -331,10 +356,16 @@ export class VakifBankPaymentResultHandlerStrategy
       const errorMessage =
         err.message || 'Something went wrong while processing payment';
 
-      await this.transactionsRepository.update(transaction.id, {
-        status: TransactionStatus.FAILED,
-        errorMessage,
-      });
+      Promise.all([
+        this.transactionsRepository.update(transaction.id, {
+          status: TransactionStatus.FAILED,
+          errorMessage,
+        }),
+        this.planeTicketOrdersRepository.update(
+          { id: transaction.planeTicketOrder.id },
+          { status: OrderStatus.PAYMENT_FAILED },
+        ),
+      ]);
 
       // TODO: this should be sent to a queue
       if (actionsCompleted.includes('PAYMENT')) {
@@ -446,10 +477,18 @@ export class VakifBankPaymentResultHandlerStrategy
       const errorMessage =
         err.message || 'Something went wrong while processing payment';
 
-      await this.transactionsRepository.update(transaction.id, {
-        status: TransactionStatus.FAILED,
-        errorMessage,
-      });
+      Promise.all([
+        this.transactionsRepository.update(transaction.id, {
+          status: TransactionStatus.FAILED,
+          errorMessage,
+        }),
+        this.hotelBookingOrdersRepository.update(
+          transaction.hotelBookingOrder.id,
+          {
+            status: OrderStatus.PAYMENT_FAILED,
+          },
+        ),
+      ]);
 
       // TODO: this should be sent to a queue
       if (actionsCompleted.includes('PAYMENT')) {

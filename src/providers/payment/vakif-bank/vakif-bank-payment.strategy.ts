@@ -182,11 +182,7 @@ export class VakifBankPaymentStrategy implements IPayment {
       '/VposService/v3/Vposreq.aspx',
       body,
     );
-    this.logger.log(
-      `CancelVakifBankPayment: ${{
-        transactionId: transactionId,
-      }}`,
-    );
+    this.logger.log(`CancelVakifBankPayment: ${transactionId}`);
     return resp;
   }
 
@@ -212,12 +208,7 @@ export class VakifBankPaymentStrategy implements IPayment {
       '/VposService/v3/Vposreq.aspx',
       body,
     );
-    this.logger.log(
-      `RefundVakifBankPayment: ${{
-        transactionId: transactionId,
-        amount: refundAmount,
-      }}`,
-    );
+    this.logger.log(`RefundVakifBankPayment: ${transactionId}:${refundAmount}`);
     return resp;
   }
 }

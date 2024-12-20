@@ -7,7 +7,7 @@ import { EventEmitterService } from '@app/providers/event-emitter/provider.servi
 import { PlaneTicketOutputHandlerHelper } from '../helpers/plane-ticket-output-handler.helper';
 
 // entites
-import { Order } from '@app/modules/orders/order.entity';
+import { PlaneTicketOrder } from '@app/modules/orders/plane-ticket/entities/plane-ticket-order.entity';
 
 // decorators
 import { OnEvent } from '@app/providers/event-emitter/decorators';
@@ -24,27 +24,26 @@ export class PlaneTicketOutputHandlerService {
   ) {}
 
   @OnEvent('ticket.plane.purchased')
-  async handlePlaneTicketOutputGeneration(order: Order) {
+  async handlePlaneTicketOutputGeneration(order: PlaneTicketOrder) {
     // compose the ticket(s) info
-    order.planeTickets.sort((a, b) => a.ticketOrder - b.ticketOrder);
-    order.planeTickets.forEach((planeTicket) =>
-      planeTicket.segments.sort((a, b) => a.segmentOrder - b.segmentOrder),
-    );
+    order.tickets.sort((a, b) => a.ticketOrder - b.ticketOrder);
+    order.segments.sort((a, b) => a.segmentOrder - b.segmentOrder);
+
     const ticketTemplateData: PlaneTicketEmailTemplateData = {
       passengers: PlaneTicketOutputHandlerHelper.mapPassengers(
-        order.planeTickets,
+        order.tickets,
         order.pnr as string,
       ),
-      airlineCompany: order.planeTickets[0].segments[0].airlineName,
+      airlineCompany: order.segments[0].airlineName,
       pnrNumber: order.pnr as string,
       importantNote: 'Bagajınızda sıvı kısıtlamalarına dikkat ediniz.',
       departureFlights: PlaneTicketOutputHandlerHelper.mapSegments(
-        order.planeTickets[0].segments,
+        order.segments,
         order.pnr as string,
         false,
       ),
       returnFlights: PlaneTicketOutputHandlerHelper.mapSegments(
-        order.planeTickets[0].segments,
+        order.segments,
         order.pnr as string,
         true,
       ),

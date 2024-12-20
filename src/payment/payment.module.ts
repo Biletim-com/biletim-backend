@@ -14,16 +14,20 @@ import { BusTicketStartPaymentService } from './services/bus-ticket-start-paymen
 import { PlaneTicketStartPaymentService } from './services/plane-ticket-start-payment.service';
 import { PaymentResultHandlerProviderFactory } from './factories/payment-result-handler-provider.factory';
 import { VakifBankPaymentResultHandlerStrategy } from './strategies/vakif-bank-payment-result-handler.strategy';
-import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 import { BiletAllPaymentResultHandlerStrategy } from './strategies/biletall-payment-result-handler.strategy';
-import { OrdersRepository } from '@app/modules/orders/orders.repository';
 import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
 import { BiletAllPaymentStrategy } from '@app/providers/payment/biletall/biletall-payment.strategy';
 import { VakifBankPaymentStrategy } from '@app/providers/payment/vakif-bank/vakif-bank-payment.strategy';
 import { VakifBankEnrollmentService } from '@app/providers/payment/vakif-bank/services/vakif-bank-enrollment.service';
 import { HotelBookingStartPaymentService } from './services/hotel-booking-start-payment.service';
 import { RatehawkProviderModule } from '@app/providers/hotel/ratehawk/provider.module';
+
+// repositories
 import { UsersRepository } from '@app/modules/users/users.repository';
+import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
+import { BusTicketOrdersRepository } from '@app/modules/orders/bus-ticket/bus-ticket-orders.repository';
+import { PlaneTicketOrdersRepository } from '@app/modules/orders/plane-ticket/plane-ticket-orders.repository';
+import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
 
 @Module({
   imports: [
@@ -56,8 +60,10 @@ import { UsersRepository } from '@app/modules/users/users.repository';
     VakifBankPaymentResultHandlerStrategy,
     BiletAllPaymentStrategy,
     BiletAllPaymentResultHandlerStrategy,
+    BusTicketOrdersRepository,
+    PlaneTicketOrdersRepository,
+    HotelBookingOrdersRepository,
     TransactionsRepository,
-    OrdersRepository,
     UsersRepository,
   ],
 })

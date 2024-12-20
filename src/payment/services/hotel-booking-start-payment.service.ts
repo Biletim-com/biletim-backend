@@ -6,9 +6,9 @@ import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.
 import { RatehawkOrderBookingService } from '@app/providers/hotel/ratehawk/services/ratehawk-order-booking.service';
 
 // entities
-import { HotelBookingOrder } from '@app/modules/orders/entites/hotel-booking-order.entity';
-import { HotelBookingRoom } from '@app/modules/orders/entites/hotel-booking-room.entity';
-import { HotelRoomGuest } from '@app/modules/orders/entites/hotel-room-guest.entity';
+import { HotelBookingOrder } from '@app/modules/orders/hotel-booking/entities/hotel-booking-order.entity';
+import { HotelBookingRoom } from '@app/modules/orders/hotel-booking/entities/hotel-booking-room.entity';
+import { HotelRoomGuest } from '@app/modules/orders/hotel-booking/entities/hotel-room-guest.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { Invoice } from '@app/modules/invoices/invoice.entity';
 import { User } from '@app/modules/users/user.entity';
@@ -23,11 +23,12 @@ import {
   TransactionStatus,
   TransactionType,
   PaymentMethod,
-  OrderType,
   OrderStatus,
   PaymentProvider,
   InvoiceType,
   TicketType,
+  OrderCategory,
+  OrderType,
 } from '@app/common/enums';
 
 @Injectable()
@@ -115,7 +116,8 @@ export class HotelBookingStartPaymentService {
       const orderToCreate = new HotelBookingOrder({
         userEmail: hotelBookingPurchaseDto.email,
         userPhoneNumber: hotelBookingPurchaseDto.phoneNumber,
-        type: OrderType.PURCHASE,
+        type: OrderType.HOTEL_BOOKING,
+        category: OrderCategory.PURCHASE,
         status: OrderStatus.PENDING,
         user,
         transaction,

@@ -1,8 +1,8 @@
 import { DateTimeHelper } from '@app/common/helpers';
 
 // entites
-import { PlaneTicket } from '../plane/entities/plane-ticket.entity';
-import { PlaneTicketSegment } from '../plane/entities/plane-ticket-segment.entity';
+import { PlaneTicketSegment } from '@app/modules/orders/plane-ticket/entities/plane-ticket-segment.entity';
+import { PlaneTicket } from '@app/modules/orders/plane-ticket/entities/plane-ticket.entity';
 
 export class PlaneTicketOutputHandlerHelper {
   static mapPassengers(planeTickets: PlaneTicket[], pnrNumber: string) {

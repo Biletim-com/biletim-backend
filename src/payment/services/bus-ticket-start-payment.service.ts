@@ -6,11 +6,11 @@ import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/ser
 import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
 
 // entities
-import { Order } from '@app/modules/orders/order.entity';
+import { BusTicketOrder } from '@app/modules/orders/bus-ticket/entities/bus-ticket-order.entity';
+import { BusTicket } from '@app/modules/orders/bus-ticket/entities/bus-ticket.entity';
+import { BusTicketPassenger } from '@app/modules/orders/bus-ticket/entities/bus-ticket-passenger.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
-import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
-import { BusTicketPassenger } from '@app/modules/tickets/bus/entities/bus-ticket-passenger.entity';
+import { BusTerminal } from '@app/providers/ticket/biletall/bus/entities/bus-terminal.entity';
 import { Invoice } from '@app/modules/invoices/invoice.entity';
 import { User } from '@app/modules/users/user.entity';
 
@@ -18,6 +18,7 @@ import { User } from '@app/modules/users/user.entity';
 import {
   Currency,
   InvoiceType,
+  OrderCategory,
   OrderStatus,
   OrderType,
   PaymentMethod,
@@ -30,7 +31,7 @@ import {
 // dtos
 import { InvoiceDto } from '@app/common/dtos';
 import { BusTicketPurchaseDto } from '../dto/bus-ticket-purchase.dto';
-import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
+import { BusSeatAvailabilityRequestDto } from '@app/search/bus/dto/bus-seat-availability.dto';
 
 // types
 import { UUID } from '@app/common/types';
@@ -188,21 +189,29 @@ export class BusTicketStartPaymentService {
       /**
        * Create Order
        */
-      const order = new Order({
+      const order = new BusTicketOrder({
         userEmail: busTicketPurchaseDto.email,
         userPhoneNumber: busTicketPurchaseDto.phoneNumber,
-        type: OrderType.PURCHASE,
+        companyNumber: trip.companyNumber,
+        companyName: company.companyName,
+        routeNumber: trip.routeNumber,
+        tripTrackingNumber: busSeatAvailabilityDto.tripTrackingNumber,
+        travelStartDateTime: trip.travelStartDateTime,
+        departureTerminal,
+        arrivalTerminal,
+        type: OrderType.BUS_TICKET,
+        category: OrderCategory.PURCHASE,
         status: OrderStatus.PENDING,
         user,
         transaction,
         invoice,
       });
-      await queryRunner.manager.save(Order, order);
+      await queryRunner.manager.save(BusTicketOrder, order);
 
       /**
        * Create Bus ticket and assign the order
        */
-      const busTickets = busTicketPurchaseDto.passengers.map(
+      const tickets = busTicketPurchaseDto.passengers.map(
         (
           {
             seatNumber,
@@ -218,12 +227,7 @@ export class BusTicketStartPaymentService {
           new BusTicket({
             ticketPrice,
             currency: Currency.TRY,
-            companyNumber: trip.companyNumber,
-            companyName: company.companyName,
             ticketOrder: index + 1,
-            routeNumber: trip.routeNumber,
-            tripTrackingNumber: busSeatAvailabilityDto.tripTrackingNumber,
-            travelStartDateTime: trip.travelStartDateTime,
             seatNumber,
             passenger: new BusTicketPassenger({
               firstName,
@@ -234,12 +238,11 @@ export class BusTicketStartPaymentService {
               passportNumber: passport?.number,
               passportExpirationDate: passport?.expirationDate,
             }),
-            departureTerminal,
-            arrivalTerminal,
+
             order,
           }),
       );
-      await queryRunner.manager.save(BusTicket, busTickets);
+      await queryRunner.manager.save(BusTicket, tickets);
 
       // get strategy dynamically
       const paymentProvider =
@@ -249,7 +252,7 @@ export class BusTicketStartPaymentService {
         clientIp,
         TicketType.BUS,
         busTicketPurchaseDto.bankCard,
-        { ...transaction, order: { ...order, busTickets } },
+        { ...transaction, busTicketOrder: { ...order, tickets } },
       );
       await queryRunner.commitTransaction();
       return { transactionId: transaction.id, htmlContent };

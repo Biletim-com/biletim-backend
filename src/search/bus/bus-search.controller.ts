@@ -3,10 +3,10 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // services
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
-import { BusTerminalsService } from './services/bus-terminals.service';
+import { BusTerminalsService } from '@app/providers/ticket/biletall/bus/services/bus-terminals.service';
 
 // entities
-import { BusTerminal } from './entities/bus-terminal.entity';
+import { BusTerminal } from '@app/providers/ticket/biletall/bus/entities/bus-terminal.entity';
 
 // decorators
 import { ClientIp } from '@app/common/decorators';
@@ -24,9 +24,9 @@ import { BusScheduleListResponseDto } from '@app/providers/ticket/biletall/bus/d
 import { BusSeatAvailabilityDto } from '@app/providers/ticket/biletall/bus/dto/bus-seat-availability.dto';
 import { BusTicketDetailDto } from '@app/providers/ticket/biletall/bus/dto/bus-ticket-detail.dto';
 
-@ApiTags('Bus')
-@Controller('bus')
-export class BusController {
+@ApiTags('Bus Search')
+@Controller('search/bus')
+export class BusSearchController {
   constructor(
     private readonly BiletAllBusSearchService: BiletAllBusSearchService,
     private readonly busTerminalsService: BusTerminalsService,
@@ -41,7 +41,7 @@ export class BusController {
   }
 
   @ApiOperation({ summary: 'Search Bus Terminals By Terminal name and Region' })
-  @Get('bus-terminal-search')
+  @Get('bus-terminals')
   async searchBusTerminals(
     @Query() { searchTerm }: BusTerminalSearchQueryDto,
   ): Promise<BusTerminal[]> {

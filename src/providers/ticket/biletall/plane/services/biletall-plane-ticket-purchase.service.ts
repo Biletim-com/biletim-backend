@@ -7,9 +7,9 @@ import { BiletAllPlaneTicketPurchaseParserService } from '../parsers/biletall-pl
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 
 // entites
-import { PlaneTicketSegment } from '@app/modules/tickets/plane/entities/plane-ticket-segment.entity';
-import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
-import { Order } from '@app/modules/orders/order.entity';
+import { PlaneTicketOrder } from '@app/modules/orders/plane-ticket/entities/plane-ticket-order.entity';
+import { PlaneTicket } from '@app/modules/orders/plane-ticket/entities/plane-ticket.entity';
+import { PlaneTicketSegment } from '@app/modules/orders/plane-ticket/entities/plane-ticket-segment.entity';
 
 // dto
 import { FlightTicketPurchaseDto } from '../dto/plane-ticket-purchase.dto';
@@ -48,7 +48,7 @@ export class BiletAllPlaneTicketPurchaseService {
     clientIp: string,
     operationType: PlaneTicketOperationType.PURCHASE,
     totalPrice: string,
-    order: Order,
+    order: PlaneTicketOrder,
     planeTickets: PlaneTicket[],
     segments: PlaneTicketSegment[],
   ): Promise<FlightTicketPurchaseDto>;
@@ -57,7 +57,7 @@ export class BiletAllPlaneTicketPurchaseService {
     clientIp: string,
     operationType: PlaneTicketOperationType.RESERVATION,
     totalPrice: string,
-    order: Order,
+    order: PlaneTicketOrder,
     planeTickets: PlaneTicket[],
     segments: PlaneTicketSegment[],
   ): Promise<FlightTicketReservationDto>;
@@ -66,7 +66,7 @@ export class BiletAllPlaneTicketPurchaseService {
     clientIp: string,
     operationType: PlaneTicketOperationType,
     totalPrice: string,
-    order: Order,
+    order: PlaneTicketOrder,
     planeTickets: PlaneTicket[],
     segments: PlaneTicketSegment[],
   ): Promise<FlightTicketPurchaseDto | FlightTicketReservationDto> {

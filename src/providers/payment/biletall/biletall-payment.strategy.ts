@@ -44,8 +44,8 @@ export class BiletAllPaymentStrategy implements IPayment {
     const saleXml = await this.biletAllBusTicketPurchaseService.purchaseTicket(
       clientIp,
       transaction,
-      transaction.order,
-      transaction.order.busTickets,
+      transaction.busTicketOrder,
+      transaction.busTicketOrder.tickets,
       bankCard,
     );
 

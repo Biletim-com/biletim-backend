@@ -4,7 +4,7 @@ import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity'
 import { Gender, PassengerType } from '@app/common/enums';
 import { DateISODate } from '@app/common/types';
 
-@Entity('plane_ticket_passenger')
+@Entity('plane_ticket_passengers')
 export class PlaneTicketPassenger extends AbstractEntity<PlaneTicketPassenger> {
   @Column()
   firstName: string;

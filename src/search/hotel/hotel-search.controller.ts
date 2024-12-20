@@ -6,7 +6,7 @@ import { RatehawkSearchService } from '@app/providers/hotel/ratehawk/services/ra
 import { RatehawkOrderBookingService } from '@app/providers/hotel/ratehawk/services/ratehawk-order-booking.service';
 import { RatehawkStaticHotelDataService } from '@app/providers/hotel/ratehawk/services/ratehawk-static-hotel-data.service';
 
-import { HotelBookingOrdersRepository } from '@app/modules/orders/repositories/hotel-booking-orders.repository';
+import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
 import { HotelDocument } from '@app/providers/hotel/ratehawk/models/hotel.schema';
 
 // dto

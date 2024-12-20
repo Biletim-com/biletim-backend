@@ -5,6 +5,9 @@ import { EventEmitterService } from '@app/providers/event-emitter/provider.servi
 import { OrderReturnValidationService } from './order-return-validation.service';
 import { VerificationService } from '@app/modules/verification/verification.service';
 
+// enums
+import { OrderType } from '@app/common/enums';
+
 @Injectable()
 export class OrderReturnStartService {
   constructor(
@@ -16,12 +19,13 @@ export class OrderReturnStartService {
   public async startReturnOrder(
     pnrNumber: string,
     passengerLastName: string,
+    orderType: OrderType,
   ): Promise<void> {
-    const order =
-      await this.orderReturnValidationService.validateOrderWithPnrNumber(
-        pnrNumber,
-        passengerLastName,
-      );
+    const order = await this.orderReturnValidationService.validateOrder(
+      pnrNumber,
+      passengerLastName,
+      orderType,
+    );
     const verificationCode =
       await this.verificaitonService.createOrderCancellationVerificationCode(
         order,

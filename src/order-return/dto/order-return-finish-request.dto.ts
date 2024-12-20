@@ -1,18 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
 
-// utils
-import { UUID } from '@app/common/types';
+// enumns
+import { OrderType } from '@app/common/enums';
 
 export class OrderReturnFinishRequestDto {
   @ApiProperty({
-    description: 'The unique PNR number',
+    description:
+      'The unique reservation number (PNR for bus and plane tickets)',
     example: 'ABC123',
     required: true,
   })
   @IsNotEmpty()
   @IsString()
-  pnrNumber: UUID;
+  reservationNumber: string;
+
+  @ApiProperty({
+    description: 'Order type',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsEnum(OrderType)
+  orderType: OrderType;
 
   @ApiProperty({
     description: "First Passenger's lastname",

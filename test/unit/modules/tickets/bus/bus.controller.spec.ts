@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Gender } from '@app/common/enums';
 import { TicketConfigService } from '@app/configs/ticket';
 import { ConfigModule } from '@app/configs/config.module';
-import { BusController } from '@app/modules/tickets/bus/bus.controller';
-import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
-import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
-import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
+import { BusSearchController } from '@app/search/bus/bus-search.controller';
+import { BusCompanyRequestDto } from '@app/search/bus/dto/bus-company.dto';
+import { BusScheduleRequestDto } from '@app/search/bus/dto/bus-schedule-list.dto';
+import { BusSeatAvailabilityRequestDto } from '@app/search/bus/dto/bus-seat-availability.dto';
 import { BiletAllBusSearchParserService } from '@app/providers/ticket/biletall/bus/parsers/biletall-bus-search.parser.service';
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
-import { BusTerminalsService } from '@app/modules/tickets/bus/services/bus-terminals.service';
+import { BusTerminalsService } from '@app/providers/ticket/biletall/bus/services/bus-terminals.service';
 import {
   busCompanyMockResponse,
   busSeatAvailabilityMockResponse,
@@ -16,7 +16,7 @@ import {
   getBusTerminalsByNameMockResponse,
 } from './mock-response/biletall-bus-service-mock-response';
 
-describe('BusController', () => {
+describe('BusSearchController', () => {
   const busServiceMock = {
     searchBusTerminals: jest.fn(),
   };
@@ -32,7 +32,7 @@ describe('BusController', () => {
     saleRequest: jest.fn(),
   };
 
-  let controller: BusController;
+  let controller: BusSearchController;
   let biletAllBusService: BiletAllBusSearchService;
 
   beforeEach(async () => {
@@ -51,10 +51,10 @@ describe('BusController', () => {
           useValue: biletAllBusServiceMock,
         },
       ],
-      controllers: [BusController],
+      controllers: [BusSearchController],
     }).compile();
 
-    controller = module.get<BusController>(BusController);
+    controller = module.get<BusSearchController>(BusSearchController);
     biletAllBusService = module.get<BiletAllBusSearchService>(
       BiletAllBusSearchService,
     );
