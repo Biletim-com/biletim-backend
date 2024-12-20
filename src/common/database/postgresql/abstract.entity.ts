@@ -11,7 +11,7 @@ const UtcDateTransformer = {
   to: (value: Date) => value, // Stores as-is
 };
 
-export abstract class AbstractEntity<T> {
+export abstract class AbstractEntity<Entity> {
   @PrimaryGeneratedColumn('uuid')
   id: UUID;
 
@@ -21,7 +21,7 @@ export abstract class AbstractEntity<T> {
   @UpdateDateColumn({ type: 'timestamp', transformer: UtcDateTransformer })
   updatedAt: DateTime;
 
-  constructor(entity: Partial<T>) {
+  constructor(entity: Partial<Entity>) {
     Object.assign(this, entity);
   }
 }

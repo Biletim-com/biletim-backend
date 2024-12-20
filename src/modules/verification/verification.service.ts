@@ -4,12 +4,15 @@ import { Injectable } from '@nestjs/common';
 import { VerificationsRepository } from './verification.repository';
 
 // entites
+import { AbstractOrder } from '../orders/abstract-order.entity';
 import { User } from '../users/user.entity';
-import { Order } from '../orders/order.entity';
 import { Verification } from './verification.entity';
+import { HotelBookingOrder } from '../orders/hotel-booking/entities/hotel-booking-order.entity';
+import { BusTicketOrder } from '../orders/bus-ticket/entities/bus-ticket-order.entity';
+import { PlaneTicketOrder } from '../orders/plane-ticket/entities/plane-ticket-order.entity';
 
 // enums
-import { VerificationType } from '@app/common/enums';
+import { OrderType, VerificationType } from '@app/common/enums';
 
 // helpers
 import { DateTimeHelper } from '@app/common/helpers';
@@ -19,6 +22,7 @@ import { UUID } from '@app/common/types';
 
 // errors
 import {
+  ServiceError,
   UserNotFoundError,
   VerificaitonCodeExpiredError,
   VerificaitonCodeInvalidError,
@@ -43,18 +47,29 @@ export class VerificationService {
     return verificationCode;
   }
 
-  async createOrderCancellationVerificationCode(order: Order): Promise<number> {
+  async createOrderCancellationVerificationCode(
+    order: AbstractOrder,
+  ): Promise<number> {
     const { verificationCode } = await this.uniqueSixDigitNumber();
 
-    await this.verificationRepository.save(
-      new Verification({
-        order,
-        verificationCode: verificationCode,
-        isUsed: false,
-        type: VerificationType.CANCEL_ORDER,
-        expiredAt: DateTimeHelper.addMinutesToCurrentDateTime(4),
-      }),
-    );
+    const verification = new Verification({
+      verificationCode,
+      isUsed: false,
+      type: VerificationType.CANCEL_ORDER,
+      expiredAt: DateTimeHelper.addMinutesToCurrentDateTime(4),
+    });
+
+    if (order.type === OrderType.BUS_TICKET) {
+      verification.busTicketOrder = order as BusTicketOrder;
+    } else if (order.type === OrderType.PLANE_TICKET) {
+      verification.planeTicketOrder = order as PlaneTicketOrder;
+    } else if (order.type === OrderType.HOTEL_BOOKING) {
+      verification.hotelBookingOrder = order as HotelBookingOrder;
+    } else {
+      throw new ServiceError('Invalid order type');
+    }
+
+    await this.verificationRepository.save(verification);
     return verificationCode;
   }
 
@@ -84,12 +99,28 @@ export class VerificationService {
   ): Promise<Verification> {
     const orderCancellationVerification =
       await this.verificationRepository.findOne({
-        where: {
-          verificationCode: verificationCode,
-          type: VerificationType.CANCEL_ORDER,
-          order: { id: orderId },
+        where: [
+          {
+            verificationCode,
+            type: VerificationType.CANCEL_ORDER,
+            busTicketOrder: { id: orderId },
+          },
+          {
+            verificationCode,
+            type: VerificationType.CANCEL_ORDER,
+            planeTicketOrder: { id: orderId },
+          },
+          {
+            verificationCode,
+            type: VerificationType.CANCEL_ORDER,
+            hotelBookingOrder: { id: orderId },
+          },
+        ],
+        relations: {
+          busTicketOrder: true,
+          planeTicketOrder: true,
+          hotelBookingOrder: true,
         },
-        relations: { order: true },
       });
 
     if (!orderCancellationVerification)

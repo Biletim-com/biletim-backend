@@ -13,7 +13,7 @@ import { ApiExcludeController } from '@nestjs/swagger';
 
 // services
 import { HotelApiConfigService } from '@app/configs/hotel-api';
-import { HotelBookingOrdersRepository } from '@app/modules/orders/repositories/hotel-booking-orders.repository';
+import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
 
 // enums
 import { OrderStatus } from '@app/common/enums';

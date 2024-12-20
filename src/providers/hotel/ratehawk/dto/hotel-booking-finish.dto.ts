@@ -1,5 +1,5 @@
 // entity
-import { HotelRoomGuest } from '@app/modules/orders/entites/hotel-room-guest.entity';
+import { HotelRoomGuest } from '@app/modules/orders/hotel-booking/entities/hotel-room-guest.entity';
 
 // dto
 import { OrderBookingFinishStatusRequestDto } from './hotel-order-booking-finish-status.dto';

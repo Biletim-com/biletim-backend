@@ -6,9 +6,6 @@ import { OrderReturnValidationService } from './services/order-return-validation
 import { OrderReturnStartService } from './services/order-return-start.service';
 import { OrderReturnFinishService } from './services/order-return-finish.service';
 
-// entites
-import { Order } from '@app/modules/orders/order.entity';
-
 // decorators
 import { ClientIp } from '@app/common/decorators';
 
@@ -16,6 +13,7 @@ import { ClientIp } from '@app/common/decorators';
 import { OrderReturnStartRequestDto } from './dto/order-return-start-request.dto';
 import { OrderReturnFinishRequestDto } from './dto/order-return-finish-request.dto';
 import { OrderReturnValidationRequestDto } from './dto/order-return-validation-request.dto copy';
+import { OrderReturnValidationDto } from './dto/order-return-validation.dto';
 
 @ApiTags('Order Return')
 @Controller('order-return')
@@ -28,21 +26,33 @@ export class OrderReturnController {
 
   @Get('validate')
   validateOrder(
-    @Query() { pnrNumber, passengerLastName }: OrderReturnValidationRequestDto,
-  ): Promise<Order> {
-    return this.orderReturnValidationService.validateOrderWithPnrNumber(
-      pnrNumber,
+    @Query()
+    {
+      reservationNumber,
       passengerLastName,
+      orderType,
+    }: OrderReturnValidationRequestDto,
+  ): Promise<OrderReturnValidationDto> {
+    return this.orderReturnValidationService.validateOrder(
+      reservationNumber,
+      passengerLastName,
+      orderType,
     );
   }
 
   @Post('start')
   async startOrderReturn(
-    @Body() { pnrNumber, passengerLastName }: OrderReturnStartRequestDto,
+    @Body()
+    {
+      reservationNumber,
+      passengerLastName,
+      orderType,
+    }: OrderReturnStartRequestDto,
   ): Promise<{ message: string }> {
     await this.orderReturnStartService.startReturnOrder(
-      pnrNumber,
+      reservationNumber,
       passengerLastName,
+      orderType,
     );
     return { message: 'Order Cancellation message is sent' };
   }
@@ -52,15 +62,17 @@ export class OrderReturnController {
     @ClientIp() clientIp: string,
     @Body()
     {
-      pnrNumber,
+      reservationNumber,
       passengerLastName,
+      orderType,
       verificationCode,
     }: OrderReturnFinishRequestDto,
   ): Promise<{ message: string }> {
     await this.orderReturnFinishService.finishReturn(
       clientIp,
-      pnrNumber,
+      reservationNumber,
       passengerLastName,
+      orderType,
       verificationCode,
     );
     return { message: 'Order Cancellation is successful' };

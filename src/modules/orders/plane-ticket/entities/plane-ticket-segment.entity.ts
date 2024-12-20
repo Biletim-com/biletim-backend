@@ -1,7 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 // entites
-import { Airport } from './airport.entity';
+import { PlaneTicketOrder } from './plane-ticket-order.entity';
+import { Airport } from '@app/modules/tickets/plane/entities/airport.entity';
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
 // dtos
@@ -17,20 +18,6 @@ export class PlaneTicketSegment extends AbstractEntity<PlaneTicketSegment> {
 
   @Column()
   companyNumber: string;
-
-  @JoinColumn({
-    name: 'departure_airport_code',
-    referencedColumnName: 'airportCode',
-  })
-  @ManyToOne(() => Airport, (airport) => airport.airportCode)
-  departureAirport: Airport;
-
-  @JoinColumn({
-    name: 'arrival_airport_code',
-    referencedColumnName: 'airportCode',
-  })
-  @ManyToOne(() => Airport, (airport) => airport.airportCode)
-  arrivalAirport: Airport;
 
   @Column()
   departureDateTime: string;
@@ -58,6 +45,27 @@ export class PlaneTicketSegment extends AbstractEntity<PlaneTicketSegment> {
 
   @Column()
   isReturnFlight: boolean;
+
+  @JoinColumn({
+    name: 'departure_airport_code',
+    referencedColumnName: 'airportCode',
+  })
+  @ManyToOne(() => Airport, (airport) => airport.airportCode)
+  departureAirport: Airport;
+
+  @JoinColumn({
+    name: 'arrival_airport_code',
+    referencedColumnName: 'airportCode',
+  })
+  @ManyToOne(() => Airport, (airport) => airport.airportCode)
+  arrivalAirport: Airport;
+
+  @JoinColumn()
+  @ManyToOne(
+    () => PlaneTicketOrder,
+    (planeTicketOrder) => planeTicketOrder.segments,
+  )
+  order: PlaneTicketOrder;
 
   constructor(
     planeTicketSegment: Partial<PlaneTicketSegment> & { companyNumber: string },

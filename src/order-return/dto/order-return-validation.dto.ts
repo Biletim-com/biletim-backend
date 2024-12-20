@@ -1,4 +1,5 @@
-import { Order } from '@app/modules/orders/order.entity';
+import { AbstractOrder } from '@app/modules/orders/abstract-order.entity';
+import { Transaction } from '@app/modules/transactions/transaction.entity';
 
 export class OrderReturnTotalPenaltyDto {
   totalTicketPrice: string;
@@ -8,6 +9,7 @@ export class OrderReturnTotalPenaltyDto {
   amountToRefund: string;
 }
 
-export class OrderReturnValidationDto extends Order {
+export class OrderReturnValidationDto extends AbstractOrder {
   penalty: OrderReturnTotalPenaltyDto;
+  transaction: Transaction;
 }

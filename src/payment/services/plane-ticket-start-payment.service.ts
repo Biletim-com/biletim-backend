@@ -6,11 +6,11 @@ import { BiletAllPlaneSearchService } from '@app/providers/ticket/biletall/plane
 import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
 
 // entities
-import { Order } from '@app/modules/orders/order.entity';
+import { PlaneTicketOrder } from '@app/modules/orders/plane-ticket/entities/plane-ticket-order.entity';
+import { PlaneTicketSegment } from '@app/modules/orders/plane-ticket/entities/plane-ticket-segment.entity';
+import { PlaneTicketPassenger } from '@app/modules/orders/plane-ticket/entities/plane-ticket-passenger.entity';
+import { PlaneTicket } from '@app/modules/orders/plane-ticket/entities/plane-ticket.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { PlaneTicketPassenger } from '@app/modules/tickets/plane/entities/plane-ticket-passenger.entity';
-import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
-import { PlaneTicketSegment } from '@app/modules/tickets/plane/entities/plane-ticket-segment.entity';
 import { Airport } from '@app/modules/tickets/plane/entities/airport.entity';
 import { Invoice } from '@app/modules/invoices/invoice.entity';
 import { User } from '@app/modules/users/user.entity';
@@ -19,6 +19,7 @@ import { User } from '@app/modules/users/user.entity';
 import {
   Currency,
   InvoiceType,
+  OrderCategory,
   OrderStatus,
   OrderType,
   PassengerType,
@@ -177,16 +178,17 @@ export class PlaneTicketStartPaymentService {
       /**
        * Create Order
        */
-      const order = new Order({
+      const order = new PlaneTicketOrder({
         userEmail: planeTicketPurchaseDto.email,
         userPhoneNumber: planeTicketPurchaseDto.phoneNumber,
-        type: OrderType.PURCHASE,
+        type: OrderType.PLANE_TICKET,
+        category: OrderCategory.PURCHASE,
         status: OrderStatus.PENDING,
         invoice,
         transaction,
         user,
       });
-      await queryRunner.manager.save(Order, order);
+      await queryRunner.manager.save(PlaneTicketOrder, order);
 
       /**
        * Create Segments
@@ -195,6 +197,7 @@ export class PlaneTicketStartPaymentService {
         (segment, index) =>
           new PlaneTicketSegment({
             ...segment,
+            order,
             departureAirport: new Airport({
               airportCode: segment.departureAirport,
             }),
@@ -205,7 +208,7 @@ export class PlaneTicketStartPaymentService {
             segmentOrder: index + 1,
           }),
       );
-      await queryRunner.manager.insert(PlaneTicketSegment, segments);
+      await queryRunner.manager.save(PlaneTicketSegment, segments);
 
       /**
        * Create Plane tickets, and assign the order and the segments
@@ -232,7 +235,6 @@ export class PlaneTicketStartPaymentService {
             serviceFee: passengerDto.serviceFee,
             biletimFee: passengerDto.serviceFee, // TODO: temporary
             passenger,
-            segments,
             order,
           });
         },

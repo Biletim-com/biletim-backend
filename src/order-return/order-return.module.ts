@@ -1,12 +1,18 @@
 import { Module } from '@nestjs/common';
 
 // services
-import { OrdersRepository } from '@app/modules/orders/orders.repository';
 import { OrderReturnValidationService } from './services/order-return-validation.service';
 import { OrderReturnStartService } from './services/order-return-start.service';
 import { VerificationService } from '@app/modules/verification/verification.service';
 import { OrderReturnFinishService } from './services/order-return-finish.service';
+import { OrderRepositoryFactoryService } from './factories/order-repository.factory.service';
+import { OrderEntityFactoryService } from './factories/order-entity.factory.service';
+
+// repositories
 import { VerificationsRepository } from '@app/modules/verification/verification.repository';
+import { BusTicketOrdersRepository } from '@app/modules/orders/bus-ticket/bus-ticket-orders.repository';
+import { PlaneTicketOrdersRepository } from '@app/modules/orders/plane-ticket/plane-ticket-orders.repository';
+import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
 
 import { OrderReturnController } from './order-return.controller';
 import { PaymentProviderModule } from '@app/providers/payment/provider.module';
@@ -25,7 +31,11 @@ import { BiletAllBusModule } from '@app/providers/ticket/biletall/bus/provider.m
     OrderReturnValidationService,
     OrderReturnStartService,
     OrderReturnFinishService,
-    OrdersRepository,
+    OrderRepositoryFactoryService,
+    OrderEntityFactoryService,
+    BusTicketOrdersRepository,
+    PlaneTicketOrdersRepository,
+    HotelBookingOrdersRepository,
     VerificationsRepository,
     VerificationService,
   ],

@@ -1,8 +1,9 @@
 import { SendPlaneTicketGeneratedEmailNotication } from '@app/common/types';
-import { Order } from '@app/modules/orders/order.entity';
+import { BusTicketOrder } from '@app/modules/orders/bus-ticket/entities/bus-ticket-order.entity';
+import { PlaneTicketOrder } from '@app/modules/orders/plane-ticket/entities/plane-ticket-order.entity';
 
 export type TicketEventsMap = {
-  'ticket.bus.purchased': Order;
-  'ticket.plane.purchased': Order;
+  'ticket.bus.purchased': BusTicketOrder;
+  'ticket.plane.purchased': PlaneTicketOrder;
   'ticket.plane.generated': SendPlaneTicketGeneratedEmailNotication;
 };

@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 import { AbstractRepository } from '@app/common/database/postgresql/abstract.repository';
-import { Order } from './order.entity';
+import { PlaneTicketOrder } from './entities/plane-ticket-order.entity';
 
 @Injectable()
-export class OrdersRepository extends AbstractRepository<Order> {
+export class PlaneTicketOrdersRepository extends AbstractRepository<PlaneTicketOrder> {
   constructor(private dataSource: DataSource) {
-    super(Order, dataSource.createEntityManager());
+    super(PlaneTicketOrder, dataSource.createEntityManager());
   }
 }

@@ -7,10 +7,9 @@ import { BiletAllCommonModule } from '@app/providers/ticket/biletall/common/prov
 
 // services
 import { PlaneTicketOutputHandlerService } from './services/plane-ticket-output-handler.service';
-import { OrdersRepository } from '../orders/orders.repository';
 
 @Module({
   imports: [BusModule, PlaneModule, BiletAllCommonModule],
-  providers: [OrdersRepository, PlaneTicketOutputHandlerService],
+  providers: [PlaneTicketOutputHandlerService],
 })
 export class TicketsModule {}

@@ -1,9 +1,10 @@
 import { Entity, OneToOne, JoinColumn, Column, OneToMany } from 'typeorm';
 
 // entities
-import { AbstractOrder } from './abstract-order.entity';
+import { AbstractOrder } from '../../abstract-order.entity';
 import { HotelBookingRoom } from './hotel-booking-room.entity';
 import { Invoice } from '@app/modules/invoices/invoice.entity';
+import { Transaction } from '@app/modules/transactions/transaction.entity';
 
 // dto
 import {
@@ -33,8 +34,12 @@ export class HotelBookingOrder extends AbstractOrder<HotelBookingOrder> {
   rooms: HotelBookingRoom[];
 
   @JoinColumn()
-  @OneToOne(() => Invoice, (invoice) => invoice.order, {
+  @OneToOne(() => Invoice, (invoice) => invoice.hotelBookingOrder, {
     cascade: ['insert'],
   })
   invoice: Invoice;
+
+  @JoinColumn()
+  @OneToOne(() => Transaction, (transaction) => transaction.hotelBookingOrder)
+  transaction: Transaction;
 }

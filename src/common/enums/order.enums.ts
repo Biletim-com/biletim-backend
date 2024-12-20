@@ -12,7 +12,13 @@ export enum OrderStatus {
   REJECTED = 'rejected', // The order has been successfully completed, and no further action is required.
 }
 
-export enum OrderType {
+export enum OrderCategory {
   PURCHASE = 'purchase',
   RESERVATION = 'reservation',
+}
+
+export enum OrderType {
+  BUS_TICKET = 'bus-ticket',
+  PLANE_TICKET = 'plane-ticket',
+  HOTEL_BOOKING = 'hotel-booking',
 }

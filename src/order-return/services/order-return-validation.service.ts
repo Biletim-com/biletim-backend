@@ -3,13 +3,11 @@ import { Injectable } from '@nestjs/common';
 // services
 import { BiletAllPnrService } from '@app/providers/ticket/biletall/common/services/biletall-pnr.service';
 import { BiletAllPlaneTicketReturnService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-ticket-return.service';
-
-// repositories
-import { OrdersRepository } from '@app/modules/orders/orders.repository';
+import { OrderRepositoryFactoryService } from '../factories/order-repository.factory.service';
 
 // entities
-import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
-import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
+import { PlaneTicket } from '@app/modules/orders/plane-ticket/entities/plane-ticket.entity';
+import { BusTicket } from '@app/modules/orders/bus-ticket/entities/bus-ticket.entity';
 
 // errors
 import {
@@ -17,7 +15,7 @@ import {
   OrderNotFoundError,
 } from '@app/common/errors';
 import { normalizeDecimal, turkishToEnglish } from '@app/common/utils';
-import { OrderStatus } from '@app/common/enums';
+import { OrderStatus, OrderType } from '@app/common/enums';
 
 // dto
 import {
@@ -28,59 +26,53 @@ import {
 @Injectable()
 export class OrderReturnValidationService {
   constructor(
-    private readonly ordersRepository: OrdersRepository,
+    private readonly orderRepositoryFactoryService: OrderRepositoryFactoryService,
     private readonly biletAllPnrService: BiletAllPnrService,
     private readonly biletAllPlaneTicketReturnService: BiletAllPlaneTicketReturnService,
   ) {}
 
-  private getFirstPassengerSurname(order: {
-    busTickets: BusTicket[];
-    planeTickets: PlaneTicket[];
-  }): string {
+  private getFirstPassengerSurname(
+    tickets: BusTicket[] | PlaneTicket[],
+  ): string {
     const getSurname = (tickets: BusTicket[] | PlaneTicket[]) =>
       tickets.sort(
         (a: BusTicket | PlaneTicket, b: BusTicket | PlaneTicket) =>
           a.ticketOrder - b.ticketOrder,
       )[0]?.passenger?.lastName || '';
 
-    let firstPassengerSurname = '';
-    if (order.busTickets.length > 0) {
-      firstPassengerSurname = getSurname(order.busTickets);
-    } else {
-      firstPassengerSurname = getSurname(order.planeTickets);
-    }
-
+    const firstPassengerSurname = getSurname(tickets);
     return turkishToEnglish(firstPassengerSurname).toUpperCase();
   }
 
   public async validateOrderWithPnrNumber(
     pnrNumber: string,
     passengerLastName: string,
+    orderType: OrderType.BUS_TICKET | OrderType.PLANE_TICKET,
   ): Promise<OrderReturnValidationDto> {
     const transformedPassengerLastName =
       turkishToEnglish(passengerLastName).toUpperCase();
-    const existingOrder = await this.ordersRepository.findOne({
+    const ordersRepository =
+      this.orderRepositoryFactoryService.getRepository(orderType);
+
+    const existingOrder = await ordersRepository.findOne({
       where: {
         pnr: pnrNumber,
       },
       relations: {
         transaction: true,
-        busTickets: {
-          passenger: true,
-        },
-        planeTickets: {
+        tickets: {
           passenger: true,
         },
       },
     });
+
     if (!existingOrder) {
       throw new OrderNotFoundError();
     }
 
-    const firstPassengerSurname = this.getFirstPassengerSurname({
-      busTickets: existingOrder.busTickets,
-      planeTickets: existingOrder.planeTickets,
-    });
+    const firstPassengerSurname = this.getFirstPassengerSurname(
+      existingOrder.tickets,
+    );
 
     if (transformedPassengerLastName !== firstPassengerSurname) {
       throw new OrderNotFoundError();
@@ -102,7 +94,7 @@ export class OrderReturnValidationService {
       amountToRefund: existingOrder.transaction.amount,
     };
 
-    if (existingOrder.planeTickets.length > 0) {
+    if (orderType === OrderType.PLANE_TICKET) {
       const { passengers } =
         await this.biletAllPlaneTicketReturnService.ticketReturnPenalty(
           pnrNumber,
@@ -133,5 +125,29 @@ export class OrderReturnValidationService {
       ...existingOrder,
       penalty,
     };
+  }
+
+  public validateOrder(
+    reservationNumber: string,
+    passengerLastName: string,
+    orderType: OrderType,
+  ) {
+    if (
+      orderType === OrderType.BUS_TICKET ||
+      orderType === OrderType.PLANE_TICKET
+    ) {
+      return this.validateOrderWithPnrNumber(
+        reservationNumber,
+        passengerLastName,
+        orderType,
+      );
+    } else {
+      // TODO: this is for HOTEL
+      return this.validateOrderWithPnrNumber(
+        reservationNumber,
+        passengerLastName,
+        orderType as OrderType.BUS_TICKET,
+      );
+    }
   }
 }
