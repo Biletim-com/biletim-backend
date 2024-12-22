@@ -1,6 +1,7 @@
 import { UUID } from '@app/common/types';
+import { PaymentDetailsDto } from '../../dto/payment-finish.dto';
 
-export class VakifBankPaymentResultDto {
+export class VakifBankPaymentResultDto extends PaymentDetailsDto {
   MerchantId: string;
   Pan: string;
   Expiry: string;

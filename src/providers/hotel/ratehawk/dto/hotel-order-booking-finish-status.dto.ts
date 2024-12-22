@@ -1,26 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNotEmpty,
+  IsNumberString,
   IsOptional,
   IsString,
-  Length,
   MaxLength,
   MinLength,
 } from 'class-validator';
 
 export class OrderBookingFinishStatusRequestDto {
   @ApiProperty({
-    description:
-      'Id (UUID) of the booking (at the partner) made by the partner (Required)',
-    example: 'unique-partner-order-id',
+    description: 'Reservation number of the booking ',
+    example: '1000',
   })
-  @IsString()
-  @Length(1, 256)
+  @IsNumberString()
   @IsNotEmpty()
   partnerOrderId: string;
 
   @ApiProperty({
-    description: 'Comment (Optional)',
+    description: 'Comment',
     example: 'This is a comment',
   })
   @IsString()

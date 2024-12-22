@@ -1,4 +1,5 @@
 import { Currency } from '@app/common/enums';
+import { DateTime } from '@app/common/types';
 
 export type PaymentType = {
   amount: string;
@@ -47,14 +48,14 @@ type CommissionDetails = {
   amount_commission: string;
 };
 
-type CancellationPenalties = {
+export type CancellationPenalties = {
   policies: CancellationPolicy[];
-  free_cancellation_before: string | null;
+  free_cancellation_before: DateTime;
 };
 
 type CancellationPolicy = {
-  start_at: string | null;
-  end_at: string | null;
+  start_at: DateTime | null;
+  end_at: DateTime | null;
   amount_charge: string;
   amount_show: string;
   commission_info: CommissionInfo;

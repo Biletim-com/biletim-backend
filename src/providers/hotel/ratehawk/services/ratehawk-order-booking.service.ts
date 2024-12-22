@@ -1,5 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import * as crypto from 'crypto';
+import { Injectable } from '@nestjs/common';
 
 import { HotelApiConfigService } from '@app/configs/hotel-api';
 import { RestClientService } from '@app/providers/rest-client/provider.service';
@@ -9,13 +8,13 @@ import { HotelRateValidationRequestDto } from '@app/search/hotel/dto/hotel-rate-
 import { BookingFinishRequestDto } from '../dto/hotel-booking-finish.dto';
 import { OrderBookingFormRequestDto } from '../dto/hotel-order-booking-form.dto';
 import { OrderBookingFinishStatusRequestDto } from '../dto/hotel-order-booking-finish-status.dto';
-import { WebhookRequestDto } from '../dto/hotel-webhook.dto';
 import { OrderTotalInformationRequestDto } from '../dto/hotel-order-total-information.dto';
 import { CaseConversionService } from '@app/common/helpers';
 
 // types
-import { HotelRateValidationResponseData } from '../types/hotel-prebook.type';
-import { HotelOrderBookingFormResponseData } from '../types/hotel-order-booking-form.type';
+import { HotelRateValidationResponseData } from '../types/hotel-prebook-response.type';
+import { HotelOrderBookingFormResponseData } from '../types/hotel-order-booking-form-response.type';
+import { HotelOrderFinishStatusResponseData } from '../types/hotel-order-finish-status-response.type';
 
 @Injectable()
 export class RatehawkOrderBookingService {
@@ -23,8 +22,8 @@ export class RatehawkOrderBookingService {
   private readonly caseConversionService = CaseConversionService;
 
   constructor(
+    hotelApiConfigService: HotelApiConfigService,
     private readonly ratehawkRequestService: RatehawkRequestService,
-    private readonly hotelApiConfigService: HotelApiConfigService,
   ) {
     this.restClientService = new RestClientService(
       hotelApiConfigService.hotelApiBaseUrl,
@@ -124,49 +123,13 @@ export class RatehawkOrderBookingService {
   async orderBookingFinishStatus(
     requestDto: OrderBookingFinishStatusRequestDto,
   ) {
-    const response = await this.restClientService.request<any>({
-      path: '/hotel/order/booking/finish/status/',
-      method: 'POST',
-      data: { requestDto },
-    });
-    return this.caseConversionService.convertKeysToCamelCase(response.data);
-  }
-
-  async handleWebhook(body: WebhookRequestDto): Promise<any> {
-    try {
-      const apiKey = this.hotelApiConfigService.hotelApiPassword;
-      const { signature, timestamp, token } = body.signature;
-
-      if (!apiKey || !timestamp || !token || !signature) {
-        throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
-      }
-
-      const encodedToken = crypto
-        .createHmac('sha256', apiKey)
-        .update(`${timestamp}${token}`)
-        .digest('hex');
-
-      if (encodedToken !== signature) {
-        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-      }
-
-      return {
-        isValid: true,
-        data: {
-          partner_order_id: body.data.partner_order_id,
-          status: body.data.status,
-        },
-      };
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        throw new HttpException(
-          'Internal Server Error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-    }
+    const response =
+      await this.restClientService.request<HotelOrderFinishStatusResponseData>({
+        path: '/hotel/order/booking/finish/status/',
+        method: 'POST',
+        data: { requestDto },
+      });
+    return this.caseConversionService.convertKeysToCamelCase(response);
   }
 
   async orderInfo(requestDto: OrderTotalInformationRequestDto): Promise<any> {

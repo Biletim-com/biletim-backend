@@ -1,7 +1,7 @@
-import { BusTicketPurchaseRequest } from '../types/biletall-bus-ticket-purchase.type';
+import { BusTicketPurchaseResult } from '../types/biletall-bus-ticket-purchase-result.type';
 import { DateTime } from '@app/common/types';
 
-export class BusTicketPurchaseDto {
+export class BusTicketPurchaseResultDto {
   result: boolean;
   pnr: string;
   message?: string;
@@ -15,17 +15,17 @@ export class BusTicketPurchaseDto {
     Mesaj,
     SeferInternetTarihSaat,
     Hata,
-    ...rest
-  }: BusTicketPurchaseRequest) {
+    ...EBilets
+  }: BusTicketPurchaseResult) {
     this.result = Sonuc === 'true';
     this.pnr = PNR;
     this.message = Mesaj;
     this.error = Hata;
     this.tripDateTime = SeferInternetTarihSaat as DateTime;
 
-    this.ticketNumbers = Object.keys(rest)
+    this.ticketNumbers = Object.keys(EBilets)
       .filter((key) => key.startsWith('Ebilet'))
-      .map((key) => ({ key, value: rest[key as keyof typeof rest] }))
+      .map((key) => ({ key, value: EBilets[key as keyof typeof EBilets] }))
       .sort((a, b) => {
         const numA = parseInt(a.key.replace('Ebilet', ''), 10);
         const numB = parseInt(b.key.replace('Ebilet', ''), 10);

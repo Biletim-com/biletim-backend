@@ -5,5 +5,6 @@ import { BiletAllCommonModule } from './common/provider.module';
 
 @Module({
   imports: [BiletAllCommonModule, BiletAllBusModule, BiletAllPlaneModule],
+  exports: [BiletAllCommonModule, BiletAllBusModule, BiletAllPlaneModule],
 })
 export class BiletAllTicketProvider {}

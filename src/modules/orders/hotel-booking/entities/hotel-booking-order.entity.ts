@@ -12,13 +12,26 @@ import {
   PaymentType,
 } from '@app/providers/hotel/ratehawk/dto/hotel-booking-finish.dto';
 
+// types
+import { DateTime, DeepConvertKeysToCamel } from '@app/common/types';
+import { CancellationPenalties } from '@app/providers/hotel/ratehawk/types/hotel-payment-type.type';
+
 @Entity('hotel_booking_orders')
 export class HotelBookingOrder extends AbstractOrder<HotelBookingOrder> {
+  @Column('varchar')
+  checkinDateTime: DateTime;
+
+  @Column('varchar')
+  checkoutDateTime: DateTime;
+
   @Column('jsonb')
   upsell: OrderUpsellData[];
 
   @Column('jsonb')
   paymentType: PaymentType;
+
+  @Column('jsonb')
+  cancellationPenalties: DeepConvertKeysToCamel<CancellationPenalties>;
 
   @Column({
     type: 'bigint',

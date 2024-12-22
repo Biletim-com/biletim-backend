@@ -8,6 +8,7 @@ import { OrderReturnValidationService } from './order-return-validation.service'
 import { VerificationService } from '@app/modules/verification/verification.service';
 import { BiletAllBusTicketReturnService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-ticket-return.service';
 import { BiletAllPlaneTicketReturnService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-ticket-return.service';
+import { RatehawkOrderCancelService } from '@app/providers/hotel/ratehawk/services/ratehawk-order-cancel.service';
 
 // entities
 import { Transaction } from '@app/modules/transactions/transaction.entity';
@@ -19,7 +20,6 @@ import { OrderReturnValidationDto } from '../dto/order-return-validation.dto';
 import {
   OrderStatus,
   OrderType,
-  PaymentMethod,
   PaymentProvider,
   TransactionStatus,
 } from '@app/common/enums';
@@ -33,17 +33,18 @@ export class OrderReturnFinishService {
     private readonly verificaitonService: VerificationService,
     private readonly biletAllBusTicketReturnService: BiletAllBusTicketReturnService,
     private readonly biletAllPlaneTicketReturnService: BiletAllPlaneTicketReturnService,
+    private readonly ratehawkOrderCancelService: RatehawkOrderCancelService,
     private readonly paymentProviderFactory: PaymentProviderFactory,
   ) {}
 
   private async validateVerificationCode(
-    pnrNumber: string,
+    reservationNumber: string,
     passengerLastName: string,
     orderType: OrderType,
     verificationCode: number,
   ): Promise<OrderReturnValidationDto> {
     const order = await this.orderReturnValidationService.validateOrder(
-      pnrNumber,
+      reservationNumber,
       passengerLastName,
       orderType,
     );
@@ -61,13 +62,13 @@ export class OrderReturnFinishService {
 
   public async finishReturn(
     clientIp: string,
-    pnrNumber: string,
+    reservationNumber: string,
     passengerLastName: string,
     orderType: OrderType,
     verificationCode: number,
   ): Promise<void> {
     const order = await this.validateVerificationCode(
-      pnrNumber,
+      reservationNumber,
       passengerLastName,
       orderType,
       verificationCode,
@@ -78,37 +79,38 @@ export class OrderReturnFinishService {
     await queryRunner.startTransaction();
 
     try {
-      const paymentMethod = order.transaction.paymentMethod;
       const paymentProviderName = order.transaction.paymentProvider;
-      const refundAmount = order.penalty.amountToRefund;
+      let refundAmount = order.penalty.amountToRefund;
 
       // return ticket
       if (order.type === OrderType.BUS_TICKET) {
-        await this.biletAllBusTicketReturnService.returnBusTicket(pnrNumber);
-      } else {
+        await this.biletAllBusTicketReturnService.returnBusTicket(
+          reservationNumber,
+        );
+      } else if (order.type === OrderType.PLANE_TICKET) {
         await this.biletAllPlaneTicketReturnService.returnPlaneTicket(
-          pnrNumber,
+          reservationNumber,
           passengerLastName,
           refundAmount,
         );
+      } else {
+        const hotelRefund =
+          await this.ratehawkOrderCancelService.orderCancellation(
+            reservationNumber,
+          );
+        refundAmount = hotelRefund.amountRefunded?.amount || refundAmount;
       }
 
       // return money
-      if (
-        paymentMethod === PaymentMethod.BANK_CARD &&
-        paymentProviderName &&
-        paymentProviderName !== PaymentProvider.BILET_ALL
-      ) {
+      if (paymentProviderName !== PaymentProvider.BILET_ALL) {
         const paymentProvider =
           this.paymentProviderFactory.getStrategy(paymentProviderName);
 
-        await paymentProvider.refundPayment(
+        await paymentProvider.refundPayment({
           clientIp,
-          order.transaction.id,
+          transactionId: order.transaction.id,
           refundAmount,
-        );
-      } else {
-        // TODO: it is purchased with wallet then
+        });
       }
 
       await Promise.all([

@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -20,8 +19,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 //entities&repositories
 import { UsersRepository } from './users.repository';
 import { User } from './user.entity';
-import { RegisterUserRequest } from '@app/auth/dto/register-user-request.dto';
 import { Verification } from '../verification/verification.entity';
+import { ServiceError, UserNotFoundError } from '@app/common/errors';
+import { Wallet } from '../wallets/wallet.entity';
 
 @Injectable()
 export class UsersService {
@@ -61,35 +61,26 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    try {
-      const { password, name, familyName } = createUserDto;
+    const { password, name, familyName, isVerified } = createUserDto;
 
-      // validation
-      const email = createUserDto.email.toLowerCase();
-      const existUser = await this.findByEmailWithoutThrowError(email);
-      if (existUser) {
-        throw new HttpException(
-          'This email address is already in use',
-          HttpStatus.CONFLICT,
-        );
-      }
-      const hashedPassword = this.passwordService.hashPassword(password);
-      const user = await this.usersRepository.save(
-        new User({
-          name,
-          familyName,
-          email,
-          password: hashedPassword,
-          isVerified: true,
-        }),
-      );
-      return user;
-    } catch (err: any) {
-      throw new HttpException(
-        `user create error ->  ${err?.message}`,
-        HttpStatus.BAD_REQUEST,
-      );
+    const email = createUserDto.email.toLowerCase();
+    const existingUser = await this.usersRepository.findOneBy({ email });
+    if (existingUser) {
+      throw new ServiceError('This email address is already in use');
     }
+    const hashedPassword = this.passwordService.hashPassword(password);
+    return this.usersRepository.save(
+      new User({
+        name,
+        familyName,
+        email,
+        password: hashedPassword,
+        isVerified,
+        wallet: new Wallet({
+          balance: 0,
+        }),
+      }),
+    );
   }
 
   async updateUser(userId: UUID, data: CreateUserDto): Promise<any> {
@@ -110,10 +101,13 @@ export class UsersService {
           'user not active, please contact your super admin',
           HttpStatus.NOT_FOUND,
         );
-      const checkEmail = await this.findByEmail(email);
+      const existingUser = await this.findByEmail(email);
+      if (!existingUser) {
+        throw new UserNotFoundError();
+      }
 
       // validate func
-      if (checkEmail && user.email !== checkEmail.email)
+      if (existingUser && user.email !== existingUser.email)
         throw new HttpException(
           'this email address is already used by someone else',
           HttpStatus.BAD_REQUEST,
@@ -168,22 +162,8 @@ export class UsersService {
     return !!deleteResult.affected;
   }
 
-  async findByEmail(email: string): Promise<User> {
-    const user = await this.usersRepository.findOneBy({
-      email,
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User not found with this email`);
-    }
-
-    return user;
-  }
-
-  async findByEmailWithoutThrowError(email: string): Promise<User | null> {
-    const user = await this.usersRepository.findOneBy({ email });
-
-    return user || null;
+  async findByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOneBy({ email });
   }
 
   async findAppUserById(id: UUID, findOptions?: FindOptionsRelations<User>) {
@@ -211,30 +191,6 @@ export class UsersService {
       );
     }
     return user;
-  }
-
-  async registerEmailCheck(email: string): Promise<User | null> {
-    const user = await this.usersRepository.findOneBy({
-      email,
-    });
-
-    if (user) {
-      if (user.isVerified) {
-        throw new ConflictException('This email address is already in use.');
-      }
-      return user;
-    }
-
-    return null;
-  }
-
-  async registerUser(dto: RegisterUserRequest): Promise<User> {
-    const userToCreate = new User({
-      ...dto,
-      password: this.passwordService.hashPassword(dto.password),
-    });
-    await this.usersRepository.insert(userToCreate);
-    return userToCreate;
   }
 
   async updateUserPasswordCode(

@@ -13,7 +13,7 @@ import { normalizeDecimal } from '@app/common/utils';
 
 import {
   Currency,
-  PaymentMethod,
+  PaymentRefundSource,
   PaymentProvider,
   TransactionStatus,
   TransactionType,
@@ -40,16 +40,16 @@ export class Transaction extends AbstractEntity<Transaction> {
   transactionType: TransactionType;
 
   @Column('varchar')
-  paymentMethod: PaymentMethod;
-
-  @Column('varchar', { nullable: true })
-  paymentProvider?: Nullable<PaymentProvider>;
+  paymentProvider: PaymentProvider;
 
   @Column('varchar', { nullable: true })
   errorMessage?: Nullable<string>;
 
   @Column('varchar', { nullable: true })
   refundAmount?: Nullable<string>;
+
+  @Column('varchar', { nullable: true })
+  refundSource?: Nullable<PaymentRefundSource>;
 
   // anonymous credit cards
   @Column('varchar', { nullable: true })

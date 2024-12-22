@@ -15,8 +15,9 @@ import {
 import { Type } from 'class-transformer';
 
 import { BankCardDto, InvoiceDto } from '@app/common/dtos';
-import { DateISODate } from '@app/common/types';
+import { DateISODate, DateTime } from '@app/common/types';
 import { Gender } from '@app/common/enums';
+import { IsAfter } from '@app/common/decorators';
 
 const hotelNameRegex =
   "^[^Wd_]+([^Wd_]*[\u0590-\u05FF\u0900-\u097F\u0980-\u09FF\u0E00-\u0E7F'-,.’s]*)*$";
@@ -82,14 +83,34 @@ export class HotelBookingPurchaseDto {
   phoneNumber: string;
 
   @ApiProperty({
-    description: 'Unique id of the rate. (Required)',
+    description: 'Unique id of the rate',
     example: 'h-364cce9c-91ff-58d4-aaad-df3f6a659465',
+    required: true,
   })
   @IsNotEmpty()
   @IsString()
   @MinLength(1)
   @MaxLength(256)
   bookHash: string;
+
+  @ApiProperty({
+    description: 'Date and Time of the trip in the format YYYY-MM-ddTHH:mm:SS',
+    example: '2024-09-20T15:00:00',
+    required: true,
+  })
+  @IsDateString()
+  @IsNotEmpty()
+  checkinDateTime: DateTime;
+
+  @ApiProperty({
+    description: 'Date and Time of the trip in the format YYYY-MM-ddTHH:mm:SS',
+    example: '2024-09-20T15:00:00',
+    required: true,
+  })
+  @IsDateString()
+  @IsNotEmpty()
+  @IsAfter('checkinDateTime')
+  checkoutDateTime: DateTime;
 
   @ApiProperty({
     description: 'The list of guests for a single room',

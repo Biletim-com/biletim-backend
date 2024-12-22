@@ -21,7 +21,6 @@ import {
   OrderCategory,
   OrderStatus,
   OrderType,
-  PaymentMethod,
   PaymentProvider,
   TicketType,
   TransactionStatus,
@@ -168,7 +167,6 @@ export class BusTicketStartPaymentService {
         currency: Currency.TRY,
         status: TransactionStatus.PENDING,
         transactionType: TransactionType.PURCHASE,
-        paymentMethod: PaymentMethod.BANK_CARD,
         paymentProvider: paymentProviderType,
         // unregistered card
         cardholderName: busTicketPurchaseDto.bankCard.holderName,
@@ -248,12 +246,12 @@ export class BusTicketStartPaymentService {
       const paymentProvider =
         this.paymentProviderFactory.getStrategy(paymentProviderType);
 
-      const htmlContent = await paymentProvider.startPayment(
+      const htmlContent = await paymentProvider.startPayment({
         clientIp,
-        TicketType.BUS,
-        busTicketPurchaseDto.bankCard,
-        { ...transaction, busTicketOrder: { ...order, tickets } },
-      );
+        ticketType: TicketType.BUS,
+        paymentMethod: { bankCard: busTicketPurchaseDto.bankCard },
+        transaction: { ...transaction, busTicketOrder: { ...order, tickets } },
+      });
       await queryRunner.commitTransaction();
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {

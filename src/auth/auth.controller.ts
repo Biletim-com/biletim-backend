@@ -39,17 +39,12 @@ import { JwtAuthGuard } from '@app/common/guards/jwt-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiOperation({ summary: 'Panel User Login' })
-  @Post('/panel-login')
+  @ApiOperation({ summary: 'Find Me App User' })
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
-  @UseGuards(PanelUserLocalAuthGuard)
-  async panelLogin(
-    @Res({ passthrough: true }) response: Response,
-    @CurrentUser() user: PanelUser,
-    @Body() _: LoginUserRequest,
-  ): Promise<PanelUserWithoutPasswordDto> {
-    this.authService.login(user, response);
-    return new PanelUserWithoutPasswordDto(user);
+  @Get('/me')
+  getMe(@CurrentUser() user: User): UserWithoutPasswordDto {
+    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'App Login' })
@@ -65,6 +60,19 @@ export class AuthController {
     return new UserWithoutPasswordDto(user);
   }
 
+  @ApiOperation({ summary: 'Panel User Login' })
+  @Post('/panel-login')
+  @HttpCode(200)
+  @UseGuards(PanelUserLocalAuthGuard)
+  async panelLogin(
+    @Res({ passthrough: true }) response: Response,
+    @CurrentUser() user: PanelUser,
+    @Body() _: LoginUserRequest,
+  ): Promise<PanelUserWithoutPasswordDto> {
+    this.authService.login(user, response);
+    return new PanelUserWithoutPasswordDto(user);
+  }
+
   @ApiOperation({ summary: 'App Logout' })
   @Post('/logout')
   @HttpCode(200)
@@ -73,14 +81,6 @@ export class AuthController {
   ): Promise<{ result: true }> {
     this.authService.logout(response);
     return { result: true };
-  }
-
-  @ApiOperation({ summary: 'Find Me App User' })
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(200)
-  @Get('/me')
-  getMe(@CurrentUser() user: User): UserWithoutPasswordDto {
-    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({

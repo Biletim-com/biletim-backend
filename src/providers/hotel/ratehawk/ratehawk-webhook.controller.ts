@@ -19,7 +19,7 @@ import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/
 import { OrderStatus } from '@app/common/enums';
 
 // dto
-import { HotelOrderStatusRequestDto } from './dto/hotel-order-status.dto';
+import { HotelOrderStatusWebhookRequestDto } from './dto/hotel-order-status-webhook-request.dto';
 
 // types
 import type { Request } from 'express';
@@ -37,7 +37,7 @@ export class RatehawkWebhookController {
   @Post('order-status')
   @HttpCode(HttpStatus.OK)
   async handleOrderStatus(
-    @Req() { body }: Request<object, any, HotelOrderStatusRequestDto>,
+    @Req() { body }: Request<object, any, HotelOrderStatusWebhookRequestDto>,
   ): Promise<void> {
     try {
       const { data, signature } = body;
@@ -71,7 +71,7 @@ export class RatehawkWebhookController {
   @Post('test-connection')
   @HttpCode(HttpStatus.OK)
   async testConnection(
-    @Req() { body }: Request<object, any, HotelOrderStatusRequestDto>,
+    @Req() { body }: Request<object, any, HotelOrderStatusWebhookRequestDto>,
   ): Promise<void> {
     try {
       const { signature } = body;

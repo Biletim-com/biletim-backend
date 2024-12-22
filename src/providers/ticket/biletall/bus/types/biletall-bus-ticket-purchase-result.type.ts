@@ -1,6 +1,6 @@
 import { SoapEnvelope } from '../../types/biletall-soap-envelope.type';
 
-export type BusTicketPurchaseRequest = {
+export type BusTicketPurchaseResult = {
   Sonuc: string; // true || false
   PNR: string;
   Mesaj: string;
@@ -11,9 +11,9 @@ export type BusTicketPurchaseRequest = {
 
 type BusTicketSaleRequestDataSet = {
   IslemSonuc: Array<{
-    [K in keyof BusTicketPurchaseRequest]: [string];
+    [K in keyof BusTicketPurchaseResult]: [string];
   }>;
 };
 
-export type BusTicketPurchaseRequestResponse =
+export type BusTicketPurchaseResultResponse =
   SoapEnvelope<BusTicketSaleRequestDataSet>;

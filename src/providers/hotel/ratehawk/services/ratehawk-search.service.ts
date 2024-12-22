@@ -9,11 +9,13 @@ import { HotelAvailabilityByRegionIdRequestDto } from '@app/search/hotel/dto/hot
 import { HotelAvailabilityByHotelIdsRequestDto } from '@app/search/hotel/dto/hotel-availability-by-hotel-ids-request.dto';
 
 // types
-import { HotelSearchResponseData } from '../types/hotel-search.type';
-import { HotelsAvailabilityByHoltelIdsResponseData } from '../types/hotel-availability-by-hotel-ids.type';
-import { HotelAvailabilityByRegionIdResponseData } from '../types/hotel-availability-by-region-id.type';
+import { HotelSearchResponseData } from '../types/hotel-search-response.type';
+import { HotelsAvailabilityByHoltelIdsResponseData } from '../types/hotel-availability-by-hotel-ids-response.type';
+import { HotelAvailabilityByRegionIdResponseData } from '../types/hotel-availability-by-region-id-response.type';
 import { HotelPageResponseData } from '../types/hotel-page.type';
 import { Language } from '@app/common/types/languages.type';
+
+// enums
 import { Currency } from '@app/common/enums';
 
 @Injectable()

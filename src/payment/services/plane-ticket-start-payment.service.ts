@@ -23,7 +23,6 @@ import {
   OrderStatus,
   OrderType,
   PassengerType,
-  PaymentMethod,
   PaymentProvider,
   TicketType,
   TransactionStatus,
@@ -159,7 +158,6 @@ export class PlaneTicketStartPaymentService {
         currency: Currency.TRY,
         status: TransactionStatus.PENDING,
         transactionType: TransactionType.PURCHASE,
-        paymentMethod: PaymentMethod.BANK_CARD,
         paymentProvider: PaymentProvider.VAKIF_BANK,
         // unregistered card
         cardholderName: planeTicketPurchaseDto.bankCard.holderName,
@@ -246,12 +244,12 @@ export class PlaneTicketStartPaymentService {
         PaymentProvider.VAKIF_BANK,
       );
 
-      const htmlContent = await paymentProvider.startPayment(
+      const htmlContent = await paymentProvider.startPayment({
         clientIp,
-        TicketType.PLANE,
-        planeTicketPurchaseDto.bankCard,
+        ticketType: TicketType.PLANE,
         transaction,
-      );
+        paymentMethod: { bankCard: planeTicketPurchaseDto.bankCard },
+      });
       await queryRunner.commitTransaction();
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {

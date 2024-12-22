@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 
-import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { VakifBankEnrollmentService } from './services/vakif-bank-enrollment.service';
 import { PoxClientService } from '@app/providers/pox-client/provider.service';
 import { PaymentConfigService } from '@app/configs/payment';
@@ -13,11 +12,7 @@ import { IPayment } from '../interfaces/payment.interface';
 import { InjectPoxClient } from '@app/providers/pox-client/decorators';
 
 // enums
-import { PaymentProvider, TicketType } from '@app/common/enums';
-
-// dtos
-import { BankCardDto } from '@app/common/dtos';
-import { VakifBankPaymentResultDto } from '@app/payment/dto/vakif-bank-payment-result.dto';
+import { PaymentProvider } from '@app/common/enums';
 
 // types
 import {
@@ -26,15 +21,18 @@ import {
   CancelResponse,
   RefundResponse,
 } from './types/v-pos-response.type';
-import { UUID } from '@app/common/types';
 
 // constants
 import { threeDSecureResponse } from './constants/3d-response.constant';
 import { vPOSResponse } from './constants/vpos-reponse.constant';
 
+// dtos
+import { VakifBankPaymentResultDto } from './dto/vakif-bank-payment-result.dto';
+import { VakifBankPaymentStartDto } from './dto/vakif-bank-payment-start.dto';
+import { PaymentFinishDto } from '../dto/payment-finish.dto';
+
 // utils
 import { normalizeDecimal } from '@app/common/utils';
-
 @Injectable()
 export class VakifBankPaymentStrategy implements IPayment {
   private readonly logger = new Logger(VakifBankPaymentStrategy.name);
@@ -63,7 +61,7 @@ export class VakifBankPaymentStrategy implements IPayment {
     if (response.VposResponse.ResultCode !== '0000') {
       const { description, detail } =
         vPOSResponse[response.VposResponse.ResultCode];
-      this.logger.error({ description, detail });
+      this.logger.error(`${description}, ${detail}`);
       throw new BadRequestException(response.VposResponse.ResultDetail);
     }
     return response;
@@ -81,12 +79,11 @@ export class VakifBankPaymentStrategy implements IPayment {
     };
   }
 
-  async startPayment(
-    _clientIp: string,
-    ticketType: TicketType,
-    bankCard: BankCardDto,
-    transaction: Transaction,
-  ): Promise<string> {
+  async startPayment({
+    ticketType,
+    transaction,
+    paymentMethod: { bankCard },
+  }: VakifBankPaymentStartDto): Promise<string> {
     const card3DsEligibility =
       await this.vakifBankEnrollmentService.checkCard3DsEligibility(
         ticketType,
@@ -131,11 +128,11 @@ export class VakifBankPaymentStrategy implements IPayment {
     return htmlString;
   }
 
-  finishPayment(
-    clientIp: string,
-    paymentDetailsDto: VakifBankPaymentResultDto,
-    orderId: UUID,
-  ): Promise<SaleResponse> {
+  finishPayment({
+    clientIp,
+    orderId,
+    details,
+  }: PaymentFinishDto<VakifBankPaymentResultDto>): Promise<SaleResponse> {
     const {
       PurchAmount,
       Pan,
@@ -143,7 +140,7 @@ export class VakifBankPaymentStrategy implements IPayment {
       VerifyEnrollmentRequestId,
       Eci,
       Cavv,
-    } = paymentDetailsDto;
+    } = details;
     const body = {
       VposRequest: {
         ...this.authCredentials,
@@ -166,10 +163,7 @@ export class VakifBankPaymentStrategy implements IPayment {
   /**
    * İptal işlemleri, başarılı gerçekleşmiş ve henüz günsonu alınmamış bir satış veya iade işlemini iptal etmek için kullanılır.
    */
-  async cancelPayment(
-    clientIp: string,
-    transactionId: UUID,
-  ): Promise<CancelResponse> {
+  async cancelPayment({ clientIp, transactionId }): Promise<CancelResponse> {
     const body = {
       VposRequest: {
         ...this.authCredentials,
@@ -189,11 +183,11 @@ export class VakifBankPaymentStrategy implements IPayment {
   /**
    * İade işlemi, başarılı gerçekleşmiş ve günsonu alınarak finansallaşmış bir işlemi iade etmek için kullanılır.
    */
-  async refundPayment(
-    clientIp: string,
-    transactionId: UUID,
-    refundAmount: string,
-  ): Promise<RefundResponse> {
+  async refundPayment({
+    clientIp,
+    transactionId,
+    refundAmount,
+  }): Promise<RefundResponse> {
     const body = {
       VposRequest: {
         ...this.authCredentials,

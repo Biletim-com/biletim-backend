@@ -24,8 +24,8 @@ export class OrderEntityFactoryService {
   constructor() {
     this.entityMap = new Map<OrderType, OrderEntityMap[OrderType]>([
       [OrderType.BUS_TICKET, BusTicketOrder],
-      [OrderType.PLANE_TICKET, BusTicketOrder],
-      [OrderType.HOTEL_BOOKING, BusTicketOrder],
+      [OrderType.PLANE_TICKET, PlaneTicketOrder],
+      [OrderType.HOTEL_BOOKING, HotelBookingOrder],
     ]);
   }
 

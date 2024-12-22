@@ -22,7 +22,6 @@ import {
   Currency,
   TransactionStatus,
   TransactionType,
-  PaymentMethod,
   OrderStatus,
   PaymentProvider,
   InvoiceType,
@@ -65,22 +64,26 @@ export class HotelBookingStartPaymentService {
     clientIp: string,
     user?: User,
   ) {
-    const { rates, changes } =
-      await this.ratehawkOrderBookingService.validateRate({
-        bookHash: hotelBookingPurchaseDto.bookHash,
-        priceIncreasePercent: 0,
-      });
+    const {
+      rates: [rate],
+      changes,
+    } = await this.ratehawkOrderBookingService.validateRate({
+      bookHash: hotelBookingPurchaseDto.bookHash,
+      priceIncreasePercent: 0,
+    });
 
     if (changes.priceChanged) {
       throw new BadRequestException('Rate price has been changed');
     }
-    const paymentType = rates[0].paymentOptions.paymentTypes.find(
+    const paymentType = rate.paymentOptions.paymentTypes.find(
       (paymentType) => paymentType.type === 'deposit',
     );
     if (!paymentType) {
       throw new BadRequestException('Payment method is not compatible');
     }
-    const roomName = rates[0].roomName;
+    const roomName = rate.roomName;
+    const cancellationPenalties =
+      rate.paymentOptions.paymentTypes[0].cancellationPenalties;
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -94,7 +97,6 @@ export class HotelBookingStartPaymentService {
         currency: Currency.TRY,
         status: TransactionStatus.PENDING,
         transactionType: TransactionType.PURCHASE,
-        paymentMethod: PaymentMethod.BANK_CARD,
         paymentProvider: PaymentProvider.VAKIF_BANK,
         // unregistered card
         cardholderName: hotelBookingPurchaseDto.bankCard.holderName,
@@ -116,6 +118,8 @@ export class HotelBookingStartPaymentService {
       const orderToCreate = new HotelBookingOrder({
         userEmail: hotelBookingPurchaseDto.email,
         userPhoneNumber: hotelBookingPurchaseDto.phoneNumber,
+        checkinDateTime: hotelBookingPurchaseDto.checkinDateTime,
+        checkoutDateTime: hotelBookingPurchaseDto.checkoutDateTime,
         type: OrderType.HOTEL_BOOKING,
         category: OrderCategory.PURCHASE,
         status: OrderStatus.PENDING,
@@ -123,6 +127,7 @@ export class HotelBookingStartPaymentService {
         transaction,
         invoice,
         upsell: [],
+        cancellationPenalties,
         paymentType: {
           type: paymentType.type,
           amount: paymentType.amount,
@@ -148,9 +153,9 @@ export class HotelBookingStartPaymentService {
       /**
        * Update HotelBookingOrder with the upsell data
        */
-      await queryRunner.manager.update(HotelBookingOrder, order.id, {
-        upsell: [],
-      });
+      // await queryRunner.manager.update(HotelBookingOrder, order.id, {
+      //   upsell: [],
+      // });
 
       /**
        * Create Rooms and Guests
@@ -168,12 +173,12 @@ export class HotelBookingStartPaymentService {
         PaymentProvider.VAKIF_BANK,
       );
 
-      const htmlContent = await paymentProvider.startPayment(
+      const htmlContent = await paymentProvider.startPayment({
         clientIp,
-        TicketType.HOTEL,
-        hotelBookingPurchaseDto.bankCard,
+        ticketType: TicketType.HOTEL,
+        paymentMethod: { bankCard: hotelBookingPurchaseDto.bankCard },
         transaction,
-      );
+      });
       await queryRunner.commitTransaction();
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {

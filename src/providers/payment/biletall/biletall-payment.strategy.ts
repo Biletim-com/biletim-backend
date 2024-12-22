@@ -7,17 +7,14 @@ import { BiletAllEncryptorService } from './helpers/biletall-encryptor.service';
 import { HtmlTemplateService } from '../../html-template/provider.service';
 import { BiletAllBusTicketPurchaseService } from '../../ticket/biletall/bus/services/biletall-bus-ticket-purchase.service';
 
-// entites
-import { Transaction } from '@app/modules/transactions/transaction.entity';
-
 // interfaces
 import { IPayment } from '../interfaces/payment.interface';
 
-// dtos
-import { BankCardDto } from '@app/common/dtos';
-
 // enums
-import { PaymentProvider, TicketType } from '@app/common/enums';
+import { PaymentProvider } from '@app/common/enums';
+
+// dtos
+import { BiletAllPaymentStartDto } from './dto/biletall-payment-start.dto';
 
 @Injectable()
 export class BiletAllPaymentStrategy implements IPayment {
@@ -34,12 +31,12 @@ export class BiletAllPaymentStrategy implements IPayment {
     return `<Kullanici><Adi>${this.paymentConfigService.biletAll3DSUsername}</Adi><Sifre>${this.paymentConfigService.biletAll3DSPassword}</Sifre></Kullanici>`;
   }
 
-  async startPayment(
-    clientIp: string,
-    ticketType: TicketType,
-    bankCard: BankCardDto,
-    transaction: Transaction,
-  ): Promise<string> {
+  async startPayment({
+    clientIp,
+    ticketType,
+    transaction,
+    paymentMethod: { bankCard },
+  }: BiletAllPaymentStartDto): Promise<string> {
     const { encode } = this.biletAllEncryptorService;
     const saleXml = await this.biletAllBusTicketPurchaseService.purchaseTicket(
       clientIp,

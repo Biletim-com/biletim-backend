@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import { HotelApiConfigService } from '@app/configs/hotel-api';
-import { RestClientService } from '@app/providers/rest-client/provider.service';
+import {
+  RestClientService,
+  RequestConfigs,
+} from '@app/providers/rest-client/provider.service';
 import { CaseConversionService } from '@app/common/helpers';
 
 // types
@@ -13,16 +16,6 @@ import {
 // errors
 import { ServiceError } from '@app/common/errors';
 import { DeepConvertKeysToCamel } from '@app/common/types';
-
-type Methods = 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH';
-
-interface RequestConfigs {
-  method: Methods;
-  path?: string;
-  headers?: Record<string, string>;
-  data?: Record<string, any>;
-  params?: Record<string, string>;
-}
 
 @Injectable()
 export class RatehawkRequestService {
