@@ -12,6 +12,12 @@ import { PlaneTicketSegment } from './entities/plane-ticket-segment.entity';
 // repositories
 import { PlaneTicketOrdersRepository } from './plane-ticket-orders.repository';
 
+// services
+import { PlaneTicketOrderService } from './plane-ticket-order.service';
+
+// controller
+import { PlaneTicketOrderController } from './plane-ticket-order.controller';
+
 @Module({
   imports: [
     PostgreSQLProviderModule.forFeature([
@@ -21,7 +27,8 @@ import { PlaneTicketOrdersRepository } from './plane-ticket-orders.repository';
       PlaneTicketOrder,
     ]),
   ],
-  providers: [PlaneTicketOrdersRepository],
-  exports: [PlaneTicketOrdersRepository],
+  controllers: [PlaneTicketOrderController],
+  providers: [PlaneTicketOrdersRepository, PlaneTicketOrderService],
+  exports: [PlaneTicketOrdersRepository, PlaneTicketOrderService],
 })
 export class PlaneTicketOrdersModule {}
