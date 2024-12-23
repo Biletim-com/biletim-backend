@@ -17,10 +17,10 @@ import { HotelBookingOrder } from '@app/modules/orders/hotel-booking/entities/ho
 import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
 
 // abstract
-import { PaymentProcessingStrategy } from '../abstract/payment-processing.strategy.abstract';
+import { IPaymentProcessingStrategy } from '../interfaces/payment-processing.strategy.interface';
 
 // dto
-import { PaymentResultDto } from '../dto/payment-result.dto';
+import { VakifBankPaymentResultDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
 
 // enums
 import { OrderStatus, TransactionStatus } from '@app/common/enums';
@@ -33,7 +33,13 @@ import { PaymentProcessingActions } from '../types/payment-processing-actions.ty
 import { TransactionNotFoundError } from '@app/common/errors';
 
 @Injectable()
-export class HotelBookingPaymentProcessingStrategy extends PaymentProcessingStrategy {
+export class HotelBookingPaymentProcessingStrategy
+  implements IPaymentProcessingStrategy
+{
+  private readonly logger = new Logger(
+    HotelBookingPaymentProcessingStrategy.name,
+  );
+
   constructor(
     private readonly dataSource: DataSource,
     private readonly eventEmitterService: EventEmitterService,
@@ -41,14 +47,12 @@ export class HotelBookingPaymentProcessingStrategy extends PaymentProcessingStra
     private readonly transactionsRepository: TransactionsRepository,
     private readonly hotelBookingOrdersRepository: HotelBookingOrdersRepository,
     private readonly ratehawkOrderBookingService: RatehawkOrderBookingService,
-  ) {
-    super(new Logger(HotelBookingPaymentProcessingStrategy.name));
-  }
+  ) {}
 
   async handlePayment(
     clientIp: string,
     transactionId: UUID,
-    { provider, details }: PaymentResultDto,
+    paymentResultDto: VakifBankPaymentResultDto,
   ): Promise<Transaction> {
     const transaction = await this.transactionsRepository.findOne({
       where: {
@@ -72,21 +76,18 @@ export class HotelBookingPaymentProcessingStrategy extends PaymentProcessingStra
     await queryRunner.startTransaction();
 
     const actionsCompleted: PaymentProcessingActions = [];
-    const paymentProvider = this.paymentProviderFactory.getStrategy(provider);
+    const paymentProvider = this.paymentProviderFactory.getStrategy(
+      transaction.paymentProvider,
+    );
 
     try {
-      /**
-       * validate received response from the payment provider
-       */
-      this.validatePaymentResponseStatus(details);
-
       /**
        * finalize payment
        */
       await paymentProvider.finishPayment({
         clientIp,
         details: {
-          ...details,
+          ...paymentResultDto,
           PurchAmount: transaction.amount,
         },
         orderId: transaction.hotelBookingOrder.id,

@@ -10,9 +10,6 @@ import { BiletAllBusTicketPurchaseService } from '../../ticket/biletall/bus/serv
 // interfaces
 import { IPayment } from '../interfaces/payment.interface';
 
-// enums
-import { PaymentProvider } from '@app/common/enums';
-
 // dtos
 import { BiletAllPaymentStartDto } from './dto/biletall-payment-start.dto';
 
@@ -60,13 +57,13 @@ export class BiletAllPaymentStrategy implements IPayment {
         {
           name: 'successURL',
           value: encode(
-            `${this.applicationConfigService.backendUrl}/payment/success?provider=${PaymentProvider.BILET_ALL}&transactionId=${transaction.id}&ticketType=${ticketType}`,
+            `${this.applicationConfigService.backendUrl}/payment/success?transactionId=${transaction.id}&ticketType=${ticketType}`,
           ),
         },
         {
           name: 'failURL',
           value: encode(
-            `${this.applicationConfigService.backendUrl}/payment/failure?provider=${PaymentProvider.BILET_ALL}&transactionId=${transaction.id}&ticketType=${ticketType}`,
+            `${this.applicationConfigService.backendUrl}/payment/failure?transactionId=${transaction.id}&ticketType=${ticketType}`,
           ),
         },
       ],

@@ -71,8 +71,8 @@ export class VakifBankEnrollmentService {
       PurchaseAmount: normalizeDecimal(transaction.amount),
       Currency: VakifBankCurrency[Currency.TRY],
       BrandName: VakifBankBankCardBrand[bankCard.cardType],
-      SuccessUrl: `${this.applicationConfigService.backendUrl}/payment/success?provider=${PaymentProvider.VAKIF_BANK}&transactionId=${transaction.id}&ticketType=${ticketType}`,
-      FailureUrl: `${this.applicationConfigService.backendUrl}/payment/failure?provider=${PaymentProvider.VAKIF_BANK}&transactionId=${transaction.id}&ticketType=${ticketType}`,
+      SuccessUrl: `${this.applicationConfigService.backendUrl}/payment/success?transactionId=${transaction.id}&ticketType=${ticketType}`,
+      FailureUrl: `${this.applicationConfigService.backendUrl}/payment/failure?transactionId=${transaction.id}&ticketType=${ticketType}`,
     };
 
     const {

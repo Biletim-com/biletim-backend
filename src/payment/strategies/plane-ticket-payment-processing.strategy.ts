@@ -18,10 +18,10 @@ import { PlaneTicketOrder } from '@app/modules/orders/plane-ticket/entities/plan
 import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
 
 // interfaces
-import { PaymentProcessingStrategy } from '../abstract/payment-processing.strategy.abstract';
+import { IPaymentProcessingStrategy } from '../interfaces/payment-processing.strategy.interface';
 
 // dto
-import { PaymentResultDto } from '../dto/payment-result.dto';
+import { VakifBankPaymentResultDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
 
 // enums
 import {
@@ -38,7 +38,13 @@ import { PaymentProcessingActions } from '../types/payment-processing-actions.ty
 import { TransactionNotFoundError } from '@app/common/errors';
 
 @Injectable()
-export class PlaneTicketPaymentProcessingStrategy extends PaymentProcessingStrategy {
+export class PlaneTicketPaymentProcessingStrategy
+  implements IPaymentProcessingStrategy
+{
+  private readonly logger = new Logger(
+    PlaneTicketPaymentProcessingStrategy.name,
+  );
+
   constructor(
     private readonly dataSource: DataSource,
     private readonly eventEmitterService: EventEmitterService,
@@ -46,14 +52,12 @@ export class PlaneTicketPaymentProcessingStrategy extends PaymentProcessingStrat
     private readonly transactionsRepository: TransactionsRepository,
     private readonly planeTicketOrdersRepository: PlaneTicketOrdersRepository,
     private readonly biletAllPlaneTicketPurchaseService: BiletAllPlaneTicketPurchaseService,
-  ) {
-    super(new Logger(PlaneTicketPaymentProcessingStrategy.name));
-  }
+  ) {}
 
   async handlePayment(
     clientIp: string,
     transactionId: UUID,
-    { provider, details }: PaymentResultDto,
+    paymentResultDto: VakifBankPaymentResultDto,
   ): Promise<Transaction> {
     const transaction = await this.transactionsRepository.findOne({
       where: {
@@ -87,7 +91,9 @@ export class PlaneTicketPaymentProcessingStrategy extends PaymentProcessingStrat
     await queryRunner.startTransaction();
 
     const actionsCompleted: PaymentProcessingActions = [];
-    const paymentProvider = this.paymentProviderFactory.getStrategy(provider);
+    const paymentProvider = this.paymentProviderFactory.getStrategy(
+      transaction.paymentProvider,
+    );
 
     try {
       /**
@@ -97,7 +103,7 @@ export class PlaneTicketPaymentProcessingStrategy extends PaymentProcessingStrat
         clientIp,
         orderId: transaction.planeTicketOrder.id,
         details: {
-          ...details,
+          ...paymentResultDto,
           PurchAmount: transaction.amount,
         },
       });

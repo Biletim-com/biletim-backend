@@ -6,7 +6,7 @@ import { ImmediateSuccessPaymentStrategy } from './bus-ticket/immediate-success-
 import { PendingPaymentProcessingStrategy } from './bus-ticket/pending-payment-processing.strategy';
 
 // abstract
-import { PaymentProcessingStrategy } from '@app/payment/abstract/payment-processing.strategy.abstract';
+import { IPaymentProcessingStrategy } from '@app/payment/interfaces/payment-processing.strategy.interface';
 
 // interfaces
 import { IBusTicketPaymentProcessingStrategy } from '../interfaces/bus-ticket-payment-processing.strategy.interface';
@@ -22,7 +22,8 @@ import { TransactionsRepository } from '@app/modules/transactions/transactions.r
 import { BusTicketOrdersRepository } from '@app/modules/orders/bus-ticket/bus-ticket-orders.repository';
 
 // dto
-import { PaymentResultDto } from '@app/payment/dto/payment-result.dto';
+import { BusTicketPurchaseResultDto } from '@app/providers/ticket/biletall/bus/dto/bus-ticket-purchase-result.dto';
+import { VakifBankPaymentResultDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
 
 // enums
 import {
@@ -38,7 +39,13 @@ import { UUID } from '@app/common/types';
 import { TransactionNotFoundError } from '@app/common/errors';
 
 @Injectable()
-export class BusTicketPaymentResultProcessingStrategy extends PaymentProcessingStrategy {
+export class BusTicketPaymentResultProcessingStrategy
+  implements IPaymentProcessingStrategy
+{
+  private readonly logger = new Logger(
+    BusTicketPaymentResultProcessingStrategy.name,
+  );
+
   constructor(
     private readonly dataSource: DataSource,
     private readonly immediateSuccessStrategy: ImmediateSuccessPaymentStrategy,
@@ -46,14 +53,12 @@ export class BusTicketPaymentResultProcessingStrategy extends PaymentProcessingS
     private readonly eventEmitterService: EventEmitterService,
     private readonly transactionsRepository: TransactionsRepository,
     private readonly busTicketOrdersRepository: BusTicketOrdersRepository,
-  ) {
-    super(new Logger(BusTicketPaymentResultProcessingStrategy.name));
-  }
+  ) {}
 
   async handlePayment(
     clientIp: string,
     transactionId: UUID,
-    { provider, details }: PaymentResultDto,
+    paymentResultDto: BusTicketPurchaseResultDto | VakifBankPaymentResultDto,
   ): Promise<Transaction> {
     const transaction = await this.transactionsRepository.findOne({
       where: {
@@ -81,18 +86,13 @@ export class BusTicketPaymentResultProcessingStrategy extends PaymentProcessingS
     await queryRunner.startTransaction();
 
     try {
-      /**
-       * validate received response from the payment provider
-       */
-      this.validatePaymentResponseStatus(details);
-
       const busTicketPaymentProcessingStrategy =
         this.getBusTicketPaymentStrategy(transaction.paymentProvider);
       await busTicketPaymentProcessingStrategy.handleTicketPayment(
         queryRunner,
         clientIp,
         transaction,
-        details,
+        paymentResultDto,
       );
 
       this.eventEmitterService.emitEvent(

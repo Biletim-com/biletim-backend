@@ -16,6 +16,7 @@ import { TransactionStatusService } from './services/transaction-status.service'
 import { BusTicketStartPaymentService } from './services/bus-ticket-start-payment.service';
 import { PlaneTicketStartPaymentService } from './services/plane-ticket-start-payment.service';
 import { HotelBookingStartPaymentService } from './services/hotel-booking-start-payment.service';
+import { PaymentProcessingService } from './services/payment-processing.service';
 
 // strategies
 import { BusTicketPaymentResultProcessingStrategy } from './strategies/bus-ticket-payment-processing.strategy';
@@ -58,6 +59,7 @@ import { PaymentProvider } from '@app/common/enums';
   controllers: [PaymentStartController, PaymentProcessingController],
   providers: [
     PaymentProcessingFactory,
+    PaymentProcessingService,
     BusTicketPaymentResultProcessingStrategy,
     PendingPaymentProcessingStrategy,
     ImmediateSuccessPaymentStrategy,

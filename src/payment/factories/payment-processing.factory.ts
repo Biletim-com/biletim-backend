@@ -6,7 +6,7 @@ import { PlaneTicketPaymentProcessingStrategy } from '../strategies/plane-ticket
 import { HotelBookingPaymentProcessingStrategy } from '../strategies/hotel-booking-payment-processing.strategy';
 
 // interfaces
-import { PaymentProcessingStrategy } from '../abstract/payment-processing.strategy.abstract';
+import { IPaymentProcessingStrategy } from '../interfaces/payment-processing.strategy.interface';
 
 // enums
 import { TicketType } from '@app/common/enums';
@@ -16,7 +16,7 @@ import { ServiceError } from '@app/common/errors';
 
 @Injectable()
 export class PaymentProcessingFactory {
-  private readonly strategies: Map<TicketType, PaymentProcessingStrategy> =
+  private readonly strategies: Map<TicketType, IPaymentProcessingStrategy> =
     new Map();
 
   constructor(
@@ -32,7 +32,7 @@ export class PaymentProcessingFactory {
     );
   }
 
-  getStrategy(ticketType: TicketType): PaymentProcessingStrategy {
+  getStrategy(ticketType: TicketType): IPaymentProcessingStrategy {
     const strategy = this.strategies.get(ticketType);
     if (!strategy) {
       throw new ServiceError(ticketType);
