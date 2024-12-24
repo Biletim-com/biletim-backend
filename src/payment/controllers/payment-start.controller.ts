@@ -60,6 +60,7 @@ export class PaymentStartController {
         clientIp,
         user,
       );
+
     const base64HtmlContent = Buffer.from(htmlContent).toString('base64');
     return { transactionId, htmlContent: base64HtmlContent };
   }

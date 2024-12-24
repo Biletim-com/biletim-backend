@@ -57,7 +57,7 @@ export class PendingPaymentProcessingStrategy
 
     const actionsCompleted: PaymentProcessingActions = [];
     const paymentProvider = this.paymentProviderFactory.getStrategy(
-      PaymentProvider.VAKIF_BANK,
+      transaction.paymentProvider,
     );
 
     try {

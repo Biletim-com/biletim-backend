@@ -156,12 +156,14 @@ export class OrderReturnValidationService {
       throw new OrderNotFoundError();
     }
 
-    if (
-      existingOrder.status !== OrderStatus.COMPLETED &&
-      existingOrder.status !== OrderStatus.REJECTED
-    ) {
-      throw new OrderCannotBeReturnedError(existingOrder.status);
-    }
+    // if (
+    //   existingOrder.status !== OrderStatus.COMPLETED &&
+    //   existingOrder.status !== OrderStatus.REJECTED
+    // ) {
+    //   throw new OrderCannotBeReturnedError(existingOrder.status);
+    // }
+
+    console.log(Date.now(), new Date(existingOrder.checkoutDateTime).getTime());
 
     if (Date.now() > new Date(existingOrder.checkoutDateTime).getTime()) {
       throw new OrderReturnDeadlineExpiredError();

@@ -8,9 +8,9 @@ import {
   Length,
 } from 'class-validator';
 
-import { DateISODate, PassportCountryCode } from '../types';
-import { IsNotInPast } from '../decorators';
-import { passportCountryCodes } from '../constants/passport-country-codes.constant';
+import { DateISODate, PassportCountryCode } from '../../common/types';
+import { IsNotInPast } from '../../common/decorators';
+import { passportCountryCodes } from '../../common/constants/passport-country-codes.constant';
 
 export class PassportDto {
   @ApiProperty({

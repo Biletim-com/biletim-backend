@@ -24,6 +24,7 @@ import { BusTicketOrdersRepository } from '@app/modules/orders/bus-ticket/bus-ti
 // dto
 import { BusTicketPurchaseResultDto } from '@app/providers/ticket/biletall/bus/dto/bus-ticket-purchase-result.dto';
 import { VakifBankPaymentResultDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
+import { BiletimGoPaymentResultDto } from '@app/providers/payment/biletim-go/dto/biletim-go-payment-result.dto';
 
 // enums
 import {
@@ -37,6 +38,9 @@ import { UUID } from '@app/common/types';
 
 // errors
 import { TransactionNotFoundError } from '@app/common/errors';
+
+// decorators
+import { OnEvent } from '@app/providers/event-emitter/decorators';
 
 @Injectable()
 export class BusTicketPaymentResultProcessingStrategy
@@ -55,10 +59,14 @@ export class BusTicketPaymentResultProcessingStrategy
     private readonly busTicketOrdersRepository: BusTicketOrdersRepository,
   ) {}
 
+  @OnEvent('payment.bus.finish')
   async handlePayment(
     clientIp: string,
     transactionId: UUID,
-    paymentResultDto: BusTicketPurchaseResultDto | VakifBankPaymentResultDto,
+    paymentResultDto:
+      | BusTicketPurchaseResultDto
+      | VakifBankPaymentResultDto
+      | BiletimGoPaymentResultDto,
   ): Promise<Transaction> {
     const transaction = await this.transactionsRepository.findOne({
       where: {

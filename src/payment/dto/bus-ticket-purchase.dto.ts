@@ -2,7 +2,6 @@ import {
   ArrayMinSize,
   IsArray,
   IsDateString,
-  IsEmail,
   IsNotEmpty,
   IsNumberString,
   IsOptional,
@@ -22,11 +21,9 @@ import { normalizeDecimal } from '@app/common/utils';
 import { DateISODate, DateTime } from '@app/common/types';
 
 // dtos
-import { BankCardDto } from '@app/common/dtos/bank-card.dto';
-import { PassengerInfoDto } from '@app/common/dtos';
-
-// dtos
-import { InvoiceDto } from '@app/common/dtos/invoice.dto';
+import { PassengerInfoDto } from './passenger-info.dto';
+import { InvoiceDto } from './invoice.dto';
+import { PurchaseDto } from './purchase.dto';
 
 class BusPassengerInfoDto extends PassengerInfoDto {
   @ApiProperty({
@@ -113,27 +110,7 @@ class BusTicketPurchaseTripDto {
   tripTrackingNumber: string;
 }
 
-export class BusTicketPurchaseDto {
-  @ApiProperty({
-    description: 'Contact email address of the person booking the ticket',
-    required: true,
-  })
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @ApiProperty({
-    description:
-      'Contact phone number of the person booking the ticket. Must be 10 characters',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  @Length(10, 10, {
-    message: 'phone Number must be 10 characters length',
-  })
-  phoneNumber: string;
-
+export class BusTicketPurchaseDto extends PurchaseDto {
   @ApiProperty({
     description: 'The invoice details for the ticket purchase.',
     required: false,
@@ -161,15 +138,6 @@ export class BusTicketPurchaseDto {
   @ArrayMinSize(1)
   @Type(() => BusPassengerInfoDto)
   passengers: BusPassengerInfoDto[];
-
-  @ApiProperty({
-    description: 'Bank card info',
-    type: BankCardDto,
-    required: true,
-  })
-  @ValidateNested()
-  @Type(() => BankCardDto)
-  bankCard: BankCardDto;
 
   get date(): DateISODate {
     return dayjs(this.trip.travelStartDateTime).format(

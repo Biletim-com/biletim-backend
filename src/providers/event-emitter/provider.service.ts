@@ -7,7 +7,10 @@ import { EventsMap } from './events';
 export class EventEmitterService {
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
-  emitEvent<K extends keyof EventsMap>(eventName: K, payload: EventsMap[K]) {
-    this.eventEmitter.emit(eventName, payload);
+  emitEvent<K extends keyof EventsMap>(
+    eventName: K,
+    ...payload: EventsMap[K] extends any[] ? EventsMap[K] : [EventsMap[K]]
+  ): void {
+    this.eventEmitter.emit(eventName, ...payload);
   }
 }

@@ -4,6 +4,11 @@ import { DataSource } from 'typeorm';
 // services
 import { BiletAllPlaneSearchService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-search.service';
 import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
+import { AbstractStartPaymentService } from '../abstract/start-payment.abstract.service';
+import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
+
+// repositories
+import { UsersRepository } from '@app/modules/users/users.repository';
 
 // entities
 import { PlaneTicketOrder } from '@app/modules/orders/plane-ticket/entities/plane-ticket-order.entity';
@@ -34,7 +39,7 @@ import {
   PlanePassengerInfoDto,
   PlaneTicketPurchaseDto,
 } from '../dto/plane-ticket-purchase.dto';
-import { InvoiceDto } from '@app/common/dtos';
+import { InvoiceDto } from '../dto/invoice.dto';
 
 // utils
 import { normalizeDecimal } from '@app/common/utils';
@@ -43,14 +48,18 @@ import { normalizeDecimal } from '@app/common/utils';
 import { ServiceError } from '@app/common/errors';
 
 @Injectable()
-export class PlaneTicketStartPaymentService {
+export class PlaneTicketStartPaymentService extends AbstractStartPaymentService {
   private readonly logger = new Logger(PlaneTicketStartPaymentService.name);
 
   constructor(
     private readonly dataSource: DataSource,
+    private readonly eventEmitter: EventEmitterService,
     private readonly paymentProviderFactory: PaymentProviderFactory,
     private readonly biletAllPlaneSearchService: BiletAllPlaneSearchService,
-  ) {}
+    usersRepository: UsersRepository,
+  ) {
+    super(usersRepository);
+  }
 
   private composePlanePassengerTypeCount(
     passengers: {
@@ -130,6 +139,11 @@ export class PlaneTicketStartPaymentService {
     clientIp: string,
     user?: User,
   ): Promise<{ transactionId: string; htmlContent: string }> {
+    const paymentMethod = await this.validatePaymentMethod(
+      planeTicketPurchaseDto.paymentMethod,
+      user,
+    );
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -149,6 +163,10 @@ export class PlaneTicketStartPaymentService {
       priceList.totalTicketPrice,
     );
 
+    const paymentProviderType = planeTicketPurchaseDto.paymentMethod.useWallet
+      ? PaymentProvider.BILETIM_GO
+      : PaymentProvider.VAKIF_BANK;
+
     try {
       /**
        * Init Transactions
@@ -158,13 +176,24 @@ export class PlaneTicketStartPaymentService {
         currency: Currency.TRY,
         status: TransactionStatus.PENDING,
         transactionType: TransactionType.PURCHASE,
-        paymentProvider: PaymentProvider.VAKIF_BANK,
+        paymentProvider: paymentProviderType,
         // unregistered card
-        cardholderName: planeTicketPurchaseDto.bankCard.holderName,
-        maskedPan: planeTicketPurchaseDto.bankCard.maskedPan,
+        ...(paymentMethod.bankCard
+          ? {
+              cardholderName: paymentMethod.bankCard.holderName,
+              maskedPan: paymentMethod.bankCard.maskedPan,
+            }
+          : {}),
 
-        bankCard: null,
-        wallet: null,
+        // saved bank card
+        ...(paymentMethod.savedBankCard
+          ? {
+              bankCard: paymentMethod.savedBankCard,
+            }
+          : {}),
+
+        // wallet
+        ...(paymentMethod.wallet ? { wallet: paymentMethod.wallet } : {}),
       });
       await queryRunner.manager.insert(Transaction, transaction);
 
@@ -241,16 +270,32 @@ export class PlaneTicketStartPaymentService {
       await queryRunner.manager.save(PlaneTicket, planeTickets);
 
       const paymentProvider = this.paymentProviderFactory.getStrategy(
-        PaymentProvider.VAKIF_BANK,
+        paymentMethod.wallet
+          ? PaymentProvider.BILETIM_GO
+          : PaymentProvider.VAKIF_BANK,
       );
 
       const htmlContent = await paymentProvider.startPayment({
         clientIp,
         ticketType: TicketType.PLANE,
         transaction,
-        paymentMethod: { bankCard: planeTicketPurchaseDto.bankCard },
+        paymentMethod,
       });
       await queryRunner.commitTransaction();
+      /**
+       * Finish payments direnctly make with the wallet
+       */
+      if (paymentMethod.wallet) {
+        this.eventEmitter.emitEvent(
+          'payment.plane.finish',
+          clientIp,
+          transaction.id,
+          {
+            amount: transaction.amount,
+            walletId: paymentMethod.wallet.id,
+          },
+        );
+      }
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {
       await queryRunner.rollbackTransaction();

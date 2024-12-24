@@ -2,8 +2,15 @@ import { DataSource } from 'typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 // services
-import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
 import { RatehawkOrderBookingService } from '@app/providers/hotel/ratehawk/services/ratehawk-order-booking.service';
+import { AbstractStartPaymentService } from '../abstract/start-payment.abstract.service';
+import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
+
+// factories
+import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
+
+// repositories
+import { UsersRepository } from '@app/modules/users/users.repository';
 
 // entities
 import { HotelBookingOrder } from '@app/modules/orders/hotel-booking/entities/hotel-booking-order.entity';
@@ -15,7 +22,7 @@ import { User } from '@app/modules/users/user.entity';
 
 // dto
 import { HotelBookingPurchaseDto } from '../dto/hotel-booking-purchase.dto';
-import { InvoiceDto } from '@app/common/dtos';
+import { InvoiceDto } from '../dto/invoice.dto';
 
 // enums
 import {
@@ -31,12 +38,16 @@ import {
 } from '@app/common/enums';
 
 @Injectable()
-export class HotelBookingStartPaymentService {
+export class HotelBookingStartPaymentService extends AbstractStartPaymentService {
   constructor(
     private readonly dataSource: DataSource,
+    private readonly eventEmitter: EventEmitterService,
     private readonly paymentProviderFactory: PaymentProviderFactory,
     private readonly ratehawkOrderBookingService: RatehawkOrderBookingService,
-  ) {}
+    usersRepository: UsersRepository,
+  ) {
+    super(usersRepository);
+  }
 
   private composeOrderInvoice(invoiceDto: InvoiceDto): Invoice {
     const invoiceType: InvoiceType = invoiceDto.individual
@@ -64,6 +75,11 @@ export class HotelBookingStartPaymentService {
     clientIp: string,
     user?: User,
   ) {
+    const paymentMethod = await this.validatePaymentMethod(
+      hotelBookingPurchaseDto.paymentMethod,
+      user,
+    );
+
     const {
       rates: [rate],
       changes,
@@ -85,9 +101,14 @@ export class HotelBookingStartPaymentService {
     const cancellationPenalties =
       rate.paymentOptions.paymentTypes[0].cancellationPenalties;
 
+    const paymentProviderType = hotelBookingPurchaseDto.paymentMethod.useWallet
+      ? PaymentProvider.BILETIM_GO
+      : PaymentProvider.VAKIF_BANK;
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+
     try {
       /**
        * Init Transactions
@@ -97,13 +118,24 @@ export class HotelBookingStartPaymentService {
         currency: Currency.TRY,
         status: TransactionStatus.PENDING,
         transactionType: TransactionType.PURCHASE,
-        paymentProvider: PaymentProvider.VAKIF_BANK,
+        paymentProvider: paymentProviderType,
         // unregistered card
-        cardholderName: hotelBookingPurchaseDto.bankCard.holderName,
-        maskedPan: hotelBookingPurchaseDto.bankCard.maskedPan,
+        ...(paymentMethod.bankCard
+          ? {
+              cardholderName: paymentMethod.bankCard.holderName,
+              maskedPan: paymentMethod.bankCard.maskedPan,
+            }
+          : {}),
 
-        bankCard: null,
-        wallet: null,
+        // saved bank card
+        ...(paymentMethod.savedBankCard
+          ? {
+              bankCard: paymentMethod.savedBankCard,
+            }
+          : {}),
+
+        // wallet
+        ...(paymentMethod.wallet ? { wallet: paymentMethod.wallet } : {}),
       });
       await queryRunner.manager.insert(Transaction, transaction);
 
@@ -170,16 +202,33 @@ export class HotelBookingStartPaymentService {
       await queryRunner.manager.save(HotelBookingRoom, roomsAndGuests);
 
       const paymentProvider = this.paymentProviderFactory.getStrategy(
-        PaymentProvider.VAKIF_BANK,
+        paymentMethod.wallet
+          ? PaymentProvider.BILETIM_GO
+          : PaymentProvider.VAKIF_BANK,
       );
 
       const htmlContent = await paymentProvider.startPayment({
         clientIp,
         ticketType: TicketType.HOTEL,
-        paymentMethod: { bankCard: hotelBookingPurchaseDto.bankCard },
+        paymentMethod,
         transaction,
       });
       await queryRunner.commitTransaction();
+
+      /**
+       * Finish payments direnctly make with the wallet
+       */
+      if (paymentMethod.wallet) {
+        this.eventEmitter.emitEvent(
+          'payment.hotel.finish',
+          clientIp,
+          transaction.id,
+          {
+            amount: transaction.amount,
+            walletId: paymentMethod.wallet.id,
+          },
+        );
+      }
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {
       await queryRunner.rollbackTransaction();

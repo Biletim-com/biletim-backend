@@ -10,8 +10,12 @@ import { BiletAllBusTicketReturnService } from '@app/providers/ticket/biletall/b
 import { BiletAllPlaneTicketReturnService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-ticket-return.service';
 import { RatehawkOrderCancelService } from '@app/providers/hotel/ratehawk/services/ratehawk-order-cancel.service';
 
+// repositories
+import { UsersRepository } from '@app/modules/users/users.repository';
+
 // entities
 import { Transaction } from '@app/modules/transactions/transaction.entity';
+import { User } from '@app/modules/users/user.entity';
 
 // dto
 import { OrderReturnValidationDto } from '../dto/order-return-validation.dto';
@@ -24,6 +28,14 @@ import {
   TransactionStatus,
 } from '@app/common/enums';
 
+// errors
+import {
+  ServiceError,
+  UserNotFoundError,
+  WalletNotFoundError,
+} from '@app/common/errors';
+import { Wallet } from '@app/modules/wallets/wallet.entity';
+
 @Injectable()
 export class OrderReturnFinishService {
   constructor(
@@ -35,6 +47,7 @@ export class OrderReturnFinishService {
     private readonly biletAllPlaneTicketReturnService: BiletAllPlaneTicketReturnService,
     private readonly ratehawkOrderCancelService: RatehawkOrderCancelService,
     private readonly paymentProviderFactory: PaymentProviderFactory,
+    private readonly usersRepository: UsersRepository,
   ) {}
 
   private async validateVerificationCode(
@@ -60,13 +73,46 @@ export class OrderReturnFinishService {
     return order;
   }
 
+  private async validateReturnSource(
+    returnToWallet: boolean,
+    user?: User,
+  ): Promise<Wallet | null> {
+    if (!user && (returnToWallet === false || returnToWallet === undefined)) {
+      return null;
+    }
+
+    if (!user && returnToWallet) {
+      throw new ServiceError(
+        'payment couldnt be initialized without the user identified',
+      );
+    }
+
+    const userWithWallet = await this.usersRepository.findOne({
+      where: { id: user?.id },
+      relations: { wallet: true },
+    });
+    if (!userWithWallet) {
+      throw new UserNotFoundError();
+    }
+
+    const userWallet = userWithWallet.wallet;
+    if (!userWallet) {
+      throw new WalletNotFoundError();
+    }
+    return userWallet;
+  }
+
   public async finishReturn(
     clientIp: string,
     reservationNumber: string,
     passengerLastName: string,
     orderType: OrderType,
     verificationCode: number,
+    returnToWallet: boolean,
+    user?: User,
   ): Promise<void> {
+    const returnSource = await this.validateReturnSource(returnToWallet, user);
+
     const order = await this.validateVerificationCode(
       reservationNumber,
       passengerLastName,
@@ -79,8 +125,11 @@ export class OrderReturnFinishService {
     await queryRunner.startTransaction();
 
     try {
-      const paymentProviderName = order.transaction.paymentProvider;
-      let refundAmount = order.penalty.amountToRefund;
+      const returnProvider =
+        returnSource instanceof Wallet
+          ? PaymentProvider.BILETIM_GO
+          : order.transaction.paymentProvider;
+      const refundAmount = order.penalty.amountToRefund;
 
       // return ticket
       if (order.type === OrderType.BUS_TICKET) {
@@ -94,22 +143,23 @@ export class OrderReturnFinishService {
           refundAmount,
         );
       } else {
-        const hotelRefund =
-          await this.ratehawkOrderCancelService.orderCancellation(
-            reservationNumber,
-          );
-        refundAmount = hotelRefund.amountRefunded?.amount || refundAmount;
+        await this.ratehawkOrderCancelService.orderCancellation(
+          reservationNumber,
+        );
       }
 
       // return money
-      if (paymentProviderName !== PaymentProvider.BILET_ALL) {
+      if (returnProvider !== PaymentProvider.BILET_ALL) {
         const paymentProvider =
-          this.paymentProviderFactory.getStrategy(paymentProviderName);
+          this.paymentProviderFactory.getStrategy(returnProvider);
 
         await paymentProvider.refundPayment({
           clientIp,
           transactionId: order.transaction.id,
           refundAmount,
+          details: {
+            walletId: returnSource?.id,
+          },
         });
       }
 

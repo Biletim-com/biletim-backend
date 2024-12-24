@@ -22,6 +22,7 @@ import { IPaymentProcessingStrategy } from '../interfaces/payment-processing.str
 
 // dto
 import { VakifBankPaymentResultDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
+import { BiletimGoPaymentResultDto } from '@app/providers/payment/biletim-go/dto/biletim-go-payment-result.dto';
 
 // enums
 import {
@@ -36,6 +37,9 @@ import { PaymentProcessingActions } from '../types/payment-processing-actions.ty
 
 // errors
 import { TransactionNotFoundError } from '@app/common/errors';
+
+// decorators
+import { OnEvent } from '@app/providers/event-emitter/decorators';
 
 @Injectable()
 export class PlaneTicketPaymentProcessingStrategy
@@ -54,10 +58,11 @@ export class PlaneTicketPaymentProcessingStrategy
     private readonly biletAllPlaneTicketPurchaseService: BiletAllPlaneTicketPurchaseService,
   ) {}
 
+  @OnEvent('payment.plane.finish')
   async handlePayment(
     clientIp: string,
     transactionId: UUID,
-    paymentResultDto: VakifBankPaymentResultDto,
+    paymentResultDto: VakifBankPaymentResultDto | BiletimGoPaymentResultDto,
   ): Promise<Transaction> {
     const transaction = await this.transactionsRepository.findOne({
       where: {

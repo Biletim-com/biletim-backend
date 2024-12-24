@@ -9,7 +9,7 @@ import {
   Length,
 } from 'class-validator';
 
-import { IsTCNumber, OnlyOneDefined } from '../decorators';
+import { IsTCNumber, OnlyOneDefined } from '../../common/decorators';
 
 class InvoiceContactDetails {
   @ApiProperty({
