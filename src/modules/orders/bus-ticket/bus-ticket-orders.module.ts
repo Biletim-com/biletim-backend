@@ -11,6 +11,12 @@ import { BusTicketPassenger } from './entities/bus-ticket-passenger.entity';
 // repositories
 import { BusTicketOrdersRepository } from './bus-ticket-orders.repository';
 
+// services
+import { BusTicketOrderService } from './bus-ticket-order.service';
+
+// controller
+import { BusTicketOrderController } from './bus-ticket-order.controller';
+
 @Module({
   imports: [
     PostgreSQLProviderModule.forFeature([
@@ -19,7 +25,8 @@ import { BusTicketOrdersRepository } from './bus-ticket-orders.repository';
       BusTicketOrder,
     ]),
   ],
-  providers: [BusTicketOrdersRepository],
-  exports: [BusTicketOrdersRepository],
+  controllers: [BusTicketOrderController],
+  providers: [BusTicketOrdersRepository, BusTicketOrderService],
+  exports: [BusTicketOrdersRepository, BusTicketOrderService],
 })
 export class BusTicketOrdersModule {}

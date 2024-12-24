@@ -11,6 +11,12 @@ import { HotelRoomGuest } from './entities/hotel-room-guest.entity';
 // repositories
 import { HotelBookingOrdersRepository } from './hotel-booking-orders.repository';
 
+// services
+import { HotelBookingOrderService } from './hotel-booking-order.service';
+
+// controller
+import { HotelBookingOrderController } from './hotel-booking-order.controller';
+
 @Module({
   imports: [
     PostgreSQLProviderModule.forFeature([
@@ -19,7 +25,8 @@ import { HotelBookingOrdersRepository } from './hotel-booking-orders.repository'
       HotelBookingOrder,
     ]),
   ],
-  providers: [HotelBookingOrdersRepository],
-  exports: [HotelBookingOrdersRepository],
+  controllers: [HotelBookingOrderController],
+  providers: [HotelBookingOrdersRepository, HotelBookingOrderService],
+  exports: [HotelBookingOrdersRepository, HotelBookingOrderService],
 })
 export class HotelBookingOrderModule {}
