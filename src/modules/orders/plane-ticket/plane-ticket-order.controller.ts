@@ -6,9 +6,9 @@ import { User } from '@app/modules/users/user.entity';
 import { PlaneTicketOrderService } from './plane-ticket-order.service';
 import { PlaneTicketOrder } from './entities/plane-ticket-order.entity';
 
-@ApiTags('Plane-Ticket-Order')
+@ApiTags('Orders')
 @ApiCookieAuth()
-@Controller('plane-ticket-order')
+@Controller('orders/plane-tickets')
 export class PlaneTicketOrderController {
   constructor(
     private readonly planeTicketOrderService: PlaneTicketOrderService,

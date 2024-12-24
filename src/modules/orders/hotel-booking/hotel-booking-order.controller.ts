@@ -6,9 +6,9 @@ import { User } from '@app/modules/users/user.entity';
 import { HotelBookingOrderService } from './hotel-booking-order.service';
 import { HotelBookingOrder } from './entities/hotel-booking-order.entity';
 
-@ApiTags('Hotel-Booking-Order')
+@ApiTags('Orders')
 @ApiCookieAuth()
-@Controller('hotel-booking-order')
+@Controller('orders/hotel-bookings')
 export class HotelBookingOrderController {
   constructor(
     private readonly hotelBookingOrderService: HotelBookingOrderService,

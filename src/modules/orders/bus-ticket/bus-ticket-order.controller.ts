@@ -6,9 +6,9 @@ import { CurrentUser } from '@app/common/decorators';
 import { User } from '@app/modules/users/user.entity';
 import { BusTicketOrder } from './entities/bus-ticket-order.entity';
 
-@ApiTags('Bus-Ticket-Order')
+@ApiTags('Orders')
 @ApiCookieAuth()
-@Controller('bus-ticket-order')
+@Controller('orders/bus-tickets')
 export class BusTicketOrderController {
   constructor(private readonly busTicketOrderService: BusTicketOrderService) {}
 
