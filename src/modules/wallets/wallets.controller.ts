@@ -2,9 +2,13 @@ import { CurrentUser } from '@app/common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '@app/common/guards';
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { User } from '../users/user.entity';
-import { Wallet } from './wallet.entity';
+
+// services
 import { WalletsService } from './wallets.service';
+
+// entities
+import { Wallet } from './wallet.entity';
+import { User } from '../users/user.entity';
 import { Transaction } from '../transactions/transaction.entity';
 
 @ApiTags('Wallet')
@@ -25,7 +29,7 @@ export class WalletController {
   @Get('/transaction-history')
   async getTransactionHistory(
     @CurrentUser() currentUser: User,
-  ): Promise<Transaction | Transaction[]> {
+  ): Promise<Transaction[]> {
     return this.walletsService.getTransactionHistory(currentUser.id);
   }
 }

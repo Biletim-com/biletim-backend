@@ -19,34 +19,21 @@ export class WalletsService {
       where: {
         user: { id: userId },
       },
-      relations: { user: true },
-      select: {
-        user: {
-          name: true,
-          familyName: true,
-          email: true,
-          phone: true,
-          address: true,
-          isDeleted: true,
-        },
-      },
     });
-
     if (!wallet) {
       throw new WalletNotFoundError();
     }
-
     return wallet;
   }
 
-  async getTransactionHistory(
-    userId: UUID,
-  ): Promise<Transaction | Transaction[]> {
-    const wallet = await this.getMyWallet(userId);
-
+  async getTransactionHistory(userId: UUID): Promise<Transaction[]> {
     return this.transactionsRepository.find({
       where: {
-        wallet: { id: wallet.id },
+        wallet: {
+          user: {
+            id: userId,
+          },
+        },
       },
       order: {
         createdAt: 'DESC',
