@@ -19,6 +19,17 @@ export class WalletsService {
       where: {
         user: { id: userId },
       },
+      relations: { user: true },
+      select: {
+        user: {
+          name: true,
+          familyName: true,
+          email: true,
+          phone: true,
+          address: true,
+          isDeleted: true,
+        },
+      },
     });
 
     if (!wallet) {
