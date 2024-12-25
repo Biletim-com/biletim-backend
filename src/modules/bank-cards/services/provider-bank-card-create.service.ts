@@ -48,10 +48,11 @@ export class ProvidersBankCardService {
           customerId,
           createBankCardDto,
         ),
-        this.garantiBankCardService.createCustomerCard(
-          existingUser.id,
-          createBankCardDto,
-        ),
+        Promise.resolve('do-not-use-this-token'),
+        // this.garantiBankCardService.createCustomerCard(
+        //   existingUser.id,
+        //   createBankCardDto,
+        // ),
       ]);
 
       const [vakifBankResult, garantiBankResult] = results;

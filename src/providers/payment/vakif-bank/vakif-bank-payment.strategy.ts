@@ -82,14 +82,17 @@ export class VakifBankPaymentStrategy implements IPayment {
   async startPayment({
     ticketType,
     transaction,
-    paymentMethod: { bankCard },
+    paymentMethod: { bankCard, savedBankCard },
   }: VakifBankPaymentStartDto): Promise<string> {
     const card3DsEligibility =
       await this.vakifBankEnrollmentService.checkCard3DsEligibility(
         ticketType,
         transaction,
         bankCard,
+        savedBankCard,
       );
+
+    console.log({ card3DsEligibility });
 
     if (!card3DsEligibility.isEligibile) {
       const { description, detail } =
