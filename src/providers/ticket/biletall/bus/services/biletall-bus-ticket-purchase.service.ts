@@ -14,10 +14,10 @@ import { BiletAllBusTicketPurchaseParserService } from '../parsers/biletall-bus-
 
 // dtos
 import { BankCardDto } from '@app/common/dtos';
-import { BusTicketPurchaseDto } from '../dto/bus-ticket-purchase.dto';
+import { BusTicketPurchaseResultDto } from '../dto/bus-ticket-purchase-result.dto';
 
 // types
-import { BusTicketPurchaseRequestResponse } from '../types/biletall-bus-ticket-purchase.type';
+import { BusTicketPurchaseResultResponse } from '../types/biletall-bus-ticket-purchase-result.type';
 
 // helpers
 import { BiletAllGender } from '../../helpers/biletall-gender.helper';
@@ -53,7 +53,7 @@ export class BiletAllBusTicketPurchaseService {
     order: BusTicketOrder,
     tickets: BusTicket[],
     bankCard?: undefined,
-  ): Promise<BusTicketPurchaseDto>;
+  ): Promise<BusTicketPurchaseResultDto>;
 
   async purchaseTicket(
     clientIp: string,
@@ -61,7 +61,7 @@ export class BiletAllBusTicketPurchaseService {
     order: BusTicketOrder,
     tickets: BusTicket[],
     bankCard?: BankCardDto,
-  ): Promise<BusTicketPurchaseDto | string> {
+  ): Promise<BusTicketPurchaseResultDto | string> {
     const builder = new xml2js.Builder({
       headless: true,
       renderOpts: { pretty: false },
@@ -138,7 +138,7 @@ export class BiletAllBusTicketPurchaseService {
     if (bankCard) return xml;
 
     const res =
-      await this.biletAllRequestService.run<BusTicketPurchaseRequestResponse>(
+      await this.biletAllRequestService.run<BusTicketPurchaseResultResponse>(
         xml,
       );
     return this.biletAllBusTicketPurchaseParserService.parsePurchaseRequest(

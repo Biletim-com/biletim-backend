@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { BiletAllPnrService } from '@app/providers/ticket/biletall/common/services/biletall-pnr.service';
 import { BiletAllPlaneTicketReturnService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-ticket-return.service';
 import { OrderRepositoryFactoryService } from '../factories/order-repository.factory.service';
+import { RatehawkOrderCancelService } from '@app/providers/hotel/ratehawk/services/ratehawk-order-cancel.service';
 
 // entities
 import { PlaneTicket } from '@app/modules/orders/plane-ticket/entities/plane-ticket.entity';
@@ -11,17 +12,20 @@ import { BusTicket } from '@app/modules/orders/bus-ticket/entities/bus-ticket.en
 
 // errors
 import {
-  OrderAlreadyReturnedError,
+  OrderCannotBeReturnedError,
   OrderNotFoundError,
+  OrderReturnDeadlineExpiredError,
+  ServiceError,
 } from '@app/common/errors';
 import { normalizeDecimal, turkishToEnglish } from '@app/common/utils';
 import { OrderStatus, OrderType } from '@app/common/enums';
 
 // dto
-import {
-  OrderReturnTotalPenaltyDto,
-  OrderReturnValidationDto,
-} from '../dto/order-return-validation.dto';
+import { OrderReturnValidationDto } from '../dto/order-return-validation.dto';
+import { OrderReturnTotalPenaltyDto } from '@app/common/dtos';
+
+// validators
+import { isNumeric } from '@app/common/validators';
 
 @Injectable()
 export class OrderReturnValidationService {
@@ -29,6 +33,7 @@ export class OrderReturnValidationService {
     private readonly orderRepositoryFactoryService: OrderRepositoryFactoryService,
     private readonly biletAllPnrService: BiletAllPnrService,
     private readonly biletAllPlaneTicketReturnService: BiletAllPlaneTicketReturnService,
+    private readonly ratehawkOrderCancelService: RatehawkOrderCancelService,
   ) {}
 
   private getFirstPassengerSurname(
@@ -77,8 +82,8 @@ export class OrderReturnValidationService {
     if (transformedPassengerLastName !== firstPassengerSurname) {
       throw new OrderNotFoundError();
     }
-    if (existingOrder.status === OrderStatus.REFUND_PROCESSED) {
-      throw new OrderAlreadyReturnedError();
+    if (existingOrder.status !== OrderStatus.COMPLETED) {
+      throw new OrderCannotBeReturnedError(existingOrder.status);
     }
 
     await this.biletAllPnrService.pnrSearch({
@@ -127,6 +132,54 @@ export class OrderReturnValidationService {
     };
   }
 
+  private async validateHotelOrder(
+    reservationNumber: string,
+  ): Promise<OrderReturnValidationDto> {
+    if (!isNumeric(reservationNumber)) {
+      throw new ServiceError('Reservation number has to be number');
+    }
+
+    const ordersRepository = this.orderRepositoryFactoryService.getRepository(
+      OrderType.HOTEL_BOOKING,
+    );
+
+    const existingOrder = await ordersRepository.findOne({
+      where: {
+        reservationNumber: Number(reservationNumber),
+      },
+      relations: {
+        transaction: true,
+      },
+    });
+
+    if (!existingOrder) {
+      throw new OrderNotFoundError();
+    }
+
+    // if (
+    //   existingOrder.status !== OrderStatus.COMPLETED &&
+    //   existingOrder.status !== OrderStatus.REJECTED
+    // ) {
+    //   throw new OrderCannotBeReturnedError(existingOrder.status);
+    // }
+
+    console.log(Date.now(), new Date(existingOrder.checkoutDateTime).getTime());
+
+    if (Date.now() > new Date(existingOrder.checkoutDateTime).getTime()) {
+      throw new OrderReturnDeadlineExpiredError();
+    }
+
+    const penalty = this.ratehawkOrderCancelService.orderReturnPenalty(
+      existingOrder.cancellationPenalties,
+      existingOrder.transaction.amount,
+    );
+
+    return {
+      ...existingOrder,
+      penalty,
+    };
+  }
+
   public validateOrder(
     reservationNumber: string,
     passengerLastName: string,
@@ -142,12 +195,7 @@ export class OrderReturnValidationService {
         orderType,
       );
     } else {
-      // TODO: this is for HOTEL
-      return this.validateOrderWithPnrNumber(
-        reservationNumber,
-        passengerLastName,
-        orderType as OrderType.BUS_TICKET,
-      );
+      return this.validateHotelOrder(reservationNumber);
     }
   }
 }

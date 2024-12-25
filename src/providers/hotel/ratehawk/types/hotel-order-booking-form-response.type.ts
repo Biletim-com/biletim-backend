@@ -1,6 +1,6 @@
 import { OrderUpsellData } from '../dto/hotel-booking-finish.dto';
 
-export type PaymentType = {
+type PaymentType = {
   amount: string;
   currency_code: string;
   is_need_credit_card_data: boolean;

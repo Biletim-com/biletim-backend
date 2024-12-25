@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 
 import { HotelSearchController } from './hotel-search.controller';
-import { RatehawkProviderModule } from '@app/providers/hotel/ratehawk/provider.module';
 import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
+import { HotelProviderModule } from '@app/providers/hotel/provider.module';
 
 @Module({
-  imports: [RatehawkProviderModule],
+  imports: [HotelProviderModule],
   providers: [HotelBookingOrdersRepository],
   controllers: [HotelSearchController],
 })

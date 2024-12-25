@@ -60,17 +60,6 @@ export class UsersController {
     return new UserWithoutPasswordDto(user);
   }
 
-  @ApiOperation({ summary: 'Create App User' })
-  @UseGuards(PanelUserJwtAuthGuard)
-  @HttpCode(201)
-  @Post()
-  async create(
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<UserWithoutPasswordDto> {
-    const user = await this.usersService.create(createUserDto);
-    return new UserWithoutPasswordDto(user);
-  }
-
   @ApiOperation({ summary: 'Update App User' })
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)

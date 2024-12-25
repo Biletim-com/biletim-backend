@@ -9,10 +9,10 @@ import {
 } from 'class-validator';
 
 // decorators
-import { IsTCNumber } from '../decorators';
+import { IsTCNumber } from '../../common/decorators';
 
 // enums
-import { Gender } from '../enums';
+import { Gender } from '../../common/enums';
 
 // dtos
 import { PassportDto } from './passport.dto';

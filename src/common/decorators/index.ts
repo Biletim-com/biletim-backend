@@ -6,3 +6,4 @@ export * from './only-one-defined.decorator';
 export * from './is-valid-plane-passenger-type.decorator';
 export * from './is-not-in-past.decorator';
 export * from './is-bank-card-number.decorator';
+export * from './is-after.decorator';

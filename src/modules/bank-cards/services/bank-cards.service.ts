@@ -56,8 +56,7 @@ export class BankCardsService {
       throw new BankCardUniqueConstraintViolationError(['pan']);
     }
 
-    // create credit card tokens
-
+    // create bank card tokens
     const [vakifBankCardToken, garantiCardToken] =
       await this.providersBankCardService.createCustomerCards(
         createBankCardDto,

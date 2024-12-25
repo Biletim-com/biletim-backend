@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
-// enums
+// enumns
 import { OrderType } from '@app/common/enums';
 
-export class OrderReturnValidationRequestDto {
+export class OrderReturnRequestDto {
   @ApiProperty({
     description:
       'The unique reservation number (PNR for bus and plane tickets)',

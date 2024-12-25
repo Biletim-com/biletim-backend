@@ -13,21 +13,20 @@ import { VerificationsRepository } from '@app/modules/verification/verification.
 import { BusTicketOrdersRepository } from '@app/modules/orders/bus-ticket/bus-ticket-orders.repository';
 import { PlaneTicketOrdersRepository } from '@app/modules/orders/plane-ticket/plane-ticket-orders.repository';
 import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
+import { UsersRepository } from '@app/modules/users/users.repository';
 
+// controllers
 import { OrderReturnController } from './order-return.controller';
+
+// modules
 import { PaymentProviderModule } from '@app/providers/payment/provider.module';
-import { BiletAllCommonModule } from '@app/providers/ticket/biletall/common/provider.module';
-import { BiletAllPlaneModule } from '@app/providers/ticket/biletall/plane/provider.module';
-import { BiletAllBusModule } from '@app/providers/ticket/biletall/bus/provider.module';
+import { TicketProviderModule } from '@app/providers/ticket/provider.module';
+import { HotelProviderModule } from '@app/providers/hotel/provider.module';
 
 @Module({
-  imports: [
-    PaymentProviderModule,
-    BiletAllCommonModule,
-    BiletAllPlaneModule,
-    BiletAllBusModule,
-  ],
+  imports: [PaymentProviderModule, TicketProviderModule, HotelProviderModule],
   providers: [
+    UsersRepository,
     OrderReturnValidationService,
     OrderReturnStartService,
     OrderReturnFinishService,

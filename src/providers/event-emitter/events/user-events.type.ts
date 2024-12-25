@@ -1,6 +1,4 @@
-import {
-  SendVerifyAccountEmailNotificationDto
-} from '@app/common/dtos';
+import { SendVerifyAccountEmailNotificationDto } from '@app/common/dtos';
 
 export type UserEventsMap = {
   'user.created': SendVerifyAccountEmailNotificationDto;

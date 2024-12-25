@@ -13,8 +13,7 @@ import * as dayjs from 'dayjs';
 import { DateISODate } from '@app/common/types';
 
 // dto
-
-import { IsReturnDateGreaterDate } from '@app/common/decorators/is-return-date-greater-date.decorator';
+import { IsAfter } from '@app/common/decorators';
 import { Transform } from 'class-transformer';
 
 // request to be sent to get the available dates
@@ -59,7 +58,7 @@ export class BusScheduleRequestDto {
   @IsDateString({}, { message: 'Return date must be in the format yyyy-MM-dd' })
   @IsOptional()
   @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
-  @IsReturnDateGreaterDate('date', {
+  @IsAfter('date', {
     message: 'Return date must be greater than date',
   })
   returnDate?: DateISODate;

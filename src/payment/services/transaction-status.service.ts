@@ -13,7 +13,7 @@ import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { UUID } from '@app/common/types';
 
 @Injectable()
-export class PaymentResultService {
+export class TransactionStatusService {
   constructor(
     private readonly transactionsRepository: TransactionsRepository,
   ) {}

@@ -1,37 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
-
+import {
+  IsNotEmpty,
+  IsInt,
+  Min,
+  Max,
+  IsBoolean,
+  IsOptional,
+} from 'class-validator';
 // enumns
-import { OrderType } from '@app/common/enums';
+import { OrderReturnRequestDto } from './order-return-request.dto';
 
-export class OrderReturnFinishRequestDto {
-  @ApiProperty({
-    description:
-      'The unique reservation number (PNR for bus and plane tickets)',
-    example: 'ABC123',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  reservationNumber: string;
-
-  @ApiProperty({
-    description: 'Order type',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsEnum(OrderType)
-  orderType: OrderType;
-
-  @ApiProperty({
-    description: "First Passenger's lastname",
-    example: 'OZTURK',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  passengerLastName: string;
-
+export class OrderReturnFinishRequestDto extends OrderReturnRequestDto {
   @ApiProperty({
     description: 'The Verification Code',
     example: '123456',
@@ -42,4 +21,12 @@ export class OrderReturnFinishRequestDto {
   @Min(100000)
   @Max(999999)
   verificationCode: number;
+
+  @ApiProperty({
+    description: 'Define whether return is to wallet or not',
+    required: false,
+  })
+  @IsNotEmpty()
+  @IsBoolean()
+  returnToWallet: boolean;
 }

@@ -3,7 +3,14 @@ import { DataSource, In } from 'typeorm';
 
 // services
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
+import { AbstractStartPaymentService } from '../abstract/start-payment.abstract.service';
+import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
+
+// factories
 import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
+
+// repositories
+import { UsersRepository } from '@app/modules/users/users.repository';
 
 // entities
 import { BusTicketOrder } from '@app/modules/orders/bus-ticket/entities/bus-ticket-order.entity';
@@ -21,7 +28,6 @@ import {
   OrderCategory,
   OrderStatus,
   OrderType,
-  PaymentMethod,
   PaymentProvider,
   TicketType,
   TransactionStatus,
@@ -29,7 +35,7 @@ import {
 } from '@app/common/enums';
 
 // dtos
-import { InvoiceDto } from '@app/common/dtos';
+import { InvoiceDto } from '../dto/invoice.dto';
 import { BusTicketPurchaseDto } from '../dto/bus-ticket-purchase.dto';
 import { BusSeatAvailabilityRequestDto } from '@app/search/bus/dto/bus-seat-availability.dto';
 
@@ -38,15 +44,21 @@ import { UUID } from '@app/common/types';
 
 // errors
 import { ServiceError } from '@app/common/errors';
+
+// utils
 import { normalizeDecimal } from '@app/common/utils';
 
 @Injectable()
-export class BusTicketStartPaymentService {
+export class BusTicketStartPaymentService extends AbstractStartPaymentService {
   constructor(
     private readonly dataSource: DataSource,
+    private readonly eventEmitter: EventEmitterService,
     private readonly paymentProviderFactory: PaymentProviderFactory,
     private readonly biletAllBusSearchService: BiletAllBusSearchService,
-  ) {}
+    usersRepository: UsersRepository,
+  ) {
+    super(usersRepository);
+  }
 
   private composeOrderInvoice(invoiceDto: InvoiceDto): Invoice {
     const invoiceType: InvoiceType = invoiceDto.individual
@@ -74,6 +86,11 @@ export class BusTicketStartPaymentService {
     clientIp: string,
     user?: User,
   ): Promise<{ transactionId: UUID; htmlContent: string }> {
+    const paymentMethod = await this.validatePaymentMethod(
+      busTicketPurchaseDto.paymentMethod,
+      user,
+    );
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -147,11 +164,19 @@ export class BusTicketStartPaymentService {
       throw new ServiceError('This company does not accept online payments');
     }
 
-    const paymentProviderType = transactionRules.includes(
-      'INTERNAL_VIRTUAL_POS',
-    )
+    const paymentProviderType = busTicketPurchaseDto.paymentMethod.useWallet
+      ? PaymentProvider.BILETIM_GO
+      : transactionRules.includes('INTERNAL_VIRTUAL_POS')
       ? PaymentProvider.VAKIF_BANK
       : PaymentProvider.BILET_ALL;
+    if (
+      !paymentMethod.bankCard &&
+      paymentProviderType === PaymentProvider.BILET_ALL
+    ) {
+      throw new ServiceError(
+        'You must start the payment with bank card details',
+      );
+    }
 
     const totalTicketPrice = normalizeDecimal(
       busTicketPurchaseDto.passengers.reduce((acc, current) => {
@@ -168,14 +193,24 @@ export class BusTicketStartPaymentService {
         currency: Currency.TRY,
         status: TransactionStatus.PENDING,
         transactionType: TransactionType.PURCHASE,
-        paymentMethod: PaymentMethod.BANK_CARD,
         paymentProvider: paymentProviderType,
         // unregistered card
-        cardholderName: busTicketPurchaseDto.bankCard.holderName,
-        maskedPan: busTicketPurchaseDto.bankCard.maskedPan,
+        ...(paymentMethod.bankCard
+          ? {
+              cardholderName: paymentMethod.bankCard.holderName,
+              maskedPan: paymentMethod.bankCard.maskedPan,
+            }
+          : {}),
 
-        bankCard: null,
-        wallet: null,
+        // saved bank card
+        ...(paymentMethod.savedBankCard
+          ? {
+              bankCard: paymentMethod.savedBankCard,
+            }
+          : {}),
+
+        // wallet
+        ...(paymentMethod.wallet ? { wallet: paymentMethod.wallet } : {}),
       });
       await queryRunner.manager.insert(Transaction, transaction);
 
@@ -248,13 +283,28 @@ export class BusTicketStartPaymentService {
       const paymentProvider =
         this.paymentProviderFactory.getStrategy(paymentProviderType);
 
-      const htmlContent = await paymentProvider.startPayment(
+      const htmlContent = await paymentProvider.startPayment({
         clientIp,
-        TicketType.BUS,
-        busTicketPurchaseDto.bankCard,
-        { ...transaction, busTicketOrder: { ...order, tickets } },
-      );
+        ticketType: TicketType.BUS,
+        paymentMethod,
+        transaction: { ...transaction, busTicketOrder: { ...order, tickets } },
+      });
       await queryRunner.commitTransaction();
+
+      /**
+       * Finish payments direnctly make with the wallet
+       */
+      if (paymentMethod.wallet) {
+        this.eventEmitter.emitEvent(
+          'payment.bus.finish',
+          clientIp,
+          transaction.id,
+          {
+            amount: transaction.amount,
+            walletId: paymentMethod.wallet.id,
+          },
+        );
+      }
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {
       await queryRunner.rollbackTransaction();

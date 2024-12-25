@@ -1,10 +1,11 @@
-import { Entity, Column, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, OneToOne } from 'typeorm';
 
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
 import { Passenger } from '../passengers/passenger.entity';
 import { BankCard } from '../bank-cards/bank-card.entity';
 import { Verification } from '../verification/verification.entity';
+import { Wallet } from '../wallets/wallet.entity';
 
 @Entity('users')
 export class User extends AbstractEntity<User> {
@@ -48,4 +49,7 @@ export class User extends AbstractEntity<User> {
 
   @OneToMany(() => BankCard, (bankCard) => bankCard.user)
   bankCards: BankCard[];
+
+  @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: ['insert'] })
+  wallet: Wallet;
 }
