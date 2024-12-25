@@ -169,6 +169,14 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
       : transactionRules.includes('INTERNAL_VIRTUAL_POS')
       ? PaymentProvider.VAKIF_BANK
       : PaymentProvider.BILET_ALL;
+    if (
+      !paymentMethod.bankCard &&
+      paymentProviderType === PaymentProvider.BILET_ALL
+    ) {
+      throw new ServiceError(
+        'You must start the payment with bank card details',
+      );
+    }
 
     const totalTicketPrice = normalizeDecimal(
       busTicketPurchaseDto.passengers.reduce((acc, current) => {
