@@ -23,6 +23,8 @@ import { User } from '@app/modules/users/user.entity';
 // dto
 import { HotelBookingPurchaseDto } from '../dto/hotel-booking-purchase.dto';
 import { InvoiceDto } from '../dto/invoice.dto';
+import { BiletimGoPaymentResultDto } from '@app/providers/payment/biletim-go/dto/biletim-go-payment-result.dto';
+import { VakifBankSavedCardPaymentFinishDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
 
 // enums
 import {
@@ -207,26 +209,41 @@ export class HotelBookingStartPaymentService extends AbstractStartPaymentService
           : PaymentProvider.VAKIF_BANK,
       );
 
-      const htmlContent = await paymentProvider.startPayment({
-        clientIp,
-        ticketType: TicketType.HOTEL,
-        paymentMethod,
-        transaction,
-      });
+      let htmlContent: string | null = null;
+      if (!paymentMethod.savedBankCard) {
+        htmlContent = await paymentProvider.startPayment({
+          clientIp,
+          ticketType: TicketType.HOTEL,
+          paymentMethod,
+          transaction,
+        });
+      }
       await queryRunner.commitTransaction();
 
       /**
-       * Finish payments direnctly make with the wallet
+       * Finish payments direnctly make with the wallet and a saved card
        */
-      if (paymentMethod.wallet) {
+      if (paymentMethod.wallet || paymentMethod.savedBankCard) {
+        const eventDetails:
+          | BiletimGoPaymentResultDto
+          | VakifBankSavedCardPaymentFinishDto = paymentMethod.wallet
+          ? {
+              amount: transaction.amount,
+              walletId: paymentMethod.wallet.id,
+            }
+          : ({
+              amount: transaction.amount,
+              cardToken: paymentMethod.savedBankCard?.vakifPanToken,
+              currency: Currency.TRY,
+              transactionId: transaction.id,
+              userId: user?.id,
+            } as VakifBankSavedCardPaymentFinishDto);
+
         this.eventEmitter.emitEvent(
           'payment.hotel.finish',
           clientIp,
           transaction.id,
-          {
-            amount: transaction.amount,
-            walletId: paymentMethod.wallet.id,
-          },
+          eventDetails,
         );
       }
       return { transactionId: transaction.id, htmlContent };

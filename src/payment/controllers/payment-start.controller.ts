@@ -53,7 +53,7 @@ export class PaymentStartController {
     @Body() busTicketPurchaseDto: BusTicketPurchaseDto,
     @ClientIp() clientIp: string,
     @CurrentUser() user?: User,
-  ): Promise<{ transactionId: string; htmlContent: string }> {
+  ): Promise<{ transactionId: string; htmlContent: string | null }> {
     const { transactionId, htmlContent } =
       await this.busTicketStartPaymentService.busTicketPurchase(
         busTicketPurchaseDto,
@@ -61,7 +61,9 @@ export class PaymentStartController {
         user,
       );
 
-    const base64HtmlContent = Buffer.from(htmlContent).toString('base64');
+    const base64HtmlContent = htmlContent
+      ? Buffer.from(htmlContent).toString('base64')
+      : null;
     return { transactionId, htmlContent: base64HtmlContent };
   }
 
@@ -71,14 +73,16 @@ export class PaymentStartController {
     @Body() planeTicketPurchaseDto: PlaneTicketPurchaseDto,
     @ClientIp() clientIp: string,
     @CurrentUser() user?: User,
-  ): Promise<{ transactionId: string; htmlContent: string }> {
+  ): Promise<{ transactionId: string; htmlContent: string | null }> {
     const { transactionId, htmlContent } =
       await this.planeTicketStartPaymentService.startPlaneTicketPurchase(
         planeTicketPurchaseDto,
         clientIp,
         user,
       );
-    const base64HtmlContent = Buffer.from(htmlContent).toString('base64');
+    const base64HtmlContent = htmlContent
+      ? Buffer.from(htmlContent).toString('base64')
+      : null;
     return { transactionId, htmlContent: base64HtmlContent };
   }
 
@@ -88,14 +92,16 @@ export class PaymentStartController {
     @Body() hotelBookingPurchaseDto: HotelBookingPurchaseDto,
     @ClientIp() clientIp: string,
     @CurrentUser() user?: User,
-  ) {
+  ): Promise<{ transactionId: string; htmlContent: string | null }> {
     const { transactionId, htmlContent } =
       await this.hotelBookingStartPaymentService.startHotelBookingOrderPayment(
         hotelBookingPurchaseDto,
         clientIp,
         user,
       );
-    const base64HtmlContent = Buffer.from(htmlContent).toString('base64');
+    const base64HtmlContent = htmlContent
+      ? Buffer.from(htmlContent).toString('base64')
+      : null;
     return { transactionId, htmlContent: base64HtmlContent };
   }
 }

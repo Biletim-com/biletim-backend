@@ -38,6 +38,8 @@ import {
 import { InvoiceDto } from '../dto/invoice.dto';
 import { BusTicketPurchaseDto } from '../dto/bus-ticket-purchase.dto';
 import { BusSeatAvailabilityRequestDto } from '@app/search/bus/dto/bus-seat-availability.dto';
+import { BiletimGoPaymentResultDto } from '@app/providers/payment/biletim-go/dto/biletim-go-payment-result.dto';
+import { VakifBankSavedCardPaymentFinishDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
 
 // types
 import { UUID } from '@app/common/types';
@@ -85,7 +87,7 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
     busTicketPurchaseDto: BusTicketPurchaseDto,
     clientIp: string,
     user?: User,
-  ): Promise<{ transactionId: UUID; htmlContent: string }> {
+  ): Promise<{ transactionId: UUID; htmlContent: string | null }> {
     const paymentMethod = await this.validatePaymentMethod(
       busTicketPurchaseDto.paymentMethod,
       user,
@@ -283,26 +285,44 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
       const paymentProvider =
         this.paymentProviderFactory.getStrategy(paymentProviderType);
 
-      const htmlContent = await paymentProvider.startPayment({
-        clientIp,
-        ticketType: TicketType.BUS,
-        paymentMethod,
-        transaction: { ...transaction, busTicketOrder: { ...order, tickets } },
-      });
+      let htmlContent: string | null = null;
+      if (!paymentMethod.savedBankCard) {
+        htmlContent = await paymentProvider.startPayment({
+          clientIp,
+          ticketType: TicketType.BUS,
+          paymentMethod,
+          transaction: {
+            ...transaction,
+            busTicketOrder: { ...order, tickets },
+          },
+        });
+      }
       await queryRunner.commitTransaction();
 
       /**
        * Finish payments direnctly make with the wallet
        */
-      if (paymentMethod.wallet) {
+      if (paymentMethod.wallet || paymentMethod.savedBankCard) {
+        const eventDetails:
+          | BiletimGoPaymentResultDto
+          | VakifBankSavedCardPaymentFinishDto = paymentMethod.wallet
+          ? {
+              amount: transaction.amount,
+              walletId: paymentMethod.wallet.id,
+            }
+          : ({
+              amount: transaction.amount,
+              cardToken: paymentMethod.savedBankCard?.vakifPanToken,
+              currency: Currency.TRY,
+              transactionId: transaction.id,
+              userId: user?.id,
+            } as VakifBankSavedCardPaymentFinishDto);
+
         this.eventEmitter.emitEvent(
           'payment.bus.finish',
           clientIp,
           transaction.id,
-          {
-            amount: transaction.amount,
-            walletId: paymentMethod.wallet.id,
-          },
+          eventDetails,
         );
       }
       return { transactionId: transaction.id, htmlContent };

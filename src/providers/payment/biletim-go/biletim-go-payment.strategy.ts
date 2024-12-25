@@ -34,12 +34,12 @@ export class BiletimGoPaymentStrategy implements IPayment {
   async startPayment({
     transaction,
     paymentMethod: { wallet },
-  }: BiletimGoPaymentStartDto): Promise<string> {
+  }: BiletimGoPaymentStartDto): Promise<null> {
     const transactionAmount = Number(transaction.amount);
     if (transactionAmount > wallet.balance) {
       throw new InsufficientWalletBalanceError();
     }
-    return '';
+    return null;
   }
 
   async finishPayment({

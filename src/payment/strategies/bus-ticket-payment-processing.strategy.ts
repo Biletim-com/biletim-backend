@@ -23,7 +23,10 @@ import { BusTicketOrdersRepository } from '@app/modules/orders/bus-ticket/bus-ti
 
 // dto
 import { BusTicketPurchaseResultDto } from '@app/providers/ticket/biletall/bus/dto/bus-ticket-purchase-result.dto';
-import { VakifBankPaymentResultDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
+import {
+  VakifBankPaymentResultDto,
+  VakifBankSavedCardPaymentFinishDto,
+} from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
 import { BiletimGoPaymentResultDto } from '@app/providers/payment/biletim-go/dto/biletim-go-payment-result.dto';
 
 // enums
@@ -65,8 +68,9 @@ export class BusTicketPaymentResultProcessingStrategy
     transactionId: UUID,
     paymentResultDto:
       | BusTicketPurchaseResultDto
+      | BiletimGoPaymentResultDto
       | VakifBankPaymentResultDto
-      | BiletimGoPaymentResultDto,
+      | VakifBankSavedCardPaymentFinishDto,
   ): Promise<Transaction> {
     const transaction = await this.transactionsRepository.findOne({
       where: {

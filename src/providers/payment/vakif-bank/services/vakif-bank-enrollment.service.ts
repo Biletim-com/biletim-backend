@@ -4,10 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { AppConfigService } from '@app/configs/app';
 import { PaymentConfigService } from '@app/configs/payment';
 import { PoxClientService } from '@app/providers/pox-client/provider.service';
-
-// entities
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { BankCard } from '@app/modules/bank-cards/bank-card.entity';
 
 // decorators
 import { InjectPoxClient } from '@app/providers/pox-client/decorators';
@@ -64,33 +61,19 @@ export class VakifBankEnrollmentService {
   async checkCard3DsEligibility(
     ticketType: TicketType,
     transaction: Transaction,
-    bankCard?: BankCardDto,
-    savedBankCard?: BankCard,
+    bankCard: BankCardDto,
   ): Promise<ThreeDSecureEligibilityResponse> {
-    console.log(savedBankCard);
     const body = {
       ...this.authCredentials,
       VerifyEnrollmentRequestId: transaction.id,
-      ...(bankCard
-        ? {
-            Pan: bankCard.pan,
-            ExpiryDate: dayjs(bankCard.expiryDate).format('YYMM'),
-            BrandName: VakifBankBankCardBrand[bankCard.cardType],
-          }
-        : {
-            PanCode: savedBankCard?.vakifPanToken,
-            ExpiryDate: dayjs(savedBankCard?.expiryDate).format('YYMM'),
-            BrandName: savedBankCard?.cardType
-              ? VakifBankBankCardBrand[savedBankCard.cardType]
-              : undefined,
-          }),
+      Pan: bankCard.pan,
+      ExpiryDate: dayjs(bankCard.expiryDate).format('YYMM'),
       PurchaseAmount: normalizeDecimal(transaction.amount),
       Currency: VakifBankCurrency[Currency.TRY],
+      BrandName: VakifBankBankCardBrand[bankCard.cardType],
       SuccessUrl: `${this.applicationConfigService.backendUrl}/payment/success?transactionId=${transaction.id}&ticketType=${ticketType}`,
       FailureUrl: `${this.applicationConfigService.backendUrl}/payment/failure?transactionId=${transaction.id}&ticketType=${ticketType}`,
     };
-
-    console.log({ body });
 
     const {
       IPaySecure: {
