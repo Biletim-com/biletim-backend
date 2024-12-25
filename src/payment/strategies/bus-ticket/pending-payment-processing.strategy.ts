@@ -18,10 +18,11 @@ import { BiletAllBusTicketPurchaseService } from '@app/providers/ticket/biletall
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
 
 // dto
-import { VakifBankPaymentResultDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
-
-// enums
-import { PaymentProvider } from '@app/common/enums';
+import { BiletimGoPaymentResultDto } from '@app/providers/payment/biletim-go/dto/biletim-go-payment-result.dto';
+import {
+  VakifBankPaymentResultDto,
+  VakifBankSavedCardPaymentFinishDto,
+} from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
 
 // types
 import { PaymentProcessingActions } from '@app/payment/types/payment-processing-actions.type';
@@ -44,7 +45,10 @@ export class PendingPaymentProcessingStrategy
     queryRunner: QueryRunner,
     clientIp: string,
     transaction: Transaction,
-    paymentResultDetails: VakifBankPaymentResultDto,
+    paymentResultDetails:
+      | BiletimGoPaymentResultDto
+      | VakifBankPaymentResultDto
+      | VakifBankSavedCardPaymentFinishDto,
   ): Promise<void> {
     const {
       companyNumber,
@@ -92,11 +96,11 @@ export class PendingPaymentProcessingStrategy
        */
       await paymentProvider.finishPayment({
         clientIp,
+        orderId: transaction.busTicketOrder.id,
         details: {
           ...paymentResultDetails,
           PurchAmount: transaction.amount,
         },
-        orderId: transaction.busTicketOrder.id,
       });
       actionsCompleted.push('PAYMENT');
 

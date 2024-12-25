@@ -7,6 +7,7 @@ import { User } from '@app/modules/users/user.entity';
 import { VakifBankCardService } from '@app/providers/payment/vakif-bank/services/vakif-bank-card.service';
 import { VakifBankCustomerService } from '@app/providers/payment/vakif-bank/services/vakif-bank-customer.service';
 import { GarantiCardService } from '@app/providers/payment/garanti/services/garanti-card.service';
+import { AppConfigService } from '@app/configs/app';
 
 // dto
 import { CreateBankCardDto } from '../dto/create-bank-card-request.dto';
@@ -25,6 +26,7 @@ export class ProvidersBankCardService {
     private readonly vakifBankCardService: VakifBankCardService,
     private readonly vakifBankCustomerService: VakifBankCustomerService,
     private readonly garantiBankCardService: GarantiCardService,
+    private readonly appConfigService: AppConfigService,
   ) {}
 
   async createCustomerCards(
@@ -33,25 +35,21 @@ export class ProvidersBankCardService {
     userHasCard: boolean,
   ): Promise<[string, string]> {
     try {
-      const customerId = this.vakifBankCustomerService.generateVPosCustomerId(
-        existingUser.id,
-      );
       if (!userHasCard) {
-        await this.vakifBankCustomerService.createCustomer({
-          ...existingUser,
-          id: customerId as UUID,
-        });
+        await this.vakifBankCustomerService.createCustomer(existingUser);
       }
 
       const results = await Promise.allSettled([
         this.vakifBankCardService.createCustomerCard(
-          customerId,
-          createBankCardDto,
-        ),
-        this.garantiBankCardService.createCustomerCard(
           existingUser.id,
           createBankCardDto,
         ),
+        this.appConfigService.env === 'development'
+          ? Promise.resolve('do-not-use-this-token')
+          : this.garantiBankCardService.createCustomerCard(
+              existingUser.id,
+              createBankCardDto,
+            ),
       ]);
 
       const [vakifBankResult, garantiBankResult] = results;
@@ -118,9 +116,7 @@ export class ProvidersBankCardService {
     cardToken: string,
   ): Promise<void> {
     try {
-      const customerId =
-        this.vakifBankCustomerService.generateVPosCustomerId(userId);
-      await this.vakifBankCardService.deleteCustomerCard(customerId, cardToken);
+      await this.vakifBankCardService.deleteCustomerCard(userId, cardToken);
       this.logger.log(
         `successfully rolled back VakifBank card with token ${cardToken}`,
       );

@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
+// entities
+import { Wallet } from '@app/modules/wallets/wallet.entity';
+
 // services
 import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
 import { OrderEntityFactoryService } from '../factories/order-entity.factory.service';
@@ -25,16 +28,12 @@ import {
   OrderStatus,
   OrderType,
   PaymentProvider,
+  PaymentRefundSource,
   TransactionStatus,
 } from '@app/common/enums';
 
 // errors
-import {
-  ServiceError,
-  UserNotFoundError,
-  WalletNotFoundError,
-} from '@app/common/errors';
-import { Wallet } from '@app/modules/wallets/wallet.entity';
+import { ServiceError, WalletNotFoundError } from '@app/common/errors';
 
 @Injectable()
 export class OrderReturnFinishService {
@@ -77,11 +76,10 @@ export class OrderReturnFinishService {
     returnToWallet: boolean,
     user?: User,
   ): Promise<Wallet | null> {
-    if (!user && (returnToWallet === false || returnToWallet === undefined)) {
+    if (returnToWallet === false) {
       return null;
     }
-
-    if (!user && returnToWallet) {
+    if (!user) {
       throw new ServiceError(
         'payment couldnt be initialized without the user identified',
       );
@@ -91,11 +89,7 @@ export class OrderReturnFinishService {
       where: { id: user?.id },
       relations: { wallet: true },
     });
-    if (!userWithWallet) {
-      throw new UserNotFoundError();
-    }
-
-    const userWallet = userWithWallet.wallet;
+    const userWallet = userWithWallet?.wallet;
     if (!userWallet) {
       throw new WalletNotFoundError();
     }
@@ -174,6 +168,10 @@ export class OrderReturnFinishService {
         await queryRunner.manager.update(Transaction, order.transaction.id, {
           status: TransactionStatus.REFUND_PROCESSED,
           refundAmount,
+          refundSource:
+            returnProvider === PaymentProvider.BILETIM_GO
+              ? PaymentRefundSource.WALLET
+              : PaymentRefundSource.BANK_CARD,
         }),
       ]);
       await queryRunner.commitTransaction();

@@ -13,13 +13,15 @@ import { PaymentProvider } from '@app/common/enums';
 import { vPOSResponse } from '../constants/vpos-reponse.constant';
 
 // types
-import { UUID } from '@app/common/types';
 import { ResponseInfo } from '../types/response-info.type';
 import {
   CreateCustomerResponse,
   CustomerResponses,
   EditCustomerResponse,
 } from '../types/cutomer-response.type';
+
+// helpers
+import { VakifBankCustomerHelperService } from '../helpers/vakif-bank-customer.helper.service';
 
 @Injectable()
 export class VakifBankCustomerService {
@@ -30,11 +32,6 @@ export class VakifBankCustomerService {
     private readonly poxClientService: PoxClientService,
     private readonly paymentConfigService: PaymentConfigService,
   ) {}
-
-  // TODO: Find a Better way
-  public generateVPosCustomerId(id: UUID): string {
-    return id.replace('-', '').substring(0, 15);
-  }
 
   private extractResponseInfo<T extends CustomerResponses>(
     response: T,
@@ -90,7 +87,9 @@ export class VakifBankCustomerService {
     const params = {
       CreateCustomerRequest: {
         ...this.authCredentials,
-        CustomerNumber: user.id,
+        CustomerNumber: VakifBankCustomerHelperService.generateVPosCustomerId(
+          user.id,
+        ),
         Name: fullName,
         FatherName: '',
         Address: user.address,

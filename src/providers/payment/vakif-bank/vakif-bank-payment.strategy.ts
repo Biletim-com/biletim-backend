@@ -27,12 +27,20 @@ import { threeDSecureResponse } from './constants/3d-response.constant';
 import { vPOSResponse } from './constants/vpos-reponse.constant';
 
 // dtos
-import { VakifBankPaymentResultDto } from './dto/vakif-bank-payment-result.dto';
+import {
+  VakifBankPaymentResultDto,
+  VakifBankSavedCardPaymentFinishDto,
+} from './dto/vakif-bank-payment-result.dto';
 import { VakifBankPaymentStartDto } from './dto/vakif-bank-payment-start.dto';
 import { PaymentFinishDto } from '../dto/payment-finish.dto';
 
 // utils
 import { normalizeDecimal } from '@app/common/utils';
+
+// helpers
+import { VakifBankCurrency } from './helpers/vakif-bank-currency.helper';
+import { VakifBankCustomerHelperService } from './helpers/vakif-bank-customer.helper.service';
+
 @Injectable()
 export class VakifBankPaymentStrategy implements IPayment {
   private readonly logger = new Logger(VakifBankPaymentStrategy.name);
@@ -132,32 +140,43 @@ export class VakifBankPaymentStrategy implements IPayment {
     clientIp,
     orderId,
     details,
-  }: PaymentFinishDto<VakifBankPaymentResultDto>): Promise<SaleResponse> {
-    const {
-      PurchAmount,
-      Pan,
-      PurchCurrency,
-      VerifyEnrollmentRequestId,
-      Eci,
-      Cavv,
-    } = details;
-    const body = {
-      VposRequest: {
-        ...this.authCredentials,
-        Pan,
-        CurrencyAmount: normalizeDecimal(PurchAmount),
-        CurrencyCode: PurchCurrency,
+  }: PaymentFinishDto<
+    VakifBankPaymentResultDto | VakifBankSavedCardPaymentFinishDto
+  >): Promise<SaleResponse> {
+    let vPosRequestBody = {};
+    if (this.isVakifBank3DSPaymentResultDto(details)) {
+      vPosRequestBody = {
+        Pan: details.Pan,
+        ECI: details.Eci,
+        CAVV: details.Cavv,
+        MpiTransactionId: details.VerifyEnrollmentRequestId,
+        CurrencyAmount: normalizeDecimal(details.PurchAmount),
+        CurrencyCode: details.PurchCurrency,
         TransactionType: 'Sale',
-        TransactionId: VerifyEnrollmentRequestId,
-        ECI: Eci,
-        CAVV: Cavv,
-        MpiTransactionId: VerifyEnrollmentRequestId,
+        TransactionId: details.VerifyEnrollmentRequestId,
         OrderId: orderId,
         ClientIp: clientIp,
         TransactionDeviceSource: 0,
-      },
-    };
-    return this.sendRequest('/VposService/v3/Vposreq.aspx', body);
+      };
+    } else {
+      vPosRequestBody = {
+        ...this.authCredentials,
+        PanCode: details.cardToken,
+        CustomerNumber: VakifBankCustomerHelperService.generateVPosCustomerId(
+          details.userId,
+        ),
+        CurrencyAmount: normalizeDecimal(details.amount),
+        CurrencyCode: VakifBankCurrency[details.currency],
+        TransactionType: 'Sale',
+        TransactionId: details.transactionId,
+        OrderId: orderId,
+        ClientIp: clientIp,
+        TransactionDeviceSource: 0,
+      };
+    }
+    return this.sendRequest('/VposService/v3/Vposreq.aspx', {
+      VposRequest: { ...this.authCredentials, ...vPosRequestBody },
+    });
   }
 
   /**
@@ -204,5 +223,11 @@ export class VakifBankPaymentStrategy implements IPayment {
     );
     this.logger.log(`RefundVakifBankPayment: ${transactionId}:${refundAmount}`);
     return resp;
+  }
+
+  private isVakifBank3DSPaymentResultDto(
+    details: VakifBankPaymentResultDto | VakifBankSavedCardPaymentFinishDto,
+  ): details is VakifBankPaymentResultDto {
+    return (details as VakifBankPaymentResultDto).Pan !== undefined;
   }
 }

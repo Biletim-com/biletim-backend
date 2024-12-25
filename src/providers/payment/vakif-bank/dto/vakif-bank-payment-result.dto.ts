@@ -1,5 +1,6 @@
 import { UUID } from '@app/common/types';
 import { PaymentDetailsDto } from '../../dto/payment-finish.dto';
+import { Currency } from '@app/common/enums';
 
 export class VakifBankPaymentResultDto extends PaymentDetailsDto {
   MerchantId: string;
@@ -15,4 +16,12 @@ export class VakifBankPaymentResultDto extends PaymentDetailsDto {
   Eci: string;
   ErrorCode: string;
   ErrorMessage: string;
+}
+
+export class VakifBankSavedCardPaymentFinishDto extends PaymentDetailsDto {
+  cardToken: string;
+  transactionId: UUID;
+  amount: string;
+  currency: Currency;
+  userId: UUID;
 }
