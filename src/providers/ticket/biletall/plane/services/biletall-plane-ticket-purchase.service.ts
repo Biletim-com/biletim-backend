@@ -38,9 +38,9 @@ export class BiletAllPlaneTicketPurchaseService {
     private readonly biletAllPlaneTicketPurchaseParserService: BiletAllPlaneTicketPurchaseParserService,
   ) {
     this.biletAllRequestService = new BiletAllRequestService(
-      ticketConfigService.biletAllExtraBaseUrl,
-      ticketConfigService.biletAllExtraUsername,
-      ticketConfigService.biletAllExtraPassword,
+      ticketConfigService.biletAllBaseUrl,
+      ticketConfigService.biletAllUsername,
+      ticketConfigService.biletAllPassword,
     );
   }
 

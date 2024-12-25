@@ -81,9 +81,6 @@ biletim_api:
     BILETALL_BASE_URI: http://94.55.20.137/WSTEST/Service.asmx
     BILETALL_USERNAME: biletimcomWS
     BILETALL_PASSWORD: aa8809
-    # BILETALL_EXTRA_BASE_URI: https://ws.biletall.com/Service.asmx
-    # BILETALL_EXTRA_USERNAME: biletimcomWS
-    # BILETALL_EXTRA_PASSWORD: fd306d
 
     # hotel
     HOTEL_API_BASE_URL: https://api.worldota.net/api/b2b/v3

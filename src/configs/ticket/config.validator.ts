@@ -12,16 +12,4 @@ export class TicketEnvVarsValidation {
   @IsString()
   @IsNotEmpty()
   BILETALL_PASSWORD: string;
-
-  @IsString()
-  @IsOptional()
-  BILETALL_EXTRA_BASE_URI?: string;
-
-  @IsString()
-  @IsOptional()
-  BILETALL_EXTRA_USERNAME?: string;
-
-  @IsString()
-  @IsOptional()
-  BILETALL_EXTRA_PASSWORD?: string;
 }

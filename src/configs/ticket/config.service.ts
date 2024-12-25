@@ -28,22 +28,4 @@ export class TicketConfigService {
       this.configurationNamespace,
     ).biletAllPassword;
   }
-
-  get biletAllExtraBaseUrl(): string {
-    return this.configService.getOrThrow<TTicketConfiguration>(
-      this.configurationNamespace,
-    ).biletAllExtraBaseUrl;
-  }
-
-  get biletAllExtraUsername(): string {
-    return this.configService.getOrThrow<TTicketConfiguration>(
-      this.configurationNamespace,
-    ).biletAllExtraUsername;
-  }
-
-  get biletAllExtraPassword(): string {
-    return this.configService.getOrThrow<TTicketConfiguration>(
-      this.configurationNamespace,
-    ).biletAllExtraPassword;
-  }
 }
