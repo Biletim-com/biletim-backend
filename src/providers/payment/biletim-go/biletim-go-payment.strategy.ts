@@ -8,7 +8,6 @@ import { WalletsRepository } from '@app/modules/wallets/wallets.repository';
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
 
 // dto
-import { BiletimGoPaymentStartDto } from './dto/biletim-go-payment-start.dto';
 import { PaymentFinishDto } from '../dto/payment-finish.dto';
 import { CancelPaymentDto } from '../dto/cancel-payment.dto';
 import { RefundPaymentDto } from '../dto/refund-payment.dto';
@@ -31,15 +30,8 @@ export class BiletimGoPaymentStrategy implements IPayment {
     private readonly transactionsRepository: TransactionsRepository,
   ) {}
 
-  async startPayment({
-    transaction,
-    paymentMethod: { wallet },
-  }: BiletimGoPaymentStartDto): Promise<null> {
-    const transactionAmount = Number(transaction.amount);
-    if (transactionAmount > wallet.balance) {
-      throw new InsufficientWalletBalanceError();
-    }
-    return null;
+  async start3DSAuthorization(): Promise<null> {
+    throw new Error('Method not implemented.');
   }
 
   async finishPayment({

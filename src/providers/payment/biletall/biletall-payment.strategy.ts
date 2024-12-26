@@ -11,7 +11,7 @@ import { BiletAllBusTicketPurchaseService } from '../../ticket/biletall/bus/serv
 import { IPayment } from '../interfaces/payment.interface';
 
 // dtos
-import { BiletAllPaymentStartDto } from './dto/biletall-payment-start.dto';
+import { BiletAllPaymentStart3DSAuthorizationDto } from './dto/biletall-payment-start.dto';
 
 @Injectable()
 export class BiletAllPaymentStrategy implements IPayment {
@@ -28,12 +28,12 @@ export class BiletAllPaymentStrategy implements IPayment {
     return `<Kullanici><Adi>${this.paymentConfigService.biletAll3DSUsername}</Adi><Sifre>${this.paymentConfigService.biletAll3DSPassword}</Sifre></Kullanici>`;
   }
 
-  async startPayment({
+  async start3DSAuthorization({
     clientIp,
     ticketType,
     transaction,
     paymentMethod: { bankCard },
-  }: BiletAllPaymentStartDto): Promise<string> {
+  }: BiletAllPaymentStart3DSAuthorizationDto): Promise<string> {
     const { encode } = this.biletAllEncryptorService;
     const saleXml = await this.biletAllBusTicketPurchaseService.purchaseTicket(
       clientIp,

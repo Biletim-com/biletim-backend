@@ -7,7 +7,14 @@ import { User } from '../users/user.entity';
 @Entity('wallets')
 @Check(`"balance" >= 0`)
 export class Wallet extends AbstractEntity<Wallet> {
-  @Column({ default: 0 })
+  @Column({
+    default: 0,
+    type: 'decimal',
+    transformer: {
+      from: (value: string) => Number(value),
+      to: (value: string) => value,
+    },
+  })
   balance: number;
 
   @JoinColumn()

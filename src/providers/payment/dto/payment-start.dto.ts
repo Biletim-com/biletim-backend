@@ -9,32 +9,19 @@ import { BankCardDto } from '@app/common/dtos';
 // enums
 import { TicketType } from '@app/common/enums';
 
-export abstract class PaymentMethodDto {
+export abstract class PaymentMethod {
   bankCard?: BankCardDto;
   savedBankCard?: BankCard;
   wallet?: Wallet;
 }
 
-export class BankCardPaymentDto extends PaymentMethodDto {
+export class BankCardPaymentDto implements PaymentMethod {
   bankCard: BankCardDto;
 }
 
-export class SavedBankCardPaymentDto extends PaymentMethodDto {
-  savedBankCard: BankCard;
-}
-
-export class WalletPaymentDto extends PaymentMethodDto {
-  wallet: Wallet;
-}
-
-export class CombinedCardPaymentDto extends PaymentMethodDto {
-  bankCard?: BankCardDto;
-  savedBankCard?: BankCard;
-}
-
-export abstract class PaymentStartDto {
+export abstract class PaymentStart3DSAuthorizationDto {
   clientIp: string;
   ticketType: TicketType;
   transaction: Transaction;
-  paymentMethod: PaymentMethodDto;
+  paymentMethod: BankCardPaymentDto;
 }

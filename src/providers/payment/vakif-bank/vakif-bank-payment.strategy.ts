@@ -31,7 +31,7 @@ import {
   VakifBankPaymentResultDto,
   VakifBankSavedCardPaymentFinishDto,
 } from './dto/vakif-bank-payment-result.dto';
-import { VakifBankPaymentStartDto } from './dto/vakif-bank-payment-start.dto';
+import { VakifBankPaymentStart3DSAuthorizationDto } from './dto/vakif-bank-payment-start.dto';
 import { PaymentFinishDto } from '../dto/payment-finish.dto';
 
 // utils
@@ -87,11 +87,11 @@ export class VakifBankPaymentStrategy implements IPayment {
     };
   }
 
-  async startPayment({
+  async start3DSAuthorization({
     ticketType,
     transaction,
     paymentMethod: { bankCard },
-  }: VakifBankPaymentStartDto): Promise<string> {
+  }: VakifBankPaymentStart3DSAuthorizationDto): Promise<string> {
     const card3DsEligibility =
       await this.vakifBankEnrollmentService.checkCard3DsEligibility(
         ticketType,

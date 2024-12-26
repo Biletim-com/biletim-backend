@@ -17,23 +17,15 @@ import { HotelBookingOrder } from '@app/modules/orders/hotel-booking/entities/ho
 import { HotelBookingRoom } from '@app/modules/orders/hotel-booking/entities/hotel-booking-room.entity';
 import { HotelRoomGuest } from '@app/modules/orders/hotel-booking/entities/hotel-room-guest.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { Invoice } from '@app/modules/invoices/invoice.entity';
 import { User } from '@app/modules/users/user.entity';
 
 // dto
 import { HotelBookingPurchaseDto } from '../dto/hotel-booking-purchase.dto';
-import { InvoiceDto } from '../dto/invoice.dto';
-import { BiletimGoPaymentResultDto } from '@app/providers/payment/biletim-go/dto/biletim-go-payment-result.dto';
-import { VakifBankSavedCardPaymentFinishDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
 
 // enums
 import {
-  Currency,
-  TransactionStatus,
-  TransactionType,
   OrderStatus,
   PaymentProvider,
-  InvoiceType,
   TicketType,
   OrderCategory,
   OrderType,
@@ -42,34 +34,13 @@ import {
 @Injectable()
 export class HotelBookingStartPaymentService extends AbstractStartPaymentService {
   constructor(
-    private readonly dataSource: DataSource,
-    private readonly eventEmitter: EventEmitterService,
-    private readonly paymentProviderFactory: PaymentProviderFactory,
-    private readonly ratehawkOrderBookingService: RatehawkOrderBookingService,
     usersRepository: UsersRepository,
+    eventEmitter: EventEmitterService,
+    paymentProviderFactory: PaymentProviderFactory,
+    private readonly dataSource: DataSource,
+    private readonly ratehawkOrderBookingService: RatehawkOrderBookingService,
   ) {
-    super(usersRepository);
-  }
-
-  private composeOrderInvoice(invoiceDto: InvoiceDto): Invoice {
-    const invoiceType: InvoiceType = invoiceDto.individual
-      ? InvoiceType.INDIVIDUAL
-      : InvoiceType.CORPORATE;
-    const invoice = {
-      ...(invoiceDto.individual || {}),
-      ...(invoiceDto.company || {}),
-    };
-
-    return new Invoice({
-      type: invoiceType,
-      pnr: null,
-      recipientName: `${invoice.firstName} ${invoice.lastName}` || invoice.name,
-      identifier: invoice.tcNumber || invoice.taxNumber,
-      address: invoice.address,
-      taxOffice: invoice.taxOffice,
-      phoneNumber: invoice.phoneNumber,
-      email: invoice.email,
-    });
+    super(usersRepository, eventEmitter, paymentProviderFactory);
   }
 
   public async startHotelBookingOrderPayment(
@@ -115,30 +86,11 @@ export class HotelBookingStartPaymentService extends AbstractStartPaymentService
       /**
        * Init Transactions
        */
-      const transaction = new Transaction({
-        amount: paymentType.showAmount,
-        currency: Currency.TRY,
-        status: TransactionStatus.PENDING,
-        transactionType: TransactionType.PURCHASE,
-        paymentProvider: paymentProviderType,
-        // unregistered card
-        ...(paymentMethod.bankCard
-          ? {
-              cardholderName: paymentMethod.bankCard.holderName,
-              maskedPan: paymentMethod.bankCard.maskedPan,
-            }
-          : {}),
-
-        // saved bank card
-        ...(paymentMethod.savedBankCard
-          ? {
-              bankCard: paymentMethod.savedBankCard,
-            }
-          : {}),
-
-        // wallet
-        ...(paymentMethod.wallet ? { wallet: paymentMethod.wallet } : {}),
-      });
+      const transaction = this.composeTransaction(
+        paymentType.showAmount,
+        paymentProviderType,
+        paymentMethod,
+      );
       await queryRunner.manager.insert(Transaction, transaction);
 
       /**
@@ -202,50 +154,17 @@ export class HotelBookingStartPaymentService extends AbstractStartPaymentService
         order,
       });
       await queryRunner.manager.save(HotelBookingRoom, roomsAndGuests);
-
-      const paymentProvider = this.paymentProviderFactory.getStrategy(
-        paymentMethod.wallet
-          ? PaymentProvider.BILETIM_GO
-          : PaymentProvider.VAKIF_BANK,
-      );
-
-      let htmlContent: string | null = null;
-      if (!paymentMethod.savedBankCard) {
-        htmlContent = await paymentProvider.startPayment({
-          clientIp,
-          ticketType: TicketType.HOTEL,
-          paymentMethod,
-          transaction,
-        });
-      }
       await queryRunner.commitTransaction();
 
-      /**
-       * Finish payments direnctly make with the wallet and a saved card
-       */
-      if (paymentMethod.wallet || paymentMethod.savedBankCard) {
-        const eventDetails:
-          | BiletimGoPaymentResultDto
-          | VakifBankSavedCardPaymentFinishDto = paymentMethod.wallet
-          ? {
-              amount: transaction.amount,
-              walletId: paymentMethod.wallet.id,
-            }
-          : ({
-              amount: transaction.amount,
-              cardToken: paymentMethod.savedBankCard?.vakifPanToken,
-              currency: Currency.TRY,
-              transactionId: transaction.id,
-              userId: user?.id,
-            } as VakifBankSavedCardPaymentFinishDto);
-
-        this.eventEmitter.emitEvent(
-          'payment.hotel.finish',
-          clientIp,
-          transaction.id,
-          eventDetails,
-        );
-      }
+      const htmlContent = await this.finalizePaymentInit(
+        transaction,
+        paymentProviderType,
+        paymentMethod,
+        TicketType.HOTEL,
+        'payment.hotel.finish',
+        clientIp,
+        user,
+      );
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {
       await queryRunner.rollbackTransaction();

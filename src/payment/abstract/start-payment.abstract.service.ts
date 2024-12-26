@@ -1,12 +1,23 @@
+// services
+import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
+
+// factories
+import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
+
 // entities
 import { User } from '@app/modules/users/user.entity';
+import { Invoice } from '@app/modules/invoices/invoice.entity';
+import { Transaction } from '@app/modules/transactions/transaction.entity';
 
 // repositories
 import { UsersRepository } from '@app/modules/users/users.repository';
 
 // dtos
-import { PaymentStartDto } from '@app/providers/payment/dto/payment-start.dto';
+import { BiletimGoPaymentResultDto } from '@app/providers/payment/biletim-go/dto/biletim-go-payment-result.dto';
+import { VakifBankSavedCardPaymentFinishDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
+import { PaymentMethod } from '@app/providers/payment/dto/payment-start.dto';
 import { PaymentMethodDto } from '../dto/purchase.dto';
+import { InvoiceDto } from '../dto/invoice.dto';
 
 // errors
 import {
@@ -16,14 +27,31 @@ import {
   WalletNotFoundError,
 } from '@app/common/errors';
 
+// enums
+import {
+  Currency,
+  InvoiceType,
+  PaymentProvider,
+  TicketType,
+  TransactionStatus,
+  TransactionType,
+} from '@app/common/enums';
+
+// event name types
+import { PaymentEventsMap } from '@app/providers/event-emitter/events/payment-events.type';
+
 export abstract class AbstractStartPaymentService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly eventEmitter: EventEmitterService,
+    private readonly paymentProviderFactory: PaymentProviderFactory,
+  ) {}
 
   protected async validatePaymentMethod(
     paymentMethodDto: PaymentMethodDto,
     user?: User,
-  ): Promise<PaymentStartDto['paymentMethod']> {
-    const paymentMethod: PaymentStartDto['paymentMethod'] = {};
+  ): Promise<PaymentMethod> {
+    const paymentMethod: PaymentMethod = {};
 
     if (
       (!user && paymentMethodDto.useWallet) ||
@@ -50,6 +78,7 @@ export abstract class AbstractStartPaymentService {
         throw new WalletNotFoundError();
       }
       paymentMethod['wallet'] = userWallet;
+      return paymentMethod;
     }
 
     // validate user's saved card
@@ -61,6 +90,7 @@ export abstract class AbstractStartPaymentService {
         throw new BankCardNotFoundError();
       }
       paymentMethod['savedBankCard'] = userSavedCard;
+      return paymentMethod;
     }
 
     paymentMethod['bankCard'] = paymentMethodDto.bankCard;
@@ -70,5 +100,110 @@ export abstract class AbstractStartPaymentService {
     }
 
     return paymentMethod;
+  }
+
+  protected composeOrderInvoice(invoiceDto: InvoiceDto): Invoice {
+    const invoiceType: InvoiceType = invoiceDto.individual
+      ? InvoiceType.INDIVIDUAL
+      : InvoiceType.CORPORATE;
+
+    const invoiceData = {
+      ...(invoiceDto.individual || {}),
+      ...(invoiceDto.company || {}),
+    };
+
+    return new Invoice({
+      type: invoiceType,
+      pnr: null,
+      recipientName:
+        `${invoiceData.firstName} ${invoiceData.lastName}` || invoiceData.name,
+      identifier: invoiceData.tcNumber || invoiceData.taxNumber,
+      address: invoiceData.address,
+      taxOffice: invoiceData.taxOffice,
+      phoneNumber: invoiceData.phoneNumber,
+      email: invoiceData.email,
+    });
+  }
+
+  protected composeTransaction(
+    totalTicketPrice: string,
+    paymentProvider: PaymentProvider,
+    paymentMethod: PaymentMethod,
+  ): Transaction {
+    return new Transaction({
+      amount: totalTicketPrice,
+      currency: Currency.TRY,
+      status: TransactionStatus.PENDING,
+      transactionType: TransactionType.PURCHASE,
+      paymentProvider,
+      // unregistered card
+      ...(paymentMethod.bankCard
+        ? {
+            cardholderName: paymentMethod.bankCard.holderName,
+            maskedPan: paymentMethod.bankCard.maskedPan,
+          }
+        : {}),
+
+      // saved bank card
+      ...(paymentMethod.savedBankCard
+        ? {
+            bankCard: paymentMethod.savedBankCard,
+          }
+        : {}),
+
+      // wallet
+      ...(paymentMethod.wallet ? { wallet: paymentMethod.wallet } : {}),
+    });
+  }
+
+  protected async finalizePaymentInit(
+    transaction: Transaction,
+    paymentProviderType: PaymentProvider,
+    paymentMethod: PaymentMethod,
+    ticketType: TicketType,
+    finishEventName: keyof PaymentEventsMap,
+    clientIp: string,
+    user?: User,
+  ): Promise<string | null> {
+    let htmlContent: string | null = null;
+    if (paymentMethod.bankCard) {
+      const paymentProvider =
+        this.paymentProviderFactory.getStrategy(paymentProviderType);
+      htmlContent = await paymentProvider.start3DSAuthorization({
+        clientIp,
+        ticketType,
+        paymentMethod: { bankCard: paymentMethod.bankCard },
+        transaction,
+      });
+    }
+
+    /**
+     * Finish payments direnctly made with wallets and saved cards
+     */
+    if (paymentMethod.wallet || paymentMethod.savedBankCard) {
+      const eventDetails:
+        | BiletimGoPaymentResultDto
+        | VakifBankSavedCardPaymentFinishDto = paymentMethod.wallet
+        ? {
+            amount: transaction.amount,
+            walletId: paymentMethod.wallet.id,
+          }
+        : ({
+            amount: transaction.amount,
+            cardToken: paymentMethod.savedBankCard?.vakifPanToken,
+            currency: Currency.TRY,
+            transactionId: transaction.id,
+            userId: user?.id,
+          } as VakifBankSavedCardPaymentFinishDto);
+
+      this.eventEmitter.emitEvent<keyof PaymentEventsMap>(
+        finishEventName,
+        clientIp,
+        transaction.id,
+        eventDetails,
+      );
+    }
+
+    return htmlContent;
   }
 }

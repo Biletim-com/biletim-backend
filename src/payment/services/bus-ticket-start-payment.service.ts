@@ -18,28 +18,21 @@ import { BusTicket } from '@app/modules/orders/bus-ticket/entities/bus-ticket.en
 import { BusTicketPassenger } from '@app/modules/orders/bus-ticket/entities/bus-ticket-passenger.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { BusTerminal } from '@app/providers/ticket/biletall/bus/entities/bus-terminal.entity';
-import { Invoice } from '@app/modules/invoices/invoice.entity';
 import { User } from '@app/modules/users/user.entity';
 
 // enums
 import {
   Currency,
-  InvoiceType,
   OrderCategory,
   OrderStatus,
   OrderType,
   PaymentProvider,
   TicketType,
-  TransactionStatus,
-  TransactionType,
 } from '@app/common/enums';
 
 // dtos
-import { InvoiceDto } from '../dto/invoice.dto';
 import { BusTicketPurchaseDto } from '../dto/bus-ticket-purchase.dto';
 import { BusSeatAvailabilityRequestDto } from '@app/search/bus/dto/bus-seat-availability.dto';
-import { BiletimGoPaymentResultDto } from '@app/providers/payment/biletim-go/dto/biletim-go-payment-result.dto';
-import { VakifBankSavedCardPaymentFinishDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
 
 // types
 import { UUID } from '@app/common/types';
@@ -53,34 +46,13 @@ import { normalizeDecimal } from '@app/common/utils';
 @Injectable()
 export class BusTicketStartPaymentService extends AbstractStartPaymentService {
   constructor(
-    private readonly dataSource: DataSource,
-    private readonly eventEmitter: EventEmitterService,
-    private readonly paymentProviderFactory: PaymentProviderFactory,
-    private readonly biletAllBusSearchService: BiletAllBusSearchService,
     usersRepository: UsersRepository,
+    eventEmitter: EventEmitterService,
+    paymentProviderFactory: PaymentProviderFactory,
+    private readonly dataSource: DataSource,
+    private readonly biletAllBusSearchService: BiletAllBusSearchService,
   ) {
-    super(usersRepository);
-  }
-
-  private composeOrderInvoice(invoiceDto: InvoiceDto): Invoice {
-    const invoiceType: InvoiceType = invoiceDto.individual
-      ? InvoiceType.INDIVIDUAL
-      : InvoiceType.CORPORATE;
-    const invoice = {
-      ...(invoiceDto.individual || {}),
-      ...(invoiceDto.company || {}),
-    };
-
-    return new Invoice({
-      type: invoiceType,
-      pnr: null,
-      recipientName: `${invoice.firstName} ${invoice.lastName}` || invoice.name,
-      identifier: invoice.tcNumber || invoice.taxNumber,
-      address: invoice.address,
-      taxOffice: invoice.taxOffice,
-      phoneNumber: invoice.phoneNumber,
-      email: invoice.email,
-    });
+    super(usersRepository, eventEmitter, paymentProviderFactory);
   }
 
   async busTicketPurchase(
@@ -190,30 +162,11 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
       /**
        * Init Transactions
        */
-      const transaction = new Transaction({
-        amount: totalTicketPrice,
-        currency: Currency.TRY,
-        status: TransactionStatus.PENDING,
-        transactionType: TransactionType.PURCHASE,
-        paymentProvider: paymentProviderType,
-        // unregistered card
-        ...(paymentMethod.bankCard
-          ? {
-              cardholderName: paymentMethod.bankCard.holderName,
-              maskedPan: paymentMethod.bankCard.maskedPan,
-            }
-          : {}),
-
-        // saved bank card
-        ...(paymentMethod.savedBankCard
-          ? {
-              bankCard: paymentMethod.savedBankCard,
-            }
-          : {}),
-
-        // wallet
-        ...(paymentMethod.wallet ? { wallet: paymentMethod.wallet } : {}),
-      });
+      const transaction = this.composeTransaction(
+        totalTicketPrice,
+        paymentProviderType,
+        paymentMethod,
+      );
       await queryRunner.manager.insert(Transaction, transaction);
 
       /**
@@ -280,51 +233,17 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
           }),
       );
       await queryRunner.manager.save(BusTicket, tickets);
-
-      // get strategy dynamically
-      const paymentProvider =
-        this.paymentProviderFactory.getStrategy(paymentProviderType);
-
-      let htmlContent: string | null = null;
-      if (!paymentMethod.savedBankCard) {
-        htmlContent = await paymentProvider.startPayment({
-          clientIp,
-          ticketType: TicketType.BUS,
-          paymentMethod,
-          transaction: {
-            ...transaction,
-            busTicketOrder: { ...order, tickets },
-          },
-        });
-      }
       await queryRunner.commitTransaction();
 
-      /**
-       * Finish payments direnctly make with the wallet
-       */
-      if (paymentMethod.wallet || paymentMethod.savedBankCard) {
-        const eventDetails:
-          | BiletimGoPaymentResultDto
-          | VakifBankSavedCardPaymentFinishDto = paymentMethod.wallet
-          ? {
-              amount: transaction.amount,
-              walletId: paymentMethod.wallet.id,
-            }
-          : ({
-              amount: transaction.amount,
-              cardToken: paymentMethod.savedBankCard?.vakifPanToken,
-              currency: Currency.TRY,
-              transactionId: transaction.id,
-              userId: user?.id,
-            } as VakifBankSavedCardPaymentFinishDto);
-
-        this.eventEmitter.emitEvent(
-          'payment.bus.finish',
-          clientIp,
-          transaction.id,
-          eventDetails,
-        );
-      }
+      const htmlContent = await this.finalizePaymentInit(
+        transaction,
+        paymentProviderType,
+        paymentMethod,
+        TicketType.BUS,
+        'payment.bus.finish',
+        clientIp,
+        user,
+      );
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {
       await queryRunner.rollbackTransaction();
