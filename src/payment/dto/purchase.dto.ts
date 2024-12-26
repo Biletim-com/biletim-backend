@@ -66,6 +66,7 @@ export class PurchaseDto {
     type: PaymentMethodDto,
     required: true,
   })
+  @IsNotEmpty()
   @ValidateNested()
   @Type(() => PaymentMethodDto)
   paymentMethod: PaymentMethodDto;
