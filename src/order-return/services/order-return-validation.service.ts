@@ -17,7 +17,11 @@ import {
   OrderReturnDeadlineExpiredError,
   ServiceError,
 } from '@app/common/errors';
-import { normalizeDecimal, turkishToEnglish } from '@app/common/utils';
+import {
+  normalizeDecimal,
+  PlaneTicketFeeManager,
+  turkishToEnglish,
+} from '@app/common/utils';
 import { OrderStatus, OrderType } from '@app/common/enums';
 
 // dto
@@ -105,11 +109,16 @@ export class OrderReturnValidationService {
           pnrNumber,
           passengerLastName,
         );
-
       passengers.forEach((passenger) => {
+        const { addedFee } = PlaneTicketFeeManager.calculateBreakdown(
+          passenger.ticketPrice,
+          0,
+          0,
+        );
         penalty.providerPenaltyAmount = normalizeDecimal(
           Number(normalizeDecimal(penalty.providerPenaltyAmount)) +
-            Number(normalizeDecimal(passenger.providerPenaltyAmount)),
+            Number(normalizeDecimal(passenger.providerPenaltyAmount)) +
+            addedFee,
         );
         penalty.companyPenaltyAmount = normalizeDecimal(
           Number(normalizeDecimal(penalty.companyPenaltyAmount)) +
@@ -117,7 +126,8 @@ export class OrderReturnValidationService {
         );
         penalty.totalPenaltyAmount = normalizeDecimal(
           Number(normalizeDecimal(penalty.totalPenaltyAmount)) +
-            Number(normalizeDecimal(passenger.totalPenaltyAmount)),
+            Number(normalizeDecimal(passenger.totalPenaltyAmount)) +
+            addedFee,
         );
       });
       penalty.amountToRefund = normalizeDecimal(

@@ -44,6 +44,9 @@ import { TransactionNotFoundError } from '@app/common/errors';
 // decorators
 import { OnEvent } from '@app/providers/event-emitter/decorators';
 
+// utils
+import { PlaneTicketFeeManager } from '@app/common/utils';
+
 @Injectable()
 export class PlaneTicketPaymentProcessingStrategy
   implements IPaymentProcessingStrategy
@@ -127,7 +130,9 @@ export class PlaneTicketPaymentProcessingStrategy
         await this.biletAllPlaneTicketPurchaseService.processPlaneTicket(
           clientIp,
           PlaneTicketOperationType.PURCHASE,
-          transaction.amount,
+          PlaneTicketFeeManager.getProviderSubtotal(
+            transaction.amount,
+          ).toString(),
           transaction.planeTicketOrder,
           transaction.planeTicketOrder.tickets,
           transaction.planeTicketOrder.segments,

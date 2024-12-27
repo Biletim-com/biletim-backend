@@ -11,18 +11,18 @@ import { Airport } from '../../providers/ticket/biletall/plane/entities/airport.
 // decorators
 import { ClientIp } from '@app/common/decorators';
 
-// request dto
+// dto
 import { AirportSearchQueryDto } from './dto/airport-search-query.dto';
 import { PlaneFlightScheduleRequestDto } from './dto/plane-flight-schedule.dto';
-import { PullAbroadFlightPricePackagesRequestDto } from './dto/plane-pull-abroad-flight-price-packages.dto';
-import { PullPriceFlightRequestDto } from './dto/plane-pull-price-flight.dto';
-
-// response dto
+import { PullAbroadFlightPricePackagesRequestDto } from './dto/plane-pull-abroad-flight-packages.dto';
+import {
+  PullPriceFlightRequestDto,
+  PullPriceFlightResponseDto,
+} from './dto/plane-pull-price-flight.dto';
 import { AbroadFlightScheduleDto } from '@app/providers/ticket/biletall/plane/dto/plane-abroad-flight-schedule.dto';
 import { PlanePassengerAgeRuleDto } from '@app/providers/ticket/biletall/plane/dto/plane-company-passenger-age-rule.dto';
 import { DomesticFlightScheduleDto } from '@app/providers/ticket/biletall/plane/dto/plane-domestic-flight-schedule.dto';
 import { PullAbroadFlightPricePackagesResponseDto } from '@app/providers/ticket/biletall/plane/dto/plane-pull-abroad-flight-price-packages.dto';
-import { PlanePullPriceFlightDto } from '@app/providers/ticket/biletall/plane/dto/plane-pull-price-flight.dto';
 
 @ApiTags('Plane Search')
 @Controller('search/plane')
@@ -83,8 +83,15 @@ export class PlaneSearchController {
   @Post('pull-price')
   async pullPriceOfFlight(
     @Body() requestDto: PullPriceFlightRequestDto,
-  ): Promise<PlanePullPriceFlightDto> {
-    return this.biletAllPlaneSearchService.getPriceOfFlight(requestDto);
+  ): Promise<PullPriceFlightResponseDto> {
+    const { priceList, paymentRules, baggageInfo, additionalServiceRules } =
+      await this.biletAllPlaneSearchService.getPriceOfFlight(requestDto);
+    return new PullPriceFlightResponseDto(
+      priceList,
+      paymentRules,
+      baggageInfo,
+      additionalServiceRules,
+    );
   }
 
   @ApiOperation({ summary: 'Pull Abroad Flight Price Packages' })

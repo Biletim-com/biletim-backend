@@ -36,7 +36,7 @@ import {
 } from '../dto/plane-ticket-purchase.dto';
 
 // utils
-import { normalizeDecimal } from '@app/common/utils';
+import { normalizeDecimal, PlaneTicketFeeManager } from '@app/common/utils';
 
 // errors
 import { ServiceError } from '@app/common/errors';
@@ -92,9 +92,9 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
 
   private validateTicketsPrice(
     passengers: PlanePassengerInfoDto[],
-    totalPrice: string,
-  ) {
-    const totalPriseOutOfDto = passengers.reduce((acc, passenger) => {
+    originalTotalPrice: string,
+  ): number {
+    const totalAmountToPay = passengers.reduce((acc, passenger) => {
       return (
         acc +
         Number(passenger.netPrice) +
@@ -102,9 +102,16 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
         Number(passenger.serviceFee)
       );
     }, 0);
-    if (normalizeDecimal(totalPriseOutOfDto) !== normalizeDecimal(totalPrice)) {
+    const biletimServiceFee =
+      PlaneTicketFeeManager.getAddedFee(totalAmountToPay);
+    const obtainedOriginalTotalPrice = totalAmountToPay - biletimServiceFee;
+    if (
+      obtainedOriginalTotalPrice !==
+      Number(normalizeDecimal(originalTotalPrice))
+    ) {
       throw new ServiceError('There is an update in the price');
     }
+    return totalAmountToPay;
   }
 
   async startPlaneTicketPurchase(
@@ -131,7 +138,7 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
         ...passengerTypeCount,
       });
 
-    this.validateTicketsPrice(
+    const totalAmountToPay = this.validateTicketsPrice(
       planeTicketPurchaseDto.passengers,
       priceList.totalTicketPrice,
     );
@@ -145,7 +152,7 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
        * Init Transactions
        */
       const transaction = this.composeTransaction(
-        priceList.totalTicketPrice,
+        totalAmountToPay.toString(),
         paymentProviderType,
         paymentMethod,
       );
@@ -207,14 +214,25 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
             passportNumber: passengerDto.passport?.number,
             passportExpirationDate: passengerDto.passport?.expirationDate,
           });
+          const ticketTotalAbount =
+            Number(passengerDto.netPrice) +
+            Number(passengerDto.taxAmount) +
+            Number(passengerDto.serviceFee);
+          const providerServiceFee =
+            PlaneTicketFeeManager.getProviderOriginalFee(
+              ticketTotalAbount,
+              passengerDto.serviceFee,
+            );
+          const biletimFee =
+            PlaneTicketFeeManager.getAddedFee(ticketTotalAbount);
 
           return new PlaneTicket({
             ticketOrder: index + 1,
             ticketNumber: null,
             netPrice: passengerDto.netPrice,
             taxAmount: passengerDto.taxAmount,
-            serviceFee: passengerDto.serviceFee,
-            biletimFee: passengerDto.serviceFee, // TODO: temporary
+            serviceFee: providerServiceFee.toString(),
+            biletimFee: biletimFee.toString(),
             passenger,
             order,
           });
