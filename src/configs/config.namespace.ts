@@ -14,4 +14,5 @@ export default {
   PAYMENT: 'payment',
   TAMAMLIYO_API: 'tamamliyo_api',
   CHROMIUM: 'chromium',
+  MAILEON: 'maileon',
 };

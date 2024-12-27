@@ -33,11 +33,15 @@ import { PanelUserWithoutPasswordDto } from '@app/modules/panel-users/dto/panel-
 import { PanelUserLocalAuthGuard } from './guards/panel-user-local-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from '@app/common/guards/jwt-auth.guard';
+import { MaileonProviderService } from '@app/providers/maileon/provider.service';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly maileonService: MaileonProviderService
+  ) {}
 
   @ApiOperation({ summary: 'Panel User Login' })
   @Post('/panel-login')
@@ -116,8 +120,21 @@ export class AuthController {
   async sendAccountVerificationCode(
     @Body() verificationDto: VerificationCodeDto,
   ): Promise<any> {
-    await this.authService.sendAccountVerificationCode(verificationDto);
-    return { message: 'Verification code sent successfully' };
+    const res = await this.maileonService.createContact(
+      {
+        email: "selver.said01@gmail.com",
+        attributes:{
+          firstname: "Selver",
+          lastname: "Said"
+        }
+      }
+    )
+    // const res = await this.maileonService.sendEmail()
+    console.log("this.maileonService.getContacts() ", res)
+    return res
+
+    // await this.authService.sendAccountVerificationCode(verificationDto);
+    // return { message: 'Verification code sent successfully' };
   }
 
   @ApiOperation({ summary: 'Verify User' })

@@ -32,6 +32,7 @@ import { SmsModule } from './providers/sms/provider.module';
 import { PdfMakerModule } from '@app/providers/pdf-maker/provider.module';
 import { HtmlTemplateModule } from '@app/providers/html-template/provider.module';
 import { PaymentProviderModule } from './providers/payment/provider.module';
+import { MaileonProviderModule } from './providers/maileon/provider.module';
 
 // Interceptors
 import { ErrorInterceptor } from '@app/common/interceptors';
@@ -39,6 +40,8 @@ import { ErrorInterceptor } from '@app/common/interceptors';
 // Jobs
 import { JobsModule } from '@app/jobs/jobs.module';
 import { NotificationsModule } from './notifications/notifications.module';
+
+
 
 @Module({
   imports: [
@@ -68,6 +71,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     SmsModule,
     VerificationsModule,
     PaymentProviderModule,
+    MaileonProviderModule
   ],
   providers: [
     {

@@ -76,6 +76,11 @@ import chromiumConfiguration, {
   ChromiumEnvVarsValidation,
 } from './chromium';
 
+import maileonConfiguration, { 
+  MaileonConfigService, 
+  MaileonEnvVarsValidation 
+} from './maileon';
+
 
 
 @Global()
@@ -98,6 +103,7 @@ import chromiumConfiguration, {
         queueConfiguration,
         netGsmConfiguration,
         chromiumConfiguration,
+        maileonConfiguration
       ],
       validate: async (config) =>
         Promise.all([
@@ -110,6 +116,7 @@ import chromiumConfiguration, {
           ConfigValidator.validate(NotificationsEnvVarsValidation, config),
           ConfigValidator.validate(QueueEnvVarsValidation, config),
           ConfigValidator.validate(NetGsmEnvVarsValidation, config),
+          ConfigValidator.validate(MaileonEnvVarsValidation, config),
           ConfigValidator.validate(
             OAuthLoginWithGoogleEnvVarsValidation,
             config,
@@ -140,6 +147,7 @@ import chromiumConfiguration, {
     QueueConfigService,
     NetGsmConfigService,
     ChromiumConfigService,
+    MaileonConfigService,
   ],
   exports: [
     ConfigService,
@@ -157,6 +165,7 @@ import chromiumConfiguration, {
     QueueConfigService,
     NetGsmConfigService,
     ChromiumConfigService,
+    MaileonConfigService
   ],
 })
 export class ConfigModule {}
