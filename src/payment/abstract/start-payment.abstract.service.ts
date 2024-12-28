@@ -31,8 +31,8 @@ import {
 import {
   Currency,
   InvoiceType,
+  PaymentFlowType,
   PaymentProvider,
-  TicketType,
   TransactionStatus,
   TransactionType,
 } from '@app/common/enums';
@@ -160,18 +160,21 @@ export abstract class AbstractStartPaymentService {
     transaction: Transaction,
     paymentProviderType: PaymentProvider,
     paymentMethod: PaymentMethod,
-    ticketType: TicketType,
+    paymentFlowType: PaymentFlowType,
     finishEventName: keyof PaymentEventsMap,
     clientIp: string,
     user?: User,
   ): Promise<string | null> {
     let htmlContent: string | null = null;
+    /**
+     * If it is BankCard passed to finish payment, generate htmlContent
+     */
     if (paymentMethod.bankCard) {
       const paymentProvider =
         this.paymentProviderFactory.getStrategy(paymentProviderType);
       htmlContent = await paymentProvider.start3DSAuthorization({
         clientIp,
-        ticketType,
+        paymentFlowType,
         paymentMethod: { bankCard: paymentMethod.bankCard },
         transaction,
       });

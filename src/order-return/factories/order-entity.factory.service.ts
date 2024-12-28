@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { BusTicketOrder } from '@app/modules/orders/bus-ticket/entities/bus-ticket-order.entity';
 import { PlaneTicketOrder } from '@app/modules/orders/plane-ticket/entities/plane-ticket-order.entity';
 import { HotelBookingOrder } from '@app/modules/orders/hotel-booking/entities/hotel-booking-order.entity';
+import { WalletRechargeOrder } from '@app/modules/orders/wallet-recharge-order/wallet-recharge-order.entity';
 
 // enums
 import { OrderType } from '@app/common/enums';
@@ -15,6 +16,7 @@ type OrderEntityMap = {
   [OrderType.BUS_TICKET]: typeof BusTicketOrder;
   [OrderType.PLANE_TICKET]: typeof PlaneTicketOrder;
   [OrderType.HOTEL_BOOKING]: typeof HotelBookingOrder;
+  [OrderType.WALLET_RECHARGE]: typeof WalletRechargeOrder;
 };
 
 @Injectable()

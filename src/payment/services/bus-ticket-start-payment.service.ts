@@ -27,7 +27,7 @@ import {
   OrderStatus,
   OrderType,
   PaymentProvider,
-  TicketType,
+  PaymentFlowType,
 } from '@app/common/enums';
 
 // dtos
@@ -239,7 +239,7 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
         transaction,
         paymentProviderType,
         paymentMethod,
-        TicketType.BUS,
+        PaymentFlowType.BUS_TICKET,
         'payment.bus.finish',
         clientIp,
         user,

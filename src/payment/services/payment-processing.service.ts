@@ -13,9 +13,11 @@ import { IPaymentProcessingStrategy } from '../interfaces/payment-processing.str
 import { UUID } from '@app/common/types';
 import { PaymentProcessingFactory } from '../factories/payment-processing.factory';
 
+// enums
+import { PaymentFlowType } from '@app/common/enums';
+
 // types
 import { BusTicketPurchaseResult } from '@app/providers/ticket/biletall/bus/types/biletall-bus-ticket-purchase-result.type';
-import { TicketType } from '@app/common/enums';
 
 @Injectable()
 export class PaymentProcessingService {
@@ -30,7 +32,7 @@ export class PaymentProcessingService {
   public async processPayment(
     clientIp: string,
     transactionIdQuery: UUID,
-    ticketType: TicketType,
+    paymentFlowType: PaymentFlowType,
     requestBody: VakifBankPaymentResultDto | BusTicketPurchaseResult,
   ) {
     const paymentResultDetails = this.obtainPaymentResponseDetails(requestBody);
@@ -38,7 +40,7 @@ export class PaymentProcessingService {
       paymentResultDetails?.['VerifyEnrollmentRequestId'] || transactionIdQuery;
 
     const paymentProcessingStrategy =
-      this.paymentProcessingFactory.getStrategy(ticketType);
+      this.paymentProcessingFactory.getStrategy(paymentFlowType);
 
     try {
       await this.validatePaymentResponseStatus(
@@ -58,7 +60,7 @@ export class PaymentProcessingService {
 
   public failPayment(
     transactionIdQuery: UUID,
-    ticketType: TicketType,
+    paymentFlowType: PaymentFlowType,
     requestBody: VakifBankPaymentResultDto | BusTicketPurchaseResult,
   ): string | undefined {
     const paymentResultDetails = this.obtainPaymentResponseDetails(requestBody);
@@ -75,7 +77,7 @@ export class PaymentProcessingService {
     }
 
     const paymentProcessingStrategy =
-      this.paymentProcessingFactory.getStrategy(ticketType);
+      this.paymentProcessingFactory.getStrategy(paymentFlowType);
     paymentProcessingStrategy.handlePaymentFailure(transactionId, errorMessage);
     return errorMessage;
   }

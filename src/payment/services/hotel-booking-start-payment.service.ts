@@ -26,9 +26,9 @@ import { HotelBookingPurchaseDto } from '../dto/hotel-booking-purchase.dto';
 import {
   OrderStatus,
   PaymentProvider,
-  TicketType,
   OrderCategory,
   OrderType,
+  PaymentFlowType,
 } from '@app/common/enums';
 
 @Injectable()
@@ -160,7 +160,7 @@ export class HotelBookingStartPaymentService extends AbstractStartPaymentService
         transaction,
         paymentProviderType,
         paymentMethod,
-        TicketType.HOTEL,
+        PaymentFlowType.HOTEL_BOOKING,
         'payment.hotel.finish',
         clientIp,
         user,

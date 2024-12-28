@@ -30,7 +30,7 @@ export class BiletAllPaymentStrategy implements IPayment {
 
   async start3DSAuthorization({
     clientIp,
-    ticketType,
+    paymentFlowType,
     transaction,
     paymentMethod: { bankCard },
   }: BiletAllPaymentStart3DSAuthorizationDto): Promise<string> {
@@ -57,13 +57,13 @@ export class BiletAllPaymentStrategy implements IPayment {
         {
           name: 'successURL',
           value: encode(
-            `${this.applicationConfigService.backendUrl}/payment/success?transactionId=${transaction.id}&ticketType=${ticketType}`,
+            `${this.applicationConfigService.backendUrl}/payment/success?transactionId=${transaction.id}&paymentFlowType=${paymentFlowType}`,
           ),
         },
         {
           name: 'failURL',
           value: encode(
-            `${this.applicationConfigService.backendUrl}/payment/failure?transactionId=${transaction.id}&ticketType=${ticketType}`,
+            `${this.applicationConfigService.backendUrl}/payment/failure?transactionId=${transaction.id}&paymentFlowType=${paymentFlowType}`,
           ),
         },
       ],
