@@ -16,12 +16,16 @@ import { TransactionStatusService } from './services/transaction-status.service'
 import { BusTicketStartPaymentService } from './services/bus-ticket-start-payment.service';
 import { PlaneTicketStartPaymentService } from './services/plane-ticket-start-payment.service';
 import { HotelBookingStartPaymentService } from './services/hotel-booking-start-payment.service';
+import { WalletRechargeStartPaymentService } from './services/wallet-recharge-start-payment.service';
 import { PaymentProcessingService } from './services/payment-processing.service';
 
 // strategies
 import { BusTicketPaymentResultProcessingStrategy } from './strategies/bus-ticket-payment-processing.strategy';
 import { PlaneTicketPaymentProcessingStrategy } from './strategies/plane-ticket-payment-processing.strategy';
 import { HotelBookingPaymentProcessingStrategy } from './strategies/hotel-booking-payment-processing.strategy';
+import { WalletRechargePaymentProcessingStrategy } from './strategies/wallet-recharge-payment-processing.strategy';
+import { ImmediateSuccessPaymentStrategy } from './strategies/bus-ticket/immediate-success-payment.strategy';
+import { PendingPaymentProcessingStrategy } from './strategies/bus-ticket/pending-payment-processing.strategy';
 
 // factories
 import { PaymentProcessingFactory } from './factories/payment-processing.factory';
@@ -32,8 +36,8 @@ import { TransactionsRepository } from '@app/modules/transactions/transactions.r
 import { BusTicketOrdersRepository } from '@app/modules/orders/bus-ticket/bus-ticket-orders.repository';
 import { PlaneTicketOrdersRepository } from '@app/modules/orders/plane-ticket/plane-ticket-orders.repository';
 import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
-import { ImmediateSuccessPaymentStrategy } from './strategies/bus-ticket/immediate-success-payment.strategy';
-import { PendingPaymentProcessingStrategy } from './strategies/bus-ticket/pending-payment-processing.strategy';
+import { WalletRechargeOrdersRepository } from '@app/modules/orders/wallet-recharge-order/wallet-recharge-order.repository';
+import { WalletsRepository } from '@app/modules/wallets/wallets.repository';
 
 // enums
 import { PaymentProvider } from '@app/common/enums';
@@ -65,13 +69,17 @@ import { PaymentProvider } from '@app/common/enums';
     ImmediateSuccessPaymentStrategy,
     PlaneTicketPaymentProcessingStrategy,
     HotelBookingPaymentProcessingStrategy,
+    WalletRechargePaymentProcessingStrategy,
     TransactionStatusService,
     BusTicketStartPaymentService,
     PlaneTicketStartPaymentService,
     HotelBookingStartPaymentService,
+    WalletRechargeStartPaymentService,
     BusTicketOrdersRepository,
     PlaneTicketOrdersRepository,
     HotelBookingOrdersRepository,
+    WalletRechargeOrdersRepository,
+    WalletsRepository,
     TransactionsRepository,
     UsersRepository,
   ],

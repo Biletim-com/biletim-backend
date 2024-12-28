@@ -13,6 +13,7 @@ import { VerificationsRepository } from '@app/modules/verification/verification.
 import { BusTicketOrdersRepository } from '@app/modules/orders/bus-ticket/bus-ticket-orders.repository';
 import { PlaneTicketOrdersRepository } from '@app/modules/orders/plane-ticket/plane-ticket-orders.repository';
 import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
+import { WalletRechargeOrdersRepository } from '@app/modules/orders/wallet-recharge-order/wallet-recharge-order.repository';
 import { UsersRepository } from '@app/modules/users/users.repository';
 
 // controllers
@@ -35,6 +36,7 @@ import { HotelProviderModule } from '@app/providers/hotel/provider.module';
     BusTicketOrdersRepository,
     PlaneTicketOrdersRepository,
     HotelBookingOrdersRepository,
+    WalletRechargeOrdersRepository,
     VerificationsRepository,
     VerificationService,
   ],

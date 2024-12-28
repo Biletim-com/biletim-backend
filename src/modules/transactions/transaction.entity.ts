@@ -7,6 +7,7 @@ import { BankCard } from '../bank-cards/bank-card.entity';
 import { HotelBookingOrder } from '../orders/hotel-booking/entities/hotel-booking-order.entity';
 import { BusTicketOrder } from '../orders/bus-ticket/entities/bus-ticket-order.entity';
 import { PlaneTicketOrder } from '../orders/plane-ticket/entities/plane-ticket-order.entity';
+import { WalletRechargeOrder } from '../orders/wallet-recharge-order/wallet-recharge-order.entity';
 
 // utils
 import { normalizeDecimal } from '@app/common/utils';
@@ -87,4 +88,10 @@ export class Transaction extends AbstractEntity<Transaction> {
     (planeTicketOrder) => planeTicketOrder.transaction,
   )
   planeTicketOrder: PlaneTicketOrder;
+
+  @OneToOne(
+    () => WalletRechargeOrder,
+    (walletRechargeOrder) => walletRechargeOrder.transaction,
+  )
+  walletRechargeOrder: WalletRechargeOrder;
 }

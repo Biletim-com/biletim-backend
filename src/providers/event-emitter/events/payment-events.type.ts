@@ -18,4 +18,9 @@ export type PaymentEventsMap = {
     UUID,
     BiletimGoPaymentResultDto | VakifBankSavedCardPaymentFinishDto,
   ];
+  'payment.wallet-recharge.finish': [
+    string,
+    UUID,
+    VakifBankSavedCardPaymentFinishDto,
+  ];
 };

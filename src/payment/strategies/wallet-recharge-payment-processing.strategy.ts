@@ -1,17 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-// services
-import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
-import { RatehawkOrderBookingService } from '@app/providers/hotel/ratehawk/services/ratehawk-order-booking.service';
-
 // repositories
 import { TransactionsRepository } from '@app/modules/transactions/transactions.repository';
-import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
 
 // entities
+import { Wallet } from '@app/modules/wallets/wallet.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { HotelBookingOrder } from '@app/modules/orders/hotel-booking/entities/hotel-booking-order.entity';
 
 // factories
 import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
@@ -24,7 +19,6 @@ import {
   VakifBankPaymentResultDto,
   VakifBankSavedCardPaymentFinishDto,
 } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
-import { BiletimGoPaymentResultDto } from '@app/providers/payment/biletim-go/dto/biletim-go-payment-result.dto';
 
 // enums
 import { OrderStatus, TransactionStatus } from '@app/common/enums';
@@ -38,30 +32,27 @@ import { TransactionNotFoundError } from '@app/common/errors';
 
 // decorators
 import { OnEvent } from '@app/providers/event-emitter/decorators';
+import { WalletRechargeOrder } from '@app/modules/orders/wallet-recharge-order/wallet-recharge-order.entity';
 
 @Injectable()
-export class HotelBookingPaymentProcessingStrategy
+export class WalletRechargePaymentProcessingStrategy
   implements IPaymentProcessingStrategy
 {
   private readonly logger = new Logger(
-    HotelBookingPaymentProcessingStrategy.name,
+    WalletRechargePaymentProcessingStrategy.name,
   );
 
   constructor(
     private readonly dataSource: DataSource,
-    private readonly eventEmitterService: EventEmitterService,
     private readonly paymentProviderFactory: PaymentProviderFactory,
     private readonly transactionsRepository: TransactionsRepository,
-    private readonly hotelBookingOrdersRepository: HotelBookingOrdersRepository,
-    private readonly ratehawkOrderBookingService: RatehawkOrderBookingService,
   ) {}
 
-  @OnEvent('payment.hotel.finish')
+  @OnEvent('payment.wallet-recharge.finish')
   async handlePayment(
     clientIp: string,
     transactionId: UUID,
     paymentResultDto:
-      | BiletimGoPaymentResultDto
       | VakifBankPaymentResultDto
       | VakifBankSavedCardPaymentFinishDto,
   ): Promise<Transaction> {
@@ -70,10 +61,8 @@ export class HotelBookingPaymentProcessingStrategy
         id: transactionId,
       },
       relations: {
-        hotelBookingOrder: {
-          rooms: {
-            guests: true,
-          },
+        walletRechargeOrder: {
+          wallet: true,
         },
       },
     });
@@ -101,53 +90,37 @@ export class HotelBookingPaymentProcessingStrategy
           ...paymentResultDto,
           PurchAmount: transaction.amount,
         },
-        orderId: transaction.hotelBookingOrder.id,
+        orderId: transaction.walletRechargeOrder.id,
       });
       actionsCompleted.push('PAYMENT');
 
-      /**
-       * send purchase request to ratehawk
-       */
-      await this.ratehawkOrderBookingService.orderBookingFinish({
-        language: 'en',
-        partner: {
-          partnerOrderId:
-            transaction.hotelBookingOrder.reservationNumber.toString(),
-        },
-        paymentType: transaction.hotelBookingOrder.paymentType,
-        rooms: transaction.hotelBookingOrder.rooms,
-        upsellData: transaction.hotelBookingOrder.upsell,
-        user: {
-          email: 'test@mail.com',
-          phone: '5550240045',
-        },
-        supplierData: {
-          firstNameOriginal:
-            transaction.hotelBookingOrder.rooms[0].guests[0].firstName,
-          lastNameOriginal:
-            transaction.hotelBookingOrder.rooms[0].guests[0].lastName,
-          email: transaction.hotelBookingOrder.userEmail,
-          phone: transaction.hotelBookingOrder.userPhoneNumber,
-        },
-      });
-      actionsCompleted.push('HOTEL_BOOKING');
-
+      const newBalance: number =
+        Number(transaction.amount) +
+        transaction.walletRechargeOrder.wallet.balance;
       await Promise.all([
         queryRunner.manager.update(Transaction, transaction.id, {
           status: TransactionStatus.COMPLETED,
         }),
         queryRunner.manager.update(
-          HotelBookingOrder,
-          transaction.hotelBookingOrder.id,
+          WalletRechargeOrder,
+          transaction.walletRechargeOrder.id,
           {
-            status: OrderStatus.AWAITING,
+            status: OrderStatus.COMPLETED,
+          },
+        ),
+        queryRunner.manager.update(
+          Wallet,
+          transaction.walletRechargeOrder.wallet.id,
+          {
+            balance: newBalance,
           },
         ),
       ]);
 
       // update transaction and order for the data to return
       transaction.status = TransactionStatus.COMPLETED;
-      transaction.hotelBookingOrder.status = OrderStatus.AWAITING;
+      transaction.walletRechargeOrder.status = OrderStatus.COMPLETED;
+      transaction.walletRechargeOrder.wallet.balance = newBalance;
 
       await queryRunner.commitTransaction();
       return transaction;
@@ -165,9 +138,6 @@ export class HotelBookingPaymentProcessingStrategy
           transactionId: transaction.id,
         });
       }
-      if (actionsCompleted.includes('HOTEL_BOOKING')) {
-        console.log('cancel with order id');
-      }
       err.message = errorMessage;
       throw err;
     } finally {
@@ -179,24 +149,16 @@ export class HotelBookingPaymentProcessingStrategy
     transactionOrTransactionId: Transaction | UUID,
     errorMessage?: string,
   ): Promise<void> {
-    this.logger.error(`Hotel booking payment failed: ${errorMessage}`);
+    this.logger.error(`Wallet recharge payment failed: ${errorMessage}`);
 
     const transaction = await this.transactionsRepository.findEntityData(
       transactionOrTransactionId,
       { hotelBookingOrder: true },
     );
 
-    Promise.all([
-      this.transactionsRepository.update(transaction.id, {
-        status: TransactionStatus.FAILED,
-        errorMessage,
-      }),
-      this.hotelBookingOrdersRepository.update(
-        transaction.hotelBookingOrder.id,
-        {
-          status: OrderStatus.PAYMENT_FAILED,
-        },
-      ),
-    ]);
+    this.transactionsRepository.update(transaction.id, {
+      status: TransactionStatus.FAILED,
+      errorMessage,
+    });
   }
 }

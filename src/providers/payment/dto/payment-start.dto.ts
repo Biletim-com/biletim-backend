@@ -7,7 +7,7 @@ import { Transaction } from '@app/modules/transactions/transaction.entity';
 import { BankCardDto } from '@app/common/dtos';
 
 // enums
-import { TicketType } from '@app/common/enums';
+import { PaymentFlowType } from '@app/common/enums';
 
 export abstract class PaymentMethod {
   bankCard?: BankCardDto;
@@ -21,7 +21,7 @@ export class BankCardPaymentDto implements PaymentMethod {
 
 export abstract class PaymentStart3DSAuthorizationDto {
   clientIp: string;
-  ticketType: TicketType;
+  paymentFlowType: PaymentFlowType;
   transaction: Transaction;
   paymentMethod: BankCardPaymentDto;
 }

@@ -34,13 +34,13 @@ import { SmsModule } from './providers/sms/provider.module';
 import { PdfMakerModule } from '@app/providers/pdf-maker/provider.module';
 import { HtmlTemplateModule } from '@app/providers/html-template/provider.module';
 import { PaymentProviderModule } from './providers/payment/provider.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 // Interceptors
 import { ErrorInterceptor, UserInterceptor } from '@app/common/interceptors';
 
 // Jobs
 import { JobsModule } from '@app/jobs/jobs.module';
-import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [

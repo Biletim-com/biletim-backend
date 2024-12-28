@@ -16,7 +16,6 @@ import { BiletimGoPaymentResultDto } from './dto/biletim-go-payment-result.dto';
 // errors
 import {
   WalletNotFoundError,
-  InsufficientWalletBalanceError,
   TransactionNotFoundError,
 } from '@app/common/errors';
 
@@ -38,15 +37,7 @@ export class BiletimGoPaymentStrategy implements IPayment {
     details,
   }: PaymentFinishDto<BiletimGoPaymentResultDto>): Promise<void> {
     const { amount, walletId } = details;
-    const wallet = await this.walletsRepository.findOneBy({ id: walletId });
-    if (!wallet) {
-      throw new WalletNotFoundError();
-    }
-    if (Number(amount) > wallet.balance) {
-      throw new InsufficientWalletBalanceError();
-    }
-    const newBalance = wallet.balance - Number(amount);
-    await this.walletsRepository.update(walletId, { balance: newBalance });
+    await this.walletsRepository.decreaseBalance(walletId, Number(amount));
   }
 
   async cancelPayment({ transactionId }: CancelPaymentDto): Promise<void> {
@@ -62,10 +53,10 @@ export class BiletimGoPaymentStrategy implements IPayment {
     if (!transaction.wallet) {
       throw new WalletNotFoundError();
     }
-    const newBalance = transaction.wallet.balance + Number(transaction.amount);
-    await this.walletsRepository.update(transaction.wallet.id, {
-      balance: newBalance,
-    });
+    await this.walletsRepository.increaseBalance(
+      transaction.wallet,
+      Number(transaction.amount),
+    );
   }
 
   async refundPayment({
@@ -80,17 +71,10 @@ export class BiletimGoPaymentStrategy implements IPayment {
     if (!transaction) {
       throw new TransactionNotFoundError();
     }
-
-    const wallet =
-      transaction.wallet ??
-      (await this.walletsRepository.findOneBy({ id: walletId }));
-
-    if (!wallet) {
-      throw new WalletNotFoundError();
-    }
-
-    await this.walletsRepository.update(wallet.id, {
-      balance: wallet.balance + Number(refundAmount),
-    });
+    const walletIdOrWallet = transaction.wallet ?? walletId;
+    await this.walletsRepository.increaseBalance(
+      walletIdOrWallet,
+      Number(refundAmount),
+    );
   }
 }

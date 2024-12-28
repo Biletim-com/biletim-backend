@@ -34,6 +34,7 @@ export class PlanePassengerInfoDto extends PassengerInfoDto {
   @IsNotEmpty()
   @IsString()
   private readonly companyNumber: string;
+
   @ApiProperty({
     description: 'The birth date of the passenger in yyyy-MM-dd format.',
     example: '2000-01-01',

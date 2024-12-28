@@ -88,13 +88,13 @@ export class VakifBankPaymentStrategy implements IPayment {
   }
 
   async start3DSAuthorization({
-    ticketType,
+    paymentFlowType,
     transaction,
     paymentMethod: { bankCard },
   }: VakifBankPaymentStart3DSAuthorizationDto): Promise<string> {
     const card3DsEligibility =
       await this.vakifBankEnrollmentService.checkCard3DsEligibility(
-        ticketType,
+        paymentFlowType,
         transaction,
         bankCard,
       );

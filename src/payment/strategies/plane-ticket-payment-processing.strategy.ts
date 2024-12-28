@@ -21,7 +21,10 @@ import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.
 import { IPaymentProcessingStrategy } from '../interfaces/payment-processing.strategy.interface';
 
 // dto
-import { VakifBankPaymentResultDto } from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
+import {
+  VakifBankPaymentResultDto,
+  VakifBankSavedCardPaymentFinishDto,
+} from '@app/providers/payment/vakif-bank/dto/vakif-bank-payment-result.dto';
 import { BiletimGoPaymentResultDto } from '@app/providers/payment/biletim-go/dto/biletim-go-payment-result.dto';
 
 // enums
@@ -62,7 +65,10 @@ export class PlaneTicketPaymentProcessingStrategy
   async handlePayment(
     clientIp: string,
     transactionId: UUID,
-    paymentResultDto: VakifBankPaymentResultDto | BiletimGoPaymentResultDto,
+    paymentResultDto:
+      | BiletimGoPaymentResultDto
+      | VakifBankPaymentResultDto
+      | VakifBankSavedCardPaymentFinishDto,
   ): Promise<Transaction> {
     const transaction = await this.transactionsRepository.findOne({
       where: {

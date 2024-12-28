@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { BusTicketOrdersRepository } from '@app/modules/orders/bus-ticket/bus-ticket-orders.repository';
 import { PlaneTicketOrdersRepository } from '@app/modules/orders/plane-ticket/plane-ticket-orders.repository';
 import { HotelBookingOrdersRepository } from '@app/modules/orders/hotel-booking/hotel-booking-orders.repository';
+import { WalletRechargeOrdersRepository } from '@app/modules/orders/wallet-recharge-order/wallet-recharge-order.repository';
 
 // enums
 import { OrderType } from '@app/common/enums';
@@ -15,6 +16,7 @@ type OrderRepositoryMap = {
   [OrderType.BUS_TICKET]: BusTicketOrdersRepository;
   [OrderType.PLANE_TICKET]: PlaneTicketOrdersRepository;
   [OrderType.HOTEL_BOOKING]: HotelBookingOrdersRepository;
+  [OrderType.WALLET_RECHARGE]: WalletRechargeOrdersRepository;
 };
 
 @Injectable()
@@ -24,17 +26,20 @@ export class OrderRepositoryFactoryService {
     | BusTicketOrdersRepository
     | PlaneTicketOrdersRepository
     | HotelBookingOrdersRepository
+    | WalletRechargeOrdersRepository
   >;
 
   constructor(
     private readonly busTicketOrdersRepository: BusTicketOrdersRepository,
     private readonly planeTicketOrdersRepository: PlaneTicketOrdersRepository,
     private readonly hotelBookingOrdersRepository: HotelBookingOrdersRepository,
+    private readonly walletRechargeOrdersRepository: WalletRechargeOrdersRepository,
   ) {
     this.repositoryMap = new Map<OrderType, OrderRepositoryMap[OrderType]>([
       [OrderType.BUS_TICKET, this.busTicketOrdersRepository],
       [OrderType.PLANE_TICKET, this.planeTicketOrdersRepository],
       [OrderType.HOTEL_BOOKING, this.hotelBookingOrdersRepository],
+      [OrderType.WALLET_RECHARGE, this.walletRechargeOrdersRepository],
     ]);
   }
 

@@ -33,13 +33,16 @@ export class PaymentProcessingController {
     @Res() res: Response,
     @ClientIp() clientIp: string,
     @Query()
-    { transactionId: transactionIdQuery, ticketType }: PaymentResultQueryParams,
+    {
+      transactionId: transactionIdQuery,
+      paymentFlowType,
+    }: PaymentResultQueryParams,
   ): Promise<void> {
     try {
       await this.paymentProcessingService.processPayment(
         clientIp,
         transactionIdQuery,
-        ticketType,
+        paymentFlowType,
         req.body,
       );
       const htmlString = await this.htmlTemplateService.renderTemplate(
@@ -64,11 +67,11 @@ export class PaymentProcessingController {
     @Req() req: Request,
     @Res() res: Response,
     @Query()
-    { transactionId, ticketType }: PaymentResultQueryParams,
+    { transactionId, paymentFlowType }: PaymentResultQueryParams,
   ): Promise<void> {
     const errorMessage = this.paymentProcessingService.failPayment(
       transactionId,
-      ticketType,
+      paymentFlowType,
       req.body,
     );
 

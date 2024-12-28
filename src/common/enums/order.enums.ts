@@ -21,4 +21,5 @@ export enum OrderType {
   BUS_TICKET = 'bus-ticket',
   PLANE_TICKET = 'plane-ticket',
   HOTEL_BOOKING = 'hotel-booking',
+  WALLET_RECHARGE = 'wallet-recharge',
 }
