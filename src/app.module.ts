@@ -15,11 +15,12 @@ import { PassengersModule } from '@app/modules/passengers/passengers.module';
 import { BankCardsModule } from '@app/modules/bank-cards/bank-cards.module';
 import { TransactionsModule } from '@app/modules/transactions/transactions.module';
 import { WalletsModule } from '@app/modules/wallets/wallets.module';
-import { VerificationsModule } from './modules/verification/verifications.module';
+import { VerificationsModule } from '@app/modules/verification/verifications.module';
+import { OrderReturnModule } from '@app/order-return/order-return.module';
+import { TicketsModule } from '@app/modules/tickets/tickets.module';
+import { OrdersModule } from '@app/modules/orders/orders.module';
+import { InvoiceAddressModule } from '@app/modules/users/invoice-address/inovice-address.module';
 import { PaymentModule } from './payment/payment.module';
-import { OrderReturnModule } from './order-return/order-return.module';
-import { TicketsModule } from './modules/tickets/tickets.module';
-import { OrdersModule } from './modules/orders/orders.module';
 import { SearchModule } from './search/search.module';
 
 // Providers
@@ -72,6 +73,7 @@ import { JobsModule } from '@app/jobs/jobs.module';
     SmsModule,
     VerificationsModule,
     PaymentProviderModule,
+    InvoiceAddressModule,
   ],
   providers: [
     {
