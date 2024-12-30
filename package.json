@@ -61,7 +61,7 @@
     "mongoose": "^8.8.3",
     "nestjs-pino": "^4.1.0",
     "nestjs-soap": "^3.0.2",
-    "nodemailer": "^6.9.14",
+    "nodemailer": "^6.9.16",
     "papaparse": "^5.4.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",

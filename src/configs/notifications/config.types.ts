@@ -4,4 +4,5 @@ export type TNotificationsConfiguration = {
   emailUsername: string;
   emailPassword: string;
   emailUseSSL: boolean;
+  emailFrom: string;
 };

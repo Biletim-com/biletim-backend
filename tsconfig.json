@@ -18,10 +18,23 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/*": ["src/*"]
+      "@app/*": [
+        "src/*"
+      ]
     },
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "global.d.ts", "ormconfig.ts", "open-zst.script.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "global.d.ts",
+    "ormconfig.ts",
+    "open-zst.script.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

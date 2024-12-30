@@ -42,7 +42,7 @@ import { HandlerbarsHelper } from '@app/common/helpers';
           },
         },
         defaults: {
-          from: `"Biletim Team" <${notificationsConfigService.emailUsername}>`,
+          from: `"Biletim Team" <${notificationsConfigService.emailFrom}>`,
         },
         template: {
           dir: `${__dirname}/../providers/html-template/templates`,

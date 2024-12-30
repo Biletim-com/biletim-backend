@@ -41,4 +41,10 @@ export class NotificationsConfigService {
       this.configurationNamespace,
     ).emailUseSSL;
   }
+
+  get emailFrom(): string {
+    return this.configService.getOrThrow<TNotificationsConfiguration>(
+      this.configurationNamespace,
+    ).emailFrom;
+  }
 }

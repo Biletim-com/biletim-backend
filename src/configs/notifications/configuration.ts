@@ -11,5 +11,6 @@ export default registerAs(
     emailUsername: process.env.EMAIL_USERNAME,
     emailPassword: process.env.EMAIL_PASSWORD,
     emailUseSSL: process.env.EMAIL_USE_SSL === 'true',
+    emailFrom: process.env.EMAIL_FROM,
   }),
 );

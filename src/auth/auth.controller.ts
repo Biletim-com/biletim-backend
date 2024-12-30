@@ -115,7 +115,7 @@ export class AuthController {
   @Post('/send-account-verification-email')
   async sendAccountVerificationCode(
     @Body() verificationDto: VerificationCodeDto,
-  ): Promise<any> {
+  ): Promise<{ message: string }> {
     await this.authService.sendAccountVerificationCode(verificationDto);
     return { message: 'Verification code sent successfully' };
   }
@@ -127,7 +127,7 @@ export class AuthController {
   async verifyAccount(
     @Res({ passthrough: true }) response: Response,
     @Body() verificationDto: VerificationDto,
-  ): Promise<any> {
+  ): Promise<{ message: string }> {
     await this.authService.verifyAccount(verificationDto, response);
     return { message: 'Verification completed successfully' };
   }

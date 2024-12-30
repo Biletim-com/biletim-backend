@@ -62,6 +62,7 @@ declare namespace NodeJS {
     EMAIL_PORT: string;
     EMAIL_HOST: string;
     EMAIL_USE_SSL: string;
+    EMAIL_FROM: string;
     NETGSM_BASE_URL: string;
     NETGSM_USERNAME: string;
     NETGSM_PASSWORD: string;
