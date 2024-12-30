@@ -9,7 +9,7 @@ import { QueueEnum } from '@app/common/enums';
 import { AuthConfigService } from '@app/configs/auth';
 
 // entites
-import { Order } from '@app/modules/orders/order.entity';
+import { BusTicketOrder } from '@app/modules/orders/bus-ticket/entities/bus-ticket-order.entity';
 
 // decorators
 import { OnEvent, OnEvents } from '@app/providers/event-emitter/decorators';
@@ -87,22 +87,18 @@ export class EmailNotificationService {
   }
 
   @OnEvent('ticket.bus.purchased')
-  async sendBusTicketEmail(order: Order): Promise<void> {
-    order.busTickets.sort((a, b) => a.ticketOrder - b.ticketOrder);
+  async sendBusTicketEmail(order: BusTicketOrder): Promise<void> {
+    order.tickets.sort((a, b) => a.ticketOrder - b.ticketOrder);
     const ticketTemplateData: BusTicketEmailTemplateData = {
       pnrNumber: order.pnr as string,
       trip: {
-        busCompany: order.busTickets[0].companyName,
-        departureTerminal: order.busTickets[0].departureTerminal.name,
-        arrivalTerminal: order.busTickets[0].arrivalTerminal.name,
-        departureDate: DateTimeHelper.extractDate(
-          order.busTickets[0].travelStartDateTime,
-        ),
-        departureTime: DateTimeHelper.extractTime(
-          order.busTickets[0].travelStartDateTime,
-        ),
+        busCompany: order.companyName,
+        departureTerminal: order.departureTerminal.name,
+        arrivalTerminal: order.arrivalTerminal.name,
+        departureDate: DateTimeHelper.extractDate(order.travelStartDateTime),
+        departureTime: DateTimeHelper.extractTime(order.travelStartDateTime),
       },
-      passengers: order.busTickets.map(
+      passengers: order.tickets.map(
         ({ passenger, seatNumber, ticketPrice }) => ({
           passengerFullName: `${passenger.firstName} ${passenger.lastName}`,
           amount: ticketPrice,
@@ -112,7 +108,7 @@ export class EmailNotificationService {
           tcNumber: passenger.tcNumber as string,
         }),
       ),
-      companyLogo: `https://eticket.ipektr.com/wsbos3/LogoVer.Aspx?fnum=${order.busTickets[0].companyNumber}`,
+      companyLogo: `https://eticket.ipektr.com/wsbos3/LogoVer.Aspx?fnum=${order.companyNumber}`,
     };
 
     await this.queue.add({

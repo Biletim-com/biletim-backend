@@ -6,15 +6,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { parseStringPromise } from 'xml2js';
 
-import { BusController } from '@app/modules/tickets/bus/bus.controller';
-import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus-terminal.repository';
+import { BusSearchController } from '@app/search/bus/bus-search.controller';
+import { BusTerminalRepository } from '@app/providers/ticket/biletall/bus/repositories/bus-terminal.repository';
 
 // services
 import { BiletAllParserService } from '@app/providers/ticket/biletall/services/biletall-response-parser.service';
 import { BiletAllBusSearchParserService } from '@app/providers/ticket/biletall/bus/parsers/biletall-bus-search.parser.service';
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
-import { BiletAllApiConfigService } from '@app/configs/bilet-all-api';
-import { BusTerminalsService } from '@app/modules/tickets/bus/services/bus-terminals.service';
+import { TicketConfigService } from '@app/configs/ticket';
+import { BusTerminalsService } from '@app/providers/ticket/biletall/bus/services/bus-terminals.service';
 
 import {
   boardingPointMockResponse,
@@ -56,13 +56,13 @@ describe('BiletAllBusParserService', () => {
       providers: [
         BiletAllBusSearchParserService,
         BiletAllBusSearchService,
-        BiletAllApiConfigService,
+        TicketConfigService,
         BusTerminalsService,
         BusTerminalRepository,
         { provide: BiletAllParserService, useValue: mockBiletAllParserService },
         { provide: DataSource, useValue: mockDataSource },
       ],
-      controllers: [BusController],
+      controllers: [BusSearchController],
     }).compile();
 
     parser = module.get<BiletAllBusSearchParserService>(

@@ -25,7 +25,9 @@ import { EventEmitterService } from '@app/providers/event-emitter/provider.servi
 import { VerificationCodeDto, VerificationDto } from '../dto/verification.dto';
 import { CreateUserDto } from '@app/modules/users/dto/create-user.dto';
 import { DateTimeHelper } from '@app/common/helpers';
-import { VerificationType } from '@app/common/enums';
+
+// errors
+import { ServiceError, UserNotFoundError } from '@app/common/errors';
 
 @Injectable()
 export class AuthService {
@@ -50,22 +52,12 @@ export class AuthService {
   }
 
   async signup(registerUserRequest: RegisterUserRequest): Promise<User> {
-    const existingUser = await this.usersService.registerEmailCheck(
-      registerUserRequest.email.toLowerCase(),
-    );
-
-    if (existingUser) {
-      throw new BadRequestException('User does not exist');
-    }
-
-    return this.usersService.registerUser(registerUserRequest);
+    return this.usersService.create(registerUserRequest);
   }
 
   async sendAccountVerificationCode(dto: VerificationCodeDto): Promise<void> {
     const { email } = dto;
-
     const user = await this.usersService.findByEmail(email);
-
     if (!user) {
       throw new BadRequestException('User not found');
     }
@@ -74,7 +66,6 @@ export class AuthService {
         user.isVerified ? 'User is already verified' : 'User is deleted',
       );
     }
-
     const verificationCode =
       await this.verificationService.createProfileActivationVerificationCode(
         user,
@@ -124,6 +115,9 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new UserNotFoundError();
+    }
 
     const forgotPasswordCode: string = uuidv4();
 
@@ -158,10 +152,11 @@ export class AuthService {
   }
 
   async resetPasswordByEmail(email: string, newPassword: string) {
-    await this.usersService.findByEmail(email);
-
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new UserNotFoundError();
+    }
     const newPasswordHash = this.passwordService.hashPassword(newPassword);
-
     await this.usersService.updateUserPassword(email, newPasswordHash);
   }
 
@@ -205,13 +200,10 @@ export class AuthService {
     );
 
     if (!email) {
-      throw new BadRequestException(
-        'Email cannot be undefined for user lookup.',
-      );
+      throw new ServiceError('Email cannot be undefined for user lookup.');
     }
 
-    let user = await this.usersService.findByEmailWithoutThrowError(email);
-
+    let user = await this.usersService.findByEmail(email);
     if (!user) {
       const password: string = uuidv4();
       const createUserDto: CreateUserDto = {
@@ -219,6 +211,7 @@ export class AuthService {
         password: password,
         name: name,
         familyName: familyName,
+        isVerified: true,
       };
       user = await this.usersService.create(createUserDto);
     }

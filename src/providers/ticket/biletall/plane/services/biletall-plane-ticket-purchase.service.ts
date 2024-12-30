@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 
 // services
+import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllPlaneTicketPurchaseParserService } from '../parsers/biletall-plane-ticket-purchase.parser.service';
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 
 // entites
-import { PlaneTicketSegment } from '@app/modules/tickets/plane/entities/plane-ticket-segment.entity';
-import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
-import { Order } from '@app/modules/orders/order.entity';
+import { PlaneTicketOrder } from '@app/modules/orders/plane-ticket/entities/plane-ticket-order.entity';
+import { PlaneTicket } from '@app/modules/orders/plane-ticket/entities/plane-ticket.entity';
+import { PlaneTicketSegment } from '@app/modules/orders/plane-ticket/entities/plane-ticket-segment.entity';
 
 // dto
 import { FlightTicketPurchaseDto } from '../dto/plane-ticket-purchase.dto';
@@ -31,16 +32,23 @@ import { turkishToEnglish } from '@app/common/utils';
 
 @Injectable()
 export class BiletAllPlaneTicketPurchaseService {
+  private readonly biletAllRequestService: BiletAllRequestService;
   constructor(
-    private readonly biletallRequestService: BiletAllRequestService,
+    ticketConfigService: TicketConfigService,
     private readonly biletAllPlaneTicketPurchaseParserService: BiletAllPlaneTicketPurchaseParserService,
-  ) {}
+  ) {
+    this.biletAllRequestService = new BiletAllRequestService(
+      ticketConfigService.biletAllBaseUrl,
+      ticketConfigService.biletAllUsername,
+      ticketConfigService.biletAllPassword,
+    );
+  }
 
   async processPlaneTicket(
     clientIp: string,
     operationType: PlaneTicketOperationType.PURCHASE,
     totalPrice: string,
-    order: Order,
+    order: PlaneTicketOrder,
     planeTickets: PlaneTicket[],
     segments: PlaneTicketSegment[],
   ): Promise<FlightTicketPurchaseDto>;
@@ -49,7 +57,7 @@ export class BiletAllPlaneTicketPurchaseService {
     clientIp: string,
     operationType: PlaneTicketOperationType.RESERVATION,
     totalPrice: string,
-    order: Order,
+    order: PlaneTicketOrder,
     planeTickets: PlaneTicket[],
     segments: PlaneTicketSegment[],
   ): Promise<FlightTicketReservationDto>;
@@ -58,7 +66,7 @@ export class BiletAllPlaneTicketPurchaseService {
     clientIp: string,
     operationType: PlaneTicketOperationType,
     totalPrice: string,
-    order: Order,
+    order: PlaneTicketOrder,
     planeTickets: PlaneTicket[],
     segments: PlaneTicketSegment[],
   ): Promise<FlightTicketPurchaseDto | FlightTicketReservationDto> {
@@ -120,7 +128,7 @@ export class BiletAllPlaneTicketPurchaseService {
     };
 
     const xml = builder.buildObject(requestDocument);
-    const res = await this.biletallRequestService.run<
+    const res = await this.biletAllRequestService.run<
       PlaneTicketPurchaseResponse | PlaneTicketReservationResponse
     >(xml);
 

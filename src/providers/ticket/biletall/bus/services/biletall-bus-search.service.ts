@@ -3,16 +3,17 @@ import * as xml2js from 'xml2js';
 import * as dayjs from 'dayjs';
 
 // services
+import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 import { BiletAllBusSearchParserService } from '../parsers/biletall-bus-search.parser.service';
 
 // request dtos
 import { BoardingPointRequestDto } from '../dto/bus-boarding-point.dto';
 import { ServiceInformationRequestDto } from '../dto/bus-service-information.dto';
-import { BusCompanyRequestDto } from '@app/modules/tickets/bus/dto/bus-company.dto';
-import { BusScheduleRequestDto } from '@app/modules/tickets/bus/dto/bus-schedule-list.dto';
-import { BusSeatAvailabilityRequestDto } from '@app/modules/tickets/bus/dto/bus-seat-availability.dto';
-import { BusTicketDetailRequestDto } from '@app/modules/tickets/bus/dto/bus-ticket-detail.dto';
+import { BusCompanyRequestDto } from '@app/search/bus/dto/bus-company.dto';
+import { BusScheduleRequestDto } from '@app/search/bus/dto/bus-schedule-list.dto';
+import { BusSeatAvailabilityRequestDto } from '@app/search/bus/dto/bus-seat-availability.dto';
+import { BusTicketDetailRequestDto } from '@app/search/bus/dto/bus-ticket-detail.dto';
 
 // parser dtos
 import { BusTicketDetailDto } from '../dto/bus-ticket-detail.dto';
@@ -39,10 +40,17 @@ import { BiletAllGender } from '../../helpers/biletall-gender.helper';
 
 @Injectable()
 export class BiletAllBusSearchService {
+  private readonly biletAllRequestService: BiletAllRequestService;
   constructor(
-    private readonly biletAllRequestService: BiletAllRequestService,
+    ticketConfigService: TicketConfigService,
     private readonly biletAllBusSearchParserService: BiletAllBusSearchParserService,
-  ) {}
+  ) {
+    this.biletAllRequestService = new BiletAllRequestService(
+      ticketConfigService.biletAllBaseUrl,
+      ticketConfigService.biletAllUsername,
+      ticketConfigService.biletAllPassword,
+    );
+  }
 
   async searchTripSchedules(
     clientIp: string,

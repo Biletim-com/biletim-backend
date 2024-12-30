@@ -53,26 +53,26 @@ export class VakifBankEnrollmentService {
     MerchantPassword: string;
   } {
     return {
-      MerchantId: this.paymentConfigService.merchantId,
-      MerchantPassword: this.paymentConfigService.merchantPassword,
+      MerchantId: this.paymentConfigService.vakifBankMerchantId,
+      MerchantPassword: this.paymentConfigService.vakifBankMerchantPassword,
     };
   }
 
   async checkCard3DsEligibility(
     ticketType: TicketType,
     transaction: Transaction,
-    creditCard: BankCardDto,
+    bankCard: BankCardDto,
   ): Promise<ThreeDSecureEligibilityResponse> {
     const body = {
       ...this.authCredentials,
       VerifyEnrollmentRequestId: transaction.id,
-      Pan: creditCard.pan,
-      ExpiryDate: dayjs(creditCard.expiryDate).format('YYMM'),
+      Pan: bankCard.pan,
+      ExpiryDate: dayjs(bankCard.expiryDate).format('YYMM'),
       PurchaseAmount: normalizeDecimal(transaction.amount),
-      Currency: VakifBankCurrency[Currency.TL],
-      BrandName: VakifBankBankCardBrand[creditCard.cardType],
-      SuccessUrl: `${this.applicationConfigService.backendUrl}/payment/success?provider=${PaymentProvider.VAKIF_BANK}&ticketType=${ticketType}`,
-      FailureUrl: `${this.applicationConfigService.backendUrl}/payment/failure?provider=${PaymentProvider.VAKIF_BANK}&ticketType=${ticketType}`,
+      Currency: VakifBankCurrency[Currency.TRY],
+      BrandName: VakifBankBankCardBrand[bankCard.cardType],
+      SuccessUrl: `${this.applicationConfigService.backendUrl}/payment/success?transactionId=${transaction.id}&ticketType=${ticketType}`,
+      FailureUrl: `${this.applicationConfigService.backendUrl}/payment/failure?transactionId=${transaction.id}&ticketType=${ticketType}`,
     };
 
     const {

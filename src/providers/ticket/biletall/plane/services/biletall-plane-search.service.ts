@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 
 // services
+import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllPlaneSearchParserService } from '../parsers/biletall-plane-search.parser.service';
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 
 // request dto
-import { PullPriceFlightRequestDto } from '@app/modules/tickets/plane/dto/plane-pull-price-flight.dto';
+import { PullPriceFlightRequestDto } from '@app/search/plane/dto/plane-pull-price-flight.dto';
 import { PlanePassengerAgeRulesResponse } from '../types/biletall-plane-company-passanger-age-rules.type';
-import { PlaneFlightScheduleRequestDto } from '@app/modules/tickets/plane/dto/plane-flight-schedule.dto';
-import { PullAbroadFlightPricePackagesRequestDto } from '@app/modules/tickets/plane/dto/plane-pull-abroad-flight-price-packages.dto';
+import { PlaneFlightScheduleRequestDto } from '@app/search/plane/dto/plane-flight-schedule.dto';
+import { PullAbroadFlightPricePackagesRequestDto } from '@app/search/plane/dto/plane-pull-abroad-flight-price-packages.dto';
 
 // response dto
 import { PlaneAirportDto } from '../dto/plane-airport.dto';
@@ -32,10 +33,17 @@ import { AbroadFlightScheduleDto } from '../dto/plane-abroad-flight-schedule.dto
 
 @Injectable()
 export class BiletAllPlaneSearchService {
+  private readonly biletAllRequestService: BiletAllRequestService;
   constructor(
-    private readonly biletAllRequestService: BiletAllRequestService,
+    ticketConfigService: TicketConfigService,
     private readonly biletAllPlaneSearchParserService: BiletAllPlaneSearchParserService,
-  ) {}
+  ) {
+    this.biletAllRequestService = new BiletAllRequestService(
+      ticketConfigService.biletAllBaseUrl,
+      ticketConfigService.biletAllUsername,
+      ticketConfigService.biletAllPassword,
+    );
+  }
 
   async getAirports(): Promise<PlaneAirportDto[]> {
     const airportXML = '<HavaNoktaGetirKomut/>';

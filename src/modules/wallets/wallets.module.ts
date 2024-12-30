@@ -5,9 +5,12 @@ import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/pro
 import { Wallet } from './wallet.entity';
 import { WalletsRepository } from './wallets.repository';
 import { WalletsService } from './wallets.service';
+import { WalletController } from './wallets.controller';
+import { TransactionsRepository } from '../transactions/transactions.repository';
 
 @Module({
   imports: [PostgreSQLProviderModule.forFeature([Wallet])],
-  providers: [WalletsRepository, WalletsService],
+  providers: [WalletsRepository, WalletsService, TransactionsRepository],
+  controllers: [WalletController],
 })
 export class WalletsModule {}

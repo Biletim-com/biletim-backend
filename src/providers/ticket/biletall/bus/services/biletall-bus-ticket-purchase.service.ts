@@ -3,20 +3,21 @@ import * as xml2js from 'xml2js';
 import * as dayjs from 'dayjs';
 
 // entites
-import { Order } from '@app/modules/orders/order.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { BusTicket } from '@app/modules/tickets/bus/entities/bus-ticket.entity';
+import { BusTicketOrder } from '@app/modules/orders/bus-ticket/entities/bus-ticket-order.entity';
+import { BusTicket } from '@app/modules/orders/bus-ticket/entities/bus-ticket.entity';
 
 // services
+import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 import { BiletAllBusTicketPurchaseParserService } from '../parsers/biletall-bus-ticket-purchase.parser.service';
 
 // dtos
 import { BankCardDto } from '@app/common/dtos';
-import { BusTicketPurchaseDto } from '../dto/bus-ticket-purchase.dto';
+import { BusTicketPurchaseResultDto } from '../dto/bus-ticket-purchase-result.dto';
 
 // types
-import { BusTicketPurchaseRequestResponse } from '../types/biletall-bus-ticket-purchase.type';
+import { BusTicketPurchaseResultResponse } from '../types/biletall-bus-ticket-purchase-result.type';
 
 // helpers
 import { BiletAllGender } from '../../helpers/biletall-gender.helper';
@@ -26,15 +27,22 @@ import { turkishToEnglish } from '@app/common/utils';
 
 @Injectable()
 export class BiletAllBusTicketPurchaseService {
+  private readonly biletAllRequestService: BiletAllRequestService;
   constructor(
-    private readonly biletAllRequestService: BiletAllRequestService,
+    ticketConfigService: TicketConfigService,
     private readonly biletAllBusTicketPurchaseParserService: BiletAllBusTicketPurchaseParserService,
-  ) {}
+  ) {
+    this.biletAllRequestService = new BiletAllRequestService(
+      ticketConfigService.biletAllBaseUrl,
+      ticketConfigService.biletAllUsername,
+      ticketConfigService.biletAllPassword,
+    );
+  }
 
   async purchaseTicket(
     clientIp: string,
     transaction: Transaction,
-    order: Order,
+    order: BusTicketOrder,
     tickets: BusTicket[],
     bankCard: BankCardDto,
   ): Promise<string>;
@@ -42,30 +50,32 @@ export class BiletAllBusTicketPurchaseService {
   async purchaseTicket(
     clientIp: string,
     transaction: Transaction,
-    order: Order,
+    order: BusTicketOrder,
     tickets: BusTicket[],
     bankCard?: undefined,
-  ): Promise<BusTicketPurchaseDto>;
+  ): Promise<BusTicketPurchaseResultDto>;
 
   async purchaseTicket(
     clientIp: string,
     transaction: Transaction,
-    order: Order,
+    order: BusTicketOrder,
     tickets: BusTicket[],
     bankCard?: BankCardDto,
-  ): Promise<BusTicketPurchaseDto | string> {
+  ): Promise<BusTicketPurchaseResultDto | string> {
     const builder = new xml2js.Builder({
       headless: true,
       renderOpts: { pretty: false },
     });
     const {
+      userPhoneNumber,
+      userEmail,
       companyNumber,
       routeNumber,
       tripTrackingNumber,
       departureTerminal,
       arrivalTerminal,
       travelStartDateTime,
-    } = tickets[0];
+    } = order;
     const date = dayjs(travelStartDateTime).format('YYYY-MM-DD');
 
     const requestDocument = {
@@ -96,7 +106,7 @@ export class BiletAllBusTicketPurchaseService {
           }
           return acc;
         }, {}),
-        TelefonNo: order.userPhoneNumber,
+        TelefonNo: userPhoneNumber,
         ToplamBiletFiyati: transaction.amount, // with 2 precision -> 150.00
         YolcuSayisi: tickets.length,
         BiletSeriNo: 1, // constant
@@ -105,7 +115,7 @@ export class BiletAllBusTicketPurchaseService {
         WebYolcu: {
           WebUyeNo: 0, // constant
           Ip: clientIp,
-          Email: order.userEmail,
+          Email: userEmail,
           // if credit card passed this means we purchase via biletall
           ...(bankCard?.pan
             ? {
@@ -128,7 +138,7 @@ export class BiletAllBusTicketPurchaseService {
     if (bankCard) return xml;
 
     const res =
-      await this.biletAllRequestService.run<BusTicketPurchaseRequestResponse>(
+      await this.biletAllRequestService.run<BusTicketPurchaseResultResponse>(
         xml,
       );
     return this.biletAllBusTicketPurchaseParserService.parsePurchaseRequest(

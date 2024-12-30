@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { VakifBankPaymentStrategy } from './vakif-bank/vakif-bank-payment.strategy';
 import { BiletAllPaymentStrategy } from './biletall/biletall-payment.strategy';
+import { BiletimGoPaymentStrategy } from './biletim-go/biletim-go-payment.strategy';
 
 // interfaces
 import { IPayment } from './interfaces/payment.interface';
@@ -19,9 +20,11 @@ export class PaymentProviderFactory {
   constructor(
     vakifBankPaymentStrategy: VakifBankPaymentStrategy,
     biletAllPaymentStrategy: BiletAllPaymentStrategy,
+    biletimGoPaymentStrategy: BiletimGoPaymentStrategy,
   ) {
     this.strategies.set(PaymentProvider.VAKIF_BANK, vakifBankPaymentStrategy);
     this.strategies.set(PaymentProvider.BILET_ALL, biletAllPaymentStrategy);
+    this.strategies.set(PaymentProvider.BILETIM_GO, biletimGoPaymentStrategy);
   }
 
   getStrategy(provider: PaymentProvider): IPayment {

@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 
 import { UsersModule } from '@app/modules/users/users.module';
 import { PanelUsersModule } from '@app/modules/panel-users/panel-users.module';
@@ -22,26 +21,14 @@ import { FacebookOAuth2Strategy } from './strategies/facebook-auth2.strategy';
 
 import { TokenRefreshMiddleware } from './middlewares/token-refresh.middleware';
 
-import { AuthConfigService } from '@app/configs/auth';
 import { OAuthLoginWithFacebookConfigService } from '@app/configs/oauth-facebook';
 import { OAuthLoginWithGoogleConfigService } from '@app/configs/oauth-google';
 import { VerificationsModule } from '@app/modules/verification/verifications.module';
 
+import { UserInterceptor } from '@app/common/interceptors';
+
 @Module({
-  imports: [
-    PanelUsersModule,
-    UsersModule,
-    VerificationsModule,
-    JwtModule.registerAsync({
-      useFactory: (authAppConfigService: AuthConfigService) => ({
-        secret: authAppConfigService.jwtSecret,
-        signOptions: {
-          expiresIn: `${authAppConfigService.jwtExpiration}s`,
-        },
-      }),
-      inject: [AuthConfigService],
-    }),
-  ],
+  imports: [PanelUsersModule, UsersModule, VerificationsModule],
   controllers: [AuthController],
   providers: [
     AuthService,

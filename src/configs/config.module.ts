@@ -21,10 +21,10 @@ import postgresqlConfiguration, {
   PostgreSQLEnvVarsValidation,
 } from './database/postgresql';
 
-import biletAllApiConfiguration, {
-  BiletAllApiConfigService,
-  BiletAllApiEnvVarsValidation,
-} from './bilet-all-api';
+import ticketConfiguration, {
+  TicketConfigService,
+  TicketEnvVarsValidation,
+} from './ticket';
 
 import hotelApiConfiguration, {
   HotelApiConfigService,
@@ -76,12 +76,10 @@ import chromiumConfiguration, {
   ChromiumEnvVarsValidation,
 } from './chromium';
 
-import maileonConfiguration, { 
-  MaileonConfigService, 
-  MaileonEnvVarsValidation 
-} from './maileon';
-
-
+import mongoConfiguration, {
+  MongoConfigService,
+  MongoEnvVarsValidation,
+} from './database/mongodb';
 
 @Global()
 @Module({
@@ -92,7 +90,7 @@ import maileonConfiguration, {
         appConfiguration,
         authConfiguration,
         postgresqlConfiguration,
-        biletAllApiConfiguration,
+        ticketConfiguration,
         hotelApiConfiguration,
         superAdminConfiguration,
         loginWithGoogleConfiguration,
@@ -103,20 +101,19 @@ import maileonConfiguration, {
         queueConfiguration,
         netGsmConfiguration,
         chromiumConfiguration,
-        maileonConfiguration
+        mongoConfiguration,
       ],
       validate: async (config) =>
         Promise.all([
           ConfigValidator.validate(AppEnvVarsValidation, config),
           ConfigValidator.validate(AuthEnvVarsValidation, config),
           ConfigValidator.validate(PostgreSQLEnvVarsValidation, config),
-          ConfigValidator.validate(BiletAllApiEnvVarsValidation, config),
+          ConfigValidator.validate(TicketEnvVarsValidation, config),
           ConfigValidator.validate(HotelApiEnvVarsValidation, config),
           ConfigValidator.validate(SuperAdminEnvVarsValidation, config),
           ConfigValidator.validate(NotificationsEnvVarsValidation, config),
           ConfigValidator.validate(QueueEnvVarsValidation, config),
           ConfigValidator.validate(NetGsmEnvVarsValidation, config),
-          ConfigValidator.validate(MaileonEnvVarsValidation, config),
           ConfigValidator.validate(
             OAuthLoginWithGoogleEnvVarsValidation,
             config,
@@ -128,6 +125,7 @@ import maileonConfiguration, {
           ConfigValidator.validate(PaymentEnvVarsValidation, config),
           ConfigValidator.validate(TamamliyoApiEnvVarsValidation, config),
           ConfigValidator.validate(ChromiumEnvVarsValidation, config),
+          ConfigValidator.validate(MongoEnvVarsValidation, config),
         ]),
     }),
   ],
@@ -136,7 +134,7 @@ import maileonConfiguration, {
     AppConfigService,
     AuthConfigService,
     PostgreSQLConfigService,
-    BiletAllApiConfigService,
+    TicketConfigService,
     HotelApiConfigService,
     SuperAdminConfigService,
     OAuthLoginWithGoogleConfigService,
@@ -147,14 +145,14 @@ import maileonConfiguration, {
     QueueConfigService,
     NetGsmConfigService,
     ChromiumConfigService,
-    MaileonConfigService,
+    MongoConfigService,
   ],
   exports: [
     ConfigService,
     AppConfigService,
     AuthConfigService,
     PostgreSQLConfigService,
-    BiletAllApiConfigService,
+    TicketConfigService,
     HotelApiConfigService,
     SuperAdminConfigService,
     OAuthLoginWithGoogleConfigService,
@@ -165,7 +163,7 @@ import maileonConfiguration, {
     QueueConfigService,
     NetGsmConfigService,
     ChromiumConfigService,
-    MaileonConfigService
+    MongoConfigService,
   ],
 })
 export class ConfigModule {}

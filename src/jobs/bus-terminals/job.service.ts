@@ -1,8 +1,8 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
-import { BusTerminal } from '@app/modules/tickets/bus/entities/bus-terminal.entity';
-import { BusTerminalRepository } from '@app/modules/tickets/bus/repositories/bus-terminal.repository';
+import { BusTerminal } from '@app/providers/ticket/biletall/bus/entities/bus-terminal.entity';
+import { BusTerminalRepository } from '@app/providers/ticket/biletall/bus/repositories/bus-terminal.repository';
 import { BiletAllBusSearchService } from '@app/providers/ticket/biletall/bus/services/biletall-bus-search.service';
 
 // dto

@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 
-import { PostgreSQLProviderModule } from '@app/providers/database/postgresql/provider.module';
-
-import { Order } from './order.entity';
-import { OrdersRepository } from './orders.repository';
+import { HotelBookingOrderModule } from './hotel-booking/hotel-booking-order.module';
+import { BusTicketOrdersModule } from './bus-ticket/bus-ticket-orders.module';
+import { PlaneTicketOrdersModule } from './plane-ticket/plane-ticket-orders.module';
 
 @Module({
-  imports: [PostgreSQLProviderModule.forFeature([Order])],
-  providers: [OrdersRepository],
+  imports: [
+    PlaneTicketOrdersModule,
+    HotelBookingOrderModule,
+    BusTicketOrdersModule,
+  ],
 })
-export class TransactionsModule {}
+export class OrdersModule {}

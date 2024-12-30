@@ -1,10 +1,11 @@
-import { Entity, Column, OneToOne, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, OneToOne } from 'typeorm';
 
 import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity';
 
 import { Passenger } from '../passengers/passenger.entity';
 import { BankCard } from '../bank-cards/bank-card.entity';
 import { Verification } from '../verification/verification.entity';
+import { Wallet } from '../wallets/wallet.entity';
 
 @Entity('users')
 export class User extends AbstractEntity<User> {
@@ -38,14 +39,17 @@ export class User extends AbstractEntity<User> {
   @Column({ default: false })
   isUsed: boolean;
 
-  @OneToOne(() => Verification, (verification) => verification.user, {
+  @OneToMany(() => Verification, (verification) => verification.user, {
     cascade: ['insert', 'update'],
   })
-  verification: Verification;
+  verification: Verification[];
 
   @OneToMany(() => Passenger, (passenger) => passenger.user)
   passengers: Passenger[];
 
   @OneToMany(() => BankCard, (bankCard) => bankCard.user)
-  bankCards: BankCard;
+  bankCards: BankCard[];
+
+  @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: ['insert'] })
+  wallet: Wallet;
 }

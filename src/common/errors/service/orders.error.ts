@@ -6,8 +6,14 @@ export class OrderNotFoundError extends EntityNotFoundError {
   }
 }
 
-export class OrderAlreadyReturnedError extends ServiceError {
+export class OrderReturnDeadlineExpiredError extends ServiceError {
   constructor() {
-    super('Order has already been refunded!');
+    super('Order return deadline has been expired!');
+  }
+}
+
+export class OrderCannotBeReturnedError extends ServiceError {
+  constructor(orderStatus: string) {
+    super(`Order cannot be cancelled. Current order status: ${orderStatus}`);
   }
 }

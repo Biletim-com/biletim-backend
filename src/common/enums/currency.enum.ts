@@ -1,6 +1,6 @@
 export enum Currency {
-  TL = 'tl',
-  EUR = 'eur',
-  USD = 'usd',
-  GBD = 'gbd',
+  TRY = 'TRY',
+  EUR = 'EUR',
+  USD = 'USD',
+  GBD = 'GBD',
 }

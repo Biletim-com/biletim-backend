@@ -20,7 +20,7 @@ export class CreateUserDto {
     description: 'name of user',
     example: 'John',
   })
-  name!: string;
+  name: string;
 
   @IsString()
   @IsNotEmpty()
@@ -32,7 +32,7 @@ export class CreateUserDto {
     description: 'surname of user',
     example: 'Doe',
   })
-  familyName!: string;
+  familyName: string;
 
   @IsNotEmpty()
   @IsEmail({}, { message: 'Geçerli bir e-posta adresi giriniz' })
@@ -41,7 +41,7 @@ export class CreateUserDto {
     description: 'email of user',
     example: 'john.doe@example.com',
   })
-  email!: string;
+  email: string;
 
   @ApiProperty({
     description: 'password',
@@ -56,7 +56,7 @@ export class CreateUserDto {
     minSymbols: 1,
     minUppercase: 1,
   })
-  password!: string;
+  password: string;
 
   @IsOptional()
   @IsString()
@@ -73,4 +73,6 @@ export class CreateUserDto {
     example: 'Atatürk mah. İzmir',
   })
   address?: string;
+
+  isVerified?: boolean;
 }

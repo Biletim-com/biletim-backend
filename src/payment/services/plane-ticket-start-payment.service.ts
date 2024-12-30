@@ -4,28 +4,29 @@ import { DataSource } from 'typeorm';
 // services
 import { BiletAllPlaneSearchService } from '@app/providers/ticket/biletall/plane/services/biletall-plane-search.service';
 import { PaymentProviderFactory } from '@app/providers/payment/payment-provider.factory';
+import { AbstractStartPaymentService } from '../abstract/start-payment.abstract.service';
+import { EventEmitterService } from '@app/providers/event-emitter/provider.service';
+
+// repositories
+import { UsersRepository } from '@app/modules/users/users.repository';
 
 // entities
-import { Order } from '@app/modules/orders/order.entity';
+import { PlaneTicketOrder } from '@app/modules/orders/plane-ticket/entities/plane-ticket-order.entity';
+import { PlaneTicketSegment } from '@app/modules/orders/plane-ticket/entities/plane-ticket-segment.entity';
+import { PlaneTicketPassenger } from '@app/modules/orders/plane-ticket/entities/plane-ticket-passenger.entity';
+import { PlaneTicket } from '@app/modules/orders/plane-ticket/entities/plane-ticket.entity';
 import { Transaction } from '@app/modules/transactions/transaction.entity';
-import { PlaneTicketPassenger } from '@app/modules/tickets/plane/entities/plane-ticket-passenger.entity';
-import { PlaneTicket } from '@app/modules/tickets/plane/entities/plane-ticket.entity';
-import { PlaneTicketSegment } from '@app/modules/tickets/plane/entities/plane-ticket-segment.entity';
-import { Airport } from '@app/modules/tickets/plane/entities/airport.entity';
-import { Invoice } from '@app/modules/invoices/invoice.entity';
+import { Airport } from '@app/providers/ticket/biletall/plane/entities/airport.entity';
+import { User } from '@app/modules/users/user.entity';
 
 // enums
 import {
-  Currency,
-  InvoiceType,
+  OrderCategory,
   OrderStatus,
   OrderType,
   PassengerType,
-  PaymentMethod,
   PaymentProvider,
   TicketType,
-  TransactionStatus,
-  TransactionType,
 } from '@app/common/enums';
 
 // dtos
@@ -33,7 +34,6 @@ import {
   PlanePassengerInfoDto,
   PlaneTicketPurchaseDto,
 } from '../dto/plane-ticket-purchase.dto';
-import { InvoiceDto } from '@app/common/dtos';
 
 // utils
 import { normalizeDecimal } from '@app/common/utils';
@@ -42,14 +42,18 @@ import { normalizeDecimal } from '@app/common/utils';
 import { ServiceError } from '@app/common/errors';
 
 @Injectable()
-export class PlaneTicketStartPaymentService {
+export class PlaneTicketStartPaymentService extends AbstractStartPaymentService {
   private readonly logger = new Logger(PlaneTicketStartPaymentService.name);
 
   constructor(
+    usersRepository: UsersRepository,
+    eventEmitter: EventEmitterService,
+    paymentProviderFactory: PaymentProviderFactory,
     private readonly dataSource: DataSource,
-    private readonly paymentProviderFactory: PaymentProviderFactory,
     private readonly biletAllPlaneSearchService: BiletAllPlaneSearchService,
-  ) {}
+  ) {
+    super(usersRepository, eventEmitter, paymentProviderFactory);
+  }
 
   private composePlanePassengerTypeCount(
     passengers: {
@@ -72,6 +76,7 @@ export class PlaneTicketStartPaymentService {
       [PassengerType.ADULT]: 'adultCount',
       [PassengerType.CHILD]: 'childCount',
       [PassengerType.BABY]: 'babyCount',
+      [PassengerType.STUDENT]: 'studentCount',
       [PassengerType.ELDERLY]: 'elderlyCount',
     };
 
@@ -83,27 +88,6 @@ export class PlaneTicketStartPaymentService {
     });
 
     return data;
-  }
-
-  private composeOrderInvoice(invoiceDto: InvoiceDto): Invoice {
-    const invoiceType: InvoiceType = invoiceDto.individual
-      ? InvoiceType.INDIVIDUAL
-      : InvoiceType.CORPORATE;
-    const invoice = {
-      ...(invoiceDto.individual || {}),
-      ...(invoiceDto.company || {}),
-    };
-
-    return new Invoice({
-      type: invoiceType,
-      pnr: null,
-      recipientName: `${invoice.firstName} ${invoice.lastName}` || invoice.name,
-      identifier: invoice.tcNumber || invoice.taxNumber,
-      address: invoice.address,
-      taxOffice: invoice.taxOffice,
-      phoneNumber: invoice.phoneNumber,
-      email: invoice.email,
-    });
   }
 
   private validateTicketsPrice(
@@ -124,9 +108,15 @@ export class PlaneTicketStartPaymentService {
   }
 
   async startPlaneTicketPurchase(
-    clientIp: string,
     planeTicketPurchaseDto: PlaneTicketPurchaseDto,
-  ): Promise<{ transactionId: string; htmlContent: string }> {
+    clientIp: string,
+    user?: User,
+  ): Promise<{ transactionId: string; htmlContent: string | null }> {
+    const paymentMethod = await this.validatePaymentMethod(
+      planeTicketPurchaseDto.paymentMethod,
+      user,
+    );
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -146,24 +136,19 @@ export class PlaneTicketStartPaymentService {
       priceList.totalTicketPrice,
     );
 
+    const paymentProviderType = planeTicketPurchaseDto.paymentMethod.useWallet
+      ? PaymentProvider.BILETIM_GO
+      : PaymentProvider.VAKIF_BANK;
+
     try {
       /**
        * Init Transactions
        */
-      const transaction = new Transaction({
-        amount: priceList.totalTicketPrice,
-        currency: Currency.TL,
-        status: TransactionStatus.PENDING,
-        transactionType: TransactionType.PURCHASE,
-        paymentMethod: PaymentMethod.BANK_CARD,
-        paymentProvider: PaymentProvider.VAKIF_BANK,
-        // unregistered card
-        cardholderName: planeTicketPurchaseDto.bankCard.holderName,
-        maskedPan: planeTicketPurchaseDto.bankCard.maskedPan,
-
-        bankCard: null,
-        wallet: null,
-      });
+      const transaction = this.composeTransaction(
+        priceList.totalTicketPrice,
+        paymentProviderType,
+        paymentMethod,
+      );
       await queryRunner.manager.insert(Transaction, transaction);
 
       /**
@@ -174,16 +159,17 @@ export class PlaneTicketStartPaymentService {
       /**
        * Create Order
        */
-      const order = new Order({
+      const order = new PlaneTicketOrder({
         userEmail: planeTicketPurchaseDto.email,
         userPhoneNumber: planeTicketPurchaseDto.phoneNumber,
-        type: OrderType.PURCHASE,
+        type: OrderType.PLANE_TICKET,
+        category: OrderCategory.PURCHASE,
         status: OrderStatus.PENDING,
         invoice,
         transaction,
-        user: null,
+        user,
       });
-      await queryRunner.manager.save(Order, order);
+      await queryRunner.manager.save(PlaneTicketOrder, order);
 
       /**
        * Create Segments
@@ -192,6 +178,7 @@ export class PlaneTicketStartPaymentService {
         (segment, index) =>
           new PlaneTicketSegment({
             ...segment,
+            order,
             departureAirport: new Airport({
               airportCode: segment.departureAirport,
             }),
@@ -202,7 +189,7 @@ export class PlaneTicketStartPaymentService {
             segmentOrder: index + 1,
           }),
       );
-      await queryRunner.manager.insert(PlaneTicketSegment, segments);
+      await queryRunner.manager.save(PlaneTicketSegment, segments);
 
       /**
        * Create Plane tickets, and assign the order and the segments
@@ -229,25 +216,24 @@ export class PlaneTicketStartPaymentService {
             serviceFee: passengerDto.serviceFee,
             biletimFee: passengerDto.serviceFee, // TODO: temporary
             passenger,
-            segments,
             order,
           });
         },
       );
-      // SAVE is intentianal here to assign created segments
+      // SAVE is intentional here to assign created segments
       await queryRunner.manager.save(PlaneTicket, planeTickets);
-
-      const paymentProvider = this.paymentProviderFactory.getStrategy(
-        PaymentProvider.VAKIF_BANK,
-      );
-
-      const htmlContent = await paymentProvider.startPayment(
-        clientIp,
-        TicketType.PLANE,
-        planeTicketPurchaseDto.bankCard,
-        transaction,
-      );
       await queryRunner.commitTransaction();
+
+      const htmlContent = await this.finalizePaymentInit(
+        transaction,
+        paymentProviderType,
+        paymentMethod,
+        TicketType.PLANE,
+        'payment.plane.finish',
+        clientIp,
+        user,
+      );
+
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {
       await queryRunner.rollbackTransaction();

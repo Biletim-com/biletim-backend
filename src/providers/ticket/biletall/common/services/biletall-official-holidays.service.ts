@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
 
 // services
+import { TicketConfigService } from '@app/configs/ticket';
 import { BiletAllRequestService } from '../../services/biletall-request.service';
 import { BiletAllOfficialHolidaysParserService } from '../parsers/biletall-official-holidays.parser.service';
 
@@ -16,10 +17,17 @@ import { OfficialHolidaysResponse } from '../types/get-official-holidays.type';
 
 @Injectable()
 export class BiletAllOfficialHolidaysService {
+  private readonly biletAllRequestService: BiletAllRequestService;
   constructor(
-    private readonly biletallRequestService: BiletAllRequestService,
+    ticketConfigService: TicketConfigService,
     private readonly biletAllOfficialHolidaysParserService: BiletAllOfficialHolidaysParserService,
-  ) {}
+  ) {
+    this.biletAllRequestService = new BiletAllRequestService(
+      ticketConfigService.biletAllBaseUrl,
+      ticketConfigService.biletAllUsername,
+      ticketConfigService.biletAllPassword,
+    );
+  }
 
   async getOfficialHolidays(
     requestDto: OfficialHolidaysRequestDto,
@@ -31,7 +39,7 @@ export class BiletAllOfficialHolidaysService {
       },
     };
     const xml = builder.buildObject(requestDocument);
-    const res = await this.biletallRequestService.run<OfficialHolidaysResponse>(
+    const res = await this.biletAllRequestService.run<OfficialHolidaysResponse>(
       xml,
     );
     return this.biletAllOfficialHolidaysParserService.parseOfficialHolidays(

@@ -12,7 +12,7 @@ import { CreateBankCardDto } from '@app/modules/bank-cards/dto/create-bank-card-
 
 // enums
 import { PaymentProvider } from '@app/common/enums';
-import { DateISODate } from '@app/common/types';
+import { DateISODate, UUID } from '@app/common/types';
 
 // types
 import {
@@ -25,6 +25,9 @@ import { ResponseInfo } from '../types/response-info.type';
 
 // constants
 import { vPOSResponse } from '../constants/vpos-reponse.constant';
+
+// helpers
+import { VakifBankCustomerHelperService } from '../helpers/vakif-bank-customer.helper.service';
 
 @Injectable()
 export class VakifBankCardService {
@@ -77,30 +80,36 @@ export class VakifBankCardService {
   } {
     return {
       MerchantCriteria: {
-        HostMerchantId: this.paymentConfigService.merchantId,
-        MerchantPassword: this.paymentConfigService.merchantPassword,
+        HostMerchantId: this.paymentConfigService.vakifBankMerchantId,
+        MerchantPassword: this.paymentConfigService.vakifBankMerchantPassword,
       },
     };
   }
 
   async createCustomerCard(
-    userId: string,
+    userId: UUID,
     bankCard: CreateBankCardDto,
-  ): Promise<CreateCustomerPanResponse> {
+  ): Promise<string> {
     const params = {
       CreateCustomerPanRequest: {
         ...this.authCredentials,
-        CustomerNumber: userId,
+        CustomerNumber:
+          VakifBankCustomerHelperService.generateVPosCustomerId(userId),
         Pan: bankCard.pan,
         ExpireDate: dayjs(bankCard.expiryDate).format('YYYYMM'),
         CardHolderName: bankCard.holderName,
       },
     };
-    return this.sendRequest('/UIService/CreateCustomerPan.aspx', params);
+    const createCustomerCardResponse =
+      await this.sendRequest<CreateCustomerPanResponse>(
+        '/UIService/CreateCustomerPan.aspx',
+        params,
+      );
+    return createCustomerCardResponse.CreateCustomerPanResponse.PanCode;
   }
 
   updateCustomerCard(
-    userId: string,
+    userId: UUID,
     {
       panToken,
       pan,
@@ -116,7 +125,8 @@ export class VakifBankCardService {
     const params = {
       EditCustomerPanRequest: {
         ...this.authCredentials,
-        CustomerNumber: userId,
+        CustomerNumber:
+          VakifBankCustomerHelperService.generateVPosCustomerId(userId),
         PanCode: panToken,
         Pan: pan,
         ExpireDate: dayjs(expiryDate).format('YYYYMM'),
@@ -126,17 +136,18 @@ export class VakifBankCardService {
     return this.sendRequest('/UIService/EditCustomerPan.aspx', params);
   }
 
-  deleteCustomerCard(
-    userId: string,
-    panToken: string,
-  ): Promise<DeleteCustomerPanResponse> {
+  async deleteCustomerCard(userId: UUID, panToken: string): Promise<void> {
     const params = {
       DeleteCustomerPanRequest: {
         ...this.authCredentials,
-        CustomerNumber: userId,
+        CustomerNumber:
+          VakifBankCustomerHelperService.generateVPosCustomerId(userId),
         PanCode: panToken,
       },
     };
-    return this.sendRequest('/UIService/DeleteCustomerPan.aspx', params);
+    await this.sendRequest<DeleteCustomerPanResponse>(
+      '/UIService/DeleteCustomerPan.aspx',
+      params,
+    );
   }
 }

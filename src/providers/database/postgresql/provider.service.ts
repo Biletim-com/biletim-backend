@@ -23,7 +23,10 @@ export class PostgreSQLProviderService implements TypeOrmOptionsFactory {
       logging: this.postgreSQLConfigService.logging,
       migrations: [`${__dirname}/./migrations/*{.ts,.js}`],
       migrationsRun: true,
-      entities: [`${__dirname}/../../../modules/**/*.entity{.ts,.js}`],
+      entities: [
+        `${__dirname}/../../../modules/**/*.entity{.ts,.js}`,
+        `${__dirname}/../../../providers/**/*.entity{.ts,.js}`,
+      ],
       namingStrategy: new SnakeNamingStrategy(),
     };
   }

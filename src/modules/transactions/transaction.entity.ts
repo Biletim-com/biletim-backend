@@ -4,18 +4,20 @@ import { AbstractEntity } from '@app/common/database/postgresql/abstract.entity'
 
 import { Wallet } from '../wallets/wallet.entity';
 import { BankCard } from '../bank-cards/bank-card.entity';
+import { HotelBookingOrder } from '../orders/hotel-booking/entities/hotel-booking-order.entity';
+import { BusTicketOrder } from '../orders/bus-ticket/entities/bus-ticket-order.entity';
+import { PlaneTicketOrder } from '../orders/plane-ticket/entities/plane-ticket-order.entity';
 
 // utils
 import { normalizeDecimal } from '@app/common/utils';
 
 import {
   Currency,
-  PaymentMethod,
+  PaymentRefundSource,
   PaymentProvider,
   TransactionStatus,
   TransactionType,
 } from '@app/common/enums';
-import { Order } from '../orders/order.entity';
 
 @Entity('transactions')
 export class Transaction extends AbstractEntity<Transaction> {
@@ -38,13 +40,16 @@ export class Transaction extends AbstractEntity<Transaction> {
   transactionType: TransactionType;
 
   @Column('varchar')
-  paymentMethod: PaymentMethod;
-
-  @Column('varchar', { nullable: true })
-  paymentProvider?: Nullable<PaymentProvider>;
+  paymentProvider: PaymentProvider;
 
   @Column('varchar', { nullable: true })
   errorMessage?: Nullable<string>;
+
+  @Column('varchar', { nullable: true })
+  refundAmount?: Nullable<string>;
+
+  @Column('varchar', { nullable: true })
+  refundSource?: Nullable<PaymentRefundSource>;
 
   // anonymous credit cards
   @Column('varchar', { nullable: true })
@@ -53,9 +58,6 @@ export class Transaction extends AbstractEntity<Transaction> {
   // anonymous credit cards
   @Column('varchar', { nullable: true })
   maskedPan?: Nullable<string>;
-
-  @OneToOne(() => Order, (order) => order.transaction)
-  order: Order;
 
   // saved card
   @JoinColumn()
@@ -66,4 +68,23 @@ export class Transaction extends AbstractEntity<Transaction> {
   @JoinColumn()
   @ManyToOne(() => Wallet, { nullable: true })
   wallet?: Nullable<Wallet>;
+
+  // ORDERS
+  @OneToOne(
+    () => BusTicketOrder,
+    (busTicketOrder) => busTicketOrder.transaction,
+  )
+  busTicketOrder: BusTicketOrder;
+
+  @OneToOne(
+    () => HotelBookingOrder,
+    (hotelBookingOrder) => hotelBookingOrder.transaction,
+  )
+  hotelBookingOrder: HotelBookingOrder;
+
+  @OneToOne(
+    () => PlaneTicketOrder,
+    (planeTicketOrder) => planeTicketOrder.transaction,
+  )
+  planeTicketOrder: PlaneTicketOrder;
 }

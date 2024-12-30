@@ -5,7 +5,7 @@ import axios, { AxiosInstance } from 'axios';
 
 type Methods = 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH';
 
-interface RequestConfigs {
+export interface RequestConfigs {
   method: Methods;
   path?: string;
   headers?: Record<string, string>;
@@ -43,6 +43,7 @@ export class RestClientService {
       return response.data;
     } catch (error) {
       if (isAxiosError(error)) {
+        console.log({ error: error.response.data });
         const errorMessage = this.getErrorMessage(
           error,
           config.method,

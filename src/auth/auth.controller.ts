@@ -33,27 +33,18 @@ import { PanelUserWithoutPasswordDto } from '@app/modules/panel-users/dto/panel-
 import { PanelUserLocalAuthGuard } from './guards/panel-user-local-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from '@app/common/guards/jwt-auth.guard';
-import { MaileonProviderService } from '@app/providers/maileon/provider.service';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly maileonService: MaileonProviderService
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @ApiOperation({ summary: 'Panel User Login' })
-  @Post('/panel-login')
+  @ApiOperation({ summary: 'Find Me App User' })
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
-  @UseGuards(PanelUserLocalAuthGuard)
-  async panelLogin(
-    @Res({ passthrough: true }) response: Response,
-    @CurrentUser() user: PanelUser,
-    @Body() _: LoginUserRequest,
-  ): Promise<PanelUserWithoutPasswordDto> {
-    this.authService.login(user, response);
-    return new PanelUserWithoutPasswordDto(user);
+  @Get('/me')
+  getMe(@CurrentUser() user: User): UserWithoutPasswordDto {
+    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({ summary: 'App Login' })
@@ -69,6 +60,19 @@ export class AuthController {
     return new UserWithoutPasswordDto(user);
   }
 
+  @ApiOperation({ summary: 'Panel User Login' })
+  @Post('/panel-login')
+  @HttpCode(200)
+  @UseGuards(PanelUserLocalAuthGuard)
+  async panelLogin(
+    @Res({ passthrough: true }) response: Response,
+    @CurrentUser() user: PanelUser,
+    @Body() _: LoginUserRequest,
+  ): Promise<PanelUserWithoutPasswordDto> {
+    this.authService.login(user, response);
+    return new PanelUserWithoutPasswordDto(user);
+  }
+
   @ApiOperation({ summary: 'App Logout' })
   @Post('/logout')
   @HttpCode(200)
@@ -77,14 +81,6 @@ export class AuthController {
   ): Promise<{ result: true }> {
     this.authService.logout(response);
     return { result: true };
-  }
-
-  @ApiOperation({ summary: 'Find Me App User' })
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(200)
-  @Get('/me')
-  getMe(@CurrentUser() user: User): UserWithoutPasswordDto {
-    return new UserWithoutPasswordDto(user);
   }
 
   @ApiOperation({
@@ -119,22 +115,9 @@ export class AuthController {
   @Post('/send-account-verification-email')
   async sendAccountVerificationCode(
     @Body() verificationDto: VerificationCodeDto,
-  ): Promise<any> {
-    const res = await this.maileonService.createContact(
-      {
-        email: "selver.said01@gmail.com",
-        attributes:{
-          firstname: "Selver",
-          lastname: "Said"
-        }
-      }
-    )
-    // const res = await this.maileonService.sendEmail()
-    console.log("this.maileonService.getContacts() ", res)
-    return res
-
-    // await this.authService.sendAccountVerificationCode(verificationDto);
-    // return { message: 'Verification code sent successfully' };
+  ): Promise<{ message: string }> {
+    await this.authService.sendAccountVerificationCode(verificationDto);
+    return { message: 'Verification code sent successfully' };
   }
 
   @ApiOperation({ summary: 'Verify User' })
@@ -144,7 +127,7 @@ export class AuthController {
   async verifyAccount(
     @Res({ passthrough: true }) response: Response,
     @Body() verificationDto: VerificationDto,
-  ): Promise<any> {
+  ): Promise<{ message: string }> {
     await this.authService.verifyAccount(verificationDto, response);
     return { message: 'Verification completed successfully' };
   }
