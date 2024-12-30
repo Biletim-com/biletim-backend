@@ -9,7 +9,7 @@ export interface RequestConfigs {
   method: Methods;
   path?: string;
   headers?: Record<string, string>;
-  data?: Record<string, any> | any;
+  data?: Record<string, any>;
   params?: Record<string, string>;
 }
 
@@ -49,7 +49,6 @@ export class RestClientService {
           config.method,
           config.path,
         );
-        console.log(error)
         const statusCode = Number(error.status || error.response.status);
 
         throw new HttpException(errorMessage, statusCode);

@@ -8,14 +8,14 @@ import ConfigurationNamespaces from '../../config.namespace';
 export default registerAs(
   ConfigurationNamespaces.DATABASE.MONGO,
   (): TMongoConfiguration => ({
-    host: process.env.MONGO_HOST as string,
-    port: process.env.MONGO_PORT as string,
+    host: process.env.MONGO_HOST,
+    port: process.env.MONGO_PORT,
     name:
       process.env.NODE_ENV === AppEnvironment.TEST
         ? 'test'
-        : process.env.MONGO_DB as string,
-    user: process.env.MONGO_USER as string,
-    password: process.env.MONGO_PASSWORD as string,
+        : process.env.MONGO_DB,
+    user: process.env.MONGO_USER,
+    password: process.env.MONGO_PASSWORD,
     logging: process.env.DB_LOGGING === 'true',
   }),
 );
