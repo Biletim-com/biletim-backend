@@ -115,6 +115,7 @@ biletim_api:
     EMAIL_PORT: 465
     EMAIL_HOST: smtp.gmail.com
     EMAIL_USE_SSL: 'true'
+    EMAIL_FROM: 'info@westerops.com'
 
   volumeMounts:
     biletim-api: '/app/images'
