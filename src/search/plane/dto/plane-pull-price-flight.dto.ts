@@ -116,91 +116,108 @@ export class PullPriceFlightResponseDto {
   priceList: PriceListDto;
 
   constructor(
-    priceListResponse: PriceListDto,
-    public paymentRules: PlanePaymentRulesDto,
-    public baggageInfo?: PlaneBaggageInfoDto[],
-    public additionalServiceRules?: PlaneAdditionalServiceRuleDto[],
+    priceList: PriceListDto,
+    public readonly paymentRules: PlanePaymentRulesDto,
+    public readonly baggageInfo?: PlaneBaggageInfoDto[],
+    public readonly additionalServiceRules?: PlaneAdditionalServiceRuleDto[],
   ) {
+    const priceListResponse = { ...priceList };
     const newTotalFee = PlaneTicketFeeManager.getTotalPriceWithFee(
       priceListResponse.totalNetTicketPrice,
       priceListResponse.totalTax,
-      priceListResponse.totalServiceFee,
+      Number(priceListResponse.totalServiceFee) +
+        Number(priceListResponse.totalMinServiceFee),
     );
     const newTotalServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.totalNetTicketPrice,
       priceListResponse.totalTax,
-      priceListResponse.totalServiceFee,
+      Number(priceListResponse.totalServiceFee) +
+        Number(priceListResponse.totalMinServiceFee),
     );
     const newAdultServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.adultNetPrice,
       priceListResponse.adultTax,
-      priceListResponse.adultServiceFee,
+      Number(priceListResponse.adultServiceFee) +
+        Number(priceListResponse.adultMinServiceFee),
     );
     const newChildServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.childNetPrice,
       priceListResponse.childTax,
-      priceListResponse.childServiceFee,
+      Number(priceListResponse.childServiceFee) +
+        Number(priceListResponse.childMinServiceFee),
     );
     const newBabyServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.babyNetPrice,
       priceListResponse.babyTax,
-      priceListResponse.babyServiceFee,
+      Number(priceListResponse.babyServiceFee) +
+        Number(priceListResponse.babyMinServiceFee),
     );
     const newElderlyMinServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.elderlyNetPrice,
       priceListResponse.elderlyTax,
-      priceListResponse.elderlyServiceFee,
+      Number(priceListResponse.elderlyServiceFee) +
+        Number(priceListResponse.elderlyMinServiceFee),
     );
     const newStudentServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.studentNetPrice,
       priceListResponse.studentTax,
-      priceListResponse.studentServiceFee,
+      Number(priceListResponse.studentServiceFee) +
+        Number(priceListResponse.studentMinServiceFee),
     );
     const newDisabledServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.disabledNetPrice,
       priceListResponse.disabledTax,
-      priceListResponse.disabledServiceFee,
+      Number(priceListResponse.disabledServiceFee) +
+        Number(priceListResponse.disabledMinServiceFee),
     );
     const newMilitaryServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.militaryNetPrice,
       priceListResponse.militaryTax,
-      priceListResponse.militaryServiceFee,
+      Number(priceListResponse.militaryServiceFee) +
+        Number(priceListResponse.militaryMinServiceFee),
     );
     const newYouthServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.youthNetPrice,
       priceListResponse.youthTax,
-      priceListResponse.youthServiceFee,
+      Number(priceListResponse.youthServiceFee) +
+        Number(priceListResponse.youthMinServiceFee),
     );
     const newTeacherServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.teacherNetPrice,
       priceListResponse.teacherTax,
-      priceListResponse.teacherServiceFee,
+      Number(priceListResponse.teacherServiceFee) +
+        Number(priceListResponse.teacherMinServiceFee),
     );
     const newPressServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.pressNetPrice,
       priceListResponse.pressTax,
-      priceListResponse.pressServiceFee,
+      Number(priceListResponse.pressServiceFee) +
+        Number(priceListResponse.pressMinServiceFee),
     );
     const newVeteranServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.veteranNetPrice,
       priceListResponse.veteranTax,
-      priceListResponse.veteranServiceFee,
+      Number(priceListResponse.veteranServiceFee) +
+        Number(priceListResponse.veteranMinServiceFee),
     );
     const newVehicleDriverServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.vehicleDriverNetPrice,
       priceListResponse.vehicleDriverTax,
-      priceListResponse.vehicleDriverServiceFee,
+      Number(priceListResponse.vehicleDriverServiceFee) +
+        Number(priceListResponse.vehicleDriverMinServiceFee),
     );
     const newAdditionalChildServiceFee =
       PlaneTicketFeeManager.getTotalServiceFee(
         priceListResponse.additionalChildNetPrice,
         priceListResponse.additionalChildTax,
-        priceListResponse.additionalChildServiceFee,
+        Number(priceListResponse.additionalChildServiceFee) +
+          Number(priceListResponse.additionalChildMinServiceFee),
       );
     const newDiscountedServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
       priceListResponse.discountedNetPrice,
       priceListResponse.discountedTax,
-      priceListResponse.discountedServiceFee,
+      Number(priceListResponse.discountedServiceFee) +
+        Number(priceListResponse.discountedMinServiceFee),
     );
 
     priceListResponse.totalTicketPrice = newTotalFee.toString();

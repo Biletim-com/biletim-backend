@@ -36,5 +36,5 @@ const defaultAgeRestrictions: Record<
   [PassengerType.STUDENT]: { minAge: 12, maxAge: 24 },
   [PassengerType.ADULT]: { minAge: 12, maxAge: 65 },
   [PassengerType.ELDERLY]: { minAge: 65, maxAge: 120 },
-  [PassengerType.SOLDIER]: { minAge: 18, maxAge: 32 },
+  [PassengerType.MILITARY]: { minAge: 18, maxAge: 32 },
 };

@@ -17,11 +17,7 @@ import {
   OrderReturnDeadlineExpiredError,
   ServiceError,
 } from '@app/common/errors';
-import {
-  normalizeDecimal,
-  PlaneTicketFeeManager,
-  turkishToEnglish,
-} from '@app/common/utils';
+import { normalizeDecimal, turkishToEnglish } from '@app/common/utils';
 import { OrderStatus, OrderType } from '@app/common/enums';
 
 // dto
@@ -97,7 +93,7 @@ export class OrderReturnValidationService {
 
     const penalty: OrderReturnTotalPenaltyDto = {
       totalTicketPrice: existingOrder.transaction.amount,
-      providerPenaltyAmount: '0',
+      servicePenaltyAmount: '0',
       companyPenaltyAmount: '0',
       totalPenaltyAmount: '0',
       amountToRefund: existingOrder.transaction.amount,
@@ -110,15 +106,17 @@ export class OrderReturnValidationService {
           passengerLastName,
         );
       passengers.forEach((passenger) => {
-        const { addedFee } = PlaneTicketFeeManager.calculateBreakdown(
-          passenger.ticketPrice,
-          0,
-          0,
+        const biletimFee = Number(
+          (
+            existingOrder.tickets.find(
+              (ticket) => ticket.ticketNumber === passenger.ticketNumber,
+            ) as PlaneTicket
+          ).biletimFee,
         );
-        penalty.providerPenaltyAmount = normalizeDecimal(
-          Number(normalizeDecimal(penalty.providerPenaltyAmount)) +
+        penalty.servicePenaltyAmount = normalizeDecimal(
+          Number(normalizeDecimal(penalty.servicePenaltyAmount)) +
             Number(normalizeDecimal(passenger.providerPenaltyAmount)) +
-            addedFee,
+            biletimFee,
         );
         penalty.companyPenaltyAmount = normalizeDecimal(
           Number(normalizeDecimal(penalty.companyPenaltyAmount)) +
@@ -127,7 +125,7 @@ export class OrderReturnValidationService {
         penalty.totalPenaltyAmount = normalizeDecimal(
           Number(normalizeDecimal(penalty.totalPenaltyAmount)) +
             Number(normalizeDecimal(passenger.totalPenaltyAmount)) +
-            addedFee,
+            biletimFee,
         );
       });
       penalty.amountToRefund = normalizeDecimal(
@@ -172,8 +170,6 @@ export class OrderReturnValidationService {
     // ) {
     //   throw new OrderCannotBeReturnedError(existingOrder.status);
     // }
-
-    console.log(Date.now(), new Date(existingOrder.checkoutDateTime).getTime());
 
     if (Date.now() > new Date(existingOrder.checkoutDateTime).getTime()) {
       throw new OrderReturnDeadlineExpiredError();

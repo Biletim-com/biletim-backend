@@ -10,7 +10,7 @@ import { BiletAllRequestService } from '../../services/biletall-request.service'
 import { PullPriceFlightRequestDto } from '@app/search/plane/dto/plane-pull-price-flight.dto';
 import { PlanePassengerAgeRulesResponse } from '../types/biletall-plane-company-passanger-age-rules.type';
 import { PlaneFlightScheduleRequestDto } from '@app/search/plane/dto/plane-flight-schedule.dto';
-import { PullAbroadFlightPricePackagesRequestDto } from '@app/search/plane/dto/plane-pull-abroad-flight-packages.dto';
+import { PullAbroadFlightPackagesRequestDto } from '@app/search/plane/dto/plane-pull-abroad-flight-packages.dto';
 
 // response dto
 import { PlaneAirportDto } from '../dto/plane-airport.dto';
@@ -167,7 +167,7 @@ export class BiletAllPlaneSearchService {
   }
 
   async getAbroadFlightPackages(
-    requestDto: PullAbroadFlightPricePackagesRequestDto,
+    requestDto: PullAbroadFlightPackagesRequestDto,
   ): Promise<PullAbroadFlightPricePackagesResponseDto> {
     const builder = new xml2js.Builder({ headless: true });
     const requestDocument = {

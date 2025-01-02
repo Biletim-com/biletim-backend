@@ -4,7 +4,7 @@ export enum PassengerType {
   BABY = 'baby',
   ELDERLY = 'elderly',
   STUDENT = 'student',
-  SOLDIER = 'soldier',
+  MILITARY = 'military',
 }
 
 export enum Gender {

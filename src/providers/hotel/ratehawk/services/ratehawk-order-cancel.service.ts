@@ -57,7 +57,7 @@ export class RatehawkOrderCancelService {
     }
     return {
       totalTicketPrice: totalTicketPriceFloat.toFixed(2),
-      providerPenaltyAmount: '0',
+      servicePenaltyAmount: '0',
       companyPenaltyAmount: '0',
       totalPenaltyAmount: totalPenaltyAmount.toFixed(2),
       amountToRefund: amountToRefund.toFixed(2),

@@ -32,7 +32,7 @@ export const airlineCompaniesAgeRules: AirlineCompanyAgeRules = {
       minAge: 12,
       maxAge: 24,
     },
-    [PassengerType.SOLDIER]: {
+    [PassengerType.MILITARY]: {
       minAge: 18,
       maxAge: 32,
     },
@@ -55,7 +55,7 @@ export const airlineCompaniesAgeRules: AirlineCompanyAgeRules = {
       minAge: 12,
       maxAge: 24,
     },
-    [PassengerType.SOLDIER]: {
+    [PassengerType.MILITARY]: {
       minAge: 18,
       maxAge: 32,
     },
@@ -78,7 +78,7 @@ export const airlineCompaniesAgeRules: AirlineCompanyAgeRules = {
       minAge: 12,
       maxAge: 28,
     },
-    [PassengerType.SOLDIER]: {
+    [PassengerType.MILITARY]: {
       minAge: 18,
       maxAge: 32,
     },
@@ -101,7 +101,7 @@ export const airlineCompaniesAgeRules: AirlineCompanyAgeRules = {
       minAge: 12,
       maxAge: 24,
     },
-    [PassengerType.SOLDIER]: {
+    [PassengerType.MILITARY]: {
       minAge: 18,
       maxAge: 32,
     },
@@ -124,7 +124,7 @@ export const airlineCompaniesAgeRules: AirlineCompanyAgeRules = {
       minAge: 12,
       maxAge: 24,
     },
-    [PassengerType.SOLDIER]: {
+    [PassengerType.MILITARY]: {
       minAge: 18,
       maxAge: 32,
     },
@@ -147,7 +147,7 @@ export const airlineCompaniesAgeRules: AirlineCompanyAgeRules = {
       minAge: 12,
       maxAge: 24,
     },
-    [PassengerType.SOLDIER]: {
+    [PassengerType.MILITARY]: {
       minAge: 18,
       maxAge: 32,
     },
@@ -185,7 +185,7 @@ export const airlineCompaniesAgeRules: AirlineCompanyAgeRules = {
       minAge: 12,
       maxAge: 24,
     },
-    [PassengerType.SOLDIER]: {
+    [PassengerType.MILITARY]: {
       minAge: 18,
       maxAge: 32,
     },
@@ -298,7 +298,7 @@ export const airlineCompaniesAgeRules: AirlineCompanyAgeRules = {
       minAge: 12,
       maxAge: 24,
     },
-    [PassengerType.SOLDIER]: {
+    [PassengerType.MILITARY]: {
       minAge: 18,
       maxAge: 32,
     },

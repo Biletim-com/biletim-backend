@@ -11,8 +11,10 @@ import {
 // dtos
 import { FlightSegmentWithoutFareDetailsDto } from '@app/common/dtos';
 import { PullPriceFlightRequestDto } from './plane-pull-price-flight.dto';
+import { BrandFareInfoDto } from '@app/providers/ticket/biletall/plane/dto/plane-pull-abroad-flight-price-packages.dto';
+import { PlaneTicketFeeManager } from '@app/common/utils';
 
-class PullAbroadFlightPricePackagesSegmentDto extends FlightSegmentWithoutFareDetailsDto {
+class PullAbroadFlightPackagesSegmentDto extends FlightSegmentWithoutFareDetailsDto {
   @ApiProperty({
     description: 'Flight segment code (SeferKod).',
     example:
@@ -24,7 +26,7 @@ class PullAbroadFlightPricePackagesSegmentDto extends FlightSegmentWithoutFareDe
   flightCode: string;
 }
 
-export class PullAbroadFlightPricePackagesRequestDto extends PullPriceFlightRequestDto {
+export class PullAbroadFlightPackagesRequestDto extends PullPriceFlightRequestDto {
   @ApiProperty({
     description: 'Unique operation ID for the request.',
     example: '62062f6a-3140-4843-bbdd-8161579842f6',
@@ -35,10 +37,50 @@ export class PullAbroadFlightPricePackagesRequestDto extends PullPriceFlightRequ
 
   @ApiProperty({
     description: 'Flight segment information for the flight.',
-    type: [PullAbroadFlightPricePackagesSegmentDto],
+    type: [PullAbroadFlightPackagesSegmentDto],
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => PullAbroadFlightPricePackagesSegmentDto)
-  segments: PullAbroadFlightPricePackagesSegmentDto[];
+  @Type(() => PullAbroadFlightPackagesSegmentDto)
+  segments: PullAbroadFlightPackagesSegmentDto[];
+}
+
+export class PullAbroadFlightPackagesResponseDto {
+  public readonly brandFareInfos: BrandFareInfoDto[];
+  constructor(
+    public readonly transactionId: string,
+    public readonly currencyTypeCode: string,
+    public readonly isSuccess: boolean,
+    public readonly message: string,
+    brandFareInfos: BrandFareInfoDto[],
+  ) {
+    this.brandFareInfos = this.addCommissionRate(brandFareInfos);
+  }
+
+  private addCommissionRate(brandFareInfos: BrandFareInfoDto[]) {
+    const newBrandFareInfos = [...brandFareInfos];
+    newBrandFareInfos.forEach((brandFareInfo) => {
+      const {
+        totalBasePrice,
+        totalTaxPrice,
+        totalServicePrice,
+        totalMinimumServicePrice,
+      } = brandFareInfo.brandPriceInfo;
+
+      brandFareInfo.brandPriceInfo = {
+        ...brandFareInfo.brandPriceInfo,
+        totalPrice: PlaneTicketFeeManager.getTotalPriceWithFee(
+          totalBasePrice,
+          totalTaxPrice,
+          Number(totalServicePrice) + Number(totalMinimumServicePrice),
+        ).toString(),
+        totalServicePrice: PlaneTicketFeeManager.getTotalServiceFee(
+          totalBasePrice,
+          totalTaxPrice,
+          Number(totalServicePrice) + Number(totalMinimumServicePrice),
+        ).toString(),
+      };
+    });
+    return newBrandFareInfos;
+  }
 }

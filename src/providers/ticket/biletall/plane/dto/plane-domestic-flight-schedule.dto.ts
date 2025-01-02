@@ -14,8 +14,10 @@ export class FlightOptionDto {
   serviceFeeP: string;
   serviceFeeE: string;
   serviceFeeB: string;
+  totalPriceP: string;
   totalPriceE: string;
   totalPriceB: string;
+  totalServiceFeeP: string;
   totalServiceFeeE: string;
   totalServiceFeeB: string;
   luggageE: string;
@@ -26,16 +28,18 @@ export class FlightOptionDto {
 
   constructor(option: FlightOption) {
     this.id = option.ID;
-    this.priceP = option.FiyatP;
-    this.priceE = option.FiyatE;
-    this.priceB = option.FiyatB;
-    this.serviceFeeP = option.ServisUcretP;
-    this.serviceFeeE = option.ServisUcretE;
-    this.serviceFeeB = option.ServisUcretB;
-    this.totalPriceE = option.ToplamFiyatE;
-    this.totalPriceB = option.ToplamFiyatB;
-    this.totalServiceFeeE = option.ToplamServisUcretE;
-    this.totalServiceFeeB = option.ToplamServisUcretB;
+    this.priceP = option.FiyatP || '0';
+    this.priceE = option.FiyatE || '0';
+    this.priceB = option.FiyatB || '0';
+    this.serviceFeeP = option.ServisUcretP || '0';
+    this.serviceFeeE = option.ServisUcretE || '0';
+    this.serviceFeeB = option.ServisUcretB || '0';
+    this.totalPriceP = option.ToplamFiyatP || '0';
+    this.totalPriceE = option.ToplamFiyatE || '0';
+    this.totalPriceB = option.ToplamFiyatB || '0';
+    this.totalServiceFeeP = option.ToplamServisUcretP || '0';
+    this.totalServiceFeeE = option.ToplamServisUcretE || '0';
+    this.totalServiceFeeB = option.ToplamServisUcretB || '0';
     this.luggageE = option.BagajE;
     this.luggageB = option.BagajB;
     this.time = option.Vakit;
@@ -83,13 +87,11 @@ export class DomesticFlightSegmentDto {
   floorCount: string;
   seatDistance: string;
   id2: string;
-  companyLogo: string;
 
   constructor(segment: FlightSegment) {
     this.id = segment.ID;
     this.optionId = segment.SecenekID;
     this.companyId = segment.FirmaID;
-    this.companyLogo = `https://ws.biletall.com/HavaYoluLogo/orta/${segment.Firma}.png`;
     this.airlineCode = segment.Firma;
     this.airline = segment.FirmaAd;
     this.flightNumber = segment.SeferNo;

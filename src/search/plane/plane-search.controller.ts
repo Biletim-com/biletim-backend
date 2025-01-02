@@ -14,15 +14,17 @@ import { ClientIp } from '@app/common/decorators';
 // dto
 import { AirportSearchQueryDto } from './dto/airport-search-query.dto';
 import { PlaneFlightScheduleRequestDto } from './dto/plane-flight-schedule.dto';
-import { PullAbroadFlightPricePackagesRequestDto } from './dto/plane-pull-abroad-flight-packages.dto';
+import {
+  PullAbroadFlightPackagesRequestDto,
+  PullAbroadFlightPackagesResponseDto,
+} from './dto/plane-pull-abroad-flight-packages.dto';
 import {
   PullPriceFlightRequestDto,
   PullPriceFlightResponseDto,
 } from './dto/plane-pull-price-flight.dto';
-import { AbroadFlightScheduleDto } from '@app/providers/ticket/biletall/plane/dto/plane-abroad-flight-schedule.dto';
 import { PlanePassengerAgeRuleDto } from '@app/providers/ticket/biletall/plane/dto/plane-company-passenger-age-rule.dto';
-import { DomesticFlightScheduleDto } from '@app/providers/ticket/biletall/plane/dto/plane-domestic-flight-schedule.dto';
-import { PullAbroadFlightPricePackagesResponseDto } from '@app/providers/ticket/biletall/plane/dto/plane-pull-abroad-flight-price-packages.dto';
+import { PlaneDomesticFlightScheduleResponseDto } from './dto/plane-domestic-flight-schedule.dto';
+import { PlaneAbroadFlightScheduleResponseDto } from './dto/plane-abroad-flight-schedule.dto';
 
 @ApiTags('Plane Search')
 @Controller('search/plane')
@@ -48,27 +50,30 @@ export class PlaneSearchController {
   async flightScheduleSearch(
     @ClientIp() clientIp: string,
     @Query() requestDto: PlaneFlightScheduleRequestDto,
-  ): Promise<DomesticFlightScheduleDto | AbroadFlightScheduleDto> {
+  ): Promise<
+    | PlaneDomesticFlightScheduleResponseDto
+    | PlaneAbroadFlightScheduleResponseDto
+  > {
     if (requestDto.isAbroad === 'true') {
       const responseAbroadService =
-        this.biletAllPlaneSearchService.searchAbroadFlights(
+        await this.biletAllPlaneSearchService.searchAbroadFlights(
           clientIp,
           requestDto,
         );
-      return new AbroadFlightScheduleDto(
-        (await responseAbroadService).departureFlights,
-        (await responseAbroadService)?.returnFlights,
-        (await responseAbroadService)?.operationId,
+      return new PlaneAbroadFlightScheduleResponseDto(
+        responseAbroadService.departureFlights,
+        responseAbroadService?.returnFlights,
+        responseAbroadService?.operationId,
       );
     } else {
       const responseDomesticService =
-        this.biletAllPlaneSearchService.searchDomesticFlights(
+        await this.biletAllPlaneSearchService.searchDomesticFlights(
           clientIp,
           requestDto,
         );
-      return new DomesticFlightScheduleDto(
-        (await responseDomesticService).departureFlightsWithFares,
-        (await responseDomesticService)?.returnFlightsWithFares,
+      return new PlaneDomesticFlightScheduleResponseDto(
+        responseDomesticService.departureFlightsWithFares,
+        responseDomesticService?.returnFlightsWithFares,
       );
     }
   }
@@ -97,11 +102,11 @@ export class PlaneSearchController {
   @ApiOperation({ summary: 'Pull Abroad Flight Price Packages' })
   @Post('pull-abroad-flight-packages')
   async pullAbroadFlightPricePackages(
-    @Body() requestDto: PullAbroadFlightPricePackagesRequestDto,
-  ): Promise<PullAbroadFlightPricePackagesResponseDto> {
+    @Body() requestDto: PullAbroadFlightPackagesRequestDto,
+  ): Promise<PullAbroadFlightPackagesResponseDto> {
     const response =
       await this.biletAllPlaneSearchService.getAbroadFlightPackages(requestDto);
-    return new PullAbroadFlightPricePackagesResponseDto(
+    return new PullAbroadFlightPackagesResponseDto(
       response.transactionId,
       response.currencyTypeCode,
       response.isSuccess,
