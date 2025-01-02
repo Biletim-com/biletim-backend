@@ -67,13 +67,13 @@ export abstract class AbstractStartPaymentService {
       where: { id: user?.id },
       relations: { wallet: true, bankCards: true },
     });
-    if (!userWalletAndCards) {
+    if (user && !userWalletAndCards) {
       throw new UserNotFoundError();
     }
 
     // validate user's wallet
     if (paymentMethodDto.useWallet) {
-      const userWallet = userWalletAndCards.wallet;
+      const userWallet = userWalletAndCards?.wallet;
       if (!userWallet) {
         throw new WalletNotFoundError();
       }
@@ -83,7 +83,7 @@ export abstract class AbstractStartPaymentService {
 
     // validate user's saved card
     if (paymentMethodDto.savedCardId) {
-      const userSavedCard = userWalletAndCards.bankCards.find(
+      const userSavedCard = userWalletAndCards?.bankCards.find(
         (bankCard) => bankCard.id === paymentMethodDto.savedCardId,
       );
       if (!userSavedCard) {

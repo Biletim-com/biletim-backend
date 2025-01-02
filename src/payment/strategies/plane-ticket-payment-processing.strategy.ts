@@ -168,6 +168,7 @@ export class PlaneTicketPaymentProcessingStrategy
       transaction.status = TransactionStatus.COMPLETED;
       transaction.planeTicketOrder.status = OrderStatus.COMPLETED;
       transaction.planeTicketOrder.pnr = pnr;
+      transaction.planeTicketOrder.transaction = transaction;
 
       /** SEND EVENTS */
       this.eventEmitterService.emitEvent(

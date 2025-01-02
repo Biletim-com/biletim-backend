@@ -6,7 +6,7 @@ import puppeteer, { Browser } from 'puppeteer-core';
 export class PdfMakerService implements OnModuleInit {
   private browser: Browser;
   private logger = new Logger(PdfMakerService.name);
-  private options = { format: 'a4' as const };
+  private options = { format: 'a4' as const, printBackground: true };
 
   constructor(private readonly chromiumConfigService: ChromiumConfigService) {}
 

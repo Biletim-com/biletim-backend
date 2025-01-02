@@ -65,6 +65,13 @@ export type PlaneTicketEmailTemplateData = {
   importantNote?: string;
   departureFlights: Flight[];
   returnFlights?: Flight[];
+  invoice: {
+    paymentType: string;
+    netPrice: string;
+    taxAmount: string;
+    serviceFee: string;
+    totalAmount: string;
+  };
 };
 
 export type SendVerifyAccountEmailNotification = {

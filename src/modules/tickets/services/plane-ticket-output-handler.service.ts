@@ -14,6 +14,7 @@ import { OnEvent } from '@app/providers/event-emitter/decorators';
 
 // types
 import { PlaneTicketEmailTemplateData } from '@app/common/types';
+import { PaymentProvider } from '@app/common/enums';
 
 @Injectable()
 export class PlaneTicketOutputHandlerService {
@@ -47,6 +48,13 @@ export class PlaneTicketOutputHandlerService {
         order.pnr as string,
         true,
       ),
+      invoice: {
+        paymentType:
+          order.transaction.paymentProvider === PaymentProvider.BILETIM_GO
+            ? 'Cüzdan'
+            : 'Banka Kartı',
+        ...PlaneTicketOutputHandlerHelper.mapPrice(order.tickets),
+      },
     };
 
     const planeTicketHtml = await this.htmlTemplateService.renderTemplate(

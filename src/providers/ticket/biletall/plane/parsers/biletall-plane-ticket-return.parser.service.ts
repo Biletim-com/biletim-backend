@@ -34,7 +34,7 @@ export class BiletAllPlaneTicketReturnParserService extends BiletAllParserServic
 
     const planeTicketReturnPenaltyPassengersParsed: PlaneTicketReturnPenaltyPassenger[] =
       [];
-    passengers.forEach((passenger) => {
+    passengers?.forEach((passenger) => {
       const planeTicketReturnPenaltyPassengerParsed: PlaneTicketReturnPenaltyPassenger =
         Object.assign({});
       for (const [key, [value]] of ObjectTyped.entries(passenger)) {

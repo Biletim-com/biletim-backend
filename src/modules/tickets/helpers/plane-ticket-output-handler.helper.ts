@@ -49,4 +49,43 @@ export class PlaneTicketOutputHandlerHelper {
         pnrNumber,
       }));
   }
+
+  static mapPrice(planeTickets: PlaneTicket[]): {
+    netPrice: string;
+    taxAmount: string;
+    serviceFee: string;
+    totalAmount: string;
+  } {
+    const result = planeTickets.reduce(
+      (acc, planeTicket) => {
+        const netPrice = Number(planeTicket.netPrice) + acc.netPrice;
+        const taxAmount = Number(planeTicket.taxAmount) + acc.taxAmount;
+        const serviceFee =
+          Number(planeTicket.serviceFee) +
+          Number(planeTicket.biletimFee) +
+          acc.serviceFee;
+        const totalAmount = netPrice + taxAmount + serviceFee;
+
+        return {
+          netPrice,
+          taxAmount,
+          serviceFee,
+          totalAmount,
+        };
+      },
+      {
+        netPrice: 0,
+        taxAmount: 0,
+        serviceFee: 0,
+        totalAmount: 0,
+      },
+    );
+
+    return {
+      netPrice: result.netPrice.toFixed(2),
+      taxAmount: result.taxAmount.toFixed(2),
+      serviceFee: result.serviceFee.toFixed(2),
+      totalAmount: result.totalAmount.toFixed(2),
+    };
+  }
 }
