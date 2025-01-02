@@ -1,9 +1,13 @@
 import { Controller, Query, Get, NotFoundException } from '@nestjs/common';
+import { ApiExcludeController } from '@nestjs/swagger';
 
 import { PlaneTicketOutputHandlerService } from './services/plane-ticket-output-handler.service';
 import { PlaneTicketOrdersRepository } from '../orders/plane-ticket/plane-ticket-orders.repository';
+
+// types
 import { UUID } from '@app/common/types';
 
+@ApiExcludeController()
 @Controller('ticket-generate')
 export class TicketController {
   constructor(
