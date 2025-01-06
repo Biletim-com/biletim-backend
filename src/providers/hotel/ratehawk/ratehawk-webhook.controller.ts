@@ -52,7 +52,9 @@ export class RatehawkWebhookController {
         throw new UnauthorizedException('Invalid signature');
       }
 
-      this.logger.log(`Received webhook payload: ${{ data, signature }}`);
+      this.logger.log(
+        `Received webhook payload: ${JSON.stringify({ data, signature })}`,
+      );
       await this.hotelBookingOrdersRepository.update(
         { reservationNumber: Number(data.partner_order_id) },
         {
@@ -73,9 +75,6 @@ export class RatehawkWebhookController {
   async testConnection(
     @Req() { body }: Request<object, any, HotelOrderStatusWebhookRequestDto>,
   ): Promise<void> {
-    this.logger.log(
-      `Received webhook payload TO_TEST: ${JSON.stringify(body, null, 2)}`,
-    );
     try {
       const { signature } = body;
       if (
@@ -88,6 +87,9 @@ export class RatehawkWebhookController {
       ) {
         throw new UnauthorizedException('Invalid signature');
       }
+      this.logger.log(
+        `Received webhook payload TO_TEST: ${JSON.stringify(body, null, 2)}`,
+      );
     } catch (error) {
       this.logger.error(`Error testing webhook connection: ${error}`);
       throw new InternalServerErrorException();
