@@ -6,6 +6,7 @@ import { Passenger } from '../passengers/passenger.entity';
 import { BankCard } from '../bank-cards/bank-card.entity';
 import { Verification } from '../verification/verification.entity';
 import { Wallet } from '../wallets/wallet.entity';
+import { InvoiceAddress } from './invoice-address/invoice-address.entity';
 
 @Entity('users')
 export class User extends AbstractEntity<User> {
@@ -52,4 +53,9 @@ export class User extends AbstractEntity<User> {
 
   @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: ['insert'] })
   wallet: Wallet;
+
+  @OneToMany(() => InvoiceAddress, (invoiceAddress) => invoiceAddress.user, {
+    cascade: ['update'],
+  })
+  invoiceAddresses: InvoiceAddress[];
 }

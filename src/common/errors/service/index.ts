@@ -8,3 +8,4 @@ export * from './passports.error';
 export * from './orders.error';
 export * from './verifications.error';
 export * from './wallet.error';
+export * from './invoice-address.error';
