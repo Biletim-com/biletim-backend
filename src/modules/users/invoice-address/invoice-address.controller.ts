@@ -3,21 +3,38 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
   Query,
   UseGuards,
+  HttpStatus,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { InvoiceAddressService } from './invoice-address.service';
-import { InvoiceAddress } from './invoice-address.entity';
+import {
+  ApiCookieAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
+
 import { User } from '../user.entity';
-import { CurrentUser } from '@app/common/decorators';
+import { InvoiceAddress } from './invoice-address.entity';
+import { InvoiceAddressService } from './invoice-address.service';
+
+// guards
 import { JwtAuthGuard } from '@app/common/guards';
-import { InvoiceAddressDto } from './dto/invoice-address.dto';
-import { UUID } from '@app/common/types';
+
+// decorators
+import { CurrentUser } from '@app/common/decorators';
+
+// dto
+import { ListResponseDto } from '@app/common/dtos';
 import { InvoiceQueryDto } from './dto/invoice-query.dto';
+import { InvoiceAddressDto } from './dto/invoice-address.dto';
+
+// types
+import { UUID } from '@app/common/types';
 
 @ApiTags('Invoice-Address')
 @ApiCookieAuth()
@@ -25,52 +42,51 @@ import { InvoiceQueryDto } from './dto/invoice-query.dto';
 export class InvoiceAddressController {
   constructor(private readonly invoiceAddressService: InvoiceAddressService) {}
 
-  @ApiOperation({ summary: 'Create Invoice' })
+  @ApiOperation({ summary: 'Get Invoice Addresses Of User' })
+  @ApiQuery({ type: InvoiceQueryDto })
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async listInvoices(
+    @CurrentUser() user: User,
+    @Query() queryDto: InvoiceQueryDto,
+  ): Promise<ListResponseDto<InvoiceAddress>> {
+    return this.invoiceAddressService.listInvoices(
+      user.id,
+      queryDto.take,
+      queryDto.skip,
+    );
+  }
+
+  @ApiOperation({ summary: 'Create Invoice Address' })
   @UseGuards(JwtAuthGuard)
   @Post()
   async createInvoice(
+    @CurrentUser() user: User,
     @Body() dto: InvoiceAddressDto,
-    @CurrentUser() user: User,
   ): Promise<InvoiceAddress> {
-    return this.invoiceAddressService.createInvoice(dto, user.id);
+    return this.invoiceAddressService.createInvoice(user.id, dto);
   }
 
-  @ApiOperation({ summary: 'Get Invoices Of User' })
-  @UseGuards(JwtAuthGuard)
-  @Get()
-  async findAllInvoices(
-    @CurrentUser() user: User,
-    @Query() queryDto: InvoiceQueryDto,
-  ): Promise<{
-    invoices: InvoiceAddress[] | InvoiceAddress;
-    totalCount: number;
-  }> {
-    const invoices = await this.invoiceAddressService.findAllInvoices(
-      user.id,
-      queryDto.offset ? parseInt(queryDto.offset, 10) : undefined,
-      queryDto.limit ? parseInt(queryDto.limit, 10) : undefined,
-    );
-    return invoices;
-  }
-
-  @ApiOperation({ summary: 'Update Invoice ' })
+  @ApiOperation({ summary: 'Update Invoice Address' })
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
-    @Param('id') invoiceId: UUID,
     @CurrentUser() user: User,
+    @Param('id') invoiceId: UUID,
     @Body() dto: InvoiceAddressDto,
-  ): Promise<{ message: string; statusCode: number }> {
-    return this.invoiceAddressService.updateInvoice(invoiceId, user.id, dto);
+  ): Promise<{ message: string }> {
+    await this.invoiceAddressService.updateInvoice(user.id, invoiceId, dto);
+    return { message: 'Invoice updated successfully' };
   }
 
-  @ApiOperation({ summary: 'Delete Invoice ' })
+  @ApiOperation({ summary: 'Delete Invoice Address' })
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async deleteInvoice(
-    @Param('id') invoiceId: UUID,
     @CurrentUser() user: User,
-  ): Promise<{ message: string; statusCode: number }> {
-    return this.invoiceAddressService.deleteInvoice(invoiceId, user.id);
+    @Param('id') invoiceId: UUID,
+  ): Promise<void> {
+    return this.invoiceAddressService.deleteInvoice(user.id, invoiceId);
   }
 }

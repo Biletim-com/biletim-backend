@@ -11,6 +11,5 @@ import { InvoiceAddress } from './invoice-address.entity';
   imports: [PostgreSQLProviderModule.forFeature([InvoiceAddress])],
   controllers: [InvoiceAddressController],
   providers: [InvoiceAddressService, InvoiceAddressRepository],
-  exports: [InvoiceAddressService, InvoiceAddressRepository],
 })
 export class InvoiceAddressModule {}

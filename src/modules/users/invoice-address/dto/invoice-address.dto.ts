@@ -1,14 +1,7 @@
 import { InvoiceType } from '@app/common/enums';
 
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  ValidateIf,
-  IsString,
-  IsBoolean,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, ValidateIf, IsString } from 'class-validator';
 
 export class InvoiceAddressDto {
   @ApiProperty({
@@ -21,88 +14,29 @@ export class InvoiceAddressDto {
   type: InvoiceType;
 
   @ApiProperty({
-    description: 'The full name associated with the invoice address',
-    example: 'John Doe',
+    description: 'The full name of person or company',
+    example: 'John Doe || Westerops',
   })
-  @ValidateIf((dto) => dto.type === InvoiceType.INDIVIDUAL)
   @IsNotEmpty()
   @IsString()
-  fullName?: string;
+  name: string;
 
   @ApiProperty({
-    description: 'Unique identifier for the invoice address',
+    description:
+      'Unique identifier for the invoice address (TC Number or Tax Number)',
     example: '12345678901',
   })
-  @ValidateIf(
-    (dto) =>
-      dto.type === InvoiceType.INDIVIDUAL ||
-      (dto.type === InvoiceType.CORPORATE && dto.isPersonalCompany),
-  )
   @IsNotEmpty()
   @IsString()
-  identifier?: string;
+  identifier: string;
 
   @ApiProperty({
-    description: 'Country of the invoice address',
-    example: 'USA',
+    description: 'Address of the invoice owner',
+    example: 'somewhere in the world',
   })
   @IsNotEmpty()
   @IsString()
-  country?: string;
-
-  @ApiProperty({
-    description: 'City of the invoice address',
-    example: 'New York',
-  })
-  @IsNotEmpty()
-  @IsString()
-  city?: string;
-
-  @ApiProperty({
-    description: 'District of the invoice address',
-    example: 'Manhattan',
-  })
-  @ValidateIf((dto) => dto.country !== 'Turkey')
-  @IsOptional()
-  @IsString()
-  district?: string;
-
-  @ApiProperty({
-    description: 'Detailed address for the invoice',
-    example: '123 Main Street, Apt 4B',
-  })
-  @IsNotEmpty()
-  @IsString()
-  address?: string;
-
-  @ApiProperty({
-    description: 'Postal code for the invoice address',
-    example: '10001',
-  })
-  @ValidateIf(
-    (dto) => dto.type === InvoiceType.CORPORATE || dto.country !== 'Turkey',
-  )
-  @IsNotEmpty()
-  @IsString()
-  postalCode?: string;
-
-  @ApiProperty({
-    description: 'Company name if applicable',
-    example: 'Acme Corporation',
-  })
-  @ValidateIf((dto) => dto.type === InvoiceType.CORPORATE)
-  @IsNotEmpty()
-  @IsString()
-  companyName?: string;
-
-  @ApiProperty({
-    description: 'Indicates if the invoice is for a personal company',
-    example: true,
-  })
-  @ValidateIf((dto) => dto.type === InvoiceType.CORPORATE)
-  @IsNotEmpty()
-  @IsBoolean()
-  isPersonalCompany?: boolean;
+  address: string;
 
   @ApiProperty({
     description: 'Tax office associated with the invoice address',
@@ -112,16 +46,4 @@ export class InvoiceAddressDto {
   @IsNotEmpty()
   @IsString()
   taxOffice?: string;
-
-  @ApiProperty({
-    description: 'Tax number associated with the invoice address',
-    example: '987654321',
-  })
-  @ValidateIf(
-    (dto) =>
-      dto.type === InvoiceType.CORPORATE && dto.isPersonalCompany === false,
-  )
-  @IsNotEmpty()
-  @IsString()
-  taxNumber?: string;
 }

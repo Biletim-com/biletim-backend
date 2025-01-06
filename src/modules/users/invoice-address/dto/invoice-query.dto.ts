@@ -1,14 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { PaginationDto } from '@app/common/dtos/pagination.dto';
 
-export class InvoiceQueryDto {
-  @ApiProperty({ description: 'Offset', example: '0' })
-  @IsOptional()
-  @IsString()
-  offset?: string;
-
-  @ApiProperty({ description: 'Limit', example: '10' })
-  @IsOptional()
-  @IsString()
-  limit?: string;
-}
+export class InvoiceQueryDto extends PaginationDto {}

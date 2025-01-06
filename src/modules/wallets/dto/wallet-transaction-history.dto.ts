@@ -1,14 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsOptional } from 'class-validator';
 
-export class WalletTransactionHistoryDto {
+import { PaginationDto } from '@app/common/dtos';
+import { DateISODate } from '@app/common/types';
+
+export class WalletTransactionHistoryDto extends PaginationDto {
   @ApiProperty({
     description: 'Start date for filtering transactions. Format: YYYY-MM-DD',
     example: '2024-01-01',
   })
   @IsOptional()
   @IsDateString()
-  startDate?: string;
+  startDate?: DateISODate;
 
   @ApiProperty({
     description: 'End date for filtering transactions. Format: YYYY-MM-DD',
@@ -16,15 +19,5 @@ export class WalletTransactionHistoryDto {
   })
   @IsOptional()
   @IsDateString()
-  endDate?: string;
-
-  @ApiProperty({ description: 'Offset', example: '0' })
-  @IsString()
-  @IsOptional()
-  offset?: string;
-
-  @ApiProperty({ description: 'Limit', example: '10' })
-  @IsString()
-  @IsOptional()
-  limit?: string;
+  endDate?: DateISODate;
 }

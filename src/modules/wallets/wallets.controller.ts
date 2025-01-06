@@ -1,5 +1,3 @@
-import { CurrentUser } from '@app/common/decorators/current-user.decorator';
-import { JwtAuthGuard } from '@app/common/guards';
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
@@ -10,7 +8,16 @@ import { WalletsService } from './wallets.service';
 import { Wallet } from './wallet.entity';
 import { User } from '../users/user.entity';
 import { Transaction } from '../transactions/transaction.entity';
+
+// decorators
+import { CurrentUser } from '@app/common/decorators/current-user.decorator';
+
+// guards
+import { JwtAuthGuard } from '@app/common/guards';
+
+// dtos
 import { WalletTransactionHistoryDto } from './dto/wallet-transaction-history.dto';
+import { ListResponseDto } from '@app/common/dtos';
 
 @ApiTags('Wallet')
 @ApiCookieAuth()
@@ -31,15 +38,7 @@ export class WalletController {
   async getTransactionHistory(
     @Query() dto: WalletTransactionHistoryDto,
     @CurrentUser() currentUser: User,
-  ): Promise<{ transactions: Transaction[]; totalCount: number }> {
-    const offset = dto.offset ? parseInt(dto.offset, 10) : undefined;
-    const limit = dto.limit ? parseInt(dto.limit, 10) : undefined;
-
-    return this.walletsService.getTransactionHistory(
-      currentUser.id,
-      dto,
-      offset,
-      limit,
-    );
+  ): Promise<ListResponseDto<Transaction>> {
+    return this.walletsService.getTransactionHistory(currentUser.id, dto);
   }
 }

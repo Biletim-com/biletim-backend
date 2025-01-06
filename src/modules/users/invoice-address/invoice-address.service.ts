@@ -1,9 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { InvoiceAddressRepository } from './invoice-address.repository';
+
 import { InvoiceAddress } from './invoice-address.entity';
-import { UUID } from '@app/common/types';
+import { InvoiceAddressRepository } from './invoice-address.repository';
+
+// dto
+import { ListResponseDto } from '@app/common/dtos';
 import { InvoiceAddressDto } from './dto/invoice-address.dto';
-import { InvoiceAddressNotFoundError } from '@app/common/errors/service/invoice-address.error';
+
+// types
+import { UUID } from '@app/common/types';
+
+// errors
+import { InvoiceAddressNotFoundError } from '@app/common/errors';
 
 @Injectable()
 export class InvoiceAddressService {
@@ -11,28 +19,24 @@ export class InvoiceAddressService {
     private readonly invoiceAddressRepository: InvoiceAddressRepository,
   ) {}
 
+  private composeInvoiceAddress(invoiceDto: InvoiceAddressDto): InvoiceAddress {
+    return new InvoiceAddress({
+      type: invoiceDto.type,
+      name: invoiceDto.name,
+      identifier: invoiceDto.identifier,
+      address: invoiceDto.address,
+      taxOffice: invoiceDto.taxOffice,
+    });
+  }
+
   private async findOneInvoice(
-    invoiceId: UUID,
     userId: UUID,
+    invoiceId: UUID,
   ): Promise<InvoiceAddress> {
     const invoiceAddress = await this.invoiceAddressRepository.findOne({
       where: {
         id: invoiceId,
         user: { id: userId },
-      },
-      relations: ['user'],
-      select: {
-        user: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          name: true,
-          familyName: true,
-          email: true,
-          phone: true,
-          address: true,
-          isDeleted: true,
-        },
       },
     });
 
@@ -42,87 +46,49 @@ export class InvoiceAddressService {
     return invoiceAddress;
   }
 
-  async createInvoice(
-    dto: InvoiceAddressDto,
+  async listInvoices(
     userId: UUID,
-  ): Promise<InvoiceAddress> {
-    const invoiceAddress = this.invoiceAddressRepository.create({
-      ...dto,
-      user: { id: userId },
-    });
-
-    return this.invoiceAddressRepository.save(invoiceAddress);
-  }
-
-  async findAllInvoices(
-    userId: UUID,
-    offset?: number,
-    limit?: number,
-  ): Promise<{
-    invoices: InvoiceAddress[] | InvoiceAddress;
-    totalCount: number;
-  }> {
-    const invoices = await this.invoiceAddressRepository.find({
+    take: number,
+    skip: number,
+  ): Promise<ListResponseDto<InvoiceAddress>> {
+    const [invoices, count] = await this.invoiceAddressRepository.findAndCount({
       where: { user: { id: userId } },
       order: {
         createdAt: 'DESC',
       },
+      take,
+      skip,
     });
-    const totalCount = invoices.length;
-    const startIndex = Math.min(offset || 0, totalCount);
-    const endIndex = limit
-      ? Math.min(startIndex + limit, totalCount)
-      : totalCount;
+    return { data: invoices, count };
+  }
 
-    if (startIndex >= totalCount || startIndex < 0 || (limit && limit <= 0)) {
-      return {
-        invoices: [],
-        totalCount,
-      };
-    }
-
-    const slicedInvoices = invoices.slice(startIndex, endIndex);
-
-    if (slicedInvoices.length === 1) {
-      return {
-        invoices: slicedInvoices[0],
-        totalCount,
-      };
-    }
-
-    return {
-      invoices: slicedInvoices,
-      totalCount,
-    };
+  async createInvoice(
+    userId: UUID,
+    dto: InvoiceAddressDto,
+  ): Promise<InvoiceAddress> {
+    const invoiceAddress = this.composeInvoiceAddress(dto);
+    return this.invoiceAddressRepository.save({
+      ...invoiceAddress,
+      user: { id: userId },
+    });
   }
 
   async updateInvoice(
-    invoiceId: UUID,
     userId: UUID,
+    invoiceId: UUID,
     dto: InvoiceAddressDto,
-  ): Promise<{ message: string; statusCode: number }> {
-    const invoiceAddress = await this.findOneInvoice(invoiceId, userId);
+  ): Promise<void> {
+    const invoiceAddressToUpdate = this.composeInvoiceAddress(dto);
+    await this.findOneInvoice(userId, invoiceId);
 
-    await this.invoiceAddressRepository.update(invoiceAddress?.id, {
-      ...dto,
-    });
-
-    return {
-      message: 'Invoice updated successfully',
-      statusCode: 200,
-    };
+    await this.invoiceAddressRepository.update(
+      invoiceId,
+      invoiceAddressToUpdate,
+    );
   }
 
-  async deleteInvoice(
-    invoiceId: UUID,
-    userId: UUID,
-  ): Promise<{ message: string; statusCode: number }> {
-    const invoiceAddress = await this.findOneInvoice(invoiceId, userId);
-
+  async deleteInvoice(userId: UUID, invoiceId: UUID): Promise<void> {
+    const invoiceAddress = await this.findOneInvoice(userId, invoiceId);
     await this.invoiceAddressRepository.delete(invoiceAddress.id);
-    return {
-      message: 'Invoice deleted successfully',
-      statusCode: 200,
-    };
   }
 }

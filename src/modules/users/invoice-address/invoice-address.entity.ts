@@ -8,38 +8,19 @@ export class InvoiceAddress extends AbstractEntity<InvoiceAddress> {
   @Column('varchar')
   type: InvoiceType;
 
-  @Column({ nullable: true })
-  fullName?: string;
+  // person's or company's name
+  @Column()
+  name: string;
 
-  @Column({ nullable: true })
-  identifier?: string;
+  // tcNumber or TaxNumber
+  @Column()
+  identifier: string;
 
-  @Column({ nullable: true })
-  country?: string;
-
-  @Column({ nullable: true })
-  city?: string;
-
-  @Column({ nullable: true })
-  district?: string;
-
-  @Column({ nullable: true })
-  address?: string;
-
-  @Column({ nullable: true })
-  postalCode?: string;
-
-  @Column({ nullable: true })
-  companyName?: string;
-
-  @Column({ nullable: true, default: false })
-  isPersonalCompany?: boolean;
+  @Column()
+  address: string;
 
   @Column({ nullable: true })
   taxOffice?: string;
-
-  @Column({ nullable: true })
-  taxNumber?: string;
 
   @ManyToOne(() => User, (user) => user.invoiceAddresses, {
     onDelete: 'CASCADE',
