@@ -73,7 +73,11 @@ export class RatehawkWebhookController {
   async testConnection(
     @Req() { body }: Request<object, any, HotelOrderStatusWebhookRequestDto>,
   ): Promise<void> {
-    this.logger.log(`Received webhook payload TO_TEST: ${{ body }}`);
+    this.logger.log(
+      `Received webhook payload TO_TEST: ${{
+        body: JSON.stringify(body, null, 2),
+      }}`,
+    );
     try {
       const { signature } = body;
       if (
