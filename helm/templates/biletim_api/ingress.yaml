@@ -9,6 +9,8 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "{{ .Values.global.ingress.sslRedirect }}"
     cert-manager.io/cluster-issuer: "{{ .Values.certs.issuerName }}"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.global.ingress.timeout }}"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "{{ .Values.global.ingress.timeout }}"
 spec:
   tls:
     - hosts:
@@ -26,4 +28,3 @@ spec:
               number: {{ .Values.biletim_api.port }}
     host: "{{ .Values.biletim_api.hostPrefix }}.{{ .Values.global.ingress.domain }}"
 {{- end }}
-
