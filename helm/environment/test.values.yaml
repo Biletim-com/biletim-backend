@@ -15,6 +15,7 @@ global:
     class:
     domain: westerops.com
     sslRedirect: true
+    timeout: 120
 
 certs:
   managed: true
