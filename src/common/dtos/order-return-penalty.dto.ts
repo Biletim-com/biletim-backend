@@ -1,6 +1,6 @@
 export class OrderReturnTotalPenaltyDto {
   totalTicketPrice: string;
-  providerPenaltyAmount: string;
+  servicePenaltyAmount: string;
   companyPenaltyAmount: string;
   totalPenaltyAmount: string;
   amountToRefund: string;

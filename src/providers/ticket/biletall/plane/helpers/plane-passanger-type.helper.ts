@@ -5,5 +5,5 @@ export const BiletAllPlanePassengerType = {
   [PassengerType.CHILD]: 2,
   [PassengerType.BABY]: 3,
   [PassengerType.STUDENT]: 5,
-  [PassengerType.SOLDIER]: 7,
+  [PassengerType.MILITARY]: 7,
 };

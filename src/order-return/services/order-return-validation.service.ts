@@ -93,7 +93,7 @@ export class OrderReturnValidationService {
 
     const penalty: OrderReturnTotalPenaltyDto = {
       totalTicketPrice: existingOrder.transaction.amount,
-      providerPenaltyAmount: '0',
+      servicePenaltyAmount: '0',
       companyPenaltyAmount: '0',
       totalPenaltyAmount: '0',
       amountToRefund: existingOrder.transaction.amount,
@@ -105,11 +105,18 @@ export class OrderReturnValidationService {
           pnrNumber,
           passengerLastName,
         );
-
       passengers.forEach((passenger) => {
-        penalty.providerPenaltyAmount = normalizeDecimal(
-          Number(normalizeDecimal(penalty.providerPenaltyAmount)) +
-            Number(normalizeDecimal(passenger.providerPenaltyAmount)),
+        const biletimFee = Number(
+          (
+            existingOrder.tickets.find(
+              (ticket) => ticket.ticketNumber === passenger.ticketNumber,
+            ) as PlaneTicket
+          ).biletimFee,
+        );
+        penalty.servicePenaltyAmount = normalizeDecimal(
+          Number(normalizeDecimal(penalty.servicePenaltyAmount)) +
+            Number(normalizeDecimal(passenger.providerPenaltyAmount)) +
+            biletimFee,
         );
         penalty.companyPenaltyAmount = normalizeDecimal(
           Number(normalizeDecimal(penalty.companyPenaltyAmount)) +
@@ -117,7 +124,8 @@ export class OrderReturnValidationService {
         );
         penalty.totalPenaltyAmount = normalizeDecimal(
           Number(normalizeDecimal(penalty.totalPenaltyAmount)) +
-            Number(normalizeDecimal(passenger.totalPenaltyAmount)),
+            Number(normalizeDecimal(passenger.totalPenaltyAmount)) +
+            biletimFee,
         );
       });
       penalty.amountToRefund = normalizeDecimal(
@@ -162,8 +170,6 @@ export class OrderReturnValidationService {
     // ) {
     //   throw new OrderCannotBeReturnedError(existingOrder.status);
     // }
-
-    console.log(Date.now(), new Date(existingOrder.checkoutDateTime).getTime());
 
     if (Date.now() > new Date(existingOrder.checkoutDateTime).getTime()) {
       throw new OrderReturnDeadlineExpiredError();

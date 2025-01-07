@@ -126,6 +126,18 @@ export class HotelBookingStartPaymentService extends AbstractStartPaymentService
       );
 
       /**
+       * Create Rooms and Guests
+       */
+      const roomsAndGuests = new HotelBookingRoom({
+        name: roomName,
+        guests: hotelBookingPurchaseDto.guests.map(
+          (guest) => new HotelRoomGuest({ ...guest }),
+        ),
+        order,
+      });
+      await queryRunner.manager.save(HotelBookingRoom, roomsAndGuests);
+
+      /**
        * Start booking against the provider
        * need to figure out this usellData shit
        */
@@ -143,19 +155,7 @@ export class HotelBookingStartPaymentService extends AbstractStartPaymentService
       //   upsell: [],
       // });
 
-      /**
-       * Create Rooms and Guests
-       */
-      const roomsAndGuests = new HotelBookingRoom({
-        name: roomName,
-        guests: hotelBookingPurchaseDto.guests.map(
-          (guest) => new HotelRoomGuest({ ...guest }),
-        ),
-        order,
-      });
-      await queryRunner.manager.save(HotelBookingRoom, roomsAndGuests);
       await queryRunner.commitTransaction();
-
       const htmlContent = await this.finalizePaymentInit(
         transaction,
         paymentProviderType,

@@ -8,10 +8,13 @@ export type FlightOption = {
   ServisUcretP: string;
   ServisUcretE: string;
   ServisUcretB: string;
+  ToplamFiyatP: string;
   ToplamFiyatE: string;
   ToplamFiyatB: string;
+  ToplamServisUcretP: string;
   ToplamServisUcretE: string;
   ToplamServisUcretB: string;
+  BagajP: string;
   BagajE: string;
   BagajB: string;
   Vakit: string;

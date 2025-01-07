@@ -16,6 +16,10 @@ import {
 
 import { IsInEnumKeys } from '@app/common/decorators';
 import { ApiProperty } from '@nestjs/swagger';
+import { DomesticFlightWithFares } from '@app/providers/ticket/biletall/plane/dto/plane-domestic-flight-schedule.dto';
+
+// utils
+import { PlaneTicketFeeManager } from '@app/common/utils';
 
 export class PlaneDomesticFlightScheduleRequestDto {
   @ApiProperty({
@@ -107,13 +111,106 @@ export class PlaneDomesticFlightScheduleRequestDto {
   @IsInt()
   @Min(0)
   babyCount = 0;
+}
 
-  @ApiProperty({
-    description: 'IP address of the requester',
-    example: '127.0.0.1',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  ip: string;
+export class PlaneDomesticFlightScheduleResponseDto {
+  public readonly departureFlightsWithFares: Array<DomesticFlightWithFares>;
+  public readonly returnFlightsWithFares: Array<DomesticFlightWithFares>;
+  constructor(
+    departureFlights: Array<DomesticFlightWithFares>,
+    returnFlights: Array<DomesticFlightWithFares>,
+  ) {
+    this.departureFlightsWithFares = this.addCommissionRate(departureFlights);
+    this.returnFlightsWithFares = this.addCommissionRate(returnFlights);
+  }
+
+  private addCommissionRate(
+    domesticFlights: Array<DomesticFlightWithFares>,
+  ): Array<DomesticFlightWithFares> {
+    const newDomesticFlights = [...domesticFlights];
+    newDomesticFlights.forEach((domesticFlight) => {
+      domesticFlight.flightOption = {
+        ...domesticFlight.flightOption,
+        /**
+         * set single service fees
+         */
+        // Flight Class P
+        serviceFeeP: PlaneTicketFeeManager.getTotalServiceFee(
+          domesticFlight.flightOption.priceP,
+          0,
+          domesticFlight.flightOption.serviceFeeP,
+        ).toString(),
+        // FLight class Economy
+        serviceFeeE: PlaneTicketFeeManager.getTotalServiceFee(
+          domesticFlight.flightOption.priceE,
+          0,
+          domesticFlight.flightOption.serviceFeeE,
+        ).toString(),
+        // Flight class Business
+        serviceFeeB: PlaneTicketFeeManager.getTotalServiceFee(
+          domesticFlight.flightOption.priceB,
+          0,
+          domesticFlight.flightOption.serviceFeeB,
+        ).toString(),
+
+        /**
+         * set total service fees
+         */
+        // Flight class P
+        totalServiceFeeP: PlaneTicketFeeManager.getTotalServiceFee(
+          domesticFlight.flightOption.totalPriceP,
+          0,
+          domesticFlight.flightOption.totalServiceFeeP,
+        ).toString(),
+        // Flight class Economy
+        totalServiceFeeE: PlaneTicketFeeManager.getTotalServiceFee(
+          domesticFlight.flightOption.totalPriceE,
+          0,
+          domesticFlight.flightOption.totalServiceFeeE,
+        ).toString(),
+        // Flight class Business
+        totalServiceFeeB: PlaneTicketFeeManager.getTotalServiceFee(
+          domesticFlight.flightOption.totalPriceB,
+          0,
+          domesticFlight.flightOption.totalServiceFeeB,
+        ).toString(),
+      };
+
+      domesticFlight.segments.forEach((segment) => {
+        segment[
+          'companyLogo'
+        ] = `https://ws.biletall.com/HavaYoluLogo/orta/${segment.companyId}.png`;
+
+        segment.optionFares.forEach((optionFare) => {
+          // set single passenger fee
+          optionFare.singlePassengerServiceFee =
+            PlaneTicketFeeManager.getTotalServiceFee(
+              optionFare.singlePassengerFee,
+              0,
+              optionFare.singlePassengerServiceFee,
+            ).toString();
+
+          // set multiple passenger fee
+          optionFare.totalServiceFee = PlaneTicketFeeManager.getTotalServiceFee(
+            optionFare.totalFee,
+            0,
+            optionFare.totalServiceFee,
+          ).toString();
+
+          // set total price in the segment class object
+          if (optionFare.segmentClass) {
+            optionFare.segmentClass = {
+              ...optionFare.segmentClass,
+              fee: PlaneTicketFeeManager.getTotalPriceWithFee(
+                optionFare.segmentClass?.fee ?? '0',
+                0,
+                0,
+              ).toString(),
+            };
+          }
+        });
+      });
+    });
+    return newDomesticFlights;
+  }
 }

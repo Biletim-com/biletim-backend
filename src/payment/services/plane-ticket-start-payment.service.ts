@@ -36,10 +36,11 @@ import {
 } from '../dto/plane-ticket-purchase.dto';
 
 // utils
-import { normalizeDecimal } from '@app/common/utils';
+import { normalizeDecimal, PlaneTicketFeeManager } from '@app/common/utils';
 
 // errors
 import { ServiceError } from '@app/common/errors';
+import { PriceListDto } from '@app/providers/ticket/biletall/plane/dto/plane-pull-price-flight.dto';
 
 @Injectable()
 export class PlaneTicketStartPaymentService extends AbstractStartPaymentService {
@@ -78,6 +79,7 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
       [PassengerType.BABY]: 'babyCount',
       [PassengerType.STUDENT]: 'studentCount',
       [PassengerType.ELDERLY]: 'elderlyCount',
+      [PassengerType.MILITARY]: 'militaryCount',
     };
 
     passengers.forEach((passenger) => {
@@ -90,11 +92,69 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
     return data;
   }
 
+  private composeFeeByPassengerType(
+    priceList: PriceListDto,
+  ): Record<
+    PassengerType,
+    { netPrice: string; tax: string; serviceFee: string; minServiceFee: string }
+  > {
+    const data = {
+      [PassengerType.ADULT]: {
+        netPrice: '0',
+        tax: '0',
+        serviceFee: '0',
+        minServiceFee: '0',
+      },
+      [PassengerType.CHILD]: {
+        netPrice: '0',
+        tax: '0',
+        serviceFee: '0',
+        minServiceFee: '0',
+      },
+      [PassengerType.BABY]: {
+        netPrice: '0',
+        tax: '0',
+        serviceFee: '0',
+        minServiceFee: '0',
+      },
+      [PassengerType.STUDENT]: {
+        netPrice: '0',
+        tax: '0',
+        serviceFee: '0',
+        minServiceFee: '0',
+      },
+      [PassengerType.ELDERLY]: {
+        netPrice: '0',
+        tax: '0',
+        serviceFee: '0',
+        minServiceFee: '0',
+      },
+      [PassengerType.MILITARY]: {
+        netPrice: '0',
+        tax: '0',
+        serviceFee: '0',
+        minServiceFee: '0',
+      },
+    };
+
+    Object.values(PassengerType).forEach((type) => {
+      data[type] = {
+        netPrice: priceList[`${type}NetPrice`] || '0',
+        tax: priceList[`${type}Tax`] || '0',
+        serviceFee: priceList[`${type}ServiceFee`] || '0',
+        minServiceFee: priceList[`${type}MinServiceFee`] || '0',
+      };
+    });
+
+    return data;
+  }
+
   private validateTicketsPrice(
     passengers: PlanePassengerInfoDto[],
-    totalPrice: string,
-  ) {
-    const totalPriseOutOfDto = passengers.reduce((acc, passenger) => {
+    originalTotalPrice: string,
+    originalTotalMinFee: string,
+  ): number {
+    const totalAmountToPay = passengers.reduce((acc, passenger) => {
       return (
         acc +
         Number(passenger.netPrice) +
@@ -102,9 +162,17 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
         Number(passenger.serviceFee)
       );
     }, 0);
-    if (normalizeDecimal(totalPriseOutOfDto) !== normalizeDecimal(totalPrice)) {
+    const biletimServiceFee =
+      PlaneTicketFeeManager.getAddedFee(totalAmountToPay);
+    const obtainedOriginalTotalPrice =
+      totalAmountToPay - biletimServiceFee - Number(originalTotalMinFee);
+    if (
+      normalizeDecimal(obtainedOriginalTotalPrice) !==
+      normalizeDecimal(originalTotalPrice)
+    ) {
       throw new ServiceError('There is an update in the price');
     }
+    return totalAmountToPay;
   }
 
   async startPlaneTicketPurchase(
@@ -131,10 +199,13 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
         ...passengerTypeCount,
       });
 
-    this.validateTicketsPrice(
+    const totalAmountToPay = this.validateTicketsPrice(
       planeTicketPurchaseDto.passengers,
       priceList.totalTicketPrice,
+      priceList.totalMinServiceFee,
     );
+
+    const feePerPassenger = this.composeFeeByPassengerType(priceList);
 
     const paymentProviderType = planeTicketPurchaseDto.paymentMethod.useWallet
       ? PaymentProvider.BILETIM_GO
@@ -145,7 +216,7 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
        * Init Transactions
        */
       const transaction = this.composeTransaction(
-        priceList.totalTicketPrice,
+        totalAmountToPay.toString(),
         paymentProviderType,
         paymentMethod,
       );
@@ -207,14 +278,27 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
             passportNumber: passengerDto.passport?.number,
             passportExpirationDate: passengerDto.passport?.expirationDate,
           });
+          const ticketTotalAbount =
+            Number(passengerDto.netPrice) +
+            Number(passengerDto.taxAmount) +
+            Number(passengerDto.serviceFee);
+          const biletimFee =
+            PlaneTicketFeeManager.getAddedFee(ticketTotalAbount);
+          const providerServiceFee =
+            Number(passengerDto.serviceFee) -
+            Number(feePerPassenger[passengerDto.passengerType].minServiceFee) -
+            biletimFee;
 
           return new PlaneTicket({
             ticketOrder: index + 1,
             ticketNumber: null,
             netPrice: passengerDto.netPrice,
             taxAmount: passengerDto.taxAmount,
-            serviceFee: passengerDto.serviceFee,
-            biletimFee: passengerDto.serviceFee, // TODO: temporary
+            serviceFee: providerServiceFee.toString(),
+            biletimFee: (
+              biletimFee +
+              Number(feePerPassenger[passengerDto.passengerType].minServiceFee)
+            ).toString(),
             passenger,
             order,
           });

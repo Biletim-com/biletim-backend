@@ -61,6 +61,17 @@ export class PlaneTicketPaymentProcessingStrategy
     private readonly biletAllPlaneTicketPurchaseService: BiletAllPlaneTicketPurchaseService,
   ) {}
 
+  private providerSubTotalPrice(tickets: PlaneTicket[]): number {
+    return tickets.reduce((acc, ticket) => {
+      return (
+        acc +
+        Number(ticket.netPrice) +
+        Number(ticket.taxAmount) +
+        Number(ticket.serviceFee)
+      );
+    }, 0);
+  }
+
   @OnEvent('payment.plane.finish')
   async handlePayment(
     clientIp: string,
@@ -127,7 +138,9 @@ export class PlaneTicketPaymentProcessingStrategy
         await this.biletAllPlaneTicketPurchaseService.processPlaneTicket(
           clientIp,
           PlaneTicketOperationType.PURCHASE,
-          transaction.amount,
+          this.providerSubTotalPrice(
+            transaction.planeTicketOrder.tickets,
+          ).toString(),
           transaction.planeTicketOrder,
           transaction.planeTicketOrder.tickets,
           transaction.planeTicketOrder.segments,
