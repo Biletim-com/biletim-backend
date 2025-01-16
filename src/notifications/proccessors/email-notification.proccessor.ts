@@ -21,14 +21,18 @@ export class EmailNotificationProcessor implements INotificationProccessor {
   @Process()
   async send(job: Job<NotificationsOptions>) {
     const { recipient, subject, options } = job.data;
-    await this.mailerService.sendMail({
-      to: recipient,
-      subject,
-      ...options,
-      attachments: options.attachments?.map((attachment) => ({
-        ...attachment,
-        content: Buffer.from(attachment.content as Buffer),
-      })),
-    });
+    try {
+      await this.mailerService.sendMail({
+        to: recipient,
+        subject,
+        ...options,
+        attachments: options.attachments?.map((attachment) => ({
+          ...attachment,
+          content: Buffer.from(attachment.content as Buffer),
+        })),
+      });
+    } catch (err) {
+      this.logger.error(JSON.stringify(err));
+    }
   }
 }

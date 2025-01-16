@@ -179,7 +179,7 @@ export class PlaneDomesticFlightScheduleResponseDto {
       domesticFlight.segments.forEach((segment) => {
         segment[
           'companyLogo'
-        ] = `https://ws.biletall.com/HavaYoluLogo/orta/${segment.companyId}.png`;
+        ] = `https://ws.biletall.com/HavaYoluLogo/orta/${segment.airlineCode}.png`;
 
         segment.optionFares.forEach((optionFare) => {
           // set single passenger fee
