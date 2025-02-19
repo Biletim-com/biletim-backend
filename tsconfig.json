@@ -31,7 +31,6 @@
     "test/**/*.ts",
     "global.d.ts",
     "ormconfig.ts",
-    "open-zst.script.ts"
   ],
   "exclude": [
     "node_modules",
