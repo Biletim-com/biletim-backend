@@ -39,7 +39,7 @@ biletim_backend:
     POSTGRES_DB: dev
 
     # MONGO_HOST: biletim-mongo
-    MONGO_HOST: 3.70.222.16
+    MONGO_HOST: 10.74.1.65
     MONGO_PORT: 27017
     MONGO_DB: hotel_data
 
