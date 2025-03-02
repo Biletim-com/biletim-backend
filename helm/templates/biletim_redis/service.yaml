@@ -1,0 +1,14 @@
+{{- if .Values.biletim_redis.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.biletim_redis.app }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: redis
+    port: {{ .Values.biletim_redis.port }}
+    targetPort: {{ .Values.biletim_redis.port }}
+  selector:
+    app: {{ .Values.biletim_redis.app }}
+{{- end }} 

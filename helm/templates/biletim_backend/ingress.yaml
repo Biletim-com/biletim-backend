@@ -1,0 +1,32 @@
+{{- if .Values.biletim_backend.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.biletim_backend.app }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{ .Values.global.ingress.sslRedirect }}"
+    cert-manager.io/cluster-issuer: "{{ .Values.certs.issuerName }}"
+    cert-manager.io/acme-challenge-type: "{{ .Values.global.ingress.acmeChallengeType }}"
+    cert-manager.io/acme-dns01-provider: "{{ .Values.global.ingress.acmeDNS01Provider }}"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.global.ingress.timeout }}"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "{{ .Values.global.ingress.timeout }}"
+spec:
+  tls:
+    - hosts:
+        - "{{ .Values.biletim_backend.host }}"
+      secretName: "{{ .Values.ingress.tlsSecret }}"
+  rules:
+    - host: "{{ .Values.biletim_backend.host }}"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ .Values.biletim_backend.app }}
+                port:
+                  number: {{ .Values.biletim_backend.port }}
+{{- end }}

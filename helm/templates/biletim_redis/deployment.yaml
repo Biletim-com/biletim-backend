@@ -1,0 +1,74 @@
+{{- if .Values.biletim_redis.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.biletim_redis.app }}
+spec:
+  replicas: {{ $.Values.biletim_redis.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.biletim_redis.app }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.biletim_redis.app }}
+    spec:
+      containers:
+        - name: {{ .Values.biletim_redis.app }}
+          image: {{ .Values.biletim_redis.image }}
+          {{- if $.Values.biletim_redis.command }}
+          command: 
+          {{- range $.Values.biletim_redis.command }}
+          - {{ . | quote }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          {{- if $.Values.biletim_redis.volumeMounts }}
+          {{- range $key, $value := .Values.biletim_redis.volumeMounts }}
+            - name: "{{ $key }}"
+              mountPath: "{{ $value }}"
+          {{- end }}
+          {{- end }}
+          envFrom:
+          {{- if .Values.biletim_redis.secrets }}
+          {{- range .Values.biletim_redis.secrets }}
+            - secretRef:
+                name: {{ . }}
+          {{- end }}
+          {{- end }}
+          env:
+          {{- if .Values.biletim_redis.env }}
+          {{- range $key, $value := .Values.biletim_redis.env }}
+            - name: "{{ $key }}"
+              value: "{{ $value }}"
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.biletim_redis.resources | nindent 12 }}
+          ports:
+            - name: redis
+              containerPort: {{ .Values.biletim_redis.port }}
+              protocol: TCP
+      {{- if $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range $.Values.global.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.biletim_redis.app }}-pvc
+      {{- if $.Values.biletim_redis.volumes }}
+      {{- range $.Values.biletim_redis.volumes }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ .persistentVolumeClaim.claimName }}
+      {{- end }}
+      {{- end }}
+      restartPolicy: Always
+{{- end }}

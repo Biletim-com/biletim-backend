@@ -1,0 +1,104 @@
+name: Version Check Action
+description: >
+  Checks that if any helm chart templates/configurations or application code have changed,
+  then the version and appVersion in Chart.yaml have been updated.
+inputs:
+  base-sha:
+    description: 'Optional base commit SHA to diff against'
+    required: false
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout full history
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # ensure full git history is available for diffing
+
+    - name: Determine Base SHA
+      id: base
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.base-sha }}" ]; then
+          echo "Using provided base-sha: ${{ inputs.base-sha }}"
+          echo "sha=${{ inputs.base-sha }}" >> $GITHUB_OUTPUT
+        else
+          # Default to GITHUB_EVENT_BEFORE for push events
+          BASE_SHA="${GITHUB_EVENT_BEFORE}"
+
+          # If BASE_SHA is empty, fallback to the previous commit (HEAD^)
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA=$(git rev-parse HEAD^) || BASE_SHA=""
+          fi
+
+          if [ -z "$BASE_SHA" ]; then
+            echo "Error: Could not determine base commit. Exiting."
+            exit 1
+          fi
+
+          echo "Using base commit: $BASE_SHA"
+          echo "sha=$BASE_SHA" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Validate Helm Chart Versioning
+      shell: bash
+      run: |
+        BASE_SHA="${{ steps.base.outputs.sha }}"
+        echo "Validating Chart Versioning using base commit: $BASE_SHA"
+        changed_files=$(git diff --name-only $BASE_SHA HEAD)
+        echo "Changed files:"
+        echo "$changed_files"
+
+        # Check if any helm-related files changed (assumes helm/ folder holds your chart templates/configurations)
+        chart_changed=false
+        if echo "$changed_files" | grep -q "^helm/" | grep -v "helm/Chart.yaml"; then
+          chart_changed=true
+          echo "Helm chart files have changed."
+        fi
+
+        # Check if any files outside helm/ have changed (i.e. application code)
+        code_changed=false
+        if echo "$changed_files" | grep -v "^helm/" | grep -v "^.github/" | grep -q .; then
+          code_changed=true
+          echo "Application code files have changed."
+        fi
+
+        # Get current values from Chart.yaml
+        current_chart_version=$(grep '^version:' helm/Chart.yaml | awk '{print $2}')
+        current_app_version=$(grep '^appVersion:' helm/Chart.yaml | awk '{print $2}')
+        echo "Current Chart.yaml version: $current_chart_version"
+        echo "Current Chart.yaml appVersion: $current_app_version"
+
+        # Get previous Chart.yaml from the base commit
+        previous_chart_yaml=$(git show $BASE_SHA:helm/Chart.yaml 2>/dev/null || echo "")
+        if [ -z "$previous_chart_yaml" ]; then
+          echo "No previous Chart.yaml found; skipping version check."
+        else
+          previous_chart_version=$(echo "$previous_chart_yaml" | grep '^version:' | awk '{print $2}')
+          previous_app_version=$(echo "$previous_chart_yaml" | grep '^appVersion:' | awk '{print $2}')
+          echo "Previous Chart.yaml version: $previous_chart_version"
+          echo "Previous Chart.yaml appVersion: $previous_app_version"
+
+          # If helm chart files changed, ensure chart version is bumped
+          if [ "$chart_changed" = true ]; then
+            if [ "$current_chart_version" = "$previous_chart_version" ]; then
+              echo "Error: Helm chart templates/configurations have changed, but Chart.yaml version was not updated."
+              exit 1
+            else
+              echo "Chart.yaml version has been updated as expected."
+            fi
+          fi
+
+          # If application code changed, ensure appVersion is bumped
+          if [ "$code_changed" = true ]; then
+            if [ "$current_app_version" = "$previous_app_version" ]; then
+              echo "Error: Application code has changed, but appVersion in Chart.yaml was not updated."
+              exit 1
+            else
+              echo "Chart.yaml appVersion has been updated as expected."
+            fi
+          fi
+        fi
+
+        # Export IMAGE_TAG (from appVersion) for downstream steps
+        echo "IMAGE_TAG=$current_app_version" >> $GITHUB_ENV

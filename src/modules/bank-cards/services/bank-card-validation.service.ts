@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { compareSync } from 'bcrypt';
+import { compareSync } from 'bcryptjs';
 
 import { BankCardsRepository } from '../bank-cards.repository';
 

@@ -1,0 +1,16 @@
+{{- if .Values.biletim_backend.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.biletim_backend.app }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: {{ .Values.biletim_backend.port }}
+    targetPort: {{ .Values.biletim_backend.port }}
+  selector:
+    app: {{ .Values.biletim_backend.app }}
+{{- end }}
+
+
