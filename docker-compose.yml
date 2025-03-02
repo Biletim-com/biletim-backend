@@ -1,11 +1,13 @@
 services:
-  biletim-api:
+  biletim-backend:
     build:
       context: .
       dockerfile: Dockerfile
-      target: development
-    command: >
-      sh -c "pnpm migration:run && pnpm start:dev"
+      # target: development
+    # command: >
+    #   sh -c "pnpm start:dev"
+    image: 986859210325.dkr.ecr.eu-central-1.amazonaws.com/biletim/biletim-backend:ae4ec13-2025-03-01-20-22-40
+    platform: "linux/amd64"
     ports:
       - ${APP_PORT}:${APP_PORT}
     depends_on:
@@ -24,7 +26,7 @@ services:
 
   biletim-chromium:
     build:
-      context: ../biletim_chromium
+      context: ../biletim-chromium
       dockerfile: Dockerfile
     env_file:
       - .env
@@ -71,21 +73,6 @@ services:
       - biletim-mongo-vol:/data/db
     networks:
       - biletim-network
-
-  biletim-pgadmin:
-    container_name: biletim-pgadmin
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-    ports:
-      - '5050:80'
-    networks:
-      - biletim-network
-    restart: unless-stopped
 
 volumes:
   pgadmin:

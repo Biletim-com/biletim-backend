@@ -1,7 +1,7 @@
 import { AbstractDocument } from '@app/common/database/mongo/abstract.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-@Schema({ collection: 'hotel_data_collection' })
+@Schema({ collection: 'hotel_static_data_collection' })
 export class HotelDocument extends AbstractDocument {
   @Prop({ required: true })
   id: string;

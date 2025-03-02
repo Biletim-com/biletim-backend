@@ -1,0 +1,80 @@
+biletim_backend:
+  enabled: true
+  replicas: 1
+  host: api.dev.biletim.net
+  image: 986859210325.dkr.ecr.eu-central-1.amazonaws.com/biletim/biletim-backend:vIMAGE_TAG
+  secrets:
+    - postgres
+    - mongodb
+    - redis
+    - biletall
+    - ratehawk-hotel
+    - vakifbank-vpos
+    - garanti-vpos
+    - google-oauth
+    - facebook-oauth
+    - tamamliyo
+    - smtp
+    - netgsm
+  env:
+    APP_PORT: 8080
+    NODE_ENV: development
+    BACKEND_URL: https://api.dev.biletim.net
+    SUPER_ADMIN_EMAIL: super_admin@gmail.com
+    SUPER_ADMIN_PASSWORD: SuperAdmin.12345
+    SUPER_ADMIN_KEY: biletimcom2024
+    JWT_SECRET: PEMPassPhrase
+    JWT_EXPIRATION: 172800
+    BCRYPT_SALT_ROUNDS: 12
+    RESET_PASSWORD_URL: https://dev.biletim.net/tr
+
+    # services
+    CHOROMIUM_HOST: biletim-chromium
+    CHOROMIUM_PORT: 9222
+
+    # DB
+    # POSTGRES_HOST: ip address of the RDS in the same VPC
+    POSTGRES_HOST: biletim-dev-test.c74egw6eqf5r.eu-central-1.rds.amazonaws.com
+    POSTGRES_PORT: 5432
+    POSTGRES_DB: dev
+
+    # MONGO_HOST: biletim-mongo
+    MONGO_HOST: 3.70.222.16
+    MONGO_PORT: 27017
+    MONGO_DB: hotel_data
+
+    REDIS_HOST: biletim-redis
+    REDIS_PORT: 6379
+
+    # ticket
+    BILETALL_BASE_URI: http://94.55.20.137/WSTEST/Service.asmx
+
+    # hotel
+    HOTEL_API_BASE_URL: https://api.worldota.net/api/b2b/v3
+
+    # payment
+    VAKIF_BANK_VPOS_BASE_URI: https://onlineodemetest.vakifbank.com.tr:4443
+    VAKIF_BANK_3DS_BASE_URI: https://3dsecuretest.vakifbank.com.tr:4443
+    BILETALL_3DS_BASE_URI: http://94.55.20.137//WSTEST/3DSecure/SecurePay2.aspx
+    GARANTI_VPOS_BASE_URI: https://gbtaksimtunel-integration.garanti.com.tr
+
+    # insurance
+    TAMAMLIYO_API_BASE_URL: https://api-test.tamamliyo.com
+
+    # notifications
+    NETGSM_BASE_URL: 'https://api.netgsm.com.tr'
+    NETGSM_APP_KEY: 'xxx'
+
+    EMAIL_PORT: 465
+    EMAIL_HOST: smtp.gmail.com
+    EMAIL_USE_SSL: 'true'
+    EMAIL_FROM: 'info@biletim.net'
+
+biletim_redis:
+  enabled: true
+  replicas: 1
+  secrets:
+    - redis
+
+ingress:
+  enabled: true
