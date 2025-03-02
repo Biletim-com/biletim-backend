@@ -8,12 +8,12 @@ inputs:
     required: false
     default: ''
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Checkout full history
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # ensure full git history is available for diffing
+        fetch-depth: 0 # ensure full git history is available for diffing
 
     - name: Determine Base SHA
       id: base
@@ -51,7 +51,7 @@ runs:
 
         # Check if any helm-related files changed (assumes helm/ folder holds your chart templates/configurations)
         chart_changed=false
-        if echo "$changed_files" | grep -q "^helm/" | grep -v "helm/Chart.yaml"; then
+        if echo "$changed_files" | grep "^helm/" | grep -v "^helm/Chart.yaml" | grep -q .; then
           chart_changed=true
           echo "Helm chart files have changed."
         fi
