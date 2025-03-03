@@ -14,12 +14,6 @@ global:
     sslRedirect: true
     tlsSecret: biletim-tls
     timeout: 120
-    acmeChallengeType: 'dns01'
-    acmeDNS01Provider: 'route53'
-
-certs:
-  managed: true
-  issuerName: letsencrypt-route53
 
 biletim_backend:
   app: biletim-backend
