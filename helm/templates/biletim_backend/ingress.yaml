@@ -17,7 +17,7 @@ spec:
   tls:
     - hosts:
         - "{{ .Values.biletim_backend.host }}"
-      secretName: "{{ .Values.ingress.tlsSecret }}"
+      secretName: "{{ .Values.global.ingress.tlsSecret }}"
   rules:
     - host: "{{ .Values.biletim_backend.host }}"
       http:
