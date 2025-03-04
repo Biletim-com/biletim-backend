@@ -207,11 +207,10 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
       ? PaymentProvider.BILETIM_GO
       : PaymentProvider.VAKIF_BANK;
 
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
-      const queryRunner = this.dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-
       /**
        * Init Transactions
        */

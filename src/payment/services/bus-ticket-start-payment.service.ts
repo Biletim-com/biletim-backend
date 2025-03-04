@@ -156,11 +156,10 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
       }, 0),
     );
 
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
-      const queryRunner = this.dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-
       /**
        * Init Transactions
        */
