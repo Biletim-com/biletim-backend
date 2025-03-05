@@ -73,7 +73,7 @@ export class PassengersController {
   deletePassenger(
     @CurrentUser() user: User,
     @Param('passengerId') passengerId: UUID,
-  ) {
+  ): Promise<boolean> {
     return this.passengersService.deletePassenger(user.id, passengerId);
   }
 }

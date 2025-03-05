@@ -28,7 +28,7 @@ export class PassportsController {
   deletePassport(
     @CurrentUser() user: User,
     @Param('passportId') passportId: UUID,
-  ) {
+  ): Promise<boolean> {
     return this.passportsService.deletePassport(user.id, passportId);
   }
 }

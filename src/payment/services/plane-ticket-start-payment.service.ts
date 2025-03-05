@@ -185,10 +185,6 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
       user,
     );
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
     const passengerTypeCount = this.composePlanePassengerTypeCount(
       planeTicketPurchaseDto.passengers,
     );
@@ -211,6 +207,9 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
       ? PaymentProvider.BILETIM_GO
       : PaymentProvider.VAKIF_BANK;
 
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
       /**
        * Init Transactions

@@ -86,7 +86,7 @@ export class InvoiceAddressController {
   async deleteInvoice(
     @CurrentUser() user: User,
     @Param('id') invoiceId: UUID,
-  ): Promise<void> {
+  ): Promise<boolean> {
     return this.invoiceAddressService.deleteInvoice(user.id, invoiceId);
   }
 }

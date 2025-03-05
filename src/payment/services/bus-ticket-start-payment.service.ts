@@ -65,15 +65,13 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
       user,
     );
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
     const trip = busTicketPurchaseDto.trip;
 
-    const terminals = await queryRunner.manager.findBy(BusTerminal, {
-      externalId: In([trip.departureTerminalId, trip.arrivalTerminalId]),
-    });
+    const terminals = await this.dataSource
+      .getMongoRepository(BusTerminal)
+      .findBy({
+        externalId: In([trip.departureTerminalId, trip.arrivalTerminalId]),
+      });
 
     const departureTerminal = terminals.find(
       (terminal) => terminal.externalId === Number(trip.departureTerminalId),
@@ -158,6 +156,9 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
       }, 0),
     );
 
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
       /**
        * Init Transactions
