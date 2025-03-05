@@ -87,8 +87,11 @@ export class InvoiceAddressService {
     );
   }
 
-  async deleteInvoice(userId: UUID, invoiceId: UUID): Promise<void> {
+  async deleteInvoice(userId: UUID, invoiceId: UUID): Promise<boolean> {
     const invoiceAddress = await this.findOneInvoice(userId, invoiceId);
-    await this.invoiceAddressRepository.delete(invoiceAddress.id);
+    const result = await this.invoiceAddressRepository.delete(
+      invoiceAddress.id,
+    );
+    return !!result.affected;
   }
 }

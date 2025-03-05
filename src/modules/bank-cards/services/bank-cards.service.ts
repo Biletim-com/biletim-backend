@@ -83,7 +83,7 @@ export class BankCardsService {
   async deleteBankCard(
     userOrUserId: User | UUID,
     bankCardId: UUID,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const existingUser = await this.usersRepository.findEntityData(
       userOrUserId,
     );
@@ -101,6 +101,7 @@ export class BankCardsService {
       existingCard.vakifPanToken,
       existingCard.garantiPanToken,
     );
-    await this.bankCardsRepository.delete(existingCard.id);
+    const result = await this.bankCardsRepository.delete(existingCard.id);
+    return !!result.affected;
   }
 }
