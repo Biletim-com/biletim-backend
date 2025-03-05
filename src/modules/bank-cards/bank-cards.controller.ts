@@ -62,7 +62,7 @@ export class BankCardController {
   deleteBankCard(
     @CurrentUser() currentUser: User,
     @Param('cardId') cardId: UUID,
-  ): Promise<void> {
+  ): Promise<boolean> {
     return this.bankCardsService.deleteBankCard(currentUser, cardId);
   }
 }
