@@ -67,11 +67,9 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
 
     const trip = busTicketPurchaseDto.trip;
 
-    const terminals = await this.dataSource
-      .getMongoRepository(BusTerminal)
-      .findBy({
-        externalId: In([trip.departureTerminalId, trip.arrivalTerminalId]),
-      });
+    const terminals = await this.dataSource.getRepository(BusTerminal).findBy({
+      externalId: In([trip.departureTerminalId, trip.arrivalTerminalId]),
+    });
 
     const departureTerminal = terminals.find(
       (terminal) => terminal.externalId === Number(trip.departureTerminalId),
