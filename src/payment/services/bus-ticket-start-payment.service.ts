@@ -155,9 +155,13 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
     );
 
     const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
     try {
+      /**
+       * Start DB transaction
+       */
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
       /**
        * Init Transactions
        */
@@ -232,7 +236,6 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
           }),
       );
       await queryRunner.manager.save(BusTicket, tickets);
-      await queryRunner.commitTransaction();
 
       const htmlContent = await this.finalizePaymentInit(
         transaction,
@@ -243,6 +246,8 @@ export class BusTicketStartPaymentService extends AbstractStartPaymentService {
         clientIp,
         user,
       );
+
+      await queryRunner.commitTransaction();
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {
       await queryRunner.rollbackTransaction();

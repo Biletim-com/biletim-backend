@@ -208,9 +208,13 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
       : PaymentProvider.VAKIF_BANK;
 
     const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
     try {
+      /**
+       * Start DB transaction
+       */
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
       /**
        * Init Transactions
        */
@@ -305,7 +309,6 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
       );
       // SAVE is intentional here to assign created segments
       await queryRunner.manager.save(PlaneTicket, planeTickets);
-      await queryRunner.commitTransaction();
 
       const htmlContent = await this.finalizePaymentInit(
         transaction,
@@ -316,6 +319,8 @@ export class PlaneTicketStartPaymentService extends AbstractStartPaymentService 
         clientIp,
         user,
       );
+
+      await queryRunner.commitTransaction();
 
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {
