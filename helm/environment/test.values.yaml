@@ -47,7 +47,7 @@ biletim_backend:
     REDIS_PORT: 6379
 
     # ticket
-    BILETALL_BASE_URI: http://94.55.20.137/WSTEST/Service.asmx
+    BILETALL_BASE_URI: https://WS.biletall.com/Service.asmx
 
     # hotel
     HOTEL_API_BASE_URL: https://api.worldota.net/api/b2b/v3
@@ -55,7 +55,7 @@ biletim_backend:
     # payment
     VAKIF_BANK_VPOS_BASE_URI: https://onlineodemetest.vakifbank.com.tr:4443
     VAKIF_BANK_3DS_BASE_URI: https://3dsecuretest.vakifbank.com.tr:4443
-    BILETALL_3DS_BASE_URI: http://94.55.20.137//WSTEST/3DSecure/SecurePay2.aspx
+    BILETALL_3DS_BASE_URI: https://WS.biletall.com/3DSecure/SecurePay2.aspx
     GARANTI_VPOS_BASE_URI: https://gbtaksimtunel-integration.garanti.com.tr
 
     # insurance
