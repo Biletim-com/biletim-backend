@@ -66,10 +66,13 @@ export class WalletRechargeStartPaymentService extends AbstractStartPaymentServi
     const paymentProviderType = PaymentProvider.VAKIF_BANK;
 
     const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
 
     try {
+      /**
+       * Start DB transaction
+       */
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
       /**
        * Init Transactions
        */
@@ -95,8 +98,6 @@ export class WalletRechargeStartPaymentService extends AbstractStartPaymentServi
       });
       await queryRunner.manager.insert(WalletRechargeOrder, order);
 
-      await queryRunner.commitTransaction();
-
       const htmlContent = await this.finalizePaymentInit(
         transaction,
         paymentProviderType,
@@ -106,6 +107,8 @@ export class WalletRechargeStartPaymentService extends AbstractStartPaymentServi
         clientIp,
         user,
       );
+
+      await queryRunner.commitTransaction();
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {
       await queryRunner.rollbackTransaction();

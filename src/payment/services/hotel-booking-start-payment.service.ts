@@ -79,9 +79,12 @@ export class HotelBookingStartPaymentService extends AbstractStartPaymentService
       : PaymentProvider.VAKIF_BANK;
 
     const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
     try {
+      /**
+       * Start DB transaction
+       */
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
       /**
        * Init Transactions
        */
@@ -154,7 +157,6 @@ export class HotelBookingStartPaymentService extends AbstractStartPaymentService
       //   upsell: [],
       // });
 
-      await queryRunner.commitTransaction();
       const htmlContent = await this.finalizePaymentInit(
         transaction,
         paymentProviderType,
@@ -164,6 +166,8 @@ export class HotelBookingStartPaymentService extends AbstractStartPaymentService
         clientIp,
         user,
       );
+
+      await queryRunner.commitTransaction();
       return { transactionId: transaction.id, htmlContent };
     } catch (err) {
       await queryRunner.rollbackTransaction();

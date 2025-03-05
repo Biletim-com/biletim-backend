@@ -3,11 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      # target: development
-    # command: >
-    #   sh -c "pnpm start:dev"
-    image: 986859210325.dkr.ecr.eu-central-1.amazonaws.com/biletim/biletim-backend:ae4ec13-2025-03-01-20-22-40
-    platform: "linux/amd64"
+      target: development
+    command: >
+      sh -c "pnpm start:dev"
     ports:
       - ${APP_PORT}:${APP_PORT}
     depends_on:
