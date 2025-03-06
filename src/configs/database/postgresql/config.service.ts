@@ -48,4 +48,10 @@ export class PostgreSQLConfigService {
       this.configurationNamespace,
     ).logging;
   }
+
+  get ssl(): boolean {
+    return this.configService.getOrThrow<TPostgreSQLConfiguration>(
+      this.configurationNamespace,
+    ).ssl;
+  }
 }
