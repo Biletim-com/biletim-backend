@@ -21,7 +21,7 @@ declare namespace NodeJS {
     POSTGRES_DB: string;
     POSTGRES_USER: string;
     POSTGRES_PASSWORD: string;
-    POSTGRES_USE_SSL: boolean;
+    POSTGRES_USE_SSL: string;
 
     MONGO_USER: string;
     MONGO_PASSWORD: string;

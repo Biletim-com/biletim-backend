@@ -19,5 +19,5 @@ export class PostgreSQLEnvVarsValidation {
   POSTGRES_PASSWORD: string;
 
   @IsBoolean()
-  POSTGRES_USE_SSL: boolean;
+  POSTGRES_USE_SSL: string;
 }
