@@ -1,4 +1,4 @@
-import { Min, Max, IsNumber, IsString, IsBoolean } from 'class-validator';
+import { Min, Max, IsNumber, IsString, IsBooleanString } from 'class-validator';
 
 export class PostgreSQLEnvVarsValidation {
   @IsString()
@@ -18,6 +18,6 @@ export class PostgreSQLEnvVarsValidation {
   @IsString()
   POSTGRES_PASSWORD: string;
 
-  @IsBoolean()
-  POSTGRES_USE_SSL: string;
+  @IsBooleanString()
+  POSTGRES_USE_SSL: 'true' | 'false';
 }
