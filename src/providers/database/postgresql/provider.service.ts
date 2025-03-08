@@ -23,7 +23,9 @@ export class PostgreSQLProviderService implements TypeOrmOptionsFactory {
       logging: this.postgreSQLConfigService.logging,
       migrations: [`${__dirname}/./migrations/*{.ts,.js}`],
       migrationsRun: true,
-      ssl: { rejectUnauthorized: false },
+      ...(this.postgreSQLConfigService.ssl === true
+        ? { ssl: { rejectUnauthorized: false } }
+        : { ssl: false }),
       entities: [
         `${__dirname}/../../../modules/**/*.entity{.ts,.js}`,
         `${__dirname}/../../../providers/**/*.entity{.ts,.js}`,

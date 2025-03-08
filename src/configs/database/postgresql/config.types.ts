@@ -5,4 +5,5 @@ export type TPostgreSQLConfiguration = {
   user: string;
   password: string;
   logging: boolean;
+  ssl: boolean;
 };

@@ -17,5 +17,6 @@ export default registerAs(
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     logging: process.env.DB_LOGGING === 'true',
+    ssl: process.env.POSTGRES_USE_SSL === 'true',
   }),
 );

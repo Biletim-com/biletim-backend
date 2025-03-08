@@ -1,6 +1,7 @@
 name: Check Versions and Run Tests
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
     branches:
       - dev
       - test
