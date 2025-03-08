@@ -37,7 +37,7 @@ biletim_backend:
     POSTGRES_HOST: biletim-dev-test.c74egw6eqf5r.eu-central-1.rds.amazonaws.com
     POSTGRES_PORT: 5432
     POSTGRES_DB: test
-    POSTGRES_USE_SSL: true
+    POSTGRES_USE_SSL: false
 
     # MONGO_HOST: biletim-mongo
     MONGO_HOST: 10.74.1.65
